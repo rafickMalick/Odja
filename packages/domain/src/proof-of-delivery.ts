@@ -1,0 +1,139 @@
+/**
+ * Preuve de livraison.
+ *
+ * Elle ne déclenche plus le paiement — c'est la validation du client qui le
+ * fait (SPEC-ALIGNEMENT § 2) — mais elle reste la pièce qui tranche un litige
+ * « je n'ai rien reçu ». Sans elle, c'est parole contre parole, et Ojà paie.
+ *
+ * Trois éléments possibles, **deux suffisent**. Exiger les trois bloquerait
+ * des livraisons honnêtes : un client sans réseau ne reçoit pas son code, un
+ * téléphone à court de batterie ne prend pas de photo, un GPS urbain dérive
+ * entre deux immeubles. N'en exiger qu'un rendrait la preuve trop facile à
+ * fabriquer.
+ */
+
+export type ProofElement = 'otp' | 'photo' | 'gps';
+
+export const REQUIRED_PROOF_ELEMENTS = 2;
+
+/** Rayon au-delà duquel le point de livraison ne correspond plus à l'adresse. */
+export const GPS_TOLERANCE_METERS = 300;
+
+export interface ProofSubmission {
+  /** Code à quatre chiffres remis au client, saisi par le livreur. */
+  otp?: string | undefined;
+  photoKey?: string | undefined;
+  latitude?: number | undefined;
+  longitude?: number | undefined;
+}
+
+export interface ProofContext {
+  expectedOtp: string;
+  /** Position de l'adresse de livraison, si le client l'a renseignée. */
+  destination?: { latitude: number; longitude: number } | undefined;
+  distanceMeters?: ((a: { latitude: number; longitude: number }) => number) | undefined;
+}
+
+export interface ProofAssessment {
+  accepted: boolean;
+  /** Éléments effectivement apportés et valides. */
+  provided: ProofElement[];
+  /** Ce qui manque pour atteindre le seuil, en clair pour le livreur. */
+  problems: string[];
+}
+
+export class ProofOfDeliveryError extends Error {}
+
+/**
+ * Évalue une preuve de livraison.
+ *
+ * Renvoie l'inventaire de ce qui est acquis et de ce qui manque, plutôt qu'un
+ * simple refus : un livreur qui reçoit « preuve insuffisante » sans savoir
+ * quoi ajouter reste planté devant la porte.
+ */
+export function assessProof(
+  submission: ProofSubmission,
+  context: ProofContext,
+  toleranceMeters = GPS_TOLERANCE_METERS,
+): ProofAssessment {
+  const provided: ProofElement[] = [];
+  const problems: string[] = [];
+
+  // ── Code de réception ──
+  if (submission.otp) {
+    if (constantTimeEquals(submission.otp, context.expectedOtp)) {
+      provided.push('otp');
+    } else {
+      problems.push('Le code communiqué par le client ne correspond pas.');
+    }
+  } else {
+    problems.push('Demandez au client le code à quatre chiffres qu’il a reçu.');
+  }
+
+  // ── Photo ──
+  if (submission.photoKey) {
+    provided.push('photo');
+  } else {
+    problems.push('Prenez une photo du colis remis.');
+  }
+
+  // ── Position ──
+  if (submission.latitude !== undefined && submission.longitude !== undefined) {
+    const here = { latitude: submission.latitude, longitude: submission.longitude };
+
+    if (!context.destination || !context.distanceMeters) {
+      /* Le client n'a pas posé de point GPS : on ne peut rien comparer. La
+         position est enregistrée comme trace, mais ne compte pas comme
+         preuve — sinon n'importe quelle position vaudrait preuve. */
+      problems.push(
+        'Position enregistrée, mais l’adresse du client n’a pas de point GPS à comparer.',
+      );
+    } else if (context.distanceMeters(here) <= toleranceMeters) {
+      provided.push('gps');
+    } else {
+      problems.push(
+        `Vous êtes à plus de ${toleranceMeters} m de l’adresse de livraison.`,
+      );
+    }
+  } else {
+    problems.push('Activez la localisation au moment de la remise.');
+  }
+
+  const accepted = provided.length >= REQUIRED_PROOF_ELEMENTS;
+
+  return {
+    accepted,
+    provided,
+    // Une preuve acceptée n'a plus de manque à signaler : les éléments
+    // absents ne sont plus des problèmes.
+    problems: accepted ? [] : problems,
+  };
+}
+
+/**
+ * Code de réception à quatre chiffres.
+ *
+ * Quatre et non six : le client le lit à voix haute au livreur, sur le pas de
+ * sa porte. Sa courte durée de vie et son usage unique compensent le moindre
+ * espace de recherche.
+ */
+export function formatDeliveryOtp(value: number): string {
+  return String(Math.abs(Math.trunc(value)) % 10_000).padStart(4, '0');
+}
+
+/**
+ * Comparaison à temps constant.
+ *
+ * Un code à quatre chiffres se devine en 10 000 essais ; inutile d'offrir en
+ * plus la fuite d'information qu'apporte une comparaison qui s'arrête au
+ * premier caractère différent.
+ */
+function constantTimeEquals(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+
+  let difference = 0;
+  for (let index = 0; index < a.length; index++) {
+    difference |= a.charCodeAt(index) ^ b.charCodeAt(index);
+  }
+  return difference === 0;
+}

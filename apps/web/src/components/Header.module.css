@@ -1,0 +1,457 @@
+/* Nav bar (35:782) — seule barre de navigation présente dans les maquettes
+   (écran Confirmation). Reprise ici comme header commun à toutes les pages.
+
+   Sous 900px, la maquette ne prévoit rien : le desktop est remplacé par une
+   barre compacte à trois cibles tactiles et un panneau latéral, plutôt qu'une
+   rangée de liens qui défile horizontalement — un menu qu'il faut faire
+   glisser pour découvrir ne se lit pas. */
+
+.root {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding-inline: var(--space-40);
+  padding-bottom: 0.8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  border-bottom: 0.8px solid transparent;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+/* En haut de page la barre se fond dans le hero ; le filet et l'ombre
+   n'apparaissent qu'une fois du contenu passé dessous. */
+.root[data-scrolled] {
+  border-bottom-color: var(--color-pill-border);
+  box-shadow: 0 1px 12px rgba(35, 37, 38, 0.05);
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-16);
+  width: 100%;
+  max-width: 1360px;
+  height: 72px;
+  margin-inline: auto;
+  padding-inline: var(--space-64);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 77.72px;
+  height: 63.227px;
+  flex-shrink: 0;
+}
+
+.logoImage {
+  width: 63.28px;
+  height: 51.48px;
+}
+
+/* ── Navigation principale ── */
+.nav {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-32);
+}
+
+.navLink {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 2px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22.5px;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: var(--color-primary);
+}
+
+.navLinkActive {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Souligné de l'onglet actif : ancré sous la ligne de base, pas une bordure
+   qui décalerait la hauteur du lien. */
+.navLinkActive::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-primary);
+}
+
+/* ── Actions desktop ── */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-8);
+  flex-shrink: 0;
+}
+
+.action {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  min-height: 36px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 15.6px;
+  letter-spacing: 0.26px;
+  color: var(--color-black);
+  white-space: nowrap;
+  transition: background-color 120ms ease;
+}
+
+.action:hover {
+  background: var(--color-gray-100);
+}
+
+.actionIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ── Actions mobile ── */
+.mobileActions {
+  display: none;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
+}
+
+/* Cible tactile de 44px, minimum confortable au pouce. */
+.iconButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  color: var(--color-black);
+  transition: background-color 120ms ease;
+}
+
+.iconButton:hover {
+  background: var(--color-gray-100);
+}
+
+.iconButton:active {
+  background: var(--color-gray-300);
+}
+
+.iconButton img {
+  width: 20px;
+  height: 20px;
+}
+
+.iconButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.root :focus-visible,
+.drawerRoot :focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Compteur du panier — ajout hors maquette, nécessaire au parcours d'achat. */
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 6px;
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--color-white);
+}
+
+/* Dans la barre mobile, l'icône n'a pas de libellé : la pastille se pose en
+   exposant sur l'icône, avec un liseré pour rester lisible sur le fond. */
+.iconButton .count {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding-inline: 5px;
+  font-size: 10px;
+  box-shadow: 0 0 0 2px var(--color-white);
+}
+
+/* ── Panneau mobile ── */
+.drawerRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* `visibility` retire aussi le panneau de l'ordre de tabulation : fermé, il
+   n'est ni cliquable ni atteignable au clavier. */
+.drawerRoot[data-open] {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgba(35, 37, 38, 0.45);
+  opacity: 0;
+  cursor: default;
+  transition: opacity 220ms ease;
+}
+
+.drawerRoot[data-open] .scrim {
+  opacity: 1;
+}
+
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: min(340px, 88vw);
+  padding: var(--space-16) var(--space-20) var(--space-32);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-white);
+  border-radius: var(--radius-banner) 0 0 var(--radius-banner);
+  box-shadow: var(--shadow-modal);
+  transform: translateX(100%);
+  transition: transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.drawerRoot[data-open] .drawer {
+  transform: translateX(0);
+}
+
+.drawerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  margin-bottom: var(--space-8);
+}
+
+.drawerTitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 15.4px;
+  letter-spacing: 1.32px;
+  text-transform: uppercase;
+  color: var(--color-gray-700);
+}
+
+.drawerNav {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawerLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  min-height: 52px;
+  padding: var(--space-12) var(--space-12) var(--space-12) var(--space-16);
+  border-radius: var(--radius-input);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(20px * var(--type-scale));
+  line-height: 1.3;
+  color: var(--color-black);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.drawerLink:hover,
+.drawerLink:active {
+  background: var(--color-gray-100);
+}
+
+.drawerLinkActive {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.drawerChevron {
+  display: flex;
+  flex-shrink: 0;
+  opacity: 0.35;
+}
+
+.drawerChevron svg {
+  width: 16px;
+  height: 16px;
+}
+
+.drawerLinkActive .drawerChevron {
+  opacity: 1;
+}
+
+.drawerDivider {
+  height: 1px;
+  margin: var(--space-12) var(--space-16);
+  background: var(--color-gray-300);
+}
+
+.drawerAccount {
+  display: flex;
+  flex-direction: column;
+  padding-inline: var(--space-16);
+}
+
+.drawerLabel {
+  margin-bottom: var(--space-4);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 15.4px;
+  letter-spacing: 1.32px;
+  text-transform: uppercase;
+  color: var(--color-gray-700);
+}
+
+.drawerSmall {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.drawerSmall:hover {
+  color: var(--color-primary);
+}
+
+/* Le panneau se termine sur l'action que la marketplace veut provoquer :
+   l'ouverture d'une boutique. Poussée en bas, hors du flux de lecture. */
+.drawerCta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin-top: auto;
+  padding: var(--space-12) var(--space-24);
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.16px;
+  text-align: center;
+  color: var(--color-white);
+  transition: background-color 120ms ease;
+}
+
+.drawerCta:hover {
+  background: var(--color-primary-dark);
+}
+
+@media (max-width: 1100px) {
+  .container {
+    padding-inline: 0;
+  }
+
+  .nav {
+    gap: var(--space-20);
+  }
+}
+
+@media (max-width: 900px) {
+  .root {
+    padding-inline: var(--mobile-margin);
+  }
+
+  .container {
+    height: 60px;
+    gap: var(--space-8);
+    padding-inline: 0;
+    justify-content: flex-start;
+  }
+
+  .logo {
+    width: auto;
+    height: 40px;
+    margin-right: auto;
+  }
+
+  .logoImage {
+    width: 48px;
+    height: 39px;
+  }
+
+  .nav,
+  .actions {
+    display: none;
+  }
+
+  .mobileActions {
+    display: flex;
+  }
+}
+
+/* Le panneau reste disponible jusqu'à 900px ; au-delà il ne doit jamais
+   pouvoir s'ouvrir, même si l'état React était resté à true au moment du
+   redimensionnement. */
+@media (min-width: 901px) {
+  .drawerRoot {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim,
+  .drawer,
+  .root {
+    transition: none;
+  }
+}

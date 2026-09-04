@@ -1,0 +1,147 @@
+/* Back-office : filtres, fiches de dossier, planches de photos. */
+
+.filters {
+  display: flex;
+  gap: var(--space-4);
+  padding: 4px;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-pill);
+  align-self: flex-start;
+  flex-wrap: wrap;
+}
+
+.filter,
+.filterActive {
+  padding: var(--space-8) var(--space-20);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-700);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.filter:hover {
+  color: var(--color-black);
+}
+
+.filterActive {
+  background: var(--color-black);
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+/* Deux colonnes de champ-valeur : un dossier se relit plus vite en grille
+   qu'en paragraphe. */
+.details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-12) var(--space-24);
+}
+
+.details dt {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: var(--color-gray-700);
+}
+
+.details dd {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-black);
+  word-break: break-word;
+}
+
+.documents {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.documents li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: var(--space-8) var(--space-12);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-black);
+}
+
+.documents a {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Planche de photos d'une fiche à modérer. */
+.thumbs {
+  display: flex;
+  gap: var(--space-8);
+  overflow-x: auto;
+  padding-bottom: var(--space-4);
+}
+
+.thumbs img {
+  flex: 0 0 auto;
+  width: 132px;
+  height: 132px;
+  object-fit: cover;
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-card);
+}
+
+.description {
+  max-width: 72ch;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-gray-700);
+  white-space: pre-wrap;
+}
+
+/* Cases à cocher des arbitrages : le libellé explique la conséquence, il faut
+   donc de la place pour deux lignes. */
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-12);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-black);
+  cursor: pointer;
+}
+
+.check input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  accent-color: var(--color-primary);
+}
+
+/* Le grand livre se lit en colonnes de montants alignés ; un débit et un
+   crédit ne doivent jamais se confondre. */
+.debit {
+  color: var(--color-black);
+}
+
+.credit {
+  color: var(--color-primary);
+}
+
+.invariantOk {
+  padding: var(--space-12) var(--space-16);
+  background: var(--color-success-bg);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-success);
+}

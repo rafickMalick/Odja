@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    /* Le cahier des charges impose du TypeScript strict (§ 3.1). Ces quatre
+       options ne sont pas couvertes par `strict` et attrapent précisément les
+       erreurs qui coûtent cher sur un système financier : un index de tableau
+       supposé défini, un champ optionnel écrasé par `undefined`, un `catch`
+       typé `any`, une propriété de classe jamais affectée. */
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "useUnknownInCatchVariables": true,
+    "strictPropertyInitialization": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "incremental": true
+  }
+}

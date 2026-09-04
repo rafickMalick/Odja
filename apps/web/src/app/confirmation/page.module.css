@@ -1,0 +1,388 @@
+/* Confirmation — Desktop (35:781) / Mobile (61:1541). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background: var(--color-white);
+}
+
+.layout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-40);
+  width: 100%;
+  padding: var(--space-32) var(--desktop-margin) var(--space-80);
+}
+
+.left {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-40);
+}
+
+/* ── Carte de succès ── */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-20);
+  width: 100%;
+  padding: var(--space-32);
+  background: rgba(16, 185, 129, 0.04);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 20px;
+}
+
+.successHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.successIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  background: var(--color-success);
+  border-radius: 28px;
+}
+
+.successIcon img {
+  width: 24px;
+  height: 24px;
+}
+
+.successText {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.successTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(28px * var(--type-scale));
+  color: var(--color-black);
+}
+
+.successSubtitle {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--color-gray-700);
+}
+
+.rule {
+  width: 100%;
+  height: 1px;
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.reference {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+  font-size: 14px;
+}
+
+.referenceLabel {
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.referenceValue {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.referenceNote {
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--color-gray-700);
+}
+
+/* ── Carte adresse ── */
+.shipping {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-24);
+  width: 100%;
+  padding: var(--space-32);
+  background: var(--color-white);
+  border: 1px solid var(--color-pill-border);
+  border-radius: 20px;
+}
+
+.shippingTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(20px * var(--type-scale));
+  color: var(--color-black);
+}
+
+.shippingGrid {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-40);
+  width: 100%;
+}
+
+.shippingColumn {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+.shippingLabel {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--color-gray-700);
+}
+
+.shippingStrong {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-black);
+}
+
+.shippingLine {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--color-black);
+}
+
+.shippingEta {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-success);
+}
+
+.actions {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+/* ── Panneau détails ── */
+.summary {
+  width: 440px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-24);
+  padding: var(--space-20);
+  border-radius: var(--radius-card);
+  background: var(--color-white);
+  filter: drop-shadow(0px 4px 6px rgba(33, 35, 35, 0.06));
+}
+
+.summaryHead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.summaryTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(24px * var(--type-scale));
+  color: #212323;
+}
+
+.summaryCount {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--color-gray-700);
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-gray-300);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.lineThumb {
+  width: 60px;
+  height: 78px;
+  flex-shrink: 0;
+  background: var(--color-product-bg);
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.lineBody {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lineName {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--color-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.lineMeta {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--color-gray-700);
+}
+
+.linePrice {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-black);
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+  width: 100%;
+  font-size: 16px;
+}
+
+.totalsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.totalsLabel {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+.totalsValue {
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.16px;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+.totalsFree {
+  color: var(--color-success);
+}
+
+.grandTotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  width: 100%;
+  color: #212323;
+}
+
+.grandTotalLabel {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.grandTotalValue {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(28px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.28px;
+}
+
+.empty {
+  padding: var(--space-48) 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-gray-700);
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .summary {
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .layout {
+    padding: var(--space-24) var(--mobile-margin) var(--space-40);
+    gap: var(--space-24);
+  }
+
+  .success,
+  .shipping {
+    padding: var(--space-20);
+  }
+
+  .successTitle {
+    font-size: calc(20px * var(--type-scale));
+  }
+
+  .shippingGrid {
+    flex-direction: column;
+    gap: var(--space-20);
+  }
+}

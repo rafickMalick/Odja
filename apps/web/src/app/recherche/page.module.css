@@ -1,0 +1,247 @@
+/* Recherche — écran absent des maquettes, composé à partir du design system.
+   Barre de recherche en pill (même boîte que l'Input bar du panier), pills de
+   catégorie reprises du Catalog, grille produit à 4 colonnes selon la formule
+   du handoff : (1320 - 3×16) / 4 = 318px. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background: var(--color-white);
+}
+
+.hero {
+  width: 100%;
+  padding: var(--space-56) var(--desktop-margin) var(--space-32);
+  background: var(--color-gray-100);
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-24);
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(40px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.4px;
+  color: var(--color-black);
+}
+
+/* ── Barre de recherche ── */
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  max-width: 760px;
+  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-24);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-pill);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.searchBar:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.searchIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.searchBar input {
+  flex: 1 0 0;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.searchBar input::placeholder {
+  color: var(--color-gray-500);
+}
+
+.clear {
+  padding-inline: var(--space-8);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-700);
+}
+
+.clear:hover {
+  color: var(--color-black);
+}
+
+/* ── Filtres ── */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  padding: 8.8px 16.8px;
+  background: var(--color-white);
+  border: 1px solid var(--color-pill-border);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-black);
+  white-space: nowrap;
+  transition: background-color 120ms ease, border-color 120ms ease,
+    color 120ms ease;
+}
+
+.pill:hover {
+  border-color: var(--color-gray-500);
+}
+
+.pillActive {
+  background: #000;
+  border-color: #000;
+  color: var(--color-white);
+}
+
+.pillActive:hover {
+  border-color: #000;
+}
+
+/* ── Résultats ── */
+.section {
+  width: 100%;
+  max-width: calc(var(--container-max-width) + 2 * var(--desktop-margin));
+  padding: var(--space-32) var(--desktop-margin) var(--space-80);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.count {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+.count strong {
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+/* Grille produit du handoff : 4 colonnes, gap 16px (h) + 24px (v). */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--space-16);
+  row-gap: var(--space-24);
+  width: 100%;
+}
+
+/* ── État vide ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  padding: var(--space-48);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-card);
+}
+
+.emptyTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(28px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.28px;
+  color: var(--color-black);
+}
+
+.emptyText {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+.suggestions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .hero {
+    padding: var(--space-32) var(--mobile-margin) var(--space-24);
+  }
+
+  .title {
+    font-size: calc(26px * var(--type-scale));
+    letter-spacing: -0.26px;
+  }
+
+  .section {
+    padding: var(--space-24) var(--mobile-margin) var(--space-40);
+  }
+
+  /* Grille mobile du handoff : 2 colonnes, gouttière 16px. */
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Le parent est en `align-items: flex-start` : sans largeur explicite, la
+     rangée se dimensionne sur son contenu et `overflow-x` n'a rien à borner. */
+  .filters {
+    width: 100%;
+    min-width: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pill {
+    flex-shrink: 0;
+  }
+
+  .empty {
+    padding: var(--space-24);
+  }
+
+  .emptyTitle {
+    font-size: calc(20px * var(--type-scale));
+    letter-spacing: 0;
+  }
+}

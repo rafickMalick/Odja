@@ -1,0 +1,57 @@
+/* Fil d'une réclamation.
+
+   Deux interlocuteurs seulement — vous et Ojà — donc deux alignements. Le
+   créateur a son propre fil, avec la même équipe au milieu : les deux ne se
+   croisent jamais. */
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.fromMe,
+.fromAdmin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 42rem;
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-card);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.fromMe {
+  align-self: flex-end;
+  background: var(--color-primary-light);
+  color: var(--color-black);
+}
+
+.fromAdmin {
+  align-self: flex-start;
+  background: var(--color-gray-100);
+  color: var(--color-black);
+}
+
+.author {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: var(--color-gray-700);
+}
+
+.time {
+  font-size: 12px;
+  color: var(--color-gray-700);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--color-gray-300);
+}

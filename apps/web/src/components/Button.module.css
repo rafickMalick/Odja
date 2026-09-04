@@ -1,0 +1,83 @@
+/* Btn / Primary · Secondary · Outline · Icon
+   Specs : Dev Handoff — Components (76:1977). */
+
+.base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-16) var(--space-32);
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.16px;
+  text-align: center;
+  white-space: nowrap;
+  transition: background-color 120ms ease, border-color 120ms ease,
+    color 120ms ease;
+}
+
+.base:disabled {
+  cursor: not-allowed;
+}
+
+/* Fill Brand/Primary, texte blanc, hover Primary Dark. */
+.primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.primary:disabled {
+  background: var(--color-gray-300);
+  color: var(--color-gray-500);
+}
+
+/* Pas de fill, bordure 1px Brand/Primary, texte Brand/Primary. */
+.secondary {
+  background: transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary-dark);
+  color: var(--color-primary-dark);
+}
+
+/* Bordure 1px Gray/300, fond blanc, texte noir. */
+.outline {
+  background: var(--color-white);
+  border-color: var(--color-gray-300);
+  color: var(--color-black);
+}
+
+.outline:hover:not(:disabled) {
+  border-color: var(--color-gray-500);
+}
+
+/* 48×48, cercle, padding 12px, fond blanc, bordure 1px Gray/300. */
+.icon {
+  width: 48px;
+  height: 48px;
+  padding: var(--space-12);
+  border-radius: 50%;
+  background: var(--color-white);
+  border-color: var(--color-gray-300);
+  color: var(--color-black);
+}
+
+.icon:hover:not(:disabled) {
+  border-color: var(--color-gray-500);
+}
+
+.fullWidth {
+  width: 100%;
+}

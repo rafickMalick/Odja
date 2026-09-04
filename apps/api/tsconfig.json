@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    /* Le fichier d'état incrémental vit DANS dist/ : `nest build` vide dist
+       avant de compiler, et un tsbuildinfo resté à l'extérieur ferait croire
+       à tsc que tout est à jour — il n'émettrait alors qu'une poignée de
+       fichiers, et l'application planterait au démarrage sur un module
+       introuvable. */
+    "tsBuildInfoFile": "dist/.tsbuildinfo",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts"]
+}

@@ -1,0 +1,22 @@
+# Ce qui n'a rien à faire dans le contexte de build : il est copié à chaque
+# `docker build` et ralentit chaque itération.
+node_modules
+**/node_modules
+.next
+**/.next
+dist
+**/dist
+
+# Les fichiers d'incrémental de TypeScript. Copiés depuis l'hôte, ils font
+# croire à tsc que la compilation est déjà à jour : il n'émet alors AUCUN
+# fichier, et le build échoue plus loin sur un module « introuvable ».
+*.tsbuildinfo
+**/*.tsbuildinfo
+.git
+.github
+*.md
+.env
+.env.*
+!.env.example
+packages/db/generated
+coverage

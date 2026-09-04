@@ -1,0 +1,293 @@
+/* À propos — reprend le bandeau d'introduction de la page Contact, complété
+   par un récit propre à cette page plutôt qu'une redite de l'accueil. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background: var(--color-white);
+}
+
+/* ── Bandeau d'introduction ── */
+.hero {
+  width: 100%;
+  padding: var(--space-64) var(--desktop-margin);
+  background: var(--color-gray-100);
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 15.4px;
+  letter-spacing: 1.32px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(48px * var(--type-scale));
+  line-height: 1.2;
+  letter-spacing: -1.12px;
+  color: var(--color-black);
+  max-width: 18ch;
+}
+
+.lead {
+  max-width: 640px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--color-gray-700);
+}
+
+/* ── Sections de contenu ── */
+.section {
+  width: 100%;
+  max-width: calc(var(--container-max-width) + 2 * var(--desktop-margin));
+  padding: var(--space-56) var(--desktop-margin) 0;
+}
+
+.sectionTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(32px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.32px;
+  color: var(--color-black);
+  margin-bottom: var(--space-24);
+}
+
+.paragraph {
+  max-width: 72ch;
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-gray-700);
+}
+
+/* ── Étapes numérotées ── */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  max-width: 72ch;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+}
+
+.stepNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-primary);
+}
+
+.stepTitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--color-black);
+  margin-bottom: 4px;
+}
+
+.stepText {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--color-gray-700);
+}
+
+/* ── Chiffres ── */
+.statsSection {
+  width: 100%;
+  margin-top: var(--space-56);
+  padding: var(--space-40) var(--desktop-margin);
+  background: var(--color-black);
+}
+
+.statsInner {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-64);
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: center;
+}
+
+.statValue {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(40px * var(--type-scale));
+  color: var(--color-primary);
+}
+
+.statLabel {
+  margin-top: var(--space-8);
+  max-width: 22ch;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-footer-text-50);
+}
+
+/* ── Valeurs ── */
+.values {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-24);
+}
+
+.valueCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+  padding: var(--space-24);
+  background: var(--color-white);
+  border-radius: 20px;
+  filter: drop-shadow(0px 4px 6px rgba(33, 35, 35, 0.06));
+}
+
+.valueIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-pill);
+}
+
+.valueIcon img {
+  width: 20px;
+  height: 20px;
+}
+
+.valueTitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--color-black);
+}
+
+.valueText {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+/* ── Appels à l'action ── */
+.cta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  width: 100%;
+  max-width: calc(var(--container-max-width) + 2 * var(--desktop-margin));
+  padding: var(--space-56) var(--desktop-margin);
+}
+
+.ctaInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-24);
+  padding: var(--space-24);
+  background: var(--color-gray-100);
+  border-radius: 20px;
+  flex-wrap: wrap;
+}
+
+.ctaTitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--color-black);
+}
+
+.ctaText {
+  margin-top: 4px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-700);
+}
+
+.footNote {
+  padding-bottom: var(--space-64);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-700);
+}
+
+.footNote a {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    padding: var(--space-40) var(--mobile-margin);
+  }
+
+  .title {
+    font-size: calc(30px * var(--type-scale));
+    letter-spacing: -0.64px;
+  }
+
+  .lead {
+    font-size: 16px;
+  }
+
+  .section,
+  .cta {
+    padding-left: var(--mobile-margin);
+    padding-right: var(--mobile-margin);
+  }
+
+  .statsSection {
+    padding: var(--space-32) var(--mobile-margin);
+  }
+
+  .statsInner {
+    gap: var(--space-32);
+  }
+
+  .values {
+    grid-template-columns: 1fr;
+  }
+
+  .ctaInner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

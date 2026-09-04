@@ -1,0 +1,223 @@
+/* Catalog — Desktop (31:700) / Mobile (59:5755). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background: var(--color-white);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: var(--space-40) var(--desktop-margin);
+}
+
+/* ── Barre de recherche ──
+   Même boîte que celle de la page Recherche : la marketplace n'a plus qu'un
+   seul endroit où chercher, autant qu'il ait la même apparence. */
+.searchRow {
+  display: flex;
+  width: 100%;
+  margin-bottom: var(--space-24);
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  max-width: 560px;
+  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-24);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-pill);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.searchBar:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.searchIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.searchBar input {
+  flex: 1 0 0;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.searchBar input::placeholder {
+  color: var(--color-gray-500);
+}
+
+.clear {
+  padding-inline: var(--space-8);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-700);
+}
+
+.clear:hover {
+  color: var(--color-black);
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+/* ── Aside catégories ── */
+.aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+  width: 318px;
+  flex-shrink: 0;
+}
+
+.asideTitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 15.4px;
+  letter-spacing: 1.32px;
+  text-transform: uppercase;
+  color: rgba(35, 37, 38, 0.6);
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 207px;
+  padding-inline: var(--space-4);
+}
+
+.categoryItem {
+  width: 100%;
+}
+
+/* Pill : padding 8.8px 16.8px relevé sur la maquette. */
+.categoryLink {
+  display: flex;
+  align-items: center;
+  padding: 8.8px 16.8px;
+  border: 1px solid var(--color-pill-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-black);
+  white-space: nowrap;
+  transition: background-color 120ms ease, border-color 120ms ease,
+    color 120ms ease;
+}
+
+.categoryLink:hover {
+  border-color: var(--color-gray-500);
+}
+
+.categoryLinkActive {
+  background: #000;
+  border-color: #000;
+  color: var(--color-white);
+}
+
+.categoryLinkActive:hover {
+  border-color: #000;
+}
+
+/* ── Grille produits ──
+   Desktop : 3 colonnes, gouttière 16px horizontale et 20px verticale. */
+.grid {
+  flex: 1 0 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--space-16);
+  row-gap: var(--space-20);
+}
+
+.empty {
+  grid-column: 1 / -1;
+  padding: var(--space-48) 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Sous 900px on bascule sur la maquette mobile : filtres en bandeau
+   horizontal défilant, grille 2 colonnes, marge 20px. */
+@media (max-width: 900px) {
+  .section {
+    padding: var(--space-24) var(--mobile-margin);
+  }
+
+  .searchRow {
+    margin-bottom: var(--space-16);
+  }
+
+  .searchBar {
+    max-width: none;
+  }
+
+  .container {
+    flex-direction: column;
+    gap: var(--space-24);
+  }
+
+  .aside {
+    width: 100%;
+  }
+
+  .categoryList {
+    flex-direction: row;
+    width: 100%;
+    padding-inline: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .categoryList::-webkit-scrollbar {
+    display: none;
+  }
+
+  .categoryItem {
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .grid {
+    width: 100%;
+    column-gap: var(--space-16);
+    row-gap: var(--space-24);
+  }
+}

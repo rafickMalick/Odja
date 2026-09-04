@@ -1,0 +1,571 @@
+/* Listing / fiche produit — Desktop (16:2837) / Mobile (56:4441). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  background: var(--color-white);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: var(--space-40) var(--desktop-margin);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-64);
+  width: 100%;
+}
+
+/* ── Fil d'Ariane ── */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  font-family: var(--font-outfit);
+  font-weight: 400;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.breadcrumbCurrent {
+  color: #000;
+}
+
+.chevron {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* ── Colonnes principales ── */
+.columns {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.pictures {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+
+.thumbs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-16);
+  flex-shrink: 0;
+}
+
+.thumb {
+  width: 125px;
+  height: 125px;
+  object-fit: cover;
+  border-radius: var(--radius-card);
+  border: 2px solid transparent;
+  transition: border-color 120ms ease;
+}
+
+.thumbActive {
+  border-color: var(--color-primary);
+}
+
+.mainImageWrap {
+  flex: 1 0 0;
+  min-width: 0;
+  position: relative;
+  height: 548px;
+}
+
+.mainImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-banner);
+}
+
+/* Étiquette de remise, ancrée en haut à droite de l'image. */
+.discount {
+  position: absolute;
+  top: 32px;
+  right: 0;
+  width: 94px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.discountShape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.discountLabel {
+  position: relative;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-white);
+}
+
+/* ── Panneau d'achat ── */
+.buy {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-20);
+  padding-inline: var(--space-12);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.atelier {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(56px * var(--type-scale));
+  line-height: 1.2;
+  letter-spacing: -1.12px;
+  color: var(--color-black);
+}
+
+.rating {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+}
+
+.stars {
+  color: var(--color-star);
+}
+
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.price {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(28px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.28px;
+  color: var(--color-black);
+}
+
+/* Handoff : anciens prix en Body/Small, gris, barrés. */
+.oldPrice {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+  text-decoration: line-through;
+}
+
+.description {
+  width: 580px;
+  max-width: 100%;
+  padding-top: var(--space-20);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.favorite {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.reassurance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.reassuranceItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+}
+
+.reassuranceIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ── Accordéons ── */
+.panels {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-40);
+  width: 100%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-24);
+  width: 100%;
+}
+
+.panelHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.panelToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.panelTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(28px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.28px;
+  color: var(--color-black);
+}
+
+.panelChevron {
+  width: 24px;
+  height: 24px;
+  transition: transform 160ms ease;
+}
+
+.panelChevronOpen {
+  transform: rotate(180deg);
+}
+
+/* Filet complet + segment actif sous le titre. */
+.panelRule {
+  position: relative;
+  width: 100%;
+  height: 3px;
+}
+
+.panelRuleTrack {
+  position: absolute;
+  inset-inline: 0;
+  top: 1px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.panelRuleActive {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 3px;
+  background: var(--color-black);
+}
+
+.panelBody {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* ── Fiche technique ── */
+.specs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  font-size: 16px;
+}
+
+.specRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-40);
+  width: 100%;
+}
+
+.specKey {
+  width: 160px;
+  flex-shrink: 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.16px;
+  color: #000;
+}
+
+.specValue {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* ── Avis ── */
+.reviews {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.reviewer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-12);
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.reviewerMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+.reviewerName {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--color-black);
+}
+
+.reviewerStars {
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--color-star);
+}
+
+.reviewBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+  font-size: 16px;
+}
+
+.reviewTitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.16px;
+  color: #000;
+}
+
+.reviewText {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.reviewMeta {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.reviewMeta strong {
+  font-weight: 500;
+  color: #000;
+}
+
+@media (max-width: 1100px) {
+  .columns {
+    flex-direction: column;
+  }
+
+  .pictures,
+  .buy {
+    width: 100%;
+    flex: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .section {
+    padding: var(--space-24) var(--mobile-margin);
+  }
+
+  .container {
+    gap: var(--space-32);
+  }
+
+  .pictures {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .thumbs {
+    flex-direction: row;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .thumb {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+  }
+
+  .mainImageWrap {
+    height: 360px;
+    width: 100%;
+    flex: none;
+  }
+
+  .buy {
+    padding-inline: 0;
+  }
+
+  .title {
+    font-size: calc(32px * var(--type-scale));
+    letter-spacing: -0.64px;
+  }
+
+  .panelTitle {
+    font-size: calc(20px * var(--type-scale));
+    letter-spacing: 0;
+  }
+
+  .specRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .specKey {
+    width: auto;
+  }
+}
+
+/* ── Décomposition du prix ──
+   Le cahier client impose d'afficher les trois lignes : prix du créateur,
+   commission Ojà, prix final. C'est un choix de transparence assumé, pas un
+   détail — le créateur touche son prix en entier, et le client le voit. */
+.priceBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 320px;
+  margin-top: var(--space-12);
+  padding: var(--space-12) var(--space-16);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-input);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-16);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+}
+
+.priceRow dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.priceRowTotal {
+  margin-top: var(--space-4);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-gray-300);
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.emptyReviews {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}

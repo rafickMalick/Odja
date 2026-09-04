@@ -1,0 +1,1288 @@
+// Ojà — schéma de données
+//
+// Aligné sur le cahier des charges client « OJÀ — Phase 1 : Makers Place ».
+// Là où il diverge de CAHIER-DES-CHARGES-BACKEND.md, c'est SPEC-ALIGNEMENT.md
+// qui fait foi ; les écarts sont commentés sur place.
+//
+// Conventions
+//   · Identifiants  : cuid(). Jamais d'entier auto-incrémenté exposé — il
+//     laisse lire le volume d'affaires.
+//   · Montants      : entiers, en franc CFA. Le XOF n'a pas de sous-unité
+//     d'usage : aucune décimale, donc aucun flottant, jamais. Suffixe `Xof`.
+//   · Taux          : points de base (`Bps`). 500 = 5 %. Un entier se compare
+//     et s'additionne sans dérive.
+//   · Suppression   : logique (`deletedAt`) partout où une trace comptable ou
+//     légale doit survivre.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════ Géographie
+
+model Country {
+  id          String  @id @default(cuid())
+  iso2        String  @unique // CI, BJ, SN, TG, BF, ML, NE, GW
+  name        String
+  currency    String  @default("XOF")
+  callingCode String // +225
+  /// TVA en points de base. Absente du cahier client : reste à 0 tant que la
+  /// décision fiscale n'est pas prise, la ligne apparaît dès qu'on l'active.
+  vatBps      Int     @default(0)
+  isActive    Boolean @default(false)
+
+  cities         City[]
+  vehicleRates   VehicleRate[]
+  paymentMethods PaymentMethodConfig[]
+
+  @@map("countries")
+}
+
+model City {
+  id        String  @id @default(cuid())
+  countryId String
+  country   Country @relation(fields: [countryId], references: [id])
+  name      String
+  /// Centroïde de la ville : sert de repli quand un point GPS précis manque.
+  latitude  Float?
+  longitude Float?
+
+  addresses     Address[]
+  makerProfiles MakerProfile[]
+
+  @@unique([countryId, name])
+  @@map("cities")
+}
+
+// ═══════════════════════════════════════════ Identité
+
+enum UserRole {
+  CUSTOMER
+  MAKER
+  COURIER
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+}
+
+model User {
+  id     String     @id @default(cuid())
+  role   UserRole
+  status UserStatus @default(PENDING)
+
+  email           String    @unique
+  emailVerifiedAt DateTime?
+  /// E.164, +225… Le téléphone est l'identité réelle sur ce marché ; c'est lui
+  /// qui porte la vérification par OTP. Reste obligatoire même pour un compte
+  /// ouvert via Google : le profil Google ne le fournit pas, donc l'inscription
+  /// par Google se termine par une étape qui le demande avant de créer la ligne.
+  phone           String    @unique
+  phoneVerifiedAt DateTime?
+  /// Absent pour un compte ouvert uniquement via Google — rien à vérifier par
+  /// mot de passe tant qu'il n'en a pas défini un.
+  passwordHash    String? // argon2id
+  /// Identifiant Google (`sub`), pour retrouver ou lier le compte à la
+  /// prochaine connexion. `null` pour un compte jamais passé par Google.
+  googleId        String?   @unique
+
+  firstName String
+  lastName  String
+  locale    String  @default("fr")
+  /// TOTP. Obligatoire pour ADMIN, optionnel pour MAKER.
+  mfaSecret String?
+
+  lastLoginAt DateTime?
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  maker            MakerProfile?
+  courier          CourierProfile?
+  addresses        Address[]
+  sessions         Session[]
+  orders           Order[]
+  carts            Cart[]
+  termsAcceptance  TermsAcceptance[]
+  notifications    Notification[]
+  verifications    VerificationToken[]
+  promoRedemptions PromoRedemption[]
+
+  @@index([role, status])
+  @@map("users")
+}
+
+model Session {
+  id String @id @default(cuid())
+
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Le jeton de rafraîchissement n'est jamais stocké en clair : une fuite de
+  /// la base donnerait sinon des sessions valides.
+  refreshHash String
+  userAgent   String?
+  ip          String?
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId, revokedAt])
+  @@map("sessions")
+}
+
+enum VerificationPurpose {
+  PHONE_VERIFICATION
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+/// Codes à usage unique : OTP d'inscription, vérification d'e-mail,
+/// réinitialisation de mot de passe.
+///
+/// Le code n'est **jamais stocké en clair** : une fuite de la base donnerait
+/// sinon un accès immédiat à tous les comptes en cours de vérification. Le
+/// compteur de tentatives ferme la porte au balayage des 10 000 combinaisons
+/// d'un code à quatre chiffres.
+model VerificationToken {
+  id          String              @id @default(cuid())
+  userId      String
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose     VerificationPurpose
+  codeHash    String
+  attempts    Int                 @default(0)
+  maxAttempts Int                 @default(5)
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  createdAt   DateTime            @default(now())
+
+  @@index([userId, purpose, consumedAt])
+  @@index([expiresAt])
+  @@map("verification_tokens")
+}
+
+/// Acceptation des CGU horodatée et versionnée — exigence du § 15 du cahier.
+model TermsAcceptance {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documentId String // cgu-client, cgu-createur, cgu-livreur
+  version    String
+  acceptedAt DateTime @default(now())
+  ip         String?
+
+  @@unique([userId, documentId, version])
+  @@map("terms_acceptances")
+}
+
+model Address {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  label     String? // « Domicile »
+  fullName  String
+  phone     String
+  cityId    String
+  city      City    @relation(fields: [cityId], references: [id])
+  line1     String
+  /// L'adressage postal est peu fiable dans la zone : le repère et le point
+  /// GPS sont ce dont le livreur se sert réellement. Le GPS est en outre
+  /// indispensable au calcul de la distance de livraison.
+  landmark  String?
+  latitude  Float?
+  longitude Float?
+
+  isDefault Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, deletedAt])
+  @@map("addresses")
+}
+
+// ═══════════════════════════════════════════ Créateur (entreprise)
+
+enum KycStatus {
+  NOT_SUBMITTED
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Le cahier client sépare explicitement informations publiques et privées.
+/// Cette frontière n'est pas qu'un choix d'affichage : aucune route ne doit
+/// jamais exposer un champ marqué « privé » à un client.
+model MakerProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // ── Informations publiques ──
+  shopName    String
+  slug        String  @unique
+  description String?
+  logoUrl     String?
+  coverUrl    String?
+  cityId      String
+  city        City    @relation(fields: [cityId], references: [id])
+
+  // ── Informations privées : administration uniquement ──
+  managerName   String?
+  contactPhone  String?
+  contactEmail  String?
+  postalAddress String?
+  /// Numéro d'identification fiscale unique.
+  ifuNumber     String?
+  /// Registre du commerce et du crédit mobilier.
+  rccmNumber    String?
+
+  kycStatus       KycStatus @default(NOT_SUBMITTED)
+  kycSubmittedAt  DateTime?
+  kycReviewedAt   DateTime?
+  kycReviewerId   String?
+  kycRejectReason String?
+
+  /// Adresse de récupération par le livreur. Distincte de l'adresse postale :
+  /// l'atelier n'est pas toujours au siège.
+  pickupLine1     String?
+  pickupLandmark  String?
+  pickupLatitude  Float?
+  pickupLongitude Float?
+
+  // ── Réception des versements ──
+  payoutMethod   PayoutMethod @default(MOBILE_MONEY)
+  payoutMsisdn   String?
+  payoutOperator String?
+  payoutBankIban String?
+
+  /// Taux de commission propre à ce créateur, en points de base. Il surcharge
+  /// le taux de la plateforme. 500 = 5 %.
+  commissionBps Int     @default(500)
+  isFeatured    Boolean @default(false)
+  ratingAvg     Float   @default(0)
+  ratingCount   Int     @default(0)
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products  Product[]
+  subOrders SubOrder[]
+  documents KycDocument[]
+
+  @@index([kycStatus])
+  @@map("maker_profiles")
+}
+
+model KycDocument {
+  id        String          @id @default(cuid())
+  makerId   String?
+  maker     MakerProfile?   @relation(fields: [makerId], references: [id], onDelete: Cascade)
+  courierId String?
+  courier   CourierProfile? @relation(fields: [courierId], references: [id], onDelete: Cascade)
+
+  type      String // cni_recto, cni_verso, rccm, ifu, permis, carte_grise
+  /// Clé S3, jamais une URL publique : l'accès passe par une URL pré-signée
+  /// à durée courte, générée à la demande pour un administrateur.
+  fileKey   String
+  status    KycStatus @default(PENDING)
+  note      String?
+  createdAt DateTime  @default(now())
+
+  @@index([makerId])
+  @@index([courierId])
+  @@map("kyc_documents")
+}
+
+// ═══════════════════════════════════════════ Livreur
+
+/// Les trois véhicules nommés par le cahier client. Le système en choisit un
+/// automatiquement selon dimensions, poids, quantité et distance.
+enum VehicleType {
+  MOTO
+  TRICYCLE
+  CAMIONNETTE
+}
+
+model CourierProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vehicle     VehicleType
+  plateNumber String?
+
+  /// Même suivi de dossier que le créateur : sans date de dépôt ni motif de
+  /// refus, un livreur recalé ne saurait pas quoi corriger.
+  kycStatus       KycStatus @default(NOT_SUBMITTED)
+  kycSubmittedAt  DateTime?
+  kycReviewedAt   DateTime?
+  kycRejectReason String?
+
+  payoutMsisdn   String?
+  payoutOperator String?
+
+  isAvailable Boolean @default(false)
+  ratingAvg   Float   @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documents KycDocument[]
+  shipments Shipment[]
+  runs      DeliveryRun[]
+
+  @@index([isAvailable, kycStatus])
+  @@map("courier_profiles")
+}
+
+/// Grille tarifaire et capacités, par pays et par type de véhicule.
+/// C'est cette table qui pilote le choix automatique du véhicule.
+model VehicleRate {
+  id        String      @id @default(cuid())
+  countryId String
+  country   Country     @relation(fields: [countryId], references: [id])
+  vehicle   VehicleType
+
+  baseFeeXof Int
+  perKmXof   Int
+  minFeeXof  Int @default(0)
+
+  // Capacités : une commande est écartée dès qu'elle dépasse l'une d'elles.
+  maxWeightKg Int
+  maxVolumeL  Int
+  maxLengthCm Int
+
+  isActive Boolean @default(true)
+
+  @@unique([countryId, vehicle])
+  @@map("vehicle_rates")
+}
+
+// ═══════════════════════════════════════════ Catalogue
+
+model Category {
+  id       String     @id @default(cuid())
+  slug     String     @unique
+  name     String
+  parentId String?
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+  position Int        @default(0)
+
+  products Product[]
+
+  @@map("categories")
+}
+
+enum ProductStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+/// Pas de table de variantes : le cahier client décrit un produit avec un prix
+/// et une quantité, sans déclinaison. Prix et stock vivent donc ici.
+/// Réintroductible plus tard sans casse (cf. SPEC-ALIGNEMENT § 5).
+model Product {
+  id      String       @id @default(cuid())
+  slug    String       @unique
+  makerId String
+  maker   MakerProfile @relation(fields: [makerId], references: [id], onDelete: Cascade)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  name        String
+  description String
+  material    String?
+
+  /// LE prix que le créateur fixe et qu'il touchera **en entier**.
+  /// La commission Ojà s'ajoute par-dessus, elle ne s'en déduit pas.
+  /// Le prix final payé par le client n'est pas stocké : il se recalcule,
+  /// car le taux de commission peut évoluer.
+  makerPriceXof Int
+
+  /// Stock. Ignoré quand le produit est fabriqué sur commande.
+  quantityAvailable Int @default(0)
+  quantityReserved  Int @default(0)
+
+  /// Mode de mise en vente, tel que nommé par le cahier client.
+  isMadeToOrder Boolean @default(false)
+  /// Délai de fabrication en jours. Obligatoire si `isMadeToOrder`.
+  /// C'est lui qui arme le compte à rebours du statut « En fabrication ».
+  leadTimeDays  Int?
+  observations  String?
+
+  /// Poids et encombrement. Absents du formulaire du cahier client, mais le
+  /// choix automatique du véhicule en dépend entièrement : ils sont rendus
+  /// obligatoires (SPEC-ALIGNEMENT § 9, point B).
+  weightGrams Int
+  lengthMm    Int
+  widthMm     Int
+  heightMm    Int
+
+  status       ProductStatus @default(DRAFT)
+  submittedAt  DateTime?
+  reviewedAt   DateTime?
+  reviewerId   String?
+  rejectReason String?
+  /// Masquage par un administrateur, distinct du rejet à la modération.
+  hiddenAt     DateTime?
+
+  ratingAvg   Float @default(0)
+  ratingCount Int   @default(0)
+
+  searchVector Unsupported("tsvector")?
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  images     ProductImage[]
+  orderLines OrderLine[]
+  cartItems  CartItem[]
+  reviews    Review[]
+
+  @@index([status, categoryId])
+  @@index([makerId, status])
+  @@map("products")
+}
+
+/// Le cahier client impose entre 3 et 5 photos par produit. La règle est
+/// appliquée au moment de la soumission à modération, pas par le schéma :
+/// un brouillon doit pouvoir n'en avoir aucune.
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  fileKey   String
+  alt       String?
+  position  Int     @default(0)
+
+  @@index([productId, position])
+  @@map("product_images")
+}
+
+// ═══════════════════════════════════════════ Panier
+
+model Cart {
+  id     String  @id @default(cuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Jeton de cookie : permet un panier avant toute inscription, fusionné
+  /// dans le panier utilisateur à la connexion.
+  token  String  @unique
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items CartItem[]
+
+  @@index([userId])
+  @@map("carts")
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
+
+// ═══════════════════════════════════════════ Commande
+
+/// Vue client, avec les libellés du cahier : Commande confirmée, En fabrication,
+/// En préparation, En livraison, Livrée.
+enum OrderStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  IN_PRODUCTION
+  PREPARING
+  IN_DELIVERY
+  DELIVERED
+  /// Le client a cliqué « Valider la réception ». C'est ce statut qui arme le
+  /// versement au créateur, 24 h plus tard.
+  VALIDATED
+  /// Versements libérés, dossier clos.
+  COMPLETED
+  /// Le client a cliqué « Signaler un problème ».
+  DISPUTED
+  CANCELLED
+  REFUNDED
+}
+
+/// Vue créateur, avec les libellés du cahier : Commande reçue, Paiement
+/// confirmé, En fabrication, Prêt à récupérer, En cours de livraison.
+enum SubOrderStatus {
+  RECEIVED
+  PAYMENT_CONFIRMED
+  IN_PRODUCTION
+  READY_FOR_PICKUP
+  IN_DELIVERY
+  DELIVERED
+  VALIDATED
+  REJECTED
+  CANCELLED
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  /// Référence lisible, séquentielle et sans trou : CMD-2026-000123
+  reference  String      @unique
+  customerId String
+  customer   User        @relation(fields: [customerId], references: [id])
+  status     OrderStatus @default(PENDING_PAYMENT)
+
+  // ── Adresse figée à la commande ──
+  // Si le client modifie ensuite son carnet d'adresses, la commande ne doit
+  // pas changer.
+  shipFullName  String
+  shipPhone     String
+  shipCityId    String
+  shipLine1     String
+  shipLandmark  String?
+  shipLatitude  Float?
+  shipLongitude Float?
+
+  // ── Montants figés, tous en XOF entier ──
+  // La commission s'AJOUTE au prix du créateur, elle ne s'en déduit pas.
+  //   itemsFinalTotalXof = itemsMakerTotalXof + commissionTotalXof
+  //   totalXof           = itemsFinalTotalXof + deliveryTotalXof + vatXof
+  /// Somme due aux créateurs — ce qu'ils toucheront en entier.
+  itemsMakerTotalXof Int
+  /// Part Ojà, visible du client sur la fiche produit et au panier.
+  commissionTotalXof Int
+  /// Ce que le client paie pour les articles.
+  itemsFinalTotalXof Int
+  deliveryTotalXof   Int
+  vatXof             Int @default(0)
+  /// Remise appliquée par un code promo, retranchée du total. Portée par la
+  /// commission Ojà (jamais par la part créateur ou livreur), et donc bornée
+  /// à `commissionTotalXof`.
+  discountXof        Int @default(0)
+  totalXof           Int
+
+  /// Code promo utilisé, figé sur la commande.
+  promoCodeId String?
+  promoCode   PromoCode? @relation(fields: [promoCodeId], references: [id])
+
+  placedAt       DateTime?
+  deliveredAt    DateTime?
+  /// Horodatage du clic « Valider la réception ».
+  validatedAt    DateTime?
+  /// Échéance de validation automatique si le client ne clique jamais.
+  autoValidateAt DateTime?
+  completedAt    DateTime?
+  cancelledAt    DateTime?
+  cancelReason   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subOrders       SubOrder[]
+  payments        Payment[]
+  shipments       Shipment[]
+  disputes        Dispute[]
+  invoice         Invoice?
+  promoRedemption PromoRedemption?
+
+  @@index([customerId, status])
+  @@index([status, createdAt])
+  @@index([status, autoValidateAt])
+  @@map("orders")
+}
+
+/// Un panier peut réunir les pièces de plusieurs créateurs. La sous-commande
+/// est l'unité que le créateur voit, accepte et prépare, et l'unité sur
+/// laquelle porte son versement.
+model SubOrder {
+  id        String @id @default(cuid())
+  reference String @unique // CMD-2026-000123-A
+
+  orderId String
+  order   Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  makerId String
+  maker   MakerProfile @relation(fields: [makerId], references: [id])
+
+  status SubOrderStatus @default(RECEIVED)
+
+  /// Ce que le créateur recevra : Σ (makerPriceXof × quantité). Pas de
+  /// soustraction — la commission a été facturée au client par-dessus.
+  itemsMakerSubtotalXof Int
+  commissionSubtotalXof Int
+  deliveryFeeXof        Int @default(0)
+
+  acceptedAt     DateTime?
+  rejectedAt     DateTime?
+  rejectReason   String?
+  /// Échéance de réponse du créateur. Silence vaut refus.
+  respondByAt    DateTime?
+  /// Horodatage de la relance envoyée au créateur avant l'expiration des 48 h.
+  /// Sert de garde d'idempotence : une seule relance par sous-commande.
+  reminderSentAt DateTime?
+  /// Fin de fabrication attendue, calculée sur le délai saisi au produit.
+  dueReadyAt     DateTime?
+  readyAt        DateTime?
+  deliveredAt    DateTime?
+  validatedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lines    OrderLine[]
+  shipment Shipment?
+  payout   PayoutItem?
+  disputes Dispute[]
+
+  @@index([makerId, status])
+  @@map("sub_orders")
+}
+
+/// Toutes les valeurs sont figées par copie : un créateur qui augmente ses
+/// prix ou renomme une pièce ne doit pas pouvoir réécrire l'histoire d'une
+/// commande déjà passée.
+model OrderLine {
+  id         String   @id @default(cuid())
+  subOrderId String
+  subOrder   SubOrder @relation(fields: [subOrderId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+
+  productName String
+  quantity    Int
+
+  /// Prix unitaire fixé par le créateur — ce qu'il touchera.
+  makerPriceXof Int
+  /// Taux appliqué, figé au moment de la commande.
+  commissionBps Int
+  /// makerPriceXof × commissionBps / 10 000, arrondi à l'entier inférieur.
+  commissionXof Int
+  /// makerPriceXof + commissionXof — le « Prix final » de la fiche produit.
+  finalPriceXof Int
+  /// finalPriceXof × quantity
+  lineTotalXof  Int
+
+  @@index([subOrderId])
+  @@map("order_lines")
+}
+
+// ═══════════════════════════════════════════ Paiement
+
+enum PaymentStatus {
+  INITIATED
+  PENDING
+  PAID
+  FAILED
+  EXPIRED
+  REFUNDED
+}
+
+enum PaymentChannel {
+  MOBILE_MONEY
+  CARD
+  BANK_TRANSFER
+}
+
+model PaymentMethodConfig {
+  id        String         @id @default(cuid())
+  countryId String
+  country   Country        @relation(fields: [countryId], references: [id])
+  channel   PaymentChannel
+  /// wave, orange, mtn, moov — chaîne vide quand le canal n'a pas d'opérateur
+  /// (carte bancaire). Volontairement non nullable : PostgreSQL ne fait jamais
+  /// entrer deux NULL en conflit dans une contrainte d'unicité, si bien qu'un
+  /// `operator` nullable laisserait se dupliquer autant de lignes « carte »
+  /// qu'on rejoue le seed.
+  operator  String         @default("")
+  label     String
+  logoUrl   String?
+  /// Frais retenus par l'agrégateur, en points de base. Absorbés par Ojà.
+  feeBps    Int            @default(0)
+  isActive  Boolean        @default(true)
+  position  Int            @default(0)
+
+  @@unique([countryId, channel, operator])
+  @@map("payment_method_configs")
+}
+
+model Payment {
+  id      String        @id @default(cuid())
+  orderId String
+  order   Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status  PaymentStatus @default(INITIATED)
+
+  channel  PaymentChannel
+  operator String?
+
+  /// « simulated » pendant tout le développement, « kadevpay » en dernier lot.
+  /// Le reste du code ne connaît que l'interface PaymentProvider.
+  provider     String  @default("simulated")
+  providerRef  String? @unique
+  providerMode String  @default("test")
+
+  amountXof     Int
+  paidAmountXof Int?
+  /// Net encaissé, frais agrégateur déduits.
+  netAmountXof  Int?
+  feeXof        Int?
+
+  idempotencyKey String    @unique
+  initiatedAt    DateTime  @default(now())
+  paidAt         DateTime?
+  failedAt       DateTime?
+  failureCode    String?
+  failureMessage String?
+  /// Au-delà, le stock réservé est relâché.
+  expiresAt      DateTime
+
+  events  PaymentEvent[]
+  refunds Refund[]
+
+  @@index([orderId, status])
+  @@index([status, expiresAt])
+  @@map("payments")
+}
+
+/// Journal brut de tout ce que l'agrégateur envoie ou répond. Preuve, base de
+/// rejeu et matière du rapprochement quotidien.
+model PaymentEvent {
+  id          String    @id @default(cuid())
+  paymentId   String?
+  payment     Payment?  @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  providerRef String?
+  eventType   String
+  signature   String?
+  /// Corps brut, tel qu'il est arrivé. La signature se vérifie sur lui et sur
+  /// rien d'autre — surtout pas sur une re-sérialisation JSON.
+  rawBody     String
+  payload     Json
+  signatureOk Boolean
+  processedAt DateTime?
+  error       String?
+  receivedAt  DateTime  @default(now())
+
+  /// Clé d'idempotence : un même webhook rejoué n'écrit qu'une fois.
+  @@unique([providerRef, eventType, signature])
+  @@index([processedAt])
+  @@map("payment_events")
+}
+
+/// Règle du cahier client : le remboursement porte sur 100 % du prix produit.
+/// Les frais de livraison et la commission Ojà restent acquis.
+model Refund {
+  id        String  @id @default(cuid())
+  paymentId String
+  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  /// Σ (makerPriceXof × quantité) des lignes remboursées.
+  amountXof   Int
+  reason      String
+  status      String    @default("PENDING") // PENDING | DONE | FAILED
+  providerRef String?
+  requestedBy String
+  createdAt   DateTime  @default(now())
+  settledAt   DateTime?
+
+  @@index([paymentId])
+  @@map("refunds")
+}
+
+// ═══════════════════════════════════════════ Grand livre
+
+enum LedgerAccountType {
+  PLATFORM_CASH
+  PLATFORM_REVENUE
+  MAKER_PAYABLE
+  COURIER_PAYABLE
+  CUSTOMER_REFUNDABLE
+  PSP_FEE
+  VAT_PAYABLE
+}
+
+model LedgerAccount {
+  id       String            @id @default(cuid())
+  type     LedgerAccountType
+  /// userId pour les comptes nominatifs, null pour les comptes de plateforme.
+  ownerId  String?
+  currency String            @default("XOF")
+
+  entries LedgerEntry[]
+
+  @@unique([type, ownerId])
+  @@map("ledger_accounts")
+}
+
+/// Partie double stricte : la somme des montants signés d'une transaction vaut
+/// exactement zéro. Aucune ligne n'est jamais modifiée ni supprimée — on
+/// contre-passe. Garanti en base par un trigger, pas seulement par le code.
+model LedgerTransaction {
+  id      String  @id @default(cuid())
+  kind    String // order_paid, psp_fee, payout_released, payout_paid, refund
+  refType String // order | sub_order | payout | refund
+  refId   String
+  memo    String?
+
+  entries   LedgerEntry[]
+  createdAt DateTime      @default(now())
+
+  @@index([refType, refId])
+  @@index([kind, createdAt])
+  @@map("ledger_transactions")
+}
+
+model LedgerEntry {
+  id            String            @id @default(cuid())
+  transactionId String
+  transaction   LedgerTransaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  accountId     String
+  account       LedgerAccount     @relation(fields: [accountId], references: [id])
+  /// Signé : positif au débit, négatif au crédit.
+  amountXof     Int
+  createdAt     DateTime          @default(now())
+
+  @@index([accountId, createdAt])
+  @@map("ledger_entries")
+}
+
+// ═══════════════════════════════════════════ Versements
+
+enum PayoutMethod {
+  MOBILE_MONEY
+  BANK_TRANSFER
+  CASH
+}
+
+enum PayoutStatus {
+  SCHEDULED
+  READY
+  PROCESSING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+model PayoutBatch {
+  id        String       @id @default(cuid())
+  reference String       @unique
+  status    PayoutStatus @default(SCHEDULED)
+  totalXof  Int          @default(0)
+  itemCount Int          @default(0)
+
+  createdBy  String?
+  /// Double validation : l'approbateur ne peut pas être le créateur du lot.
+  approvedBy String?
+  approvedAt DateTime?
+  executedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  items PayoutItem[]
+
+  @@map("payout_batches")
+}
+
+model PayoutItem {
+  id      String       @id @default(cuid())
+  batchId String?
+  batch   PayoutBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
+  beneficiaryId   String
+  beneficiaryRole UserRole
+
+  subOrderId String?   @unique
+  subOrder   SubOrder? @relation(fields: [subOrderId], references: [id])
+  shipmentId String?   @unique
+  shipment   Shipment? @relation(fields: [shipmentId], references: [id])
+
+  amountXof Int
+  method    PayoutMethod
+  msisdn    String?
+  operator  String?
+
+  status        PayoutStatus @default(SCHEDULED)
+  /// Échéance de libération : validation client + 24 h (cahier client).
+  releaseAt     DateTime?
+  releasedAt    DateTime?
+  paidAt        DateTime?
+  externalRef   String?
+  failureReason String?
+
+  createdAt DateTime @default(now())
+
+  @@index([beneficiaryId, status])
+  @@index([status, releaseAt])
+  @@map("payout_items")
+}
+
+// ═══════════════════════════════════════════ Logistique
+
+enum ShipmentStatus {
+  /// « À récupérer » — libellé du cahier client.
+  TO_PICK_UP
+  PICKED_UP
+  IN_DELIVERY
+  /// Basculé par la confirmation du client, pas par le livreur.
+  DELIVERED
+  /// Le client a signalé un problème : le livreur voit « produit à retourner ».
+  RETURN_REQUIRED
+  RETURNED
+  FAILED
+}
+
+/// Tournée : plusieurs missions groupées et confiées à un même livreur.
+/// Le cahier client confie la création des tournées à l'administrateur.
+model DeliveryRun {
+  id        String @id @default(cuid())
+  reference String @unique
+
+  courierId String
+  courier   CourierProfile @relation(fields: [courierId], references: [id])
+
+  plannedFor DateTime
+  startedAt  DateTime?
+  closedAt   DateTime?
+  createdBy  String
+  createdAt  DateTime  @default(now())
+
+  shipments Shipment[]
+
+  @@index([courierId, plannedFor])
+  @@map("delivery_runs")
+}
+
+model Shipment {
+  id        String @id @default(cuid())
+  reference String @unique // LIV-2026-000456
+
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  subOrderId String   @unique
+  subOrder   SubOrder @relation(fields: [subOrderId], references: [id], onDelete: Cascade)
+
+  status ShipmentStatus @default(TO_PICK_UP)
+
+  /// Affectation décidée par un administrateur (cahier client).
+  courierId  String?
+  courier    CourierProfile? @relation(fields: [courierId], references: [id])
+  runId      String?
+  run        DeliveryRun?    @relation(fields: [runId], references: [id], onDelete: SetNull)
+  assignedBy String?
+  assignedAt DateTime?
+
+  /// Véhicule retenu par le calcul automatique, et éléments qui l'ont décidé.
+  vehicle      VehicleType
+  distanceKm   Float
+  totalWeightG Int
+  totalVolumeL Float
+
+  /// Facturé au client.
+  feeXof        Int
+  /// Reversé au livreur. Renseigné dès que la règle de rémunération est fixée.
+  courierFeeXof Int @default(0)
+
+  pickupLine1     String
+  pickupLandmark  String?
+  pickupLatitude  Float?
+  pickupLongitude Float?
+
+  etaAt       DateTime?
+  pickedUpAt  DateTime?
+  deliveredAt DateTime?
+
+  // ── Preuve de livraison ──
+  // Elle ne déclenche plus le paiement — c'est la validation du client qui le
+  // fait — mais elle reste la pièce qui tranche un litige « je n'ai rien reçu ».
+  proofPhotoKey  String?
+  proofOtp       String?
+  proofLatitude  Float?
+  proofLongitude Float?
+  proofAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events ShipmentEvent[]
+  payout PayoutItem?
+
+  @@index([status, courierId])
+  @@map("shipments")
+}
+
+model ShipmentEvent {
+  id         String         @id @default(cuid())
+  shipmentId String
+  shipment   Shipment       @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  status     ShipmentStatus
+  note       String?
+  actorId    String?
+  latitude   Float?
+  longitude  Float?
+  createdAt  DateTime       @default(now())
+
+  @@index([shipmentId, createdAt])
+  @@map("shipment_events")
+}
+
+// ═══════════════════════════════════════════ Litiges, avis, messagerie
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+model Dispute {
+  id        String @id @default(cuid())
+  reference String @unique
+
+  orderId    String
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  /// La réclamation vise une sous-commande précise : c'est elle qui porte le
+  /// créateur, le montant et la livraison en cause. Sans cette relation, il
+  /// faudrait deux requêtes pour savoir de quel atelier on parle.
+  subOrderId String?
+  subOrder   SubOrder? @relation(fields: [subOrderId], references: [id], onDelete: SetNull)
+  openedById String
+
+  reason     String // non_conforme, casse, non_recu, autre
+  status     DisputeStatus @default(OPEN)
+  resolution String? // refund, reship, rejected
+  refundXof  Int?
+
+  resolvedBy String?
+  resolvedAt DateTime?
+  slaDueAt   DateTime
+
+  createdAt DateTime @default(now())
+
+  messages DisputeMessage[]
+
+  @@index([status, slaDueAt])
+  @@map("disputes")
+}
+
+model DisputeMessage {
+  id         String   @id @default(cuid())
+  disputeId  String
+  dispute    Dispute  @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+  authorId   String
+  body       String
+  fileKeys   String[]
+  /// Note d'équipe, invisible des parties.
+  isInternal Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([disputeId, createdAt])
+  @@map("dispute_messages")
+}
+
+/// Messagerie strictement bilatérale avec l'administration.
+/// Règle métier du cahier client : jamais d'échange créateur ↔ client.
+enum ThreadParty {
+  MAKER
+  CUSTOMER
+  COURIER
+}
+
+model MessageThread {
+  id        String      @id @default(cuid())
+  party     ThreadParty
+  /// userId du créateur, du client ou du livreur. L'autre bout est toujours
+  /// l'administration — il n'y a pas de second participant à stocker.
+  userId    String
+  subject   String
+  isClosed  Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  messages Message[]
+
+  @@index([userId, isClosed])
+  @@map("message_threads")
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  threadId  String
+  thread    MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId  String
+  /// true quand l'auteur est un administrateur.
+  fromAdmin Boolean
+  body      String
+  fileKeys  String[]
+  readAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  @@index([threadId, createdAt])
+  @@map("messages")
+}
+
+model Review {
+  id          String  @id @default(cuid())
+  productId   String
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  authorId    String
+  /// Un avis exige une ligne de commande réellement achetée et validée.
+  orderLineId String  @unique
+
+  rating    Int // 1..5
+  body      String?
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+
+  @@index([productId, status])
+  @@map("reviews")
+}
+
+// ═══════════════════════════════════════════ Notifications et audit
+
+model Notification {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel         String // email | sms | push | inapp
+  template        String
+  /// Version du gabarit au moment de l'envoi (registre `notifications/templates.ts`).
+  /// Un gabarit qui évolue incrémente sa version ; l'historique reste lisible.
+  templateVersion Int       @default(1)
+  payload         Json
+  sentAt          DateTime?
+  readAt          DateTime?
+  error           String?
+  createdAt       DateTime  @default(now())
+
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  actorId    String?
+  actorRole  UserRole?
+  action     String // maker.kyc.approve, payout.batch.approve…
+  targetType String
+  targetId   String
+  before     Json?
+  after      Json?
+  ip         String?
+  createdAt  DateTime  @default(now())
+
+  @@index([targetType, targetId])
+  @@index([actorId, createdAt])
+  @@map("audit_logs")
+}
+
+/// Compteurs de références lisibles (CMD-2026-000123). Une table dédiée plutôt
+/// qu'une séquence Postgres : la numérotation doit être sans trou, y compris
+/// après une transaction annulée — ce qu'une séquence ne garantit pas.
+model ReferenceCounter {
+  id    String @id @default(cuid())
+  scope String // order | shipment | dispute | payout | invoice
+  year  Int
+  value Int    @default(0)
+
+  @@unique([scope, year])
+  @@map("reference_counters")
+}
+
+// ═══════════════════════════════════════════ Codes promo
+
+enum PromoKind {
+  /// Remise en pourcentage, exprimée en points de base (1000 = 10 %).
+  PERCENT
+  /// Remise d'un montant fixe en XOF.
+  FIXED
+}
+
+/// Code promo appliqué au chiffrage. La remise sort **toujours** de la
+/// commission Ojà, jamais de la part due au créateur ou au livreur : elle est
+/// bornée à `commissionTotalXof` au moment de la commande.
+model PromoCode {
+  id   String    @id @default(cuid())
+  code String    @unique
+  kind PromoKind
+
+  /// Renseigné pour `PERCENT` : points de base retranchés de la base remisable.
+  valueBps  Int?
+  /// Renseigné pour `FIXED` : montant retranché, en XOF.
+  amountXof Int?
+
+  /// Montant minimum de commande (articles + livraison) pour que le code s'applique.
+  minOrderXof     Int  @default(0)
+  /// Plafond global d'utilisations. `null` = illimité.
+  maxRedemptions  Int?
+  redemptionCount Int  @default(0)
+  /// Nombre d'utilisations autorisées par client.
+  perUserLimit    Int  @default(1)
+
+  startsAt DateTime?
+  endsAt   DateTime?
+  isActive Boolean   @default(true)
+
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  redemptions PromoRedemption[]
+  orders      Order[]
+
+  @@map("promo_codes")
+}
+
+/// Trace d'utilisation d'un code : une par commande, et le couple
+/// (code, client) est unique — le contrôle du `perUserLimit > 1` se fait alors
+/// dans le service, mais le cas courant (une fois par client) est garanti en base.
+model PromoRedemption {
+  id          String    @id @default(cuid())
+  promoCodeId String
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId     String    @unique
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amountXof   Int
+  createdAt   DateTime  @default(now())
+
+  @@unique([promoCodeId, userId])
+  @@index([userId])
+  @@map("promo_redemptions")
+}
+
+// ═══════════════════════════════════════════ Factures
+
+/// Facture numérotée, archivée, immuable (cahier L2-20). Une par commande, émise
+/// à l'encaissement. Le PDF vit dans le stockage privé ; seule la clé est ici.
+model Invoice {
+  id          String   @id @default(cuid())
+  number      String   @unique // FAC-2026-000001
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  issuedAt    DateTime @default(now())
+  pdfKey      String
+  totalXof    Int
+  vatXof      Int      @default(0)
+  discountXof Int      @default(0)
+  /// Pays de livraison, figé : c'est lui qui porte le régime de TVA mentionné.
+  country     String
+
+  @@map("invoices")
+}

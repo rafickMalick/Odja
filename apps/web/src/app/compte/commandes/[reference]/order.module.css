@@ -1,0 +1,107 @@
+/* Détail d'une commande. */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.rows > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-16);
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-gray-700);
+}
+
+.rows strong {
+  font-weight: 600;
+  color: var(--color-black);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.total {
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-gray-300);
+}
+
+.total strong {
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+/* ── Suivi de livraison en direct (F1-07) ── */
+.tracker {
+  margin-top: 0.9rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.6rem;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.trackerHead {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+}
+
+.trackerPos {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  color: #666;
+}
+
+.trackerList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.trackerList li {
+  font-size: 0.85rem;
+  color: #555;
+  padding-left: 0.9rem;
+  border-left: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+.trackerList li[data-current] {
+  color: inherit;
+  font-weight: 600;
+  border-left-color: #d9480f;
+}
+
+.trackerStep {
+  font-weight: inherit;
+}
+
+.trackerNote {
+  color: #777;
+}
+
+.trackerTime {
+  display: block;
+  font-size: 0.75rem;
+  color: #999;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tracker {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .trackerList li {
+    color: #aaa;
+    border-left-color: rgba(255, 255, 255, 0.2);
+  }
+}

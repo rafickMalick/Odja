@@ -1,0 +1,58 @@
+/* Liste des pièces justificatives du livreur. */
+
+.documents {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.documents li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--color-black);
+}
+
+/* Une pièce déposée passe au vert : le livreur voit d'un coup d'œil ce qui
+   manque encore, sans compter les lignes. */
+.documents li[data-done] {
+  background: var(--color-success-bg);
+}
+
+.documents strong {
+  font-weight: 600;
+}
+
+.upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 96px;
+  min-height: 44px;
+  padding-inline: var(--space-16);
+  background: var(--color-white);
+  border: 1px solid var(--color-black);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-black);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.upload:hover {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.upload input {
+  display: none;
+}

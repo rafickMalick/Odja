@@ -1,0 +1,27 @@
+
+> oja@0.1.0 web
+> npm run dev -w @oja/web
+
+
+> @oja/web@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.251:3000
+
+ ✓ Starting...
+ ✓ Ready in 2.9s
+ ○ Compiling / ...
+ ✓ Compiled / in 5.5s (778 modules)
+ GET / 200 in 380ms
+ GET / 200 in 259ms
+ ○ Compiling /a-propos ...
+ ✓ Compiled /a-propos in 600ms (681 modules)
+ GET /a-propos 200 in 832ms
+ ○ Compiling /inscription ...
+ ✓ Compiled /inscription in 713ms (734 modules)
+ GET /inscription 200 in 913ms
+ ✓ Compiled /catalogue in 420ms (746 modules)
+ GET /catalogue 200 in 606ms
+ GET / 200 in 483ms

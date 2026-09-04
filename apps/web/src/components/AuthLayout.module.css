@@ -1,0 +1,372 @@
+/* Écrans Connexion (88:3513) et Inscription (88:3475) :
+   deux moitiés — visuel plein à gauche, formulaire de 480px à droite. */
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--color-white);
+}
+
+.visual {
+  flex: 1 0 0;
+  min-width: 0;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding-block: var(--space-80);
+  overflow: hidden;
+}
+
+.visualImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.visualLogo {
+  position: relative;
+  width: 200px;
+  height: 162.761px;
+}
+
+.panel {
+  flex: 1 0 0;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-24);
+  padding: var(--space-48) var(--space-120);
+}
+
+/* La maquette fige le contenu du formulaire à 480px de large. */
+.panel > * {
+  width: 480px;
+  max-width: 100%;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(40px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.4px;
+  color: var(--color-dark-gray);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--color-dark-gray);
+}
+
+.subtitleLink {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.16px;
+  color: var(--color-primary);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+}
+
+.groupTitle {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: calc(24px * var(--type-scale));
+  line-height: 1.4;
+  color: var(--color-dark-gray);
+}
+
+/* Les libellés des champs d'auth sont en Bold 14px, plus appuyés
+   que le SemiBold du composant Field partagé. */
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.fieldLabel {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-dark-gray);
+}
+
+.input {
+  width: 100%;
+  height: 52px;
+  padding: 14px var(--space-16);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-black);
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.input::placeholder {
+  color: var(--color-gray-500);
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 3px var(--color-primary-light);
+}
+
+/* ── Validation en direct ── */
+
+.inputWrap {
+  position: relative;
+  width: 100%;
+}
+
+.inputError {
+  border-color: var(--color-danger);
+}
+
+.inputValid {
+  border-color: var(--color-success);
+  padding-right: 44px;
+}
+
+.validMark {
+  position: absolute;
+  top: 50%;
+  right: var(--space-16);
+  transform: translateY(-50%);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+.fieldError {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-danger);
+}
+
+.hint {
+  width: 100%;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #868e96;
+}
+
+.separator {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--color-dark-gray);
+  text-align: center;
+}
+
+/* ── Fournisseurs OAuth ── */
+.providers {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-24);
+}
+
+.provider {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-16) var(--space-48);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-card);
+  background: var(--color-white);
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.provider:hover {
+  border-color: var(--color-gray-500);
+  background: var(--color-gray-100);
+}
+
+.providerIcon {
+  width: 32px;
+  height: 32px;
+}
+
+/* ── Cases à cocher ── */
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+.check input {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin: var(--space-4);
+  accent-color: var(--color-primary);
+  border-radius: 4px;
+}
+
+.checkText {
+  flex: 1 0 0;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.legal {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-black);
+  text-align: center;
+}
+
+.switch {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+  text-align: center;
+}
+
+.switch a {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+@media (max-width: 1200px) {
+  .panel {
+    padding-inline: var(--space-48);
+  }
+}
+
+/* Sous 900px la maquette mobile n'affiche plus le visuel latéral. */
+@media (max-width: 900px) {
+  .root {
+    flex-direction: column;
+  }
+
+  .visual {
+    display: none;
+  }
+
+  .panel {
+    padding: var(--space-32) var(--mobile-margin);
+    align-self: stretch;
+  }
+
+  .title {
+    font-size: calc(26px * var(--type-scale));
+    letter-spacing: -0.26px;
+  }
+
+  .groupTitle {
+    font-size: calc(20px * var(--type-scale));
+  }
+
+  .providers {
+    gap: var(--space-12);
+  }
+
+  .provider {
+    padding: var(--space-16) var(--space-16);
+  }
+}
+
+/* ── Choix du rôle à l'inscription ──
+   Le rôle décide de tout le parcours qui suit : il mérite d'être choisi
+   explicitement, pas caché dans une liste déroulante. */
+.roleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.roleCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-12);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-input);
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.roleCard:hover {
+  border-color: var(--color-primary);
+}
+
+.roleCard input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.roleCardActive {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.roleTitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-black);
+}
+
+.roleText {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+}
+
+@media (max-width: 520px) {
+  .roleGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "oja",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ojà — place de marché du mobilier et de la décoration façonnés localement",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "web": "npm run dev -w @oja/web",
+    "api": "npm run start:dev -w @oja/api",
+    "infra:up": "docker-compose up -d",
+    "infra:down": "docker-compose down",
+    "db:generate": "npm run generate -w @oja/db",
+    "db:migrate": "npm run migrate -w @oja/db",
+    "db:migrate:deploy": "npm run migrate:deploy -w @oja/db",
+    "db:check-migrations": "npm run check-migrations -w @oja/db",
+    "db:seed": "npm run seed -w @oja/db",
+    "db:demo": "npm run demo -w @oja/db",
+    "db:studio": "npm run studio -w @oja/db",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

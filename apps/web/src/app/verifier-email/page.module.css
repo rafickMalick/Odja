@@ -1,0 +1,55 @@
+/* Page de confirmation — composée à partir du design system. */
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 60vh;
+  padding: var(--space-64) var(--desktop-margin);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  max-width: 520px;
+  padding: var(--space-40);
+  background: var(--color-white);
+  border-radius: var(--radius-banner);
+  box-shadow: var(--shadow-card);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(32px * var(--type-scale));
+  line-height: 1.2;
+  letter-spacing: -0.64px;
+  color: var(--color-black);
+}
+
+.text {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+.link {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-700);
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding: var(--space-32) var(--mobile-margin);
+  }
+
+  .card {
+    padding: var(--space-24);
+  }
+}

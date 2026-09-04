@@ -1,0 +1,293 @@
+/* Espace livreur — pensé pour un téléphone, en mouvement.
+
+   Trois écarts assumés par rapport aux espaces de bureau :
+   la navigation est en bas, à portée du pouce ; les cibles font 44 px au
+   minimum, gants compris ; les contrastes sont plus fermes, parce qu'on lit
+   cet écran en plein soleil. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* La barre du bas ne doit jamais recouvrir le dernier bouton d'une page. */
+  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  background: var(--color-gray-100);
+}
+
+/* ── Barre du haut ── */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding: var(--space-12) var(--space-16);
+  background: var(--color-black);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-height: 44px;
+}
+
+.logo {
+  width: 40px;
+  height: auto;
+}
+
+.space {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 1.32px;
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+}
+
+.logout {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-8);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-gray-500);
+}
+
+.logout:hover {
+  color: var(--color-white);
+}
+
+/* ── Bandeaux ── */
+
+.statusBand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding: var(--space-12) var(--space-16);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-300);
+}
+
+.notice {
+  padding: var(--space-12) var(--space-16);
+  background: var(--color-primary-light);
+  border-bottom: 1px solid var(--color-gray-300);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+/* ── Titres ── */
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(28px * var(--type-scale));
+  line-height: 1.2;
+  color: var(--color-black);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+/* ── Cartes ── */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-card);
+}
+
+/* La mission qui attend un geste porte un liseré orange à gauche : elle se
+   repère sans lire, ce qui est la seule chose possible en roulant. */
+.cardAction {
+  border-left: 4px solid var(--color-primary);
+}
+
+/* ── Barre d'onglets ── */
+
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 30;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--color-white);
+  border-top: 1px solid var(--color-gray-300);
+}
+
+.tab,
+.tabActive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 60px;
+  padding: var(--space-8) var(--space-4);
+  font-family: var(--font-body);
+  color: var(--color-gray-700);
+}
+
+.tabActive {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.tabIcon {
+  position: relative;
+  display: flex;
+}
+
+.tabIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.tabBadge {
+  position: absolute;
+  top: -6px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding-inline: 5px;
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.tabLabel {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+/* ── Éléments communs aux pages ── */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.rows > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-16);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--color-gray-700);
+}
+
+.rows strong {
+  font-weight: 600;
+  color: var(--color-black);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.muted {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+.error {
+  padding: var(--space-12);
+  background: var(--color-danger-bg);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-danger);
+}
+
+.success {
+  padding: var(--space-12);
+  background: var(--color-success-bg);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-success);
+}
+
+/* Un numéro de téléphone est fait pour être appelé, pas recopié. */
+.callLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-primary);
+}
+
+/* Interrupteur de disponibilité. */
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-black);
+  cursor: pointer;
+}
+
+.toggle input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-primary);
+}
+
+@media (min-width: 720px) {
+  .content {
+    padding: var(--space-24);
+    gap: var(--space-20);
+  }
+}

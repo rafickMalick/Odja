@@ -1,0 +1,28 @@
+{
+  "name": "@oja/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Schéma Prisma, migrations et client généré. Point d'accès unique à la base : aucun module applicatif n'importe @prisma/client directement.",
+  "main": "./generated/client/index.js",
+  "types": "./generated/client/index.d.ts",
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "studio": "prisma studio",
+    "seed": "tsx prisma/seed.ts",
+    "build": "prisma generate",
+    "typecheck": "node scripts/check-migrations.mjs",
+    "check-migrations": "node scripts/check-migrations.mjs",
+    "demo": "tsx prisma/demo.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "prisma": "^6.2.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
