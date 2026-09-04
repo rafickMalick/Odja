@@ -1,0 +1,49 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  flex-wrap: wrap;
+}
+
+/* Choix du type de pièce et sélection du fichier sur une seule ligne : ce sont
+   deux moitiés du même geste. */
+.upload {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  flex-wrap: wrap;
+}
+
+.upload select {
+  max-width: 280px;
+}
+
+.uploadButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 var(--space-24);
+  border: 1px solid var(--color-black);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-black);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.uploadButton:hover {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.uploadButton input {
+  display: none;
+}

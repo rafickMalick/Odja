@@ -1,0 +1,75 @@
+# Infrastructure de développement (cahier § 3.1).
+# Les ports sont décalés pour ne jamais entrer en conflit avec un Postgres
+# ou un Redis déjà installés sur la machine du développeur.
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: oja-pg
+    environment:
+      POSTGRES_USER: oja
+      POSTGRES_PASSWORD: oja_dev
+      POSTGRES_DB: oja
+    ports:
+      - "55432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oja"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: oja-redis
+    ports:
+      - "56379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Stockage compatible S3 : photos produits, pièces justificatives, preuves
+  # de livraison. Console web sur http://localhost:59001
+  minio:
+    image: minio/minio:latest
+    container_name: oja-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: oja
+      MINIO_ROOT_PASSWORD: oja_dev_secret
+    ports:
+      - "59000:9000"
+      - "59001:9001"
+    volumes:
+      - minio-data:/data
+
+  # Boîte mail de test : tous les e-mails sortants y atterrissent.
+  # Interface sur http://localhost:58025
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: oja-mailpit
+    ports:
+      - "58025:8025"
+      - "51025:1025"
+
+  # Crée les deux seaux au démarrage : sans eux, le premier téléversement
+  # échoue avec un message que personne ne rattache à l'infrastructure.
+  minio-init:
+    image: minio/mc:latest
+    container_name: oja-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 oja oja_dev_secret; do sleep 1; done;
+      mc mb --ignore-existing local/oja-dev-public local/oja-dev-private;
+      mc anonymous set download local/oja-dev-public;
+      "
+
+volumes:
+  pg-data:
+  minio-data:

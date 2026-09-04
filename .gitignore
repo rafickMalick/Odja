@@ -1,0 +1,17 @@
+node_modules
+dist
+.next
+out
+build
+coverage
+*.tsbuildinfo
+
+# Secrets — seul .env.example est versionné (cahier § 11)
+.env
+.env.*
+!.env.example
+
+.DS_Store
+*.pem
+npm-debug.log*
+next-env.d.ts

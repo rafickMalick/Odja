@@ -1,0 +1,120 @@
+/* ==========================================================================
+   Ojà Design System v1.0 — Design tokens
+   Source: Figma « Ojà » → page Doc → frame « Dev Handoff — CSS Tokens » (76:2074)
+   Transcrit à l'identique depuis le handoff. Ne pas modifier une valeur sans
+   la changer d'abord dans Figma.
+   ========================================================================== */
+
+:root {
+  /* ── Fonts ──
+     Le handoff déclare `'Fredoka One', sans-serif` / `'Rethink Sans', sans-serif`.
+     next/font expose chaque famille via une variable CSS, placée en tête pour
+     servir la police auto-hébergée ; le nom d'origine reste en repli. */
+  --font-heading: var(--font-fredoka-one), 'Fredoka One', sans-serif;
+  --font-body: var(--font-rethink-sans), 'Rethink Sans', sans-serif;
+
+  /* ── Brand Colors ── */
+  --color-primary: #E35619;
+  --color-primary-dark: #B94410;
+  --color-primary-light: #FFF3ED;
+
+  /* ── Neutrals ── */
+  --color-black: #232526;
+  --color-white: #FFFFFF;
+  --color-gray-100: #F8F9FA;
+  --color-gray-300: #E9ECEF;
+  --color-gray-500: #ADB5BD;
+  --color-gray-700: #6B6B6B;
+
+  /* ── State Colors ── */
+  --color-success: #2E7D32;
+  --color-info: #1565C0;
+  --color-warning: #F57C00;
+  --color-danger: #C62828;
+
+  /* ── Badge Backgrounds ── */
+  --color-success-bg: #E8F5E9;
+  --color-info-bg: #E3F2FD;
+  --color-warning-bg: #FFF3ED;
+  --color-danger-bg: #FFEBEE;
+
+  /* ── Border Radius ── */
+  --radius-input: 12px;
+  --radius-card-mobile: 12px;
+  --radius-card: 16px;
+  --radius-banner: 24px;
+  --radius-pill: 999px;
+
+  /* ── Layout ── */
+  --grid-gutter: 16px;
+  --desktop-margin: 60px;
+  --mobile-margin: 20px;
+  --container-max-width: 1320px;
+
+  /* ── Shadows ── */
+  --shadow-card: 0px 4px 12px rgba(35, 37, 38, 0.06);
+  --shadow-modal: 0px 8px 32px rgba(35, 37, 38, 0.12);
+
+  /* ── Spacing (échelle 8px) ──
+     Absente du bloc :root du handoff, reprise du frame « Spacing & Radius » (76:1869). */
+  --space-4: 4px;    /* 0.5x base */
+  --space-8: 8px;    /* 1x base */
+  --space-12: 12px;  /* 1.5x base */
+  --space-16: 16px;  /* 2x base — gutter */
+  --space-20: 20px;  /* marge mobile */
+  --space-24: 24px;  /* 3x base */
+  --space-32: 32px;  /* 4x base */
+  --space-40: 40px;  /* 5x base */
+  --space-48: 48px;  /* 6x base */
+  --space-56: 56px;  /* 7x base */
+  --space-64: 64px;  /* 8x base */
+  --space-80: 80px;  /* 10x base */
+  --space-96: 96px;  /* 12x base */
+  --space-120: 120px; /* 15x base */
+
+  /* ── Palette étendue ──
+     Couleurs présentes dans les écrans de la page Design mais absentes du
+     handoff. Relevées via get_design_context, conservées telles quelles pour
+     rester fidèle aux maquettes. */
+  --color-dark-gray: #232321;      /* titre « Ojà » du hero */
+  --color-hero-gray: #E7E7E3;      /* sous-titre sur image hero */
+  --color-product-bg: #EDE8DF;     /* fond des images produit */
+  --color-footer-cta: #302A25;     /* texte du bouton newsletter */
+  --color-pill-border: #E6E7E8;    /* bordure des pills de catégorie */
+  --color-footer-text-50: #E7E7E8; /* texte secondaire du footer */
+  --color-star: #B94410;           /* étoiles de notation */
+
+  /* ── Échelle typographique ──
+     Les maquettes Figma sont dessinées sur un canevas 1440px, ce qui donne
+     une typo d'affichage très grande dans un navigateur réel. Ce facteur
+     réduit d'un seul geste toutes les tailles ≥ 20px ; les tailles ≤ 18px
+     (labels, légendes, badges) restent inchangées pour rester lisibles.
+     Mettre 1 pour retrouver exactement les valeurs Figma. */
+  --type-scale: 0.78;
+
+  /* ── Polices additionnelles utilisées dans les écrans ── */
+  --font-outfit: var(--font-outfit-var), sans-serif;
+  --font-rubik: var(--font-rubik-var), sans-serif;
+}
+
+/* ── Mobile Product Grid ── */
+@media (max-width: 390px) {
+  .product-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 16px;
+    padding: 0 20px;
+  }
+}
+
+/* ── Desktop Product Grid ── */
+@media (min-width: 1024px) {
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px 16px;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 60px;
+  }
+}

@@ -1,0 +1,6 @@
+<!-- Loupe. L'export Figma de ce nœud était vide (groupes Vector sans tracé) :
+     icône redessinée dans le style outline du reste du fichier. -->
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="7.17" cy="7.17" r="4.92" stroke="currentColor" stroke-width="1.5"/>
+  <path d="M10.98 10.98L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,114 @@
+/* Progress Stepper (35:978) — parcours Panier → Livraison & Paiement → Confirmation. */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding-top: var(--space-32);
+  padding-inline: 104px;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* Les étapes situées après la suivante sont estompées. */
+.stepFuture {
+  opacity: 0.5;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-gray-300);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--color-gray-500);
+}
+
+.badgeActive {
+  background: rgba(227, 86, 25, 0.1);
+  border: 1.5px solid var(--color-primary);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Étape franchie : pastille orangée pâle sans bordure, avec une coche. */
+.badgeDone {
+  background: rgba(227, 86, 25, 0.1);
+  border: none;
+}
+
+.check {
+  width: 12px;
+  height: 12px;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--color-gray-500);
+  white-space: nowrap;
+}
+
+.labelDone {
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.labelActive {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.line {
+  width: 32px;
+  height: 1px;
+  background: var(--color-gray-300);
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .section {
+    padding-inline: var(--mobile-margin);
+  }
+
+  /* Les trois étapes ne tiennent pas sur 350px : la rangée défile
+     horizontalement plutôt que d'être tronquée. */
+  .container {
+    gap: var(--space-8);
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    padding-bottom: var(--space-4);
+    scrollbar-width: none;
+  }
+
+  .container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .line {
+    width: 16px;
+  }
+
+  .label {
+    font-size: 12px;
+  }
+}

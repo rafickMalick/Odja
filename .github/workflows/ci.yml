@@ -1,0 +1,115 @@
+name: CI
+
+# Sur toute branche et toute proposition de fusion : une régression détectée
+# après la fusion coûte dix fois plus cher qu'avant.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+concurrency:
+  # Une nouvelle poussée annule la précédente sur la même branche : inutile de
+  # payer deux fois pour un état déjà dépassé.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Les tests de bout en bout tournent contre un vrai PostgreSQL et un vrai
+    # MinIO. Des doublures les rendraient verts sans rien prouver : les
+    # invariants du grand livre sont tenus par des triggers, l'immuabilité par
+    # une contrainte, et l'expiration des URL signées par le stockage.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: oja
+          POSTGRES_PASSWORD: oja_ci
+          POSTGRES_DB: oja
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U oja"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      minio:
+        image: bitnami/minio:latest
+        env:
+          MINIO_ROOT_USER: oja
+          MINIO_ROOT_PASSWORD: oja_dev_secret
+          # Les deux compartiments que StorageService dérive de S3_BUCKET :
+          # « -public » lisible de tous, « -private » jamais.
+          MINIO_DEFAULT_BUCKETS: oja-ci-public:download,oja-ci-private
+        ports: ['9000:9000']
+
+      mailpit:
+        image: axllent/mailpit:latest
+        ports: ['1025:1025', '8025:8025']
+
+    env:
+      DATABASE_URL: postgresql://oja:oja_ci@localhost:5432/oja?schema=public
+      JWT_ACCESS_SECRET: secret-de-test-suffisamment-long
+      JWT_REFRESH_SECRET: autre-secret-de-test-suffisamment-long
+      ARGON2_PEPPER: poivre-de-test
+      S3_ENDPOINT: http://localhost:9000
+      S3_ACCESS_KEY: oja
+      S3_SECRET_KEY: oja_dev_secret
+      # Le service ajoute lui-même les suffixes « -public » et « -private ».
+      S3_BUCKET: oja-ci
+      S3_PUBLIC_BASE_URL: http://localhost:9000/oja-ci-public
+      SMTP_HOST: localhost
+      SMTP_PORT: 1025
+      REQUIRE_PHONE_VERIFICATION: 'false'
+      SCHEDULER_ENABLED: 'false'
+      RATE_LIMIT_ENABLED: 'false'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Générer le client Prisma
+        run: npm run db:generate
+
+      # Contrôle mécanique : Prisma régénère un `DROP INDEX products_search_idx`
+      # dans chaque migration touchant `products`. C'est arrivé quatre fois.
+      - name: Vérifier les migrations
+        run: node packages/db/scripts/check-migrations.mjs
+
+      - name: Appliquer les migrations
+        run: npm run db:migrate:deploy
+
+      - name: Peupler les données de référence
+        run: npm run db:seed
+
+      - name: Types
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  # Une image qui ne se construit pas se découvre au déploiement, un vendredi
+  # soir. On la construit ici, sans la pousser.
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Image de l'API
+        run: docker build -f apps/api/Dockerfile -t oja-api:ci .
+
+      - name: Image du front
+        run: docker build -f apps/web/Dockerfile -t oja-web:ci .

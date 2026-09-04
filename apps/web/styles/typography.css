@@ -1,0 +1,110 @@
+/* ==========================================================================
+   Ojà Design System v1.0 — Échelle typographique
+   Source: Figma « Ojà » → page Doc → frame « Dev Handoff — Typography » (76:1746)
+   Fredoka One pour les titres, Rethink Sans pour l'UI et le corps de texte.
+   Les line-heights sont en pourcentage, comme dans Figma.
+   ========================================================================== */
+
+.h1-desktop {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(56px * var(--type-scale));
+  line-height: 120%;
+  letter-spacing: -2%;
+}
+
+.h1-mobile {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(32px * var(--type-scale));
+  line-height: 120%;
+  letter-spacing: -2%;
+}
+
+.h2-desktop {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(40px * var(--type-scale));
+  line-height: 130%;
+  letter-spacing: -1%;
+}
+
+.h2-mobile {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(26px * var(--type-scale));
+  line-height: 130%;
+  letter-spacing: -1%;
+}
+
+.h3-desktop {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(28px * var(--type-scale));
+  line-height: 130%;
+  letter-spacing: -1%;
+}
+
+.h3-mobile {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(20px * var(--type-scale));
+  line-height: 130%;
+  letter-spacing: 0;
+}
+
+.heading-small {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.body-large {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 150%;
+  letter-spacing: 0;
+}
+
+.body-regular {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0;
+}
+
+.body-small {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.button-label {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 1%;
+}
+
+.button-label-small {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.caption-tiny {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 140%;
+  letter-spacing: 0;
+}

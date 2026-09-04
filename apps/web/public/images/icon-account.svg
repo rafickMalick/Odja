@@ -1,0 +1,6 @@
+<!-- Silhouette « compte ». L'export Figma de ce nœud était vide (groupes Vector
+     sans tracé) : icône redessinée dans le style outline du reste du fichier. -->
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="8" cy="5.17" r="2.92" stroke="currentColor" stroke-width="1.5"/>
+  <path d="M2.75 13.75c0-2.35 2.35-4.25 5.25-4.25s5.25 1.9 5.25 4.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

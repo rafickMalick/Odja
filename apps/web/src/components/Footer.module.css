@@ -1,0 +1,341 @@
+/* Footer — composant partagé (I31:631 / I24:3031).
+   Deux bandes : appel à l'inscription sur fond assombri, puis la zone liens. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  background: var(--color-black);
+}
+
+/* ── Bande newsletter ── */
+.callout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 100px var(--desktop-margin);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.calloutInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-20);
+  width: 100%;
+  text-align: center;
+}
+
+.calloutTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(56px * var(--type-scale));
+  line-height: 1.2;
+  letter-spacing: -1.12px;
+  color: var(--color-white);
+}
+
+.calloutText {
+  font-family: var(--font-outfit);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-footer-text-50);
+}
+
+/* ── Bande liens ── */
+.links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-24);
+  width: 100%;
+  padding: var(--space-40) var(--desktop-margin);
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-40);
+  width: 100%;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-40);
+  width: 369px;
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 77.72px;
+  height: 63.227px;
+}
+
+.logoImage {
+  width: 63.28px;
+  height: 51.48px;
+}
+
+/* ── Réseaux sociaux ── */
+.social {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+/* Twitter est exporté avec son propre cercle : pas de cadre supplémentaire. */
+.socialPlain {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.socialFramed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-16);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 60px;
+  flex-shrink: 0;
+}
+
+.socialIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.socialIconSmall {
+  width: 20px;
+  height: 20px;
+  margin: 2px;
+}
+
+/* ── Newsletter ── */
+.newsletter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.newsletterLabel {
+  font-family: var(--font-outfit);
+  font-weight: 500;
+  font-size: 16px;
+  text-transform: uppercase;
+  color: var(--color-white);
+}
+
+.inputBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-24);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+}
+
+.inputBar input {
+  flex: 1 0 0;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-outfit);
+  font-weight: 300;
+  font-size: 16px;
+  color: var(--color-white);
+}
+
+.inputBar input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.inputButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: var(--space-16) var(--space-32);
+  background: var(--color-white);
+  border-radius: 80px;
+  font-family: var(--font-outfit);
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--color-footer-cta);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Colonnes de menu ── */
+.menu {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 120px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+}
+
+.columnNarrow {
+  width: 107px;
+}
+
+/* Intitulé « Marketplace » : Rethink SemiBold 11px, interlettrage 1.32px. */
+.columnLabelSmall {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 15.4px;
+  letter-spacing: 1.32px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.columnLabel {
+  font-family: var(--font-outfit);
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--color-white);
+}
+
+.listSmall {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+  font-family: var(--font-outfit);
+  font-weight: 400;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.listSmall a:hover,
+.list a:hover {
+  color: var(--color-white);
+}
+
+/* ── Bas de footer ── */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-20);
+  width: 100%;
+  font-family: var(--font-outfit);
+  font-weight: 400;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.bottomLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-20);
+  width: 401px;
+  text-align: center;
+}
+
+.bottomLinks a {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .callout {
+    padding: var(--space-56) var(--mobile-margin);
+  }
+
+  .calloutTitle {
+    font-size: calc(32px * var(--type-scale));
+    letter-spacing: -0.64px;
+  }
+
+  .links {
+    padding: var(--space-40) var(--mobile-margin);
+  }
+
+  .top {
+    flex-direction: column;
+    gap: var(--space-40);
+  }
+
+  .brand {
+    width: 100%;
+  }
+
+  .menu {
+    flex-wrap: wrap;
+    gap: var(--space-40);
+    justify-content: flex-start;
+  }
+
+  /* Barre newsletter : le bouton pill est trop large à 390px. */
+  .inputBar {
+    padding-left: var(--space-16);
+  }
+
+  .inputButton {
+    padding-inline: var(--space-20);
+  }
+
+  .bottom {
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  /* Les deux mentions légales se chevauchent en une seule rangée à 390px. */
+  .bottomLinks {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-8);
+    text-align: left;
+  }
+
+  .bottomLinks a {
+    flex: none;
+  }
+}

@@ -1,0 +1,173 @@
+/* Catalog Card — variante Desktop (11:2273) et Mobile.
+   Note : le handoff annonce un ratio d'image 4:5, mais la maquette du catalogue
+   utilise un carré (aspect 400/400). On suit la maquette. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.imageLink {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--color-product-bg);
+  border-radius: var(--radius-card);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tag {
+  position: absolute;
+  top: var(--space-16);
+  left: var(--space-16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-16);
+  background: var(--color-white);
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #000;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.info {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  align-items: flex-start;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(28px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.28px;
+  color: var(--color-black);
+}
+
+/* La maquette tient sur une ligne à 318px, mais la carte mobile fait 167px :
+   la ligne doit pouvoir se replier, sinon elle déborde sur la colonne voisine. */
+.meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  width: 100%;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.6);
+  overflow-wrap: anywhere;
+}
+
+.metaPair {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.dot {
+  margin-right: var(--space-4);
+}
+
+.price {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+/* Bouton panier circulaire 48px, fill Brand/Primary. */
+.addButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  padding: var(--space-16);
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+  transition: background-color 120ms ease;
+}
+
+.addButton:hover {
+  background: var(--color-primary-dark);
+}
+
+.addIcon {
+  width: 20px;
+  height: 20px;
+  /* L'icône exportée est sombre : on la force en blanc sur le fond orange. */
+  filter: brightness(0) invert(1);
+}
+
+/* Variante mobile de la maquette : carte 167px, radius 12px, titre réduit. */
+@media (max-width: 900px) {
+  .imageLink {
+    border-radius: var(--radius-card-mobile);
+  }
+
+  .name {
+    font-size: calc(20px * var(--type-scale));
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Repliée, la ligne laisse le séparateur « • » orphelin en fin de ligne :
+     on empile les paires et on retire la puce. */
+  .meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .dot {
+    display: none;
+  }
+
+  /* La carte mobile ne fait que 167px : le bouton panier est réduit pour
+     laisser respirer le texte. */
+  .addButton {
+    width: 40px;
+    height: 40px;
+    padding: var(--space-8);
+  }
+
+  .addIcon {
+    width: 18px;
+    height: 18px;
+  }
+}

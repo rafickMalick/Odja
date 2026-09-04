@@ -1,0 +1,471 @@
+/* Checkout — Desktop (33:700) / Mobile (58:1330). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background: var(--color-white);
+}
+
+.section {
+  width: 100%;
+  padding: var(--space-32) var(--desktop-margin) var(--space-40);
+}
+
+.layout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-40);
+  width: 100%;
+}
+
+/* ── Colonne formulaire ── */
+.form {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-40);
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(40px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.4px;
+  color: var(--color-black);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-24);
+  width: 100%;
+}
+
+.blockTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(28px * var(--type-scale));
+  line-height: 1.3;
+  letter-spacing: -0.28px;
+  color: var(--color-black);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-gray-300);
+}
+
+/* ── Mode de livraison ── */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-12);
+  width: 100%;
+  padding: var(--space-16);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-input);
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.optionSelected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.option input {
+  margin-top: 4px;
+  accent-color: var(--color-primary);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.optionBody {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.optionTitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--color-black);
+}
+
+.optionText {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+}
+
+.optionPrice {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+/* ── Paiement ── */
+.secureNote {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-black);
+  cursor: pointer;
+}
+
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+}
+
+/* ── Colonne récapitulatif ── */
+.summary {
+  width: 400px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  padding: var(--space-20) var(--space-16);
+  border-radius: 20px;
+  background: var(--color-white);
+  filter: drop-shadow(0px 4px 6px rgba(33, 35, 35, 0.06));
+  position: sticky;
+  top: 96px;
+}
+
+.summaryTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: calc(20px * var(--type-scale));
+  line-height: 1.3;
+  color: #212323;
+}
+
+.summaryCount {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.lineThumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  background: var(--color-product-bg);
+  border-radius: var(--radius-input);
+  object-fit: cover;
+}
+
+.lineBody {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lineName {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-black);
+}
+
+.lineMeta {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+}
+
+.linePrice {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+.promo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.promoLabel {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #212323;
+}
+
+.promoBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-24);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-pill);
+}
+
+.promoBar input {
+  flex: 1 0 0;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-black);
+}
+
+.promoBar input::placeholder {
+  color: var(--color-gray-500);
+}
+
+.promoButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: var(--space-16) var(--space-32);
+  background: var(--color-black);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.16px;
+  color: var(--color-white);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.totalsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  font-size: 16px;
+}
+
+.totalsLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: #666667;
+}
+
+.totalsValue {
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.16px;
+  color: #212323;
+  white-space: nowrap;
+}
+
+.infoIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.grandTotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  width: 100%;
+  padding-top: 16.8px;
+  border-top: 0.8px solid #e5e6e8;
+}
+
+.grandTotalLabel {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.16px;
+  color: #212323;
+}
+
+.grandTotalValue {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #212323;
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .summary {
+    width: 100%;
+    position: static;
+  }
+}
+
+@media (max-width: 900px) {
+  .section {
+    padding: var(--space-24) var(--mobile-margin) var(--space-32);
+  }
+
+  .title {
+    font-size: calc(26px * var(--type-scale));
+    letter-spacing: -0.26px;
+  }
+
+  .blockTitle {
+    font-size: calc(20px * var(--type-scale));
+    letter-spacing: 0;
+  }
+
+  /* Même resserrement que sur le panier pour la barre code promo. */
+  .promoBar {
+    padding-left: var(--space-16);
+  }
+
+  .promoButton {
+    padding-inline: var(--space-20);
+  }
+
+  /* L'option de livraison passe en colonne : titre, description, puis prix. */
+  .option {
+    flex-wrap: wrap;
+  }
+
+  .optionPrice {
+    width: 100%;
+    padding-left: calc(18px + var(--space-12));
+  }
+}
+
+/* ── Code promo (L2-11) ── */
+.promoRow {
+  margin: var(--space-12, 0.75rem) 0;
+}
+
+.promoField {
+  display: flex;
+  gap: var(--space-8, 0.5rem);
+}
+
+.promoInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.2));
+  border-radius: 0.5rem;
+  font: inherit;
+  text-transform: uppercase;
+}
+
+.promoApplied {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted, #555);
+}
+
+.promoClear {
+  border: none;
+  background: none;
+  color: #d9480f;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}

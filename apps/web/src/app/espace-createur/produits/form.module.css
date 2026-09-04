@@ -1,0 +1,165 @@
+/* Formulaire de fiche produit et galerie de photos. */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+/* ── Décomposition du prix ──
+   Reprend la présentation de la fiche produit côté boutique : l'artisan voit
+   exactement ce que verra son acheteur. */
+
+.priceBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-16);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-input);
+}
+
+.priceBreakdown > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-16);
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-gray-700);
+}
+
+.priceBreakdown strong {
+  font-weight: 600;
+  color: var(--color-black);
+  font-variant-numeric: tabular-nums;
+}
+
+.priceTotal {
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-gray-300);
+}
+
+.priceTotal strong {
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+/* ── Cases à cocher ── */
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-black);
+  cursor: pointer;
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  flex-wrap: wrap;
+}
+
+/* ── Galerie de photos ── */
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-12);
+}
+
+.photo {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-card);
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* La première photo est la vignette du catalogue : on le dit, sinon l'ordre
+   d'envoi décide à la place de l'artisan. */
+.cover {
+  position: absolute;
+  inset: auto auto var(--space-8) var(--space-8);
+  padding: 2px var(--space-8);
+  background: var(--color-black);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.photoRemove {
+  position: absolute;
+  inset: var(--space-8) var(--space-8) auto auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: var(--color-white);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  font-size: 16px;
+  line-height: 1;
+  color: var(--color-black);
+}
+
+.photoRemove:hover {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+/* Zone de dépôt : elle occupe une case de la grille, à la suite des photos. */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  aspect-ratio: 1;
+  padding: var(--space-12);
+  background: var(--color-white);
+  border: 1px dashed var(--color-gray-500);
+  border-radius: var(--radius-card);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-700);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.dropzone:hover,
+.dropzone[data-over] {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-black);
+}
+
+.dropzone input {
+  display: none;
+}
+
+.dropHint {
+  font-size: 12px;
+  color: var(--color-gray-700);
+}
