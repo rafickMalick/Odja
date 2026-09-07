@@ -1,0 +1,65 @@
+services:
+  - type: web
+    name: oja-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Pas d'API_PORT ici : le Dockerfile déclare EXPOSE 4000 et son propre
+      # HEALTHCHECK interroge 127.0.0.1:4000 — changer le port sans changer
+      # les deux ferait échouer l'un des deux silencieusement.
+      - key: DATABASE_URL
+        sync: false
+      - key: WEB_ORIGIN
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: ARGON2_PEPPER
+        generateValue: true
+      - key: PAYMENT_PROVIDER
+        value: kadevpay
+      - key: KADEVPAY_PUBLIC_KEY
+        sync: false
+      - key: KADEVPAY_SECRET_KEY
+        sync: false
+      - key: KADEVPAY_WEBHOOK_SECRET
+        sync: false
+      - key: KADEVPAY_MODE
+        value: test
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_REGION
+        value: auto
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: S3_PUBLIC_BASE_URL
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        value: "Ojà <bonjour@oja.market>"
+      - key: SCHEDULER_ENABLED
+        value: true
+      - key: RATE_LIMIT_ENABLED
+        value: true
+      - key: REQUIRE_PHONE_VERIFICATION
+        value: false
