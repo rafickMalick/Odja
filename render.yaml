@@ -8,8 +8,12 @@ services:
     dockerContext: .
     healthCheckPath: /api/v1/health
     envVars:
+      # "development", pas "production" : les clés Kadev Pay sont des clés de
+      # test (kdvs_test_...), et env.ts refuse justement de démarrer avec une
+      # clé de test sous NODE_ENV=production (cahier § 7.7). Ce déploiement
+      # est une recette, pas la mise en production réelle.
       - key: NODE_ENV
-        value: production
+        value: development
       # Pas d'API_PORT ici : le Dockerfile déclare EXPOSE 4000 et son propre
       # HEALTHCHECK interroge 127.0.0.1:4000 — changer le port sans changer
       # les deux ferait échouer l'un des deux silencieusement.
