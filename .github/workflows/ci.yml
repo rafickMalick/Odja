@@ -36,16 +36,11 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
-      minio:
-        image: bitnami/minio:latest
-        env:
-          MINIO_ROOT_USER: oja
-          MINIO_ROOT_PASSWORD: oja_dev_secret
-          # Les deux compartiments que StorageService dérive de S3_BUCKET :
-          # « -public » lisible de tous, « -private » jamais.
-          MINIO_DEFAULT_BUCKETS: oja-ci-public:download,oja-ci-private
-        ports: ['9000:9000']
-
+      # MinIO n'est pas ici : Bitnami a retiré ses images du Docker Hub
+      # (« manifest unknown » sur bitnami/minio:latest depuis fin 2025), et
+      # l'image officielle quay.io/minio/minio a besoin d'une commande de
+      # démarrage (`server /data`) qu'un service GitHub Actions ne peut pas
+      # lui passer. Démarré à la main plus bas, en step Docker.
       mailpit:
         image: axllent/mailpit:latest
         ports: ['1025:1025', '8025:8025']
@@ -69,6 +64,38 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Démarrer MinIO
+        run: |
+          docker run -d --name minio -p 9000:9000 \
+            -e MINIO_ROOT_USER=oja -e MINIO_ROOT_PASSWORD=oja_dev_secret \
+            quay.io/minio/minio server /data
+
+          echo "Attente que MinIO réponde…"
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:9000/minio/health/live > /dev/null; then
+              echo "MinIO prêt."
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::MinIO n'a jamais répondu."
+          exit 1
+
+      # `mc mb` échouerait sur un compartiment déjà créé : sans intérêt ici,
+      # le conteneur MinIO part d'un volume vide à chaque run.
+      - name: Créer les compartiments MinIO
+        run: |
+          docker run --rm --network host \
+            -e MC_HOST_local=http://oja:oja_dev_secret@localhost:9000 \
+            quay.io/minio/mc mb local/oja-ci-public local/oja-ci-private
+
+          # Équivalent du suffixe « :download » que Bitnami lisait dans
+          # MINIO_DEFAULT_BUCKETS — seul le compartiment public doit être lisible
+          # sans authentification.
+          docker run --rm --network host \
+            -e MC_HOST_local=http://oja:oja_dev_secret@localhost:9000 \
+            quay.io/minio/mc anonymous set download local/oja-ci-public
 
       - uses: actions/setup-node@v4
         with:
