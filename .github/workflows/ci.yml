@@ -65,37 +65,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Démarrer MinIO
+      # quay.io/minio/minio (essayé en premier) répond aussi « unauthorized » :
+      # MinIO a verrouillé son dépôt quay.io lors de son changement de licence
+      # (2025), pas seulement retiré ses images de Docker Hub. S3Mock
+      # (adobe/s3mock, MIT, vérifié pullable anonymement) reste compatible S3
+      # sans dépendre d'un registre verrouillé.
+      - name: Démarrer S3Mock (compatible S3, remplace MinIO)
         run: |
-          docker run -d --name minio -p 9000:9000 \
-            -e MINIO_ROOT_USER=oja -e MINIO_ROOT_PASSWORD=oja_dev_secret \
-            quay.io/minio/minio server /data
+          docker run -d --name s3mock -p 9000:9090 adobe/s3mock:latest
 
-          echo "Attente que MinIO réponde…"
+          echo "Attente que S3Mock réponde…"
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:9000/minio/health/live > /dev/null; then
-              echo "MinIO prêt."
+            if curl -s -o /dev/null http://localhost:9000/; then
+              echo "S3Mock prêt."
               exit 0
             fi
             sleep 1
           done
-          echo "::error::MinIO n'a jamais répondu."
+          echo "::error::S3Mock n'a jamais répondu."
           exit 1
 
-      # `mc mb` échouerait sur un compartiment déjà créé : sans intérêt ici,
-      # le conteneur MinIO part d'un volume vide à chaque run.
-      - name: Créer les compartiments MinIO
+      # Les deux compartiments que StorageService dérive de S3_BUCKET.
+      # S3Mock n'impose pas de vraie signature AWS : les clés factices de
+      # l'AWS CLI ci-dessous ne sont là que pour satisfaire sa validation
+      # locale, elles ne sont jamais vérifiées côté serveur.
+      - name: Créer les compartiments S3Mock
+        env:
+          AWS_ACCESS_KEY_ID: oja
+          AWS_SECRET_ACCESS_KEY: oja_dev_secret
+          AWS_DEFAULT_REGION: us-east-1
         run: |
-          docker run --rm --network host \
-            -e MC_HOST_local=http://oja:oja_dev_secret@localhost:9000 \
-            quay.io/minio/mc mb local/oja-ci-public local/oja-ci-private
-
-          # Équivalent du suffixe « :download » que Bitnami lisait dans
-          # MINIO_DEFAULT_BUCKETS — seul le compartiment public doit être lisible
-          # sans authentification.
-          docker run --rm --network host \
-            -e MC_HOST_local=http://oja:oja_dev_secret@localhost:9000 \
-            quay.io/minio/mc anonymous set download local/oja-ci-public
+          aws --endpoint-url http://localhost:9000 s3api create-bucket --bucket oja-ci-public
+          aws --endpoint-url http://localhost:9000 s3api create-bucket --bucket oja-ci-private
 
       - uses: actions/setup-node@v4
         with:
