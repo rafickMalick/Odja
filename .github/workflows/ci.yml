@@ -93,17 +93,24 @@ jobs:
           exit 1
 
       # Les deux compartiments que StorageService dérive de S3_BUCKET.
-      # oja-ci-public est explicitement rendu public (ACL canonique
-      # public-read) ; oja-ci-private garde l'ACL private par défaut, que
-      # CloudServer applique réellement — contrairement à S3Mock.
+      # L'ACL du bucket (--acl public-read) ne suffit pas : elle ne rend pas
+      # lisibles les objets déposés sans ACL explicite (le cas ici — l'API
+      # signe ses PutObject sans en fixer une), comme sur un vrai S3. Il faut
+      # une bucket policy, l'équivalent de ce que `mc anonymous set download`
+      # faisait pour MinIO. oja-ci-private garde sa politique par défaut
+      # (aucun accès anonyme), que CloudServer applique réellement.
       - name: Créer les compartiments S3
         env:
           AWS_ACCESS_KEY_ID: accessKey1
           AWS_SECRET_ACCESS_KEY: verySecretKey1
           AWS_DEFAULT_REGION: us-east-1
         run: |
-          aws --endpoint-url http://localhost:9000 s3api create-bucket --bucket oja-ci-public --acl public-read
+          aws --endpoint-url http://localhost:9000 s3api create-bucket --bucket oja-ci-public
           aws --endpoint-url http://localhost:9000 s3api create-bucket --bucket oja-ci-private
+
+          aws --endpoint-url http://localhost:9000 s3api put-bucket-policy \
+            --bucket oja-ci-public \
+            --policy '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::oja-ci-public/*"}]}'
 
       - uses: actions/setup-node@v4
         with:
