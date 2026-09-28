@@ -7,7 +7,6 @@ import { Suspense, useState } from "react";
 import {
   AuthField,
   AuthLayout,
-  AuthProviders,
   authStyles as styles,
 } from "@/components/AuthLayout";
 import { Button } from "@/components/Button";
@@ -70,7 +69,7 @@ function ConnexionForm() {
         <AuthField
           label="E-mail ou téléphone"
           type="text"
-          placeholder="jean@email.com ou +225 07 00 00 00 00"
+          placeholder="jean@email.com ou +229 01 00 00 00 00"
           autoComplete="username"
           value={identifier}
           onChange={(event) => setIdentifier(event.target.value)}
@@ -96,10 +95,6 @@ function ConnexionForm() {
           {pending ? "Connexion…" : "Se connecter"}
         </Button>
       </form>
-
-      <p className={styles.separator}>OU</p>
-
-      <AuthProviders />
 
       <p className={styles.legal}>
         En cliquant sur « Se connecter », vous acceptez les Conditions Générales

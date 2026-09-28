@@ -176,7 +176,7 @@ export default function AddressesPage() {
                 type="tel"
                 value={values.phone}
                 onChange={(event) => setValues({ ...values, phone: event.target.value })}
-                placeholder="+225 07 00 00 00 00"
+                placeholder="+229 01 00 00 00 00"
                 error={errors["phone"]}
               />
             </FieldRow>
