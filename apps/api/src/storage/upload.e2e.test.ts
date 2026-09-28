@@ -249,7 +249,10 @@ describe('Téléversement (bout en bout)', () => {
         .expect(201);
 
       expect(response.body).toHaveLength(1);
-      expect(response.body[0].url).toContain('oja-dev-public');
+      // Le nom du compartiment public dépend de S3_BUCKET (oja-dev en local,
+      // oja-ci en CI) : on le relit plutôt que de figer l'un des deux.
+      const publicBucket = `${app.get(ConfigService).getOrThrow<string>('S3_BUCKET')}-public`;
+      expect(response.body[0].url).toContain(publicBucket);
       expect(response.body[0].position).toBe(0);
     });
 
