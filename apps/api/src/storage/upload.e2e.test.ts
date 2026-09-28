@@ -1,4 +1,5 @@
 import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 import request from 'supertest';
@@ -429,7 +430,14 @@ describe('Téléversement (bout en bout)', () => {
       const key = documents[0]?.fileKey;
       expect(key).toBeDefined();
 
-      const direct = await fetch(`http://localhost:59000/oja-dev-private/${key}`);
+      /* En dur sur les valeurs du dev local (docker-compose.yml), ce test
+         échouait toujours en CI : S3_ENDPOINT et S3_BUCKET-private y valent
+         autre chose (localhost:9000, oja-ci-private). On relit la config
+         réellement chargée plutôt qu'un couple hôte/compartiment figé. */
+      const config = app.get(ConfigService);
+      const endpoint = config.getOrThrow<string>('S3_ENDPOINT');
+      const privateBucket = `${config.getOrThrow<string>('S3_BUCKET')}-private`;
+      const direct = await fetch(`${endpoint}/${privateBucket}/${key}`);
       // Le seau privé n'autorise aucune lecture anonyme.
       expect(direct.status).toBeGreaterThanOrEqual(400);
     });
