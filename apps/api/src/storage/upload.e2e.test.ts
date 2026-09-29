@@ -1,4 +1,5 @@
 import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 import request from 'supertest';
@@ -248,7 +249,10 @@ describe('Téléversement (bout en bout)', () => {
         .expect(201);
 
       expect(response.body).toHaveLength(1);
-      expect(response.body[0].url).toContain('oja-dev-public');
+      // Le nom du compartiment public dépend de S3_BUCKET (oja-dev en local,
+      // oja-ci en CI) : on le relit plutôt que de figer l'un des deux.
+      const publicBucket = `${app.get(ConfigService).getOrThrow<string>('S3_BUCKET')}-public`;
+      expect(response.body[0].url).toContain(publicBucket);
       expect(response.body[0].position).toBe(0);
     });
 
@@ -429,7 +433,14 @@ describe('Téléversement (bout en bout)', () => {
       const key = documents[0]?.fileKey;
       expect(key).toBeDefined();
 
-      const direct = await fetch(`http://localhost:59000/oja-dev-private/${key}`);
+      /* En dur sur les valeurs du dev local (docker-compose.yml), ce test
+         échouait toujours en CI : S3_ENDPOINT et S3_BUCKET-private y valent
+         autre chose (localhost:9000, oja-ci-private). On relit la config
+         réellement chargée plutôt qu'un couple hôte/compartiment figé. */
+      const config = app.get(ConfigService);
+      const endpoint = config.getOrThrow<string>('S3_ENDPOINT');
+      const privateBucket = `${config.getOrThrow<string>('S3_BUCKET')}-private`;
+      const direct = await fetch(`${endpoint}/${privateBucket}/${key}`);
       // Le seau privé n'autorise aucune lecture anonyme.
       expect(direct.status).toBeGreaterThanOrEqual(400);
     });

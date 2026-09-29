@@ -233,7 +233,7 @@ export default function InscriptionPage() {
         <AuthField
           label="Téléphone"
           type="tel"
-          placeholder="+225 07 00 00 00 00"
+          placeholder="+229 01 00 00 00 00"
           value={form.phone}
           onChange={set("phone")}
           onBlur={blur("phone")}

@@ -223,7 +223,7 @@ export default function CourierProfilePage() {
             type="tel"
             value={payoutMsisdn}
             onChange={(event) => setPayoutMsisdn(event.target.value)}
-            placeholder="+225 07 00 00 00 00"
+            placeholder="+229 01 00 00 00 00"
             error={errors["payoutMsisdn"]}
           />
 

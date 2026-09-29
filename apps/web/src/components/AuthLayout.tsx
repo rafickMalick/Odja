@@ -22,22 +22,6 @@ export function AuthLayout({ children }: { children: ReactNode }) {
   );
 }
 
-export function AuthProviders() {
-  return (
-    <div className={styles.providers}>
-      <button type="button" className={styles.provider} aria-label="Continuer avec Google">
-        <img src="/images/logo-google.svg" alt="" className={styles.providerIcon} />
-      </button>
-      <button type="button" className={styles.provider} aria-label="Continuer avec Apple">
-        <img src="/images/logo-apple.svg" alt="" className={styles.providerIcon} />
-      </button>
-      <button type="button" className={styles.provider} aria-label="Continuer avec Facebook">
-        <img src="/images/logo-facebook.svg" alt="" className={styles.providerIcon} />
-      </button>
-    </div>
-  );
-}
-
 export function AuthField({
   label,
   error,

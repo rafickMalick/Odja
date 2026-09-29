@@ -36,16 +36,11 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
-      minio:
-        image: bitnami/minio:latest
-        env:
-          MINIO_ROOT_USER: oja
-          MINIO_ROOT_PASSWORD: oja_dev_secret
-          # Les deux compartiments que StorageService dérive de S3_BUCKET :
-          # « -public » lisible de tous, « -private » jamais.
-          MINIO_DEFAULT_BUCKETS: oja-ci-public:download,oja-ci-private
-        ports: ['9000:9000']
-
+      # MinIO n'est pas ici : Bitnami a retiré ses images du Docker Hub
+      # (« manifest unknown » sur bitnami/minio:latest depuis fin 2025), et
+      # l'image officielle quay.io/minio/minio a besoin d'une commande de
+      # démarrage (`server /data`) qu'un service GitHub Actions ne peut pas
+      # lui passer. Démarré à la main plus bas, en step Docker.
       mailpit:
         image: axllent/mailpit:latest
         ports: ['1025:1025', '8025:8025']
@@ -56,8 +51,10 @@ jobs:
       JWT_REFRESH_SECRET: autre-secret-de-test-suffisamment-long
       ARGON2_PEPPER: poivre-de-test
       S3_ENDPOINT: http://localhost:9000
-      S3_ACCESS_KEY: oja
-      S3_SECRET_KEY: oja_dev_secret
+      # Identifiants par défaut de zenko/cloudserver (documentés, pas de notre
+      # cru) : contrairement à S3Mock, il vérifie réellement la signature.
+      S3_ACCESS_KEY: accessKey1
+      S3_SECRET_KEY: verySecretKey1
       # Le service ajoute lui-même les suffixes « -public » et « -private ».
       S3_BUCKET: oja-ci
       S3_PUBLIC_BASE_URL: http://localhost:9000/oja-ci-public
@@ -69,6 +66,51 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # quay.io/minio/minio (essayé ensuite) répond aussi « unauthorized », et
+      # même les binaires officiels sur dl.min.io renvoient 410 Gone : MinIO a
+      # verrouillé toute sa distribution gratuite en 2025, pas seulement ses
+      # images Docker Hub. adobe/s3mock (essayé après) démarre bien, mais
+      # n'impose aucune vraie vérification de signature ni d'ACL — un fichier
+      # du compartiment privé restait lisible sans authentification, ce que
+      # « rend le fichier privé illisible sans signature » (upload.e2e.test.ts)
+      # est censé garantir. zenko/cloudserver applique de vraies ACL S3
+      # (private par défaut, public-read explicite) et vérifie la signature
+      # SigV4 — la seule des quatre options qui prouve encore quelque chose.
+      - name: Démarrer CloudServer (compatible S3, remplace MinIO)
+        run: |
+          docker run -d --name cloudserver -p 9000:8000 zenko/cloudserver:latest
+
+          echo "Attente que CloudServer réponde…"
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null http://localhost:9000/; then
+              echo "CloudServer prêt."
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::CloudServer n'a jamais répondu."
+          exit 1
+
+      # Les deux compartiments que StorageService dérive de S3_BUCKET.
+      # L'ACL du bucket (--acl public-read) ne suffit pas : elle ne rend pas
+      # lisibles les objets déposés sans ACL explicite (le cas ici — l'API
+      # signe ses PutObject sans en fixer une), comme sur un vrai S3. Il faut
+      # une bucket policy, l'équivalent de ce que `mc anonymous set download`
+      # faisait pour MinIO. oja-ci-private garde sa politique par défaut
+      # (aucun accès anonyme), que CloudServer applique réellement.
+      - name: Créer les compartiments S3
+        env:
+          AWS_ACCESS_KEY_ID: accessKey1
+          AWS_SECRET_ACCESS_KEY: verySecretKey1
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          aws --endpoint-url http://localhost:9000 s3api create-bucket --bucket oja-ci-public
+          aws --endpoint-url http://localhost:9000 s3api create-bucket --bucket oja-ci-private
+
+          aws --endpoint-url http://localhost:9000 s3api put-bucket-policy \
+            --bucket oja-ci-public \
+            --policy '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::oja-ci-public/*"}]}'
 
       - uses: actions/setup-node@v4
         with:
