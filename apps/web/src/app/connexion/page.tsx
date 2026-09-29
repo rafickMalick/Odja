@@ -7,6 +7,7 @@ import { Suspense, useState } from "react";
 import {
   AuthField,
   AuthLayout,
+  AuthTabs,
   authStyles as styles,
 } from "@/components/AuthLayout";
 import { Button } from "@/components/Button";
@@ -54,11 +55,10 @@ function ConnexionForm() {
 
   return (
     <AuthLayout>
+      <AuthTabs active="connexion" />
+
       <div className={styles.heading}>
         <h1 className={styles.title}>Se connecter</h1>
-        <Link href="/mot-de-passe-oublie" className={styles.subtitleLink}>
-          Mot de passe oublié ?
-        </Link>
       </div>
 
       <form className={styles.group} onSubmit={handleSubmit}>
@@ -84,6 +84,9 @@ function ConnexionForm() {
           onChange={(event) => setPassword(event.target.value)}
           required
         />
+        <Link href="/mot-de-passe-oublie" className={styles.forgotLink}>
+          Mot de passe oublié ?
+        </Link>
 
         {error ? (
           <p className={styles.legal} role="alert">

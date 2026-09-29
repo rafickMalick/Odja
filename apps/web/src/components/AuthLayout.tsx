@@ -22,6 +22,36 @@ export function AuthLayout({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Bascule Connexion / Inscription.
+ *
+ * Visible en haut, avant tout champ : sans elle, se tromper de page impose de
+ * remplir un formulaire entier avant de trouver, tout en bas, le lien vers
+ * l'autre écran.
+ */
+export function AuthTabs({ active }: { active: "connexion" | "inscription" }) {
+  return (
+    <div className={styles.tabs} role="tablist" aria-label="Connexion ou inscription">
+      <Link
+        href="/connexion"
+        role="tab"
+        aria-selected={active === "connexion"}
+        className={`${styles.tab} ${active === "connexion" ? styles.tabActive : ""}`}
+      >
+        Se connecter
+      </Link>
+      <Link
+        href="/inscription"
+        role="tab"
+        aria-selected={active === "inscription"}
+        className={`${styles.tab} ${active === "inscription" ? styles.tabActive : ""}`}
+      >
+        Créer un compte
+      </Link>
+    </div>
+  );
+}
+
 export function AuthField({
   label,
   error,

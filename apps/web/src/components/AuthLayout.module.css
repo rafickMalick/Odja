@@ -56,6 +56,34 @@
   max-width: 100%;
 }
 
+/* ── Bascule Connexion / Inscription ── */
+.tabs {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-card);
+  width: 100%;
+}
+
+.tab {
+  flex: 1 0 0;
+  text-align: center;
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-gray-700);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.tabActive {
+  background: var(--color-white);
+  color: var(--color-black);
+  box-shadow: var(--shadow-card);
+}
+
 .heading {
   display: flex;
   flex-direction: column;
@@ -86,6 +114,16 @@
   font-size: 16px;
   line-height: 1;
   letter-spacing: 0.16px;
+  color: var(--color-primary);
+}
+
+/* Sous le champ mot de passe plutôt qu'en tête de page : c'est là qu'on en a
+   besoin, au moment où on vient d'échouer à s'en souvenir. */
+.forgotLink {
+  align-self: flex-end;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
   color: var(--color-primary);
 }
 
