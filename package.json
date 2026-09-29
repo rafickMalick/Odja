@@ -22,9 +22,10 @@
     "db:seed": "npm run seed -w @oja/db",
     "db:demo": "npm run demo -w @oja/db",
     "db:studio": "npm run studio -w @oja/db",
-    "build": "npm run build --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
+    "build:packages": "npm run build -w @oja/contracts -w @oja/domain",
+    "build": "npm run build:packages && npm run build --workspaces --if-present",
+    "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present",
+    "test": "npm run build:packages && npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present"
   },
   "devDependencies": {

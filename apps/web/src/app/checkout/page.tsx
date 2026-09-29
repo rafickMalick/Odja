@@ -326,7 +326,7 @@ export default function CheckoutPage() {
                     <Field
                       label="Téléphone *"
                       name="phone"
-                      placeholder="+225 07 00 00 00 00"
+                      placeholder="+229 01 00 00 00 00"
                       required
                     />
                   </FieldRow>

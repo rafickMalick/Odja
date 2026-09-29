@@ -15,8 +15,12 @@
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const MIGRATIONS_DIR = new URL('../prisma/migrations', import.meta.url).pathname;
+/* `.pathname` renvoie `/C:/Users/...` sous Windows — un chemin invalide que
+   `readdirSync` réinterprète en doublant le lecteur (`C:\C:\Users\...`).
+   `fileURLToPath` convertit l'URL en chemin natif de l'OS, Windows compris. */
+const MIGRATIONS_DIR = fileURLToPath(new URL('../prisma/migrations', import.meta.url));
 
 /** Objets créés hors du schéma Prisma, qu'aucune migration ne doit supprimer. */
 const PROTECTED = [

@@ -63,7 +63,7 @@ export default function AdminOrderSearchPage() {
             label="Référence, nom ou téléphone"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="CMD-2026-000412, Awa Koné, +225 07…"
+            placeholder="CMD-2026-000412, Awa Koné, +229 01…"
           />
           <div className={styles.rowActions}>
             <Button type="submit" disabled={busy}>

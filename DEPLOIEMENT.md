@@ -11,7 +11,7 @@ Pas encore la mise en production — un environnement de recette.
 | Front (Next.js) | **Vercel** | Gratuit, zéro configuration pour Next.js, HTTPS automatique |
 | API (NestJS) | **Render** (Docker, plan gratuit) | Le `Dockerfile` existant s'y déploie tel quel ; `render.yaml` ci-joint automatise la création |
 | Base de données | **Neon** | Postgres gratuit et **persistant** — contrairement à Render, dont le Postgres gratuit expire au bout de 30 jours |
-| Photos produits | **Cloudflare R2** | Compatible S3 (le code n'a rien à changer), gratuit jusqu'à 10 Go, pas de frais de sortie |
+| Photos produits | **Cloudflare R2** ou **Supabase Storage** | Compatibles S3 tous les deux (le code n'a rien à changer) ; R2 est gratuit jusqu'à 10 Go sans frais de sortie, Supabase Storage est inclus dans son plan gratuit si vous utilisez déjà Supabase pour la base |
 | E-mail | **Brevo** | SMTP gratuit, 300 e-mails/jour, **livraison réelle** — contrairement à un bac à sable qui ne livre nulle part |
 | Redis | *aucun pour l'instant* | `REDIS_URL` est optionnel dans `env.ts` ; inutile tant qu'on teste |
 
@@ -27,7 +27,12 @@ bancaire exigée sur ceux listés ici, sauf mention contraire de leur part.
 2. Copier la **chaîne de connexion** fournie (`postgresql://...`). C'est la
    valeur de `DATABASE_URL`.
 
-## 2. Cloudflare R2 — photos produits
+## 2. Stockage des photos — Cloudflare R2 ou Supabase Storage
+
+Le code parle S3 et ignore lequel des deux sert derrière `S3_ENDPOINT` —
+choisissez l'un ou l'autre, pas besoin des deux.
+
+### Option A — Cloudflare R2
 
 1. Créer un compte Cloudflare, activer **R2** (Object Storage).
 2. Créer un bucket, ex. `oja-prod`.
@@ -39,6 +44,21 @@ bancaire exigée sur ceux listés ici, sauf mention contraire de leur part.
 5. Activer l'accès public au bucket (ou un domaine personnalisé) pour obtenir
    `S3_PUBLIC_BASE_URL` — l'URL par laquelle une photo est servie au client.
 6. `S3_REGION=auto`, `S3_BUCKET=oja-prod`.
+
+### Option B — Supabase Storage
+
+Pertinent si vous utilisez déjà Supabase pour `DATABASE_URL` : un seul compte
+pour la base et les photos.
+
+1. Dans le tableau de bord Supabase, section **Storage**, créer un bucket
+   public, ex. `oja-prod`.
+2. *Settings → API* : `S3_ACCESS_KEY` / `S3_SECRET_KEY` viennent des clés S3
+   du bucket (section *Storage → S3 Access Keys*, à créer si absente).
+3. `S3_ENDPOINT` : `https://<projet>.supabase.co/storage/v1/s3`.
+4. `S3_REGION` : la région du projet Supabase (visible dans *Settings →
+   General*, ex. `eu-west-1`) — **pas** `auto`, contrairement à R2.
+5. `S3_PUBLIC_BASE_URL` : `https://<projet>.supabase.co/storage/v1/object/public/oja-prod`.
+6. `S3_BUCKET=oja-prod`.
 
 ## 3. Brevo — envoi d'e-mail réel
 
@@ -63,14 +83,17 @@ suffit de le connecter, pas de le reconfigurer à la main.
 
    | Variable | Valeur |
    |---|---|
-   | `DATABASE_URL` | chaîne Neon |
+   | `DATABASE_URL` | chaîne Neon (ou Supabase, si vous avez choisi cette option) |
    | `WEB_ORIGIN` | URL Vercel (étape 5 — à revenir remplir après) |
    | `KADEVPAY_PUBLIC_KEY` / `KADEVPAY_SECRET_KEY` / `KADEVPAY_WEBHOOK_SECRET` | vos clés Kadev Pay de test |
-   | `S3_ENDPOINT` / `S3_BUCKET` / `S3_ACCESS_KEY` / `S3_SECRET_KEY` / `S3_PUBLIC_BASE_URL` | valeurs R2 |
-   | `SMTP_HOST` / `SMTP_USER` / `SMTP_PASSWORD` | valeurs Brevo |
+   | `S3_ENDPOINT` / `S3_REGION` / `S3_BUCKET` / `S3_ACCESS_KEY` / `S3_SECRET_KEY` / `S3_PUBLIC_BASE_URL` | valeurs R2 ou Supabase Storage (§ 2) — `S3_REGION` vaut `auto` pour R2, la région du projet pour Supabase |
+   | `SMTP_USER` / `SMTP_PASSWORD` | valeurs Brevo |
+   | `MAIL_FROM` | l'expéditeur vérifié dans Brevo, ex. `Ojà <bonjour@oja.market>` |
 
-   `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `ARGON2_PEPPER` sont générés
-   automatiquement par Render (`generateValue: true`) — rien à saisir.
+   `SMTP_HOST` (`smtp-relay.brevo.com`) et `SMTP_PORT` (`587`) sont déjà fixés
+   dans `render.yaml`, rien à saisir pour ces deux-là. `JWT_ACCESS_SECRET`,
+   `JWT_REFRESH_SECRET`, `ARGON2_PEPPER` sont générés automatiquement par
+   Render (`generateValue: true`) — rien à saisir non plus.
 
 4. Une fois déployé, Render donne une URL du type
    `https://oja-api.onrender.com`. Noter `https://oja-api.onrender.com/api/v1`.
@@ -119,7 +142,7 @@ Une fois l'API en ligne (étape 4), sur le tableau de bord Kadev Pay :
 - [ ] Inscription + e-mail de confirmation reçu (vraie boîte, via Brevo)
 - [ ] Une commande de test : paiement Kadev Pay (sandbox) confirmé sans
       passer par le SDK seul — le webhook doit maintenant faire le travail
-- [ ] Photo produit uploadée et visible (R2)
+- [ ] Photo produit uploadée et visible (R2 ou Supabase Storage, selon l'option choisie au § 2)
 
 ---
 
