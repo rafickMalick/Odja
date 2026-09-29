@@ -8,6 +8,7 @@ import { useState } from "react";
 import {
   AuthField,
   AuthLayout,
+  AuthTabs,
   authStyles as styles,
 } from "@/components/AuthLayout";
 import { Button } from "@/components/Button";
@@ -169,6 +170,8 @@ export default function InscriptionPage() {
 
   return (
     <AuthLayout>
+      <AuthTabs active="inscription" />
+
       <div className={styles.heading}>
         <h1 className={styles.title}>Créer un compte</h1>
       </div>
