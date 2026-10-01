@@ -20,7 +20,7 @@ import { formatFcfa } from "@/lib/format";
  *
  * Le cahier client demande six chiffres : nombre de pièces, commandes en
  * cours, pièces vendues, revenus, solde disponible, notifications. On les
- * donne, mais chacun mène quelque part — un chiffre sur lequel on ne peut pas
+ * donne, mais chacun mène quelque part  un chiffre sur lequel on ne peut pas
  * cliquer n'est qu'une décoration.
  */
 
@@ -86,7 +86,7 @@ export default function MakerDashboard() {
   const sold = past.filter((subOrder) => subOrder.status === "VALIDATED");
   const revenue = sold.reduce((total, subOrder) => total + subOrder.itemsMakerSubtotalXof, 0);
 
-  /* Ce qui attend une action de l'atelier — pas ce qui existe. C'est le seul
+  /* Ce qui attend une action de l'atelier  pas ce qui existe. C'est le seul
      chiffre sur lequel il doit se précipiter. */
   const waiting = current.filter((subOrder) =>
     ["RECEIVED", "PAYMENT_CONFIRMED"].includes(subOrder.status),
@@ -130,7 +130,7 @@ export default function MakerDashboard() {
                     <td>
                       {subOrder.respondByAt
                         ? deadline(subOrder.respondByAt)
-                        : "—"}
+                        : ""}
                     </td>
                   </tr>
                 ))}

@@ -79,7 +79,7 @@ export default function AccountOrdersPage() {
     <>
       <PageHead
         title="Mes commandes"
-        subtitle="Chaque atelier est livré séparément — vous validez chaque colis à sa réception."
+        subtitle="Chaque atelier est livré séparément  vous validez chaque colis à sa réception."
       />
 
       {awaiting.length > 0 ? (

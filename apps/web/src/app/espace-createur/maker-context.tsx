@@ -11,7 +11,7 @@ import { ApiError, apiFetch } from "@/lib/api";
  * Pourquoi un contexte plutôt qu'une simple requête sur chaque page : après
  * le dépôt du dossier, c'est ce même état qui décide si le reste de l'espace
  * s'ouvre. Sans un point commun, la page qui vient de déposer le sait, mais
- * la coquille qui décide de l'accès l'ignore encore — elle a fait sa requête
+ * la coquille qui décide de l'accès l'ignore encore  elle a fait sa requête
  * une fois, au montage, et ne la refait jamais.
  */
 
@@ -21,7 +21,7 @@ interface MakerContextValue {
   maker: AdminMaker | null;
   state: MakerState;
   /**
-   * Vrai tant que la boutique ou le dossier ne sont pas déposés — refusé,
+   * Vrai tant que la boutique ou le dossier ne sont pas déposés  refusé,
    * pas encore soumis, ou boutique manquante. C'est cette valeur, et elle
    * seule, qui décide si le reste de l'espace est joignable.
    */

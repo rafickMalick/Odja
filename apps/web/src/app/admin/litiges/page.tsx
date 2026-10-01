@@ -22,10 +22,10 @@ import admin from "../admin.module.css";
  * Trois décisions distinctes se prennent ici, et l'écran refuse de les
  * confondre :
  *
- *   · **rembourser ou rejeter** — c'est la réponse au client ;
- *   · **rendre aussi les frais de livraison** — geste commercial, faux par
+ *   · **rembourser ou rejeter**  c'est la réponse au client ;
+ *   · **rendre aussi les frais de livraison**  geste commercial, faux par
  *     défaut, parce que la règle du cahier retient livraison et commission ;
- *   · **qui supporte la perte** — le créateur ou Ojà. Sans cette question,
+ *   · **qui supporte la perte**  le créateur ou Ojà. Sans cette question,
  *     un artisan se verrait débiter une casse survenue en transit.
  *
  * Aucune de ces trois n'a de valeur implicite : les laisser à un réglage
@@ -185,7 +185,7 @@ function DisputeCard({
 
   return (
     <Panel
-      title={`${dispute.reference} — ${dispute.reasonLabel}`}
+      title={`${dispute.reference}  ${dispute.reasonLabel}`}
       action={
         <>
           {dispute.overdue ? <Badge type="danger">Hors délai</Badge> : null}{" "}
@@ -200,7 +200,7 @@ function DisputeCard({
         </div>
         <div>
           <dt>Sous-commande</dt>
-          <dd>{dispute.subOrderReference ?? "—"}</dd>
+          <dd>{dispute.subOrderReference ?? ""}</dd>
         </div>
         <div>
           <dt>Ouverte le</dt>
@@ -216,7 +216,7 @@ function DisputeCard({
         {dispute.messages.map((message) => (
           <li key={message.id}>
             <span>
-              <strong>{message.fromAdmin ? "Ojà" : "Le plaignant"}</strong> — {message.body}
+              <strong>{message.fromAdmin ? "Ojà" : "Le plaignant"}</strong>  {message.body}
             </span>
             <span className={styles.muted}>
               {new Date(message.createdAt).toLocaleDateString("fr-FR")}
@@ -231,7 +231,7 @@ function DisputeCard({
         <p className={styles.muted}>
           {dispute.resolution}
           {dispute.refundXof !== null
-            ? ` — remboursé : ${formatFcfa(dispute.refundXof)}`
+            ? `  remboursé : ${formatFcfa(dispute.refundXof)}`
             : ""}
         </p>
       ) : (
@@ -286,7 +286,7 @@ function DisputeCard({
                 onChange={(event) => setRefundDelivery(event.target.checked)}
               />
               <span>
-                Rendre aussi les frais de livraison — geste commercial, hors règle habituelle
+                Rendre aussi les frais de livraison  geste commercial, hors règle habituelle
               </span>
             </label>
           ) : null}
@@ -298,7 +298,7 @@ function DisputeCard({
               onChange={(event) => setChargeToMaker(event.target.checked)}
             />
             <span>
-              Imputer la perte au créateur — décochez si la casse est survenue en transit
+              Imputer la perte au créateur  décochez si la casse est survenue en transit
             </span>
           </label>
 

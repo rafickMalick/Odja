@@ -14,7 +14,7 @@ import { apiFetch } from "@/lib/api";
 /**
  * Vue d'ensemble.
  *
- * Elle ne compte pas l'activité — chiffre d'affaires, visites — mais **les
+ * Elle ne compte pas l'activité  chiffre d'affaires, visites  mais **les
  * files d'attente**. Ce qui intéresse une équipe de back-office à l'ouverture,
  * c'est ce qui bloque quelqu'un d'autre.
  */
@@ -77,31 +77,31 @@ export default function AdminHomePage() {
       <Panel title="Où aller">
         <ul className={styles.muted}>
           <li>
-            <Link href="/admin/ateliers">Dossiers créateurs</Link> — un dossier en attente,
+            <Link href="/admin/ateliers">Dossiers créateurs</Link>  un dossier en attente,
             c’est un atelier qui ne peut rien vendre.
           </li>
           <li>
-            <Link href="/admin/livreurs">Dossiers livreurs</Link> — sans livreur validé,
+            <Link href="/admin/livreurs">Dossiers livreurs</Link>  sans livreur validé,
             aucune commande ne quitte l’atelier.
           </li>
           <li>
-            <Link href="/admin/catalogue">Fiches à valider</Link> — refuser demande un motif,
+            <Link href="/admin/catalogue">Fiches à valider</Link>  refuser demande un motif,
             il part au créateur.
           </li>
           <li>
-            <Link href="/admin/litiges">Réclamations</Link> — trois décisions distinctes :
+            <Link href="/admin/litiges">Réclamations</Link>  trois décisions distinctes :
             rembourser, rendre la livraison, imputer la perte.
           </li>
           <li>
-            <Link href="/admin/finances">Grand livre</Link> — soldes, écritures, contrôle des
+            <Link href="/admin/finances">Grand livre</Link>  soldes, écritures, contrôle des
             invariants.
           </li>
           <li>
-            <Link href="/admin/commandes">Expéditions</Link> — une expédition par atelier,
+            <Link href="/admin/commandes">Expéditions</Link>  une expédition par atelier,
             affectée à la main.
           </li>
           <li>
-            <Link href="/admin/outils">Outils</Link> — tâches périodiques et paiement simulé,
+            <Link href="/admin/outils">Outils</Link>  tâches périodiques et paiement simulé,
             tant que l’agrégateur n’est pas branché.
           </li>
         </ul>

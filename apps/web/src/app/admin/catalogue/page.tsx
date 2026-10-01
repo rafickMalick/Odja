@@ -124,7 +124,7 @@ export default function AdminCatalogPage() {
                   ))}
                 </div>
               ) : (
-                <p className={styles.error}>Aucune photo — la fiche ne devrait pas être ici.</p>
+                <p className={styles.error}>Aucune photo  la fiche ne devrait pas être ici.</p>
               )}
 
               <p className={admin.description}>{product.description}</p>
@@ -136,7 +136,7 @@ export default function AdminCatalogPage() {
                 </div>
                 <div>
                   <dt>Matériau</dt>
-                  <dd>{product.material ?? "—"}</dd>
+                  <dd>{product.material ?? ""}</dd>
                 </div>
                 <div>
                   <dt>Prix créateur</dt>
@@ -173,7 +173,7 @@ export default function AdminCatalogPage() {
                   <dd>
                     {product.submittedAt
                       ? new Date(product.submittedAt).toLocaleDateString("fr-FR")
-                      : "—"}
+                      : ""}
                   </dd>
                 </div>
               </dl>

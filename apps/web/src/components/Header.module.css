@@ -1,9 +1,9 @@
-/* Nav bar (35:782) — seule barre de navigation présente dans les maquettes
+/* Nav bar (35:782)  seule barre de navigation présente dans les maquettes
    (écran Confirmation). Reprise ici comme header commun à toutes les pages.
 
    Sous 900px, la maquette ne prévoit rien : le desktop est remplacé par une
    barre compacte à trois cibles tactiles et un panneau latéral, plutôt qu'une
-   rangée de liens qui défile horizontalement — un menu qu'il faut faire
+   rangée de liens qui défile horizontalement  un menu qu'il faut faire
    glisser pour découvrir ne se lit pas. */
 
 .root {
@@ -185,7 +185,7 @@
   outline-offset: 2px;
 }
 
-/* Compteur du panier — ajout hors maquette, nécessaire au parcours d'achat. */
+/* Compteur du panier  ajout hors maquette, nécessaire au parcours d'achat. */
 .count {
   display: inline-flex;
   align-items: center;

@@ -51,10 +51,10 @@ const VEHICLES = [
   { value: "CAMIONNETTE", label: "Camionnette" },
 ];
 
-/** Les pièces attendues d'un livreur — différentes de celles d'un atelier. */
+/** Les pièces attendues d'un livreur  différentes de celles d'un atelier. */
 const DOCUMENT_TYPES = [
-  { value: "cni_recto", label: "Pièce d’identité — recto", required: true },
-  { value: "cni_verso", label: "Pièce d’identité — verso", required: false },
+  { value: "cni_recto", label: "Pièce d’identité  recto", required: true },
+  { value: "cni_verso", label: "Pièce d’identité  verso", required: false },
   { value: "permis", label: "Permis de conduire", required: true },
   { value: "carte_grise", label: "Carte grise du véhicule", required: true },
 ];
@@ -249,7 +249,7 @@ export default function CourierProfilePage() {
                     <div>
                       <strong>{type.label}</strong>
                       {!type.required ? (
-                        <span className={styles.muted}> — facultatif</span>
+                        <span className={styles.muted}>  facultatif</span>
                       ) : null}
                       {document?.note ? (
                         <p className={styles.muted}>{document.note}</p>

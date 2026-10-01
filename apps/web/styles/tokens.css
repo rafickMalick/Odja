@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Ojà Design System v1.0 — Design tokens
-   Source: Figma « Ojà » → page Doc → frame « Dev Handoff — CSS Tokens » (76:2074)
+   Ojà Design System v1.0  Design tokens
+   Source: Figma « Ojà » → page Doc → frame « Dev Handoff  CSS Tokens » (76:2074)
    Transcrit à l'identique depuis le handoff. Ne pas modifier une valeur sans
    la changer d'abord dans Figma.
    ========================================================================== */
@@ -60,7 +60,7 @@
   --space-4: 4px;    /* 0.5x base */
   --space-8: 8px;    /* 1x base */
   --space-12: 12px;  /* 1.5x base */
-  --space-16: 16px;  /* 2x base — gutter */
+  --space-16: 16px;  /* 2x base  gutter */
   --space-20: 20px;  /* marge mobile */
   --space-24: 24px;  /* 3x base */
   --space-32: 32px;  /* 4x base */

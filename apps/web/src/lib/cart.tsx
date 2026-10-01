@@ -16,7 +16,7 @@ import { ApiError, apiFetch } from "./api";
  * Panier serveur.
  *
  * Il ne vit plus dans `localStorage` : c'est l'API qui le tient, y compris
- * pour un visiteur non connecté — un jeton de cookie suffit. Deux
+ * pour un visiteur non connecté  un jeton de cookie suffit. Deux
  * conséquences qui comptent : le panier survit à un changement d'appareil, et
  * les prix affichés sont ceux que la commande retiendra.
  *

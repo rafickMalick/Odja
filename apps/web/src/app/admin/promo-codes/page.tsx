@@ -182,7 +182,7 @@ export default function PromoCodesPage() {
                         ? `${(promo.valueBps ?? 0) / 100} %`
                         : formatFcfa(promo.amountXof ?? 0)}
                     </td>
-                    <td>{promo.minOrderXof > 0 ? formatFcfa(promo.minOrderXof) : "—"}</td>
+                    <td>{promo.minOrderXof > 0 ? formatFcfa(promo.minOrderXof) : ""}</td>
                     <td>
                       {promo.redemptionCount}
                       {promo.maxRedemptions ? ` / ${promo.maxRedemptions}` : ""}

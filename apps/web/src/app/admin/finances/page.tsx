@@ -18,7 +18,7 @@ import admin from "../admin.module.css";
  *
  * Aucune écriture n'est modifiable : la base l'interdit par trigger, et une
  * correction se fait par contre-passation. L'écran ne propose donc aucun
- * bouton de retouche — offrir une action que la base refuse serait un
+ * bouton de retouche  offrir une action que la base refuse serait un
  * mensonge d'interface.
  *
  * La vérification des invariants est affichée en tête. Un écart y apparaît

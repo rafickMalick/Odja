@@ -9,7 +9,7 @@ import { apiFetch, apiFetchOrNull } from './api';
  * désormais de l'API : ce sont les pièces que des artisans ont réellement
  * publiées et que l'administration a validées.
  *
- * Le catalogue est mis en cache 60 secondes côté serveur — il change au
+ * Le catalogue est mis en cache 60 secondes côté serveur  il change au
  * rythme des mises en vente, pas à celui des requêtes.
  */
 

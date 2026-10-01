@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
    *
    * Next trace les modules réellement atteints et n'embarque qu'eux. Sans
    * cela, l'image de production traîne l'intégralité de `node_modules` du
-   * monorepo — Prisma, NestJS, le SDK AWS — pour servir des pages qui n'en
+   * monorepo  Prisma, NestJS, le SDK AWS  pour servir des pages qui n'en
    * utilisent rien.
    */
   output: "standalone",

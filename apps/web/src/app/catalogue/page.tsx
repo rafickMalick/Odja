@@ -11,7 +11,7 @@ import styles from "./page.module.css";
  *
  * Composant serveur : les fiches viennent de l'API, plus d'un fichier
  * statique. Le filtre par catégorie et la recherche passent tous deux par
- * l'URL — une sélection se partage, se met en favori et survit à un
+ * l'URL  une sélection se partage, se met en favori et survit à un
  * rechargement, ce qu'un état React ne permettait pas.
  *
  * La recherche vit ici plutôt que derrière une icône de l'en-tête : c'est sur
@@ -91,7 +91,7 @@ export default async function CataloguePage({
               <p className={styles.empty}>
                 {active
                   ? `Aucune pièce dans cette catégorie pour le moment.`
-                  : `Le catalogue est encore vide — les premiers ateliers arrivent.`}
+                  : `Le catalogue est encore vide  les premiers ateliers arrivent.`}
               </p>
             )}
           </div>

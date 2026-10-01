@@ -19,7 +19,7 @@ import shop from "./shop.module.css";
  *
  * Une seule page pour les deux : le cahier client les sépare, mais un artisan
  * qui vient de créer sa boutique doit enchaîner sur son dossier sans chercher
- * un autre écran — et les champs que l'administration vérifie sont ceux du
+ * un autre écran  et les champs que l'administration vérifie sont ceux du
  * formulaire de boutique.
  */
 
@@ -56,8 +56,8 @@ interface KycDocument {
 
 /** Les pièces attendues d'un atelier, dans l'ordre où on les demande. */
 const DOCUMENT_TYPES: { value: string; label: string }[] = [
-  { value: "cni_recto", label: "Pièce d’identité — recto" },
-  { value: "cni_verso", label: "Pièce d’identité — verso" },
+  { value: "cni_recto", label: "Pièce d’identité  recto" },
+  { value: "cni_verso", label: "Pièce d’identité  verso" },
   { value: "rccm", label: "Registre de commerce (RCCM)" },
   { value: "ifu", label: "Identifiant fiscal (IFU)" },
   { value: "autre", label: "Autre pièce" },
@@ -176,10 +176,10 @@ export default function ShopPage() {
       await apiFetch("/maker/kyc/submit", { method: "POST" });
       await load();
       setMessage("Dossier déposé. L’équipe Ojà revient vers vous sous 48 h ouvrées.");
-      notify("Dossier déposé — votre espace est maintenant accessible.", { tone: "success" });
+      notify("Dossier déposé  votre espace est maintenant accessible.", { tone: "success" });
 
       /* Le dépôt fait passer le statut à PENDING : la coquille se déverrouille.
-         On ne laisse pas l'artisan planté sur cette page — c'est le moment de
+         On ne laisse pas l'artisan planté sur cette page  c'est le moment de
          le conduire vers son tableau de bord. */
       await refreshShell();
       router.push("/espace-createur");
@@ -224,7 +224,7 @@ export default function ShopPage() {
         <Panel title="Vitrine publique">
           <p className={styles.muted}>
             Ces informations sont les seules visibles des acheteurs. Ni votre téléphone, ni
-            votre e-mail, ni votre adresse ne leur sont montrés — Ojà reste l’intermédiaire.
+            votre e-mail, ni votre adresse ne leur sont montrés  Ojà reste l’intermédiaire.
           </p>
 
           <Field

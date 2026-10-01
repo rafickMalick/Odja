@@ -9,7 +9,7 @@ import { Header } from "./Header";
 /* Les écrans d'authentification sont dessinés en pleine page, sans nav bar
    ni footer : on retire le chrome commun sur ces routes.
 
-   Les espaces de travail — créateur, livreur, administration — ont leur propre
+   Les espaces de travail  créateur, livreur, administration  ont leur propre
    chrome : une barre latérale à la place du menu marketing, et pas de pied de
    page. Un artisan qui gère son stock n'a que faire d'un appel à s'inscrire à
    la newsletter. */

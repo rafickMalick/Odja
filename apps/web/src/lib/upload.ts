@@ -5,7 +5,7 @@ import { apiFetch } from "./api";
  *
  * L'API ne voit jamais l'octet : elle signe une autorisation, le navigateur
  * met le fichier directement sur le stockage, puis on rattache la clé obtenue
- * à la fiche concernée. Le troisième temps appartient à l'appelant — c'est lui
+ * à la fiche concernée. Le troisième temps appartient à l'appelant  c'est lui
  * qui sait s'il s'agit d'une photo produit ou d'une pièce justificative.
  */
 

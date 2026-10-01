@@ -17,7 +17,7 @@ import proof from "./proof.module.css";
  * C'est le verrou du circuit financier : c'est cette remise qui fait basculer
  * la sous-commande en « livrée », déclenche le compte à rebours de validation
  * du client, et in fine le versement au créateur. Le serveur exige **deux
- * éléments sur trois** — code du client, photo, position — et refuse la remise
+ * éléments sur trois**  code du client, photo, position  et refuse la remise
  * en dessous.
  *
  * L'écran reproduit ce décompte en direct plutôt que de laisser le livreur
@@ -103,7 +103,7 @@ export function ProofForm({
         <li data-done={otpReady || undefined}>Code du client</li>
         <li data-done={photoKey !== null || undefined}>Photo du colis remis</li>
         <li data-done={position !== null || undefined}>
-          Position {locating ? "— recherche en cours…" : position ? "" : "— indisponible"}
+          Position {locating ? " recherche en cours…" : position ? "" : " indisponible"}
         </li>
       </ol>
 
