@@ -15,7 +15,7 @@ import admin from "../admin.module.css";
  * Deux choses provisoires y cohabitent, et le disent :
  *
  *   · les **tâches périodiques**, déclenchées à la main tant qu'aucun
- *     ordonnanceur ne tourne. Elles sont idempotentes — les relancer deux fois
+ *     ordonnanceur ne tourne. Elles sont idempotentes  les relancer deux fois
  *     ne double rien ;
  *   · le **paiement simulé**, qui permet de dérouler un parcours complet avant
  *     que l'agrégateur ne soit branché. L'API le refuse en production.

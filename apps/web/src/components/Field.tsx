@@ -9,7 +9,7 @@ type Props = {
   label: string;
   error?: string;
   /**
-   * Champ confirmé correct — coche verte, sans attendre la validation
+   * Champ confirmé correct  coche verte, sans attendre la validation
    * d'ensemble du formulaire. `undefined` : pas encore jugé, aucun signe.
    * Sans effet si `error` est posé : l'erreur l'emporte toujours.
    */

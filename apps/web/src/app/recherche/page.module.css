@@ -1,4 +1,4 @@
-/* Recherche — écran absent des maquettes, composé à partir du design system.
+/* Recherche  écran absent des maquettes, composé à partir du design system.
    Barre de recherche en pill (même boîte que l'Input bar du panier), pills de
    catégorie reprises du Catalog, grille produit à 4 colonnes selon la formule
    du handoff : (1320 - 3×16) / 4 = 318px. */

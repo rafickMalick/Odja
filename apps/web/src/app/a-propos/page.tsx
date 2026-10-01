@@ -4,7 +4,7 @@ import { ButtonLink } from "@/components/Button";
 
 import styles from "./page.module.css";
 
-/* Trois chiffres vérifiables, pas des projections — les mêmes que ceux
+/* Trois chiffres vérifiables, pas des projections  les mêmes que ceux
    affichés à l'accueil : le taux de commission, la zone couverte, le délai
    de versement. */
 const STATS = [
@@ -16,7 +16,7 @@ const STATS = [
 const STEPS = [
   {
     title: "Un catalogue de pièces uniques",
-    text: "Chaque fiche indique l’atelier qui fabrique, la matière employée et le délai réel de façonnage — jamais un stock anonyme.",
+    text: "Chaque fiche indique l’atelier qui fabrique, la matière employée et le délai réel de façonnage  jamais un stock anonyme.",
   },
   {
     title: "Un paiement protégé",
@@ -36,7 +36,7 @@ const VALUES = [
   {
     icon: "/images/icon-package.svg",
     title: "Des ateliers vérifiés",
-    text: "Chaque fabricant dépose un dossier — identité, savoir-faire, adresse d’atelier — vérifié avant sa première mise en vente.",
+    text: "Chaque fabricant dépose un dossier  identité, savoir-faire, adresse d’atelier  vérifié avant sa première mise en vente.",
   },
   {
     icon: "/images/icon-secure-payment.svg",
@@ -76,7 +76,7 @@ export default function AboutPage() {
           Ojà met en relation des ateliers identifiés et des acheteurs, et
           reste l’intermédiaire du début à la fin : le paiement, la livraison,
           et le service après-vente passent par la plateforme. Le fabricant
-          touche le prix qu’il a fixé, en entier — la commission d’Ojà
+          touche le prix qu’il a fixé, en entier  la commission d’Ojà
           s’ajoute au prix affiché, elle ne le rogne jamais.
         </p>
       </section>

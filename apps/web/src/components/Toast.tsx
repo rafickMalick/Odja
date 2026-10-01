@@ -16,14 +16,14 @@ import styles from "./Toast.module.css";
  *
  * Deux usages, volontairement distincts :
  *
- *   · **`notify()`** — un popup ponctuel, pour l'issue d'une action : une
+ *   · **`notify()`**  un popup ponctuel, pour l'issue d'une action : une
  *     commande envoyée, un champ invalide au moment de valider. Il apparaît,
  *     reste quelques secondes, disparaît ;
- *   · **le statut d'un champ** (`FieldStatus`, dans `Field.tsx`) — un état
+ *   · **le statut d'un champ** (`FieldStatus`, dans `Field.tsx`)  un état
  *     posé à côté du champ lui-même, tant qu'il reste faux. Un popup à chaque
  *     frappe serait injouable ; l'état à côté du champ ne l'est pas.
  *
- * Le popup ne remplace donc pas le message d'erreur sous un champ — il
+ * Le popup ne remplace donc pas le message d'erreur sous un champ  il
  * annonce l'issue d'ensemble, au moment où l'utilisateur agit.
  */
 

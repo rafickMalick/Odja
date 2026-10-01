@@ -213,10 +213,10 @@ export default function MakerOrdersPage() {
   );
 }
 
-/** « dans 34 h », « depuis 2 j » — plus parlant qu'une date à l'heure près. */
+/** « dans 34 h », « depuis 2 j »  plus parlant qu'une date à l'heure près. */
 function relative(iso: string): string {
   const hours = Math.round((new Date(iso).getTime() - Date.now()) / 3_600_000);
-  if (hours <= 0) return `— délai dépassé depuis ${Math.abs(hours)} h`;
+  if (hours <= 0) return ` délai dépassé depuis ${Math.abs(hours)} h`;
   if (hours < 48) return `dans ${hours} h`;
   return `dans ${Math.round(hours / 24)} jours`;
 }

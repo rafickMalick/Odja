@@ -4,7 +4,7 @@
  * Deux contextes, une seule fonction :
  *
  *   · **côté serveur** (composants et actions), les cookies de la requête
- *     entrante sont retransmis à l'API — sans quoi une page rendue sur le
+ *     entrante sont retransmis à l'API  sans quoi une page rendue sur le
  *     serveur ne saurait pas qui la demande ;
  *   · **côté navigateur**, `credentials: 'include'` suffit.
  *

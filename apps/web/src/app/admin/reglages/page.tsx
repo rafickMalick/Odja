@@ -12,7 +12,7 @@ import { formatFcfa } from "@/lib/format";
  * Paramétrage.
  *
  * Le cahier (§ 13) pose une exigence forte : **ouvrir un pays doit être un
- * réglage, pas un déploiement**. Cet écran la rend vraie — un interrupteur,
+ * réglage, pas un déploiement**. Cet écran la rend vraie  un interrupteur,
  * et le catalogue de ce pays devient visible. Les grilles tarifaires et les
  * moyens de paiement y sont affichés en lecture : les modifier touche au
  * calcul des prix, ce qui mérite une migration tracée plutôt qu'un champ
@@ -93,7 +93,7 @@ export default function AdminSettingsPage() {
     <>
       <PageHead
         title="Réglages"
-        subtitle="Ouvrir un pays est un interrupteur — aucun déploiement n’est nécessaire."
+        subtitle="Ouvrir un pays est un interrupteur  aucun déploiement n’est nécessaire."
       />
 
       {error ? <p className={styles.error}>{error}</p> : null}
@@ -120,7 +120,7 @@ export default function AdminSettingsPage() {
                   <td>{country.currency}</td>
                   <td className={styles.numeric}>{country.cityCount}</td>
                   <td className={styles.numeric}>
-                    {country.vatBps === 0 ? "—" : `${(country.vatBps / 100).toFixed(2)} %`}
+                    {country.vatBps === 0 ? "" : `${(country.vatBps / 100).toFixed(2)} %`}
                   </td>
                   <td>
                     {country.isActive ? (

@@ -34,7 +34,7 @@ const CHANNELS = [
   {
     icon: "/images/icon-vehicle.svg",
     title: "Ateliers partenaires",
-    text: "Cotonou, Bénin — les visites d'atelier se font sur rendez-vous.",
+    text: "Cotonou, Bénin  les visites d'atelier se font sur rendez-vous.",
     value: "Du lundi au vendredi, 9 h – 18 h",
   },
 ];

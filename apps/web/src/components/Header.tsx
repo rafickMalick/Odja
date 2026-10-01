@@ -29,7 +29,7 @@ const DRAWER_ANONYMOUS = [
  * Session courante, pour l'en-tête seulement.
  *
  * Sans elle, un artisan connecté voit « Se connecter » et n'a aucun chemin
- * vers son atelier — l'espace existe, mais rien n'y mène. La requête est
+ * vers son atelier  l'espace existe, mais rien n'y mène. La requête est
  * tolérante : un en-tête ne doit pas casser parce que l'API tarde.
  */
 function useSession() {
@@ -110,7 +110,7 @@ export function Header() {
 
   /* Panneau ouvert : on gèle le défilement de la page, on écoute Échap et on
      porte le focus sur le bouton de fermeture. À la fermeture, le focus
-     revient au bouton qui a ouvert — sinon il repart en tête de document. */
+     revient au bouton qui a ouvert  sinon il repart en tête de document. */
   useEffect(() => {
     if (!open) return;
 
@@ -150,7 +150,7 @@ export function Header() {
     <>
       <header className={styles.root} data-scrolled={scrolled || undefined}>
         <div className={styles.container}>
-          <Link href="/" className={styles.logo} aria-label="Ojà — accueil">
+          <Link href="/" className={styles.logo} aria-label="Ojà  accueil">
             <img
               src="/images/logo-oja-dark.svg"
               alt=""

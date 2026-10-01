@@ -40,7 +40,7 @@ export function Button({
   );
 }
 
-/** Même apparence que Button, mais navigue — utilisé pour les liens entre pages. */
+/** Même apparence que Button, mais navigue  utilisé pour les liens entre pages. */
 export function ButtonLink({
   variant,
   fullWidth,

@@ -20,7 +20,7 @@ import order from "./order.module.css";
  *
  * Le cahier client tient en deux boutons : « Valider la réception » ou
  * « Signaler un problème ». C'est ce clic qui décide si l'argent part au
- * créateur ou revient au client — il est donc présenté **par colis**, pas par
+ * créateur ou revient au client  il est donc présenté **par colis**, pas par
  * commande : une commande chez deux ateliers arrive en deux fois, et l'une des
  * deux pièces peut être parfaite quand l'autre est cassée.
  */

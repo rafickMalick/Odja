@@ -10,7 +10,7 @@ import styles from "./page.module.css";
  *
  * Seule cette partie est interactive : la recherche elle-même est faite par
  * PostgreSQL côté serveur, avec le même traitement des accents que l'API
- * applique partout. La catégorie déjà choisie est conservée dans l'URL — on
+ * applique partout. La catégorie déjà choisie est conservée dans l'URL  on
  * cherche un mot, on ne repart pas de zéro.
  */
 export function SearchInput({

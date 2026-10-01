@@ -18,7 +18,7 @@ import thread from "./thread.module.css";
  *
  * Le fil oppose deux interlocuteurs seulement : vous et Ojà. Le créateur a le
  * sien, de son côté, avec la même équipe au milieu. Les deux ne se croisent
- * jamais — c'est ce qui distingue une place de marché d'un forum.
+ * jamais  c'est ce qui distingue une place de marché d'un forum.
  */
 
 interface Message {
