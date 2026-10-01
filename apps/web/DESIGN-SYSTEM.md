@@ -1,10 +1,10 @@
-# Ojà — Design System v1.0
+# Ojà  Design System v1.0
 
-Marketplace d'artisanat africain — Furniture · Design · Décoration · Artisanat.
+Marketplace d'artisanat africain  Furniture · Design · Décoration · Artisanat.
 
 Ce document transcrit le dev handoff Figma (fichier `dfkhsBYiS9gXHDP5vj4i9U`, page **Doc**).
 Il sert de référence unique pour l'implémentation front. Les valeurs viennent
-directement des frames Figma — ne rien inventer, ne rien arrondir.
+directement des frames Figma  ne rien inventer, ne rien arrondir.
 
 - Tokens CSS → [`styles/tokens.css`](styles/tokens.css)
 - Échelle typographique → [`styles/typography.css`](styles/typography.css)
@@ -67,7 +67,7 @@ Format : `taille / line-height / letter-spacing`.
 
 ## Spacing & Radius
 
-Système à base **8px**. Les radius sont sémantiques — nommés par rôle de composant.
+Système à base **8px**. Les radius sont sémantiques  nommés par rôle de composant.
 
 **Échelle de spacing** : 4, 8, 12, 16 (gutter), 20 (marge mobile), 24, 32, 40, 48, 56, 64, 80, 96, 120.
 
@@ -126,11 +126,11 @@ Système à base **8px**. Les radius sont sémantiques — nommés par rôle de 
 
 ## Notes d'implémentation e-commerce
 
-**Affichage des prix** — `H3/Mobile` pour l'entier (`$64`), `Body/Small` pour les décimales (`.00`) et le symbole monétaire. Anciens prix : `Body/Small` + `Gray/500` + barré.
+**Affichage des prix**  `H3/Mobile` pour l'entier (`$64`), `Body/Small` pour les décimales (`.00`) et le symbole monétaire. Anciens prix : `Body/Small` + `Gray/500` + barré.
 
-**Ligne commission** — « Oja Commission (5%) » dans le récapitulatif panier : `Body/Regular` noir à gauche, `Body/Regular` `Gray/700` à droite. Inclure une icône info avec tooltip.
+**Ligne commission**  « Oja Commission (5%) » dans le récapitulatif panier : `Body/Regular` noir à gauche, `Body/Regular` `Gray/700` à droite. Inclure une icône info avec tooltip.
 
-**Frais de livraison** — Afficher « Calculated based on location » initialement. Champ code postal/adresse + bouton « Update ». Passe à `$X.XX` à la soumission.
+**Frais de livraison**  Afficher « Calculated based on location » initialement. Champ code postal/adresse + bouton « Update ». Passe à `$X.XX` à la soumission.
 
-**Bannière vie privée** — Légalement obligatoire, utilise le composant *Privacy Note Banner*. Texte :
+**Bannière vie privée**  Légalement obligatoire, utilise le composant *Privacy Note Banner*. Texte :
 > « Oja handles all payments and coordinates. Creator & client contact info is strictly hidden. All inquiries go through Support. »

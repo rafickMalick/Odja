@@ -19,7 +19,7 @@ import admin from "../admin.module.css";
  *
  * Un livreur non validé n'apparaît dans aucune liste d'affectation : le filtre
  * est posé dans la requête, pas dans l'écran. Cette file est donc, au même
- * titre que celle des ateliers, un goulot d'étranglement du service — sans
+ * titre que celle des ateliers, un goulot d'étranglement du service  sans
  * livreur validé, aucune commande ne part.
  */
 
@@ -176,11 +176,11 @@ function CourierCard({
         </div>
         <div>
           <dt>Immatriculation</dt>
-          <dd>{courier.plateNumber ?? "—"}</dd>
+          <dd>{courier.plateNumber ?? ""}</dd>
         </div>
         <div>
           <dt>Mobile Money</dt>
-          <dd>{courier.payoutMsisdn ?? "—"}</dd>
+          <dd>{courier.payoutMsisdn ?? ""}</dd>
         </div>
         <div>
           <dt>Courses livrées</dt>
@@ -191,7 +191,7 @@ function CourierCard({
           <dd>
             {courier.kycSubmittedAt
               ? new Date(courier.kycSubmittedAt).toLocaleDateString("fr-FR")
-              : "—"}
+              : ""}
           </dd>
         </div>
         <div>

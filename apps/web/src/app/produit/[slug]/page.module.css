@@ -1,4 +1,4 @@
-/* Listing / fiche produit — Desktop (16:2837) / Mobile (56:4441). */
+/* Listing / fiche produit  Desktop (16:2837) / Mobile (56:4441). */
 
 .page {
   display: flex;
@@ -527,7 +527,7 @@
 /* ── Décomposition du prix ──
    Le cahier client impose d'afficher les trois lignes : prix du créateur,
    commission Ojà, prix final. C'est un choix de transparence assumé, pas un
-   détail — le créateur touche son prix en entier, et le client le voit. */
+   détail  le créateur touche son prix en entier, et le client le voit. */
 .priceBreakdown {
   display: flex;
   flex-direction: column;

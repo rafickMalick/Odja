@@ -34,7 +34,7 @@ const ASSURANCES = [
 
 /* Ces trois chiffres sont des faits vérifiables, pas des projections : le
    taux de commission, la zone couverte, et le délai de versement. Les
-   « 120+ ateliers » qui figuraient ici étaient une valeur d'exemple — mieux
+   « 120+ ateliers » qui figuraient ici étaient une valeur d'exemple  mieux
    vaut ne rien annoncer que d'annoncer faux. */
 const STATS = [
   { value: "5 %", label: "de commission, affichée au client" },
@@ -80,12 +80,12 @@ const STEPS = [
   },
   {
     title: "Vous validez à la réception",
-    text: "Un livreur partenaire vous remet la pièce. Vous l’inspectez, puis vous validez — l’atelier est payé 24 h plus tard.",
+    text: "Un livreur partenaire vous remet la pièce. Vous l’inspectez, puis vous validez  l’atelier est payé 24 h plus tard.",
   },
 ];
 
-/* Les trois profils ouverts à l'inscription. Le quatrième — l'administrateur
-   Ojà — n'est pas un compte que l'on crée soi-même : il est mentionné en note
+/* Les trois profils ouverts à l'inscription. Le quatrième  l'administrateur
+   Ojà  n'est pas un compte que l'on crée soi-même : il est mentionné en note
    sous les cartes plutôt qu'affiché comme une offre. */
 const ROLES = [
   {

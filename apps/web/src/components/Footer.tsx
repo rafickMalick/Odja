@@ -38,7 +38,7 @@ export function Footer() {
           </p>
           <p className={styles.calloutText}>
             Soyez les premiers informés des offres exclusives, des nouveautés et
-            des promotions spéciales — le tout conçu pour apporter style, confort
+            des promotions spéciales  le tout conçu pour apporter style, confort
             et économies à votre intérieur.
           </p>
         </div>
@@ -47,7 +47,7 @@ export function Footer() {
       <div className={styles.links}>
         <div className={styles.top}>
           <div className={styles.brand}>
-            <Link href="/" className={styles.logo} aria-label="Ojà — accueil">
+            <Link href="/" className={styles.logo} aria-label="Ojà  accueil">
               <img
                 src="/images/logo-oja.svg"
                 alt=""

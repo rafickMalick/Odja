@@ -52,7 +52,7 @@ export const NEXT_ACTION: Record<string, string> = {
  *
  * `geo:` est le schéma normalisé : Android l'ouvre dans l'application de
  * cartes choisie par l'utilisateur, iOS dans Plans. On y ajoute la requête
- * `q=` avec l'adresse en clair, pour les cas où les coordonnées manquent —
+ * `q=` avec l'adresse en clair, pour les cas où les coordonnées manquent 
  * un atelier qui n'a jamais renseigné sa position reste atteignable.
  */
 export function mapLink(point: {
@@ -71,7 +71,7 @@ export function mapLink(point: {
  *
  * Jamais bloquante : on attend huit secondes, puis on continue sans. Une
  * autorisation refusée ou un GPS capricieux ne doit pas empêcher une course de
- * démarrer — ni, plus grave, une remise d'être enregistrée.
+ * démarrer  ni, plus grave, une remise d'être enregistrée.
  */
 export async function currentPosition(): Promise<{
   latitude: number;

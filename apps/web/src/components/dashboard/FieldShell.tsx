@@ -18,7 +18,7 @@ import styles from "./FieldShell.module.css";
  * 44 px. Un menu qu'on ouvre au coin supérieur gauche, casque sur la tête, ne
  * s'ouvre pas.
  *
- * Le langage visuel reste celui d'Ojà — mêmes tokens, mêmes polices, même
+ * Le langage visuel reste celui d'Ojà  mêmes tokens, mêmes polices, même
  * orange pour ce qui demande une action.
  */
 
@@ -61,7 +61,7 @@ export function FieldShell({
   return (
     <div className={styles.root}>
       <header className={styles.topbar}>
-        <Link href="/" className={styles.brand} aria-label="Ojà — accueil">
+        <Link href="/" className={styles.brand} aria-label="Ojà  accueil">
           <img src="/images/logo-oja.svg" alt="" className={styles.logo} />
           <span className={styles.space}>{title}</span>
         </Link>

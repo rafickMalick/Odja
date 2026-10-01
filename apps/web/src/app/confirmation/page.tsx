@@ -20,7 +20,7 @@ import styles from "./page.module.css";
  * qu'il n'envoie sa notification, et sans ce contrôle, un client qui vient de
  * payer verrait « en attente » pendant de longues secondes d'inquiétude
  * inutile. L'échec de cette vérification n'empêche pas la page de s'afficher
- * — elle retombe simplement sur la lecture simple, qui reflétera le statut
+ *  elle retombe simplement sur la lecture simple, qui reflétera le statut
  * dès que le webhook sera arrivé.
  */
 export default async function ConfirmationPage({
@@ -141,7 +141,7 @@ export default async function ConfirmationPage({
 
           <p className={styles.lineMeta}>
             Livrée à {order.shipFullName}, {order.shipLine1}
-            {order.shipLandmark ? ` — ${order.shipLandmark}` : ""}
+            {order.shipLandmark ? `  ${order.shipLandmark}` : ""}
           </p>
 
           <div className={styles.actions}>

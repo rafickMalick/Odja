@@ -14,7 +14,7 @@ export function homeForRole(role: string): string {
     case "ADMIN":
       return "/admin";
     case "CUSTOMER":
-      /* « Mon compte », dans l'en-tête, doit mener au compte — pas au
+      /* « Mon compte », dans l'en-tête, doit mener au compte  pas au
          catalogue. Le bouton affichait le bon libellé et le mauvais lien :
          un client cliquait « Mon compte » et atterrissait sur /catalogue. */
       return "/compte";

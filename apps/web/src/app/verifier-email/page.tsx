@@ -10,7 +10,7 @@ import styles from "./page.module.css";
  *
  * La page consomme le jeton du lien côté serveur : le visiteur clique et voit
  * le résultat, sans étape intermédiaire. Un lien déjà utilisé ou expiré donne
- * le même message — la distinction n'aiderait que quelqu'un qui essaie des
+ * le même message  la distinction n'aiderait que quelqu'un qui essaie des
  * jetons au hasard.
  */
 export default async function VerifierEmailPage({
@@ -37,7 +37,7 @@ export default async function VerifierEmailPage({
           <>
             <h1 className={styles.title}>Adresse confirmée</h1>
             <p className={styles.text}>
-              Merci. Votre adresse e-mail est vérifiée — vous recevrez les
+              Merci. Votre adresse e-mail est vérifiée  vous recevrez les
               confirmations de commande et le suivi de vos livraisons.
             </p>
             <ButtonLink href="/catalogue">Découvrir le catalogue</ButtonLink>

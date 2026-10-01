@@ -20,7 +20,7 @@ import { ApiError, apiFetch } from "@/lib/api";
  *
  * Elle porte deux choses que chaque page n'a pas à répéter : l'état du
  * dossier, et **l'interrupteur de disponibilité**. Ce dernier est en tête de
- * chaque écran parce que c'est le geste le plus fréquent de la journée — on se
+ * chaque écran parce que c'est le geste le plus fréquent de la journée  on se
  * déclare disponible en montant sur la moto, indisponible en s'arrêtant
  * manger. L'enterrer dans un écran de réglages, c'est garantir qu'il ne sera
  * jamais mis à jour.
@@ -142,7 +142,7 @@ function noticeFor(profile: CourierProfile | null, state: string): ReactNode {
     case "NOT_SUBMITTED":
       return (
         <>
-          Déposez votre dossier — pièce d&apos;identité, permis et carte grise — pour recevoir
+          Déposez votre dossier  pièce d&apos;identité, permis et carte grise  pour recevoir
           des missions. <Link href="/espace-livreur/profil">Compléter</Link>.
         </>
       );
@@ -151,7 +151,7 @@ function noticeFor(profile: CourierProfile | null, state: string): ReactNode {
     case "REJECTED":
       return (
         <>
-          Dossier refusé{profile.kycRejectReason ? ` — ${profile.kycRejectReason}` : ""}.{" "}
+          Dossier refusé{profile.kycRejectReason ? `  ${profile.kycRejectReason}` : ""}.{" "}
           <Link href="/espace-livreur/profil">Corrigez et redéposez</Link>.
         </>
       );

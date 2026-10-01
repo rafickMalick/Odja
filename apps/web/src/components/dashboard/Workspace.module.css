@@ -1,8 +1,8 @@
-/* Espaces de travail — créateur, livreur, administration.
+/* Espaces de travail  créateur, livreur, administration.
 
    Même langage visuel que la boutique : tokens du design system, Fredoka One
    pour les titres, Rethink Sans pour le reste, l'orange de marque pour ce qui
-   demande une action. Ce qui change est la densité — on lit moins, on agit
+   demande une action. Ce qui change est la densité  on lit moins, on agit
    plus, donc les blocs sont plus serrés et les tailles plus sobres. */
 
 .root {
@@ -86,7 +86,7 @@
 }
 
 /* Pastille de rappel : elle compte ce qui attend une action, pas ce qui
-   existe — un chiffre qui ne descend jamais à zéro cesse d'être lu. */
+   existe  un chiffre qui ne descend jamais à zéro cesse d'être lu. */
 .badge {
   display: inline-flex;
   align-items: center;
