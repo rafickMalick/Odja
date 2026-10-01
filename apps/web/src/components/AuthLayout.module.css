@@ -1,5 +1,5 @@
 /* Écrans Connexion (88:3513) et Inscription (88:3475) :
-   deux moitiés — visuel plein à gauche, formulaire de 480px à droite. */
+   deux moitiés  visuel plein à gauche, formulaire de 480px à droite. */
 
 .root {
   display: flex;
@@ -407,4 +407,30 @@
   .roleGrid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── Bouton de retour (Flèche) ── */
+.backButtonContainer {
+  width: 480px;
+  max-width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: -16px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.backButton:hover {
+  background: var(--color-gray-300);
+  color: var(--color-black);
 }

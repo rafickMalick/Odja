@@ -26,12 +26,12 @@ import { homeForRole } from "@/lib/home-for-role";
  *
  * Le rôle se choisit ici, une seule fois : c'est lui qui décide de tout le
  * parcours qui suit. Un créateur et un livreur devront faire valider leur
- * dossier par Ojà avant de vendre ou de livrer — on le dit dès maintenant
+ * dossier par Ojà avant de vendre ou de livrer  on le dit dès maintenant
  * plutôt que de le leur apprendre après coup.
  *
  * Chaque champ se juge **en le quittant**, avec le même schéma que l'API :
  * `registerSchema` vient de `@oja/contracts`, les deux ne peuvent donc pas
- * diverger. Un popup au clavier serait injouable — la coche verte ou le
+ * diverger. Un popup au clavier serait injouable  la coche verte ou le
  * message rouge restent à côté du champ, et le popup n'annonce que l'issue
  * d'ensemble, une fois qu'on valide.
  */
@@ -143,7 +143,7 @@ export default function InscriptionPage() {
       notify("Compte créé.", { tone: "success" });
 
       /* Le compte est ouvert et la session posée : on entre directement. Un
-         e-mail de confirmation part, mais il n'arrête personne — demander un
+         e-mail de confirmation part, mais il n'arrête personne  demander un
          détour par la boîte aux lettres perd le visiteur au moment précis où
          il vient d'arriver. Un créateur ou un livreur enchaîne aussitôt sur
          son dossier : c'est `homeForRole` qui l'y conduit. */

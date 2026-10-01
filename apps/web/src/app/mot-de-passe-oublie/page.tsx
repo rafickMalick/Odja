@@ -17,7 +17,7 @@ import { ApiError, apiFetch } from "@/lib/api";
  * L'API ne dit jamais si l'identifiant existe (`/auth/forgot-password`
  * répond pareil dans les deux cas) : le front ne peut donc pas conditionner
  * le passage à l'étape suivante sur une réponse de succès distincte d'un
- * échec — il avance dès que la demande part, comme l'API le veut.
+ * échec  il avance dès que la demande part, comme l'API le veut.
  */
 export default function MotDePasseOubliePage() {
   const [step, setStep] = useState<"demande" | "code">("demande");

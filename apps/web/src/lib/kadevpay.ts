@@ -6,7 +6,7 @@
  * ce fichier n'a donc pas pu être essayé contre un vrai paiement. Le point le
  * plus susceptible de bouger au premier essai réel est signalé plus bas.
  *
- * Le script n'est chargé **que si un paiement réel est amorcé** — c'est-à-dire
+ * Le script n'est chargé **que si un paiement réel est amorcé**  c'est-à-dire
  * quand `checkout.mode === "widget"`, jamais en développement où le
  * fournisseur simulé ne renvoie que `"simulated"`. Un script tiers chargé sur
  * chaque visite ralentirait chaque page pour un besoin qui ne se présente
@@ -29,7 +29,7 @@ interface KadevPayCheckoutParams {
 }
 
 interface KadevPayCheckoutResult {
-  /** La référence Kadev Pay de la transaction — ex. `KDV-1775413916000`. */
+  /** La référence Kadev Pay de la transaction  ex. `KDV-1775413916000`. */
   reference: string;
   [key: string]: unknown;
 }
@@ -74,7 +74,7 @@ export interface KadevPayCheckoutInput {
   customer: { fullName: string; email: string; phone: string };
   /**
    * Obligatoire pour que Kadev Pay calcule les frais exacts affichés au
-   * client dans le widget — leur documentation le signale en gras : sans ce
+   * client dans le widget  leur documentation le signale en gras : sans ce
    * champ, rien ne garantit que la commission annoncée (2,3 % Mobile Money,
    * 4,5 % carte) corresponde à celle réellement prélevée.
    */
@@ -88,7 +88,7 @@ export interface KadevPayCheckoutInput {
  * **Aucune `callback_url` n'est passée, volontairement** : leur documentation
  * indique qu'`onSuccess` ne s'exécute que dans ce cas. C'est le chemin retenu
  * ici pour pouvoir confirmer un paiement réel sans dépendre d'un webhook
- * joignable — donc sans exiger d'URL publique tant que la plateforme n'est
+ * joignable  donc sans exiger d'URL publique tant que la plateforme n'est
  * pas encore déployée. Le webhook, une fois branché, restera la voie
  * recommandée par Kadev Pay pour la production ; ce chemin par le SDK n'a pas
  * vocation à la remplacer, seulement à permettre les essais avant qu'un
@@ -98,8 +98,8 @@ export interface KadevPayCheckoutInput {
  * client, pas une preuve de paiement à elle seule : c'est le serveur qui
  * tranche, en interrogeant Kadev Pay lui-même
  * (`POST /orders/:reference/verify-payment`, `provider.verify()`). Un
- * `onSuccess` qui mentirait — script modifié, extension de navigateur
- * malveillante — ne débloquerait donc rien tout seul.
+ * `onSuccess` qui mentirait  script modifié, extension de navigateur
+ * malveillante  ne débloquerait donc rien tout seul.
  *
  * **Non vérifié en pratique** : le nom exact du champ qui porte notre
  * référence dans `metadata` (`order_id` a été choisi par analogie avec le

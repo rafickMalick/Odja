@@ -24,7 +24,7 @@ interface City {
  * Passage en caisse.
  *
  * Le chiffrage vient du serveur : une livraison par atelier, distance réelle,
- * véhicule choisi automatiquement. Le navigateur n'invente aucun montant — il
+ * véhicule choisi automatiquement. Le navigateur n'invente aucun montant  il
  * affiche ce que la commande retiendra, puis **confirme** ce total au moment
  * de valider.
  */
@@ -38,7 +38,7 @@ export default function CheckoutPage() {
   const [addressId, setAddressId] = useState<string>("");
   const [quote, setQuote] = useState<CheckoutQuote | null>(null);
   const [promoInput, setPromoInput] = useState("");
-  // Code effectivement appliqué au chiffrage — repassé tel quel à la commande.
+  // Code effectivement appliqué au chiffrage  repassé tel quel à la commande.
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
   // Mobile Money par défaut : c'est le moyen dominant sur ce marché.
   const [paymentMethod, setPaymentMethod] = useState<"momo" | "card">("momo");
@@ -185,7 +185,7 @@ export default function CheckoutPage() {
           });
 
           /* Confirme tout de suite, avec la référence que le widget vient
-             d'apprendre — sans attendre un webhook qui exige une URL
+             d'apprendre  sans attendre un webhook qui exige une URL
              publique. Voir openKadevPayCheckout() et
              PaymentService.verifyPending(). */
           await apiFetch(`/orders/${order.reference}/verify-payment`, {
@@ -195,7 +195,7 @@ export default function CheckoutPage() {
         } catch (widgetError) {
           if (!isCheckoutClosedByUser(widgetError)) {
             /* Le script n'a pas pu se charger ou s'est comporté de façon
-               inattendue — non testé contre un vrai compte à ce jour. La
+               inattendue  non testé contre un vrai compte à ce jour. La
                commande existe déjà côté serveur, en attente de paiement : on
                envoie quand même vers la confirmation, qui dira la vérité
                plutôt que de bloquer le client sur cette page. */
@@ -301,7 +301,7 @@ export default function CheckoutPage() {
                         </span>
                         <span className={styles.optionText}>
                           {address.line1}
-                          {address.landmark ? ` — ${address.landmark}` : ""}
+                          {address.landmark ? `  ${address.landmark}` : ""}
                         </span>
                       </span>
                     </label>
@@ -315,7 +315,7 @@ export default function CheckoutPage() {
                 {addresses.length > 0 ? "Ajouter une adresse" : "Où livrer ?"}
               </h2>
 
-              {/* Pas de <form> imbriqué — c'est du HTML invalide, et le
+              {/* Pas de <form> imbriqué  c'est du HTML invalide, et le
                   navigateur en fait ce qu'il veut. La saisie vit dans un
                   simple bloc, et son bouton appelle directement le
                   gestionnaire. */}
@@ -512,7 +512,7 @@ export default function CheckoutPage() {
             <div className={styles.grandTotal}>
               <span className={styles.grandTotalLabel}>Total</span>
               <span className={styles.grandTotalValue}>
-                {quote ? formatFcfa(quote.totalXof) : "—"}
+                {quote ? formatFcfa(quote.totalXof) : ""}
               </span>
             </div>
 

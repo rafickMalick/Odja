@@ -9,7 +9,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
     <main className={styles.root}>
       <div className={styles.visual}>
         <img src="/images/auth-side.png" alt="" className={styles.visualImage} />
-        <Link href="/" aria-label="Ojà — accueil">
+        <Link href="/" aria-label="Ojà accueil">
           <img
             src="/images/logo-oja-white.svg"
             alt=""
@@ -17,7 +17,16 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           />
         </Link>
       </div>
-      <div className={styles.panel}>{children}</div>
+      <div className={styles.panel}>
+        <div className={styles.backButtonContainer}>
+          <Link href="/" className={styles.backButton} aria-label="Retour à l'accueil">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </Link>
+        </div>
+        {children}
+      </div>
     </main>
   );
 }

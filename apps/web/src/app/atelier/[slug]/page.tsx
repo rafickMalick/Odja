@@ -9,7 +9,7 @@ import styles from "./page.module.css";
  * Vitrine d'un atelier.
  *
  * On n'y voit que les **informations publiques** : nom, description, ville,
- * pièces en vente. Ni téléphone, ni e-mail, ni adresse — c'est la règle métier
+ * pièces en vente. Ni téléphone, ni e-mail, ni adresse  c'est la règle métier
  * qui fonde la place de marché, et elle est tenue côté API : la route publique
  * ne renvoie tout simplement pas ces champs.
  */

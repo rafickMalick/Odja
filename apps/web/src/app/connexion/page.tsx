@@ -18,7 +18,7 @@ function ConnexionForm() {
   const router = useRouter();
   const params = useSearchParams();
   /* Une destination explicite l'emporte : c'est celle d'où l'utilisateur a
-     été renvoyé vers la connexion. Sinon, on l'envoie chez lui — un créateur
+     été renvoyé vers la connexion. Sinon, on l'envoie chez lui  un créateur
      dans son atelier, un livreur sur ses missions. */
   const requested = params.get("suite");
 

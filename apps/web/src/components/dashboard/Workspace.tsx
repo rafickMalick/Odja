@@ -9,12 +9,12 @@ import { apiFetch } from "@/lib/api";
 import styles from "./Workspace.module.css";
 
 /**
- * Coquille des espaces de travail — créateur, livreur, administration.
+ * Coquille des espaces de travail  créateur, livreur, administration.
  *
  * Elle reprend le langage visuel de la boutique : mêmes tokens, mêmes polices,
  * même orange. Ce qui change, c'est la **densité** : ici on ne raconte pas, on
  * travaille. Le menu marketing cède la place à une barre latérale, et le pied
- * de page disparaît — un artisan qui gère son stock n'a que faire d'un appel à
+ * de page disparaît  un artisan qui gère son stock n'a que faire d'un appel à
  * s'inscrire à la newsletter.
  */
 
@@ -34,7 +34,7 @@ export function Workspace({
   title: string;
   links: WorkspaceLink[];
   children: ReactNode;
-  /** Bandeau d'état affiché en tête — dossier en attente, compte suspendu… */
+  /** Bandeau d'état affiché en tête  dossier en attente, compte suspendu… */
   notice?: ReactNode;
 }) {
   const pathname = usePathname();
@@ -45,7 +45,7 @@ export function Workspace({
    * Un seul lien actif, celui qui colle le plus au chemin courant.
    *
    * Une simple correspondance par préfixe en allumerait deux dès qu'un menu
-   * contient `/admin/commandes` **et** `/admin/commandes/recherche` — l'un
+   * contient `/admin/commandes` **et** `/admin/commandes/recherche`  l'un
    * étant le préfixe de l'autre. On garde le plus long, et le lien racine
    * n'est actif qu'exactement.
    */
@@ -65,7 +65,7 @@ export function Workspace({
     <div className={styles.root}>
       <aside className={styles.sidebar} data-open={open || undefined}>
         <div className={styles.brand}>
-          <Link href="/" className={styles.logo} aria-label="Ojà — accueil">
+          <Link href="/" className={styles.logo} aria-label="Ojà  accueil">
             <img src="/images/logo-oja.svg" alt="" className={styles.logoImage} />
           </Link>
           <span className={styles.space}>{title}</span>

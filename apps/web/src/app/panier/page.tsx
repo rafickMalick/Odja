@@ -19,7 +19,7 @@ import styles from "./page.module.css";
  * découvrir sur sa facture.
  *
  * Les totaux viennent du serveur. Les recalculer ici donnerait deux vérités
- * qui finiraient par diverger — et c'est toujours le client qui verrait la
+ * qui finiraient par diverger  et c'est toujours le client qui verrait la
  * mauvaise.
  */
 export default function CartPage() {

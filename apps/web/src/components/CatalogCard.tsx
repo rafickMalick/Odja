@@ -49,7 +49,7 @@ export function CatalogCard({ product }: { product: PublicProduct }) {
                 •
               </span>
               <span>Matière :</span>
-              <span>{product.material ?? "—"}</span>
+              <span>{product.material ?? ""}</span>
             </span>
           </p>
 

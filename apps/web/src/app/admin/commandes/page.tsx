@@ -17,8 +17,8 @@ import admin from "../admin.module.css";
  * Affectation des livreurs.
  *
  * Le cahier client confie l'affectation à l'équipe Ojà, pas à un algorithme :
- * l'écran propose donc les livreurs éligibles — disponibles, validés, dont le
- * véhicule suffit — et laisse la décision à l'agent.
+ * l'écran propose donc les livreurs éligibles  disponibles, validés, dont le
+ * véhicule suffit  et laisse la décision à l'agent.
  *
  * Une commande passée chez deux ateliers produit **deux expéditions**, chacune
  * enlevée chez son créateur : elles apparaissent séparément.
@@ -196,7 +196,7 @@ function ShipmentCard({
                   <td>{courier.name}</td>
                   <td>{VEHICLES[courier.vehicle] ?? courier.vehicle}</td>
                   <td className={styles.numeric}>
-                    {courier.ratingAvg > 0 ? courier.ratingAvg.toFixed(1) : "—"}
+                    {courier.ratingAvg > 0 ? courier.ratingAvg.toFixed(1) : ""}
                   </td>
                   <td className={styles.rowActions}>
                     {courier.suitable ? (

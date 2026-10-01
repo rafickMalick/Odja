@@ -15,7 +15,7 @@ import form from "./form.module.css";
  *
  * Deux choses que le cahier client ne demandait pas figurent ici et sont
  * obligatoires : le poids et les dimensions. Le choix du véhicule de livraison
- * en dépend entièrement — sans eux, aucune commande contenant la pièce ne peut
+ * en dépend entièrement  sans eux, aucune commande contenant la pièce ne peut
  * être chiffrée (SPEC-ALIGNEMENT § 9, point B). Le formulaire l'explique
  * plutôt que de renvoyer une erreur incompréhensible à l'enregistrement.
  */
@@ -306,7 +306,7 @@ function flatten(
   depth = 0,
 ): { id: string; label: string }[] {
   return categories.flatMap((category) => [
-    { id: category.id, label: `${"— ".repeat(depth)}${category.name}` },
+    { id: category.id, label: `${" ".repeat(depth)}${category.name}` },
     ...flatten(category.children ?? [], depth + 1),
   ]);
 }

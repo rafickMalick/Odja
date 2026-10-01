@@ -5,7 +5,7 @@ import styles from "./not-found.module.css";
 /**
  * 404 générale du site.
  *
- * Sans elle, Next affiche sa page par défaut — fond noir, texte en anglais,
+ * Sans elle, Next affiche sa page par défaut  fond noir, texte en anglais,
  * hors charte. Celle-ci reprend le même gabarit que la confirmation
  * d'e-mail : une carte centrée, sur fond de page normal.
  */

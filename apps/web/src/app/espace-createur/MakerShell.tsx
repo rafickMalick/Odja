@@ -14,13 +14,13 @@ const ONBOARDING_PATH = "/espace-createur/boutique";
  *
  * Tant que la boutique n'est pas créée et le dossier déposé, l'espace ne
  * propose qu'un seul endroit : la page qui les recueille. Ce n'est pas un
- * bandeau qu'on peut ignorer en cliquant ailleurs — les autres pages ne sont
+ * bandeau qu'on peut ignorer en cliquant ailleurs  les autres pages ne sont
  * simplement pas atteignables, et une tentative directe par l'URL y ramène.
  *
  * Une fois le dossier déposé (statut `PENDING`), l'espace s'ouvre en entier :
  * on n'attend pas la décision de l'administration pour laisser l'artisan
  * préparer ses fiches. C'est la validation du **dépôt**, pas encore
- * l'approbation, qui débloque — l'approbation, elle, ne débloque que la mise
+ * l'approbation, qui débloque  l'approbation, elle, ne débloque que la mise
  * en vente réelle (déjà gardée côté API).
  */
 export function MakerShell({ children }: { children: ReactNode }) {
@@ -86,7 +86,7 @@ function noticeFor(
   state: string,
 ): ReactNode {
   if (state === "no-shop") {
-    return "Bienvenue — renseignez votre boutique pour accéder à votre espace.";
+    return "Bienvenue  renseignez votre boutique pour accéder à votre espace.";
   }
 
   if (!maker) return null;
@@ -97,7 +97,7 @@ function noticeFor(
     case "PENDING":
       return "Dossier déposé, en cours de vérification par Ojà. Vous pouvez déjà préparer vos fiches : elles partiront en vente dès la validation.";
     case "REJECTED":
-      return `Dossier refusé${maker.kycRejectReason ? ` — ${maker.kycRejectReason}` : ""}. Corrigez-le et redéposez-le pour retrouver votre espace.`;
+      return `Dossier refusé${maker.kycRejectReason ? `  ${maker.kycRejectReason}` : ""}. Corrigez-le et redéposez-le pour retrouver votre espace.`;
     default:
       return null;
   }
