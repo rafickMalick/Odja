@@ -3,7 +3,7 @@
 import type { ShipmentTrackEvent, ShipmentTrackView } from "@oja/contracts";
 import { useEffect, useRef, useState } from "react";
 
-import { apiFetch } from "@/lib/api";
+import { API_BASE_URL, apiFetch } from "@/lib/api";
 
 import order from "./order.module.css";
 
@@ -16,8 +16,9 @@ import order from "./order.module.css";
  * dernière position connue en clair suffisent à savoir où en est le colis.
  */
 
-const API_BASE =
-  process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:4000/api/v1";
+/* Même chemin que les autres appels : par le site, pour que le cookie de
+   session accompagne le flux. */
+const API_BASE = API_BASE_URL;
 const CLOSED = new Set(["DELIVERED", "RETURNED", "FAILED"]);
 
 export function DeliveryTracker({ reference }: { reference: string }) {
