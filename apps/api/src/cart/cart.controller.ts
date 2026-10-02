@@ -3,6 +3,7 @@ import { addToCartSchema, updateCartItemSchema, type AddToCartInput, type CartVi
 import type { Request, Response } from 'express';
 
 import { Public } from '../auth/decorators/public.decorator';
+import { cookieDomain } from '../common/cookie-domain';
 import { zodBody } from '../common/zod.pipe';
 import { CartService } from './cart.service';
 
@@ -91,6 +92,7 @@ export class CartController {
       sameSite: 'lax',
       maxAge: 30 * 86_400_000,
       path: '/',
+      ...cookieDomain(),
     });
 
     return { id };
