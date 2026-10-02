@@ -142,44 +142,41 @@ patiente le temps que le service redémarre.
    puis redéployer le service API — sans ça, le navigateur est bloqué par
    CORS.
 
-## 5 bis. Domaine personnalisé — `oja.aworix.agency`
+## 5 bis. Domaine personnalisé : `oja.aworix.agency` (en place depuis le 2 octobre 2026)
 
-Le domaine `aworix.agency` est géré chez **OVH**. Ojà s'y installe en
-sous-domaines, sans toucher au site principal :
+Le domaine `aworix.agency` est géré chez **OVH**. Le site de l'agence n'est
+pas touché ; Ojà vit sur un sous-domaine.
 
-| Adresse | Service |
-|---|---|
-| `oja.aworix.agency` | front (Vercel) |
-| `api.oja.aworix.agency` | API (Render) |
+**Un seul sous-domaine suffit pour le site.** Le navigateur n'appelle jamais
+l'API directement : il passe par `oja.aworix.agency/api/v1`, que Next relaie
+vers Render (`rewrites` dans `apps/web/next.config.ts`). Les cookies de
+session appartiennent ainsi au site, et le navigateur les garde.
 
-1. **Vercel** → projet → *Settings → Domains* → ajouter `oja.aworix.agency`.
-2. **Render** → service `oja-api` → *Settings → Custom Domains* → ajouter
-   `api.oja.aworix.agency`.
-3. **OVH** → *Web Cloud → Noms de domaine → aworix.agency → Zone DNS* →
-   *Ajouter une entrée* → **CNAME**, deux fois :
+### Zone DNS chez OVH (état actuel)
 
-   | Sous-domaine | Cible |
-   |---|---|
-   | `oja` | la valeur affichée par Vercel (en général `cname.vercel-dns.com.`) |
-   | `api.oja` | `oja-api.onrender.com.` |
+| Sous-domaine | Type | Valeur | Rôle |
+|---|---|---|---|
+| `oja` | **A** | `216.198.79.1` | le site (Vercel). Un A et non un CNAME : un CNAME interdit toute autre entrée sur `oja`, dont le TXT de Brevo |
+| `oja` | TXT | `brevo-code:…` | preuve de propriété pour Brevo |
+| `_vercel` | TXT | `vc-domain-verify=oja.aworix.agency,…` | preuve de propriété pour Vercel |
+| `api.oja` | CNAME | `oja-api-69ph.onrender.com.` | accès direct à l'API (facultatif, utile pour les webhooks) |
+| `brevo1._domainkey.oja`, `brevo2._domainkey.oja` | CNAME | `b1/b2.oja-aworix-agency.dkim.brevo.com.` | signature DKIM des e-mails |
+| `_dmarc.oja` | TXT | `v=DMARC1; p=none; rua=…` | DMARC des e-mails |
+| `mail.oja`, `r.mail.oja`, `img.mail.oja` | CNAME | `…brand.brevosend.com.` | liens et images des e-mails Brevo |
 
-   Le point final de la cible est exigé par OVH. Laisser la propagation se
-   faire (quelques minutes à quelques heures) ; Vercel et Render émettent le
-   certificat HTTPS d'eux-mêmes une fois le DNS vu.
-4. **Variables**, puis redéployer les deux services :
-   - Render : `WEB_ORIGIN=https://oja.aworix.agency` et
-     `COOKIE_DOMAIN=oja.aworix.agency`
-   - Vercel : `NEXT_PUBLIC_API_URL=https://api.oja.aworix.agency/api/v1` —
-     elle est figée au build, un simple redémarrage ne suffit pas.
-5. **Kadev Pay** : remplacer l'URL du webhook (§ 6) par
-   `https://api.oja.aworix.agency/api/v1/webhooks/kadevpay`.
+⚠️ **Ne jamais ajouter d'entrée NS sur `oja`** (Brevo le propose en
+« authentification automatique ») : elle confierait tout `oja.aworix.agency`
+à Brevo et couperait le site.
 
-**Pourquoi `COOKIE_DOMAIN`.** Sans lui, les cookies de session posés par
-l'API n'appartiennent qu'à `api.oja.aworix.agency` : le serveur du front ne
-les reçoit pas et les pages rendues côté serveur voient tout le monde
-déconnecté. `oja.aworix.agency` les partage entre le front et l'API, et
-seulement eux — `aworix.agency` les enverrait aussi aux autres sites du
-domaine.
+### Variables
+
+- Render : `WEB_ORIGIN=https://oja.aworix.agency` (liens des e-mails),
+  **`COOKIE_DOMAIN` vide** (avec le relais, les cookies appartiennent déjà au
+  site ; une valeur les ferait refuser), `TRUST_PROXY_HOPS=2`,
+  `MAIL_FROM="Ojà <noreply@oja.aworix.agency>"`, `BREVO_API_KEY`.
+- Vercel : `NEXT_PUBLIC_API_URL` garde l'adresse Render
+  (`https://oja-api-69ph.onrender.com/api/v1`) : c'est la cible du relais.
+- Kadev Pay : le webhook peut viser `https://api.oja.aworix.agency/api/v1/webhooks/kadevpay`.
 
 ## 6. Kadev Pay — webhook
 
