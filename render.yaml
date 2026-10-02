@@ -24,6 +24,11 @@ services:
       # si DATABASE_URL est déjà une connexion directe.
       - key: DIRECT_DATABASE_URL
         sync: false
+      # Adresse du premier administrateur : le compte qui s'inscrit (ou qui
+      # existe déjà) avec cet e-mail devient ADMIN, tant qu'aucun admin
+      # n'existe. Sans effet ensuite. Voir AdminBootstrapService.
+      - key: ADMIN_BOOTSTRAP_EMAIL
+        sync: false
       - key: WEB_ORIGIN
         sync: false
       # oja.aworix.agency une fois le domaine branché (DEPLOIEMENT.md § 5 bis).

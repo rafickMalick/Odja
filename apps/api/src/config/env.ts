@@ -75,6 +75,13 @@ export const envSchema = z
     /** Vérification du téléphone par SMS. Mise de côté : voir AuthService. */
     REQUIRE_PHONE_VERIFICATION: booleanFromEnv(false),
     MAIL_FROM: z.string().default('Ojà <bonjour@oja.market>'),
+    /** Adresse du premier administrateur d'une base neuve. Sans effet dès
+        qu'un admin existe : voir AdminBootstrapService. */
+    ADMIN_BOOTSTRAP_EMAIL: z.preprocess(
+      // Laissée vide sur Render : traitée comme absente, pas comme invalide.
+      (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+      z.string().trim().email('ADMIN_BOOTSTRAP_EMAIL doit être une adresse e-mail').optional(),
+    ),
     SMTP_SECURE: booleanFromEnv(false),
     SMTP_USER: z.string().optional(),
     SMTP_PASSWORD: z.string().optional(),

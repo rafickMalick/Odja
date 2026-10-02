@@ -144,6 +144,19 @@ const PAYMENT_METHODS: Record<
 const PLATFORM_ACCOUNTS = ['PLATFORM_CASH', 'PLATFORM_REVENUE', 'PSP_FEE', 'VAT_PAYABLE'] as const;
 
 async function main() {
+  /* `--if-empty` : mode du démarrage en production (docker-entrypoint.sh).
+     Le seed remet `isActive` et les grilles aux valeurs du fichier ; rejoué à
+     chaque démarrage, il refermerait un pays que l'admin vient d'ouvrir. Il
+     ne remplit donc qu'une base qui n'a encore aucun pays. */
+  if (process.argv.includes('--if-empty')) {
+    const countries = await prisma.country.count();
+    if (countries > 0) {
+      console.log(`Données de référence déjà présentes (${countries} pays) : seed ignoré.`);
+      return;
+    }
+    console.log('Base vide : chargement des données de référence.');
+  }
+
   console.log('→ Pays et villes');
   for (const country of COUNTRIES) {
     /* `isActive` doit être mis à jour au même titre que le reste : c'est le

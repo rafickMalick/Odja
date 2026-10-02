@@ -11,6 +11,7 @@ import type { User } from '@oja/db';
 
 import { EmailService } from '../notifications/email.service';
 import { SmsService } from '../notifications/sms.service';
+import { AdminBootstrapService } from './admin-bootstrap.service';
 import { EmailVerificationService } from './email-verification.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { OtpService } from './otp.service';
@@ -56,6 +57,7 @@ export class AuthService {
     private readonly sms: SmsService,
     private readonly mail: EmailService,
     private readonly emailVerification: EmailVerificationService,
+    private readonly adminBootstrap: AdminBootstrapService,
     config: ConfigService,
   ) {
     this.requirePhoneVerification = config.get<boolean>('REQUIRE_PHONE_VERIFICATION', false);
@@ -96,7 +98,7 @@ export class AuthService {
 
     const passwordHash = await this.passwords.hash(input.password);
 
-    const user = await this.prisma.user.create({
+    const created = await this.prisma.user.create({
       data: {
         role: input.role,
         /* Un client est actif tout de suite : il peut parcourir, remplir son
@@ -116,6 +118,12 @@ export class AuthService {
         },
       },
     });
+
+    /* Premier admin d'une base neuve (ADMIN_BOOTSTRAP_EMAIL) : promu dès
+       l'inscription, pour que la session émise porte déjà le bon rôle. */
+    const user = (await this.adminBootstrap.promoteIfDesignated(created.id, created.email))
+      ? await this.prisma.user.findUniqueOrThrow({ where: { id: created.id } })
+      : created;
 
     if (this.requirePhoneVerification) {
       await this.sendPhoneCode(user.id, input.phone);
