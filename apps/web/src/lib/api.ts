@@ -66,7 +66,59 @@ interface RequestOptions {
   signal?: AbortSignal;
 }
 
+/**
+ * Renouvellement de session.
+ *
+ * Le jeton d'accès ne vit que 15 minutes ; le jeton de rafraîchissement, lui,
+ * plusieurs jours. Sans cette étape, tout espace renvoyait vers la connexion
+ * au bout d'un quart d'heure, même en pleine utilisation. Sur un `401`, le
+ * navigateur demande donc une nouvelle session puis rejoue la requête, une
+ * seule fois.
+ *
+ * Un seul renouvellement à la fois : une page qui lance cinq requêtes en
+ * parallèle recevrait cinq `401`. Cinq rafraîchissements consommeraient le
+ * même jeton cinq fois, et l'API, y voyant un rejeu, fermerait toutes les
+ * sessions par sécurité.
+ */
+let pendingRefresh: Promise<boolean> | null = null;
+
+function refreshSession(): Promise<boolean> {
+  pendingRefresh ??= fetch(`${BASE_URL}/auth/refresh`, {
+    method: 'POST',
+    credentials: 'include',
+    cache: 'no-store',
+  })
+    .then((response) => response.ok)
+    .catch(() => false)
+    .finally(() => {
+      pendingRefresh = null;
+    });
+  return pendingRefresh;
+}
+
+/* Les routes d'authentification ne déclenchent jamais de renouvellement : un
+   mauvais mot de passe renvoie aussi un 401, et l'échec du renouvellement
+   lui-même ne doit pas boucler. */
+const NO_REFRESH = /^\/auth\/(login|register|refresh|logout)\b/;
+
 export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  try {
+    return await rawFetch<T>(path, options);
+  } catch (error) {
+    if (
+      typeof window !== 'undefined' &&
+      error instanceof ApiError &&
+      error.isUnauthorized &&
+      !NO_REFRESH.test(path) &&
+      (await refreshSession())
+    ) {
+      return rawFetch<T>(path, options);
+    }
+    throw error;
+  }
+}
+
+async function rawFetch<T>(path: string, options: RequestOptions): Promise<T> {
   const { method = 'GET', body, revalidate, signal } = options;
 
   const headers: Record<string, string> = {};
