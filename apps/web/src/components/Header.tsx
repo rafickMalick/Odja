@@ -189,10 +189,12 @@ export function Header() {
               <span>{user ? (SPACE_LABEL[user.role] ?? "Mon compte") : "Se connecter"}</span>
             </Link>
 
-            {/* Ajout hors maquette : accès au panier, indispensable au parcours. */}
+            {/* Ajout hors maquette : accès au panier, indispensable au parcours.
+                Icône noire, comme « Mon compte » : la version blanche est celle
+                du bouton orange des cartes produits, invisible sur ce fond. */}
             <Link href="/panier" className={styles.action}>
               <img
-                src="/images/icon-basket.svg"
+                src="/images/icon-basket-dark.svg"
                 alt=""
                 className={styles.actionIcon}
               />
@@ -213,7 +215,7 @@ export function Header() {
                   : "Panier"
               }
             >
-              <img src="/images/icon-basket.svg" alt="" />
+              <img src="/images/icon-basket-dark.svg" alt="" />
               {cartBadge}
             </Link>
 
