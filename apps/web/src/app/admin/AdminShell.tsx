@@ -76,6 +76,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     { href: "/admin/finances", label: "Grand livre" },
     { href: "/admin/promo-codes", label: "Codes promo" },
     { href: "/admin/journal", label: "Journal d'audit" },
+    { href: "/admin/equipe", label: "Administrateurs" },
     { href: "/admin/reglages", label: "Réglages" },
     { href: "/admin/outils", label: "Outils" },
   ];

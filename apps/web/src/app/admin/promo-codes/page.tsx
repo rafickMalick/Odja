@@ -13,7 +13,7 @@ import {
   workspaceStyles as styles,
 } from "@/components/dashboard/Workspace";
 import { ApiError, apiFetch } from "@/lib/api";
-import { formatFcfa } from "@/lib/format";
+import { formatFcfa, formatNumber } from "@/lib/format";
 
 /**
  * Codes promo (cahier L2-11 / L7).
@@ -179,7 +179,7 @@ export default function PromoCodesPage() {
                     </td>
                     <td>
                       {promo.kind === "PERCENT"
-                        ? `${(promo.valueBps ?? 0) / 100} %`
+                        ? `${formatNumber((promo.valueBps ?? 0) / 100, (promo.valueBps ?? 0) % 100 ? 2 : 0)} %`
                         : formatFcfa(promo.amountXof ?? 0)}
                     </td>
                     <td>{promo.minOrderXof > 0 ? formatFcfa(promo.minOrderXof) : "Aucun"}</td>
