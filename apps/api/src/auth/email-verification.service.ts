@@ -56,7 +56,11 @@ export class EmailVerificationService {
 
     const link = `${this.webOrigin}/verifier-email?jeton=${token}`;
 
-    await this.email.send({
+    /* L'envoi part **sans être attendu**. Le lien existe déjà en base ; le
+       compte, lui, s'ouvre sans attendre la confirmation. Attendre le relais
+       faisait tourner l'inscription sans fin quand il ne répondait pas. Un
+       échec est journalisé, et « Renvoyer le lien » reste possible. */
+    const message = {
       to: address,
       subject: 'Ojà — confirmez votre adresse e-mail',
       text: [
@@ -77,7 +81,17 @@ export class EmailVerificationService {
         `<p style="color:#6B6B6B;font-size:14px">Ce lien est valable ${TTL_HOURS} heures. ` +
           "Si vous n'êtes pas à l'origine de cette inscription, ignorez ce message.</p>",
       ].join(''),
-    });
+    };
+
+    void this.email
+      .send(message)
+      .catch((error: unknown) => {
+        this.logger.error(
+          `Lien de vérification non envoyé (utilisateur ${userId}) : ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      });
   }
 
   /**

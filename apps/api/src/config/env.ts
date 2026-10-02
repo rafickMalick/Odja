@@ -83,6 +83,9 @@ export const envSchema = z
       z.string().trim().email('ADMIN_BOOTSTRAP_EMAIL doit être une adresse e-mail').optional(),
     ),
     SMTP_SECURE: booleanFromEnv(false),
+    /** Clé de l'API Brevo. Renseignée, elle remplace SMTP : Render bloque les
+        ports SMTP sur ses services gratuits. Voir EmailService. */
+    BREVO_API_KEY: z.string().optional(),
     SMTP_USER: z.string().optional(),
     SMTP_PASSWORD: z.string().optional(),
 
