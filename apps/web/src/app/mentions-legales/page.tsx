@@ -15,31 +15,26 @@ export default function MentionsLegalesPage() {
         l’artisanat africain, est édité par :
       </p>
       <ul>
+        {/* Seules les informations renseignées dans src/lib/legal.ts s'affichent. */}
         <li>
-          Raison sociale : <Legal value={LEGAL.companyName} label="Raison sociale" />
+          <Legal value={LEGAL.companyName} fallback={LEGAL.brand} />
+          {LEGAL.legalForm ? `, ${LEGAL.legalForm}` : ""}
         </li>
-        <li>
-          Forme juridique et capital : <Legal value={LEGAL.legalForm} label="Forme juridique" />
-        </li>
-        <li>
-          Siège : <Legal value={LEGAL.address} label="Adresse du siège" />
-        </li>
-        <li>
-          RCCM : <Legal value={LEGAL.rccm} label="Numéro RCCM" />
-        </li>
-        <li>
-          IFU : <Legal value={LEGAL.ifu} label="Numéro IFU" />
-        </li>
+        {LEGAL.address ? <li>Siège : {LEGAL.address}</li> : null}
+        {LEGAL.rccm ? <li>RCCM : {LEGAL.rccm}</li> : null}
+        {LEGAL.ifu ? <li>IFU : {LEGAL.ifu}</li> : null}
         <li>
           Contact : <a href={`mailto:${LEGAL.supportEmail}`}>{LEGAL.supportEmail}</a>, ou le{" "}
           <Link href="/contact">formulaire de contact</Link>
         </li>
       </ul>
 
-      <h2>Directeur de la publication</h2>
-      <p>
-        <Legal value={LEGAL.publicationDirector} label="Nom du directeur de la publication" />
-      </p>
+      {LEGAL.publicationDirector ? (
+        <>
+          <h2>Directeur de la publication</h2>
+          <p>{LEGAL.publicationDirector}</p>
+        </>
+      ) : null}
 
       <h2>Hébergement</h2>
       <p>Le site et ses données sont hébergés par les prestataires suivants :</p>

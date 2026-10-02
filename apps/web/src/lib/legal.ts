@@ -3,8 +3,9 @@
  *
  * Les pages légales (mentions, confidentialité, conditions) lisent tout ici :
  * le jour où la société est immatriculée, on remplit ce fichier et toutes les
- * pages sont à jour. Une valeur `null` s'affiche « à compléter », bien
- * visible, plutôt qu'une information inventée.
+ * pages sont à jour. Une valeur `null` n'est pas affichée du tout (la raison
+ * sociale est alors remplacée par « Ojà ») : jamais d'information inventée,
+ * ni de mention provisoire visible sur le site.
  */
 export const LEGAL = {
   brand: "Ojà",

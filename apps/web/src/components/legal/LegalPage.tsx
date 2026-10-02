@@ -51,7 +51,12 @@ export function LegalPage({
   );
 }
 
-/** Une information légale : sa valeur, ou « à compléter » bien visible. */
-export function Legal({ value, label }: { value: string | null; label: string }) {
-  return value ? <>{value}</> : <span className={styles.todo}>{label} à compléter</span>;
+/**
+ * Une information légale : sa valeur si elle est renseignée (src/lib/legal.ts),
+ * sinon la valeur de repli, sinon rien. Aucune mention provisoire n'apparaît
+ * sur le site.
+ */
+export function Legal({ value, fallback }: { value: string | null; fallback?: string }) {
+  const shown = value ?? fallback;
+  return shown ? <>{shown}</> : null;
 }
