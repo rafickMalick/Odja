@@ -68,6 +68,11 @@ services:
         sync: false
       - key: S3_PUBLIC_BASE_URL
         sync: false
+      # Clé API Brevo (Brevo › SMTP & API › API Keys). Render bloque les ports
+      # SMTP sur le plan gratuit : avec cette clé, les e-mails passent par
+      # l'API HTTPS de Brevo, et les réglages SMTP ci-dessous sont ignorés.
+      - key: BREVO_API_KEY
+        sync: false
       - key: SMTP_HOST
         value: smtp-relay.brevo.com
       - key: SMTP_PORT
