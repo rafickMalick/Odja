@@ -73,6 +73,10 @@ services:
       # l'API HTTPS de Brevo, et les réglages SMTP ci-dessous sont ignorés.
       - key: BREVO_API_KEY
         sync: false
+      # Liste Brevo des abonnés à la newsletter (Brevo › Contacts › Listes,
+      # l'identifiant numérique). Vide : les abonnés restent en base seulement.
+      - key: BREVO_NEWSLETTER_LIST_ID
+        sync: false
       - key: SMTP_HOST
         value: smtp-relay.brevo.com
       - key: SMTP_PORT

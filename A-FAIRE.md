@@ -28,6 +28,9 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
   - `DIRECT_DATABASE_URL` si `DATABASE_URL` passe par le pooler Neon
   - `S3_*` : sans stockage, pas de photos produits, pièces jointes, factures ni
     documents des livreurs
+- [ ] Newsletter : créer une liste dans Brevo (Contacts › Listes) et mettre son
+  identifiant dans `BREVO_NEWSLETTER_LIST_ID` sur Render. Sans elle, les
+  abonnés sont gardés en base mais aucune campagne ne peut leur partir.
 - [ ] Vercel : `NEXT_PUBLIC_API_URL` reste l'adresse Render ; cliquer « Refresh »
   sur le domaine si Vercel le montre encore en erreur.
 - [ ] Le prévenir que la PR #15 a réactivé l'e-mail de confirmation à
@@ -54,11 +57,13 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
 ## 4. Site (front)
 
 - [ ] Liens des réseaux sociaux du pied de page : encore `href="#"`.
-- [ ] Formulaire newsletter du pied de page : ne fait rien.
+- [x] Formulaire newsletter du pied de page : enregistre l'abonné en base
+  (`newsletter_subscribers`) et le copie dans une liste Brevo.
 
 ## 5. Technique
 
-- [ ] Cookies : poser le drapeau `Secure` quand `NODE_ENV=production`.
+- [x] Cookies : drapeau `Secure` quand `NODE_ENV=production` (déjà en place dans
+  `auth.controller.ts` et `cart.controller.ts`).
 - [ ] Tables inutilisées `message_threads` et `messages` : décider avec Malik
   avant toute suppression.
 - [ ] Parcours livreur complet jamais testé de bout en bout (il faut le stockage S3).

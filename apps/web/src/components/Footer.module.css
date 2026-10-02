@@ -184,6 +184,39 @@
   flex-shrink: 0;
 }
 
+.inputButton:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.newsletterNote,
+.newsletterError {
+  font-family: var(--font-outfit);
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.newsletterNote a {
+  color: var(--color-white);
+  text-decoration: underline;
+}
+
+.newsletterError {
+  color: var(--color-white);
+  font-weight: 500;
+}
+
+/* Piège à robots : hors écran plutôt que `display: none`, que certains
+   robots savent repérer et ignorer. */
+.trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 /* ── Colonnes de menu ── */
 .menu {
   display: flex;

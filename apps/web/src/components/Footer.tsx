@@ -1,6 +1,10 @@
 "use client";
 
+import type { NewsletterSubscribeInput } from "@oja/contracts";
 import Link from "next/link";
+import { useState } from "react";
+
+import { ApiError, apiFetch } from "@/lib/api";
 
 import styles from "./Footer.module.css";
 
@@ -85,25 +89,7 @@ export function Footer() {
               </a>
             </div>
 
-            <div className={styles.newsletter}>
-              <p className={styles.newsletterLabel}>Recevoir la newsletter</p>
-              <form
-                className={styles.inputBar}
-                onSubmit={(event) => event.preventDefault()}
-              >
-                <label htmlFor="newsletter-email" className="srOnly">
-                  Adresse e-mail
-                </label>
-                <input
-                  id="newsletter-email"
-                  type="email"
-                  placeholder="Adresse e-mail"
-                />
-                <button type="submit" className={styles.inputButton}>
-                  Je m’inscris
-                </button>
-              </form>
-            </div>
+            <NewsletterForm />
           </div>
 
           <nav className={styles.menu} aria-label="Pied de page">
@@ -153,5 +139,88 @@ export function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+/* L'accusé ne s'affiche qu'une fois l'adresse réellement enregistrée, comme
+   sur le formulaire de contact. */
+function NewsletterForm() {
+  const [status, setStatus] = useState<"idle" | "pending" | "done">("idle");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const body: NewsletterSubscribeInput = {
+      email: String(form.get("email") ?? ""),
+      website: String(form.get("website") ?? ""),
+    };
+
+    setStatus("pending");
+    setError(null);
+    try {
+      await apiFetch("/newsletter", { method: "POST", body });
+      setStatus("done");
+    } catch (cause) {
+      setStatus("idle");
+      setError(
+        cause instanceof ApiError
+          ? (cause.fieldError("email") ?? cause.message)
+          : "Inscription impossible pour le moment. Réessayez.",
+      );
+    }
+  };
+
+  return (
+    <div className={styles.newsletter}>
+      <p className={styles.newsletterLabel}>Recevoir la newsletter</p>
+      {status === "done" ? (
+        <p className={styles.newsletterNote} role="status">
+          C’est noté : vous recevrez nos prochaines offres et nouveautés.
+        </p>
+      ) : (
+        <>
+          <form className={styles.inputBar} onSubmit={handleSubmit}>
+            <label htmlFor="newsletter-email" className="srOnly">
+              Adresse e-mail
+            </label>
+            <input
+              id="newsletter-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="Adresse e-mail"
+              maxLength={180}
+              required
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? "newsletter-error" : undefined}
+            />
+            <div className={styles.trap} aria-hidden="true">
+              <label>
+                Site web
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+              </label>
+            </div>
+            <button
+              type="submit"
+              className={styles.inputButton}
+              disabled={status === "pending"}
+            >
+              {status === "pending" ? "Envoi…" : "Je m’inscris"}
+            </button>
+          </form>
+          {error ? (
+            <p id="newsletter-error" className={styles.newsletterError} role="alert">
+              {error}
+            </p>
+          ) : (
+            <p className={styles.newsletterNote}>
+              Désinscription en un clic dans chaque e-mail.{" "}
+              <Link href="/confidentialite">Vos données</Link>
+            </p>
+          )}
+        </>
+      )}
+    </div>
   );
 }

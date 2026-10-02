@@ -1375,3 +1375,24 @@ model Invoice {
 
   @@map("invoices")
 }
+
+// ═══════════════════════════════════════════ Newsletter
+
+/// Abonné à la newsletter (pied de page). La base fait foi ; la liste Brevo,
+/// d'où partent les campagnes, n'en est qu'une copie. Une désinscription se
+/// marque (`unsubscribedAt`) plutôt que de supprimer la ligne : on garde la
+/// trace du consentement et de son retrait.
+model NewsletterSubscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  /// D'où vient l'inscription (`footer`…), pour savoir quel formulaire convertit.
+  source         String    @default("footer")
+  createdAt      DateTime  @default(now())
+  /// Dernière inscription, réinscription comprise : la date du consentement.
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+  /// Dernière copie réussie vers la liste Brevo. Nul : à rattraper.
+  brevoSyncedAt  DateTime?
+
+  @@map("newsletter_subscribers")
+}
