@@ -237,6 +237,32 @@ describe('Service client (bout en bout)', () => {
     expect(pending.body.count).toBe(2);
   });
 
+  describe('pièces jointes', () => {
+    it('refuse de joindre le fichier d’un autre compte, ou d’un autre usage', async () => {
+      const buyer = await register('acheteur@oja.market', '+2290190000313');
+      const someoneElse = 'private/support-attachment/2026-10-02/autre-compte/abcdef.png';
+      const kycOfMine = 'private/kyc-document/2026-10-02/moi/abcdef.png';
+
+      await openTicket(buyer, { fileKeys: [someoneElse] }).expect(400);
+      await openTicket(buyer, { fileKeys: [kycOfMine] }).expect(400);
+      await openTicket(buyer, { fileKeys: ['../../etc/passwd'] }).expect(400);
+    });
+
+    it('ne donne pas de lien pour une pièce absente de ma demande', async () => {
+      const buyer = await register('acheteur@oja.market', '+2290190000314');
+      const { body } = await openTicket(buyer).expect(201);
+
+      await api()
+        .get(
+          `/api/v1/support/tickets/${body.reference}/attachment?key=${encodeURIComponent(
+            'private/kyc-document/2026-10-02/x/piece-identite.png',
+          )}`,
+        )
+        .set('Cookie', buyer)
+        .expect(404);
+    });
+  });
+
   describe('formulaire de contact public', () => {
     const contact = (over: Record<string, unknown> = {}) =>
       api()
