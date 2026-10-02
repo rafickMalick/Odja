@@ -15,7 +15,23 @@
  * `httpOnly` plutôt qu'à portée du premier script injecté.
  */
 
-const BASE_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1';
+/* Adresse réelle de l'API : celle qu'appellent le serveur Next et le proxy
+   déclaré dans next.config.ts. */
+const API_ORIGIN_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1';
+
+/**
+ * Côté navigateur, l'API est appelée **sur le domaine du site** (`/api/v1`),
+ * et Next la relaie vers la vraie API (rewrites, next.config.ts).
+ *
+ * En ligne, le site (`*.vercel.app`) et l'API (`*.onrender.com`) sont deux
+ * sites distincts pour le navigateur : il refusait les cookies de session de
+ * l'API, posés depuis un site tiers. On voyait son espace cinq secondes, le
+ * temps de la réponse de connexion, puis on était renvoyé vers la connexion
+ * à la requête suivante. Relayés par le site, les cookies deviennent les
+ * siens, et le navigateur les garde.
+ */
+export const API_BASE_URL = typeof window === 'undefined' ? API_ORIGIN_URL : '/api/v1';
+const BASE_URL = API_BASE_URL;
 
 /** Erreur d'API au format RFC 9457, telle que le serveur la renvoie. */
 export interface ApiProblem {
