@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
+  CONTACT_TICKET_CATEGORIES,
   CUSTOMER_TICKET_CATEGORIES,
   MAKER_TICKET_CATEGORIES,
   TICKET_CATEGORY_LABELS,
@@ -8,6 +9,9 @@ import {
   type AdminTicketSummaryView,
   type AdminTicketView,
   type AdminTicketsQuery,
+  type ContactMessageInput,
+  type ContactReceipt,
+  type ContactTicketCategory,
   type CreateTicketInput,
   type TicketMessageInput,
   type TicketMessageView,
@@ -186,6 +190,49 @@ export class SupportService {
     ]);
 
     return this.mine(user, reference);
+  }
+
+  // ═══════════════════════════════ Formulaire de contact public
+
+  /**
+   * Message d'un visiteur, inscrit ou non.
+   *
+   * Il arrive dans la même file que les demandes des espaces connectés,
+   * marqué « formulaire de contact ». Si l'adresse correspond à un compte, la
+   * demande lui est rattachée : elle apparaît dans ses « Mes demandes » et les
+   * réponses lui parviennent aussi dans son espace.
+   */
+  async createFromContact(input: ContactMessageInput): Promise<ContactReceipt> {
+    const email = input.email!.trim().toLowerCase();
+    const account = await this.prisma.user.findFirst({
+      where: { email, deletedAt: null },
+      select: { id: true, role: true },
+    });
+
+    const label = CONTACT_TICKET_CATEGORIES[input.category as ContactTicketCategory];
+    const now = new Date();
+    const ticket = await this.prisma.$transaction(async (tx) => {
+      const reference = await nextReference(tx);
+      return tx.supportTicket.create({
+        data: {
+          reference,
+          channel: 'CONTACT_FORM',
+          ...(account ? { userId: account.id, authorRole: account.role } : {}),
+          guestName: input.name!.trim(),
+          guestEmail: email,
+          category: input.category!,
+          subject: label,
+          lastMessageAt: now,
+          messages: {
+            create: { authorId: account?.id ?? null, body: input.message!, createdAt: now },
+          },
+        },
+      });
+    });
+
+    void this.notifications.supportTicketOpened(ticket.id);
+    void this.notifications.contactReceived(ticket.id);
+    return { reference: ticket.reference };
   }
 
   // ═══════════════════════════════ Côté administration

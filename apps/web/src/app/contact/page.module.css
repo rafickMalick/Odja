@@ -203,6 +203,29 @@
   color: var(--color-gray-700);
 }
 
+/* ── Échec d'envoi : le message n'est pas parti, on le dit ── */
+.formError {
+  width: 100%;
+  padding: var(--space-16);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-danger);
+  background: rgba(239, 68, 68, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+}
+
+/* Piège à robots : hors écran plutôt que `display: none`, que certains
+   robots savent repérer et ignorer. */
+.trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 @media (max-width: 1100px) {
   .layout {
     flex-direction: column;

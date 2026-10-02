@@ -237,6 +237,66 @@ describe('Service client (bout en bout)', () => {
     expect(pending.body.count).toBe(2);
   });
 
+  describe('formulaire de contact public', () => {
+    const contact = (over: Record<string, unknown> = {}) =>
+      api()
+        .post('/api/v1/contact')
+        .send({
+          name: 'Jean Dossou',
+          email: 'visiteur@oja.market',
+          category: 'partenariat',
+          message: 'Je représente une coopérative de potiers, comment vous rejoindre ?',
+          website: '',
+          ...over,
+        });
+
+    it('crée une demande « visiteur » dans la file, avec une référence', async () => {
+      const staff = await admin();
+
+      const sent = await contact().expect(201);
+      expect(sent.body.reference).toMatch(/^SUP-\d{4}-\d{6}$/);
+
+      const queue = await api()
+        .get('/api/v1/admin/support/tickets?role=GUEST')
+        .set('Cookie', staff)
+        .expect(200);
+      expect(queue.body).toHaveLength(1);
+      expect(queue.body[0]).toMatchObject({
+        reference: sent.body.reference,
+        channel: 'CONTACT_FORM',
+        isGuest: true,
+        authorName: 'Jean Dossou',
+        authorEmail: 'visiteur@oja.market',
+        categoryLabel: 'Partenariat',
+      });
+    });
+
+    it('rattache la demande au compte dont l’adresse correspond', async () => {
+      const buyer = await register('acheteur@oja.market', '+2290190000312');
+
+      await contact({ email: 'Acheteur@Oja.market' }).expect(201);
+
+      const mine = await api().get('/api/v1/support/tickets').set('Cookie', buyer).expect(200);
+      expect(mine.body).toHaveLength(1);
+      expect(mine.body[0].categoryLabel).toBe('Partenariat');
+    });
+
+    it('ignore en silence un robot pris au piège', async () => {
+      const sent = await contact({ website: 'https://spam.example' }).expect(201);
+      expect(sent.body.reference).toBeNull();
+      const count = await prisma.supportTicket.count({
+        where: { guestEmail: 'visiteur@oja.market' },
+      });
+      expect(count).toBe(0);
+    });
+
+    it('refuse un sujet hors liste et un message vide', async () => {
+      const refused = await contact({ category: 'livraison', message: '' }).expect(400);
+      const fields = refused.body.errors.map((e: { field: string }) => e.field);
+      expect(fields).toEqual(expect.arrayContaining(['category', 'message']));
+    });
+  });
+
   it('reste fermé aux autres rôles', async () => {
     const courier = await register('livreur@oja.market', '+2290190000310', 'COURIER');
     const buyer = await register('acheteur@oja.market', '+2290190000311');

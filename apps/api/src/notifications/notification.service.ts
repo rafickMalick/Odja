@@ -706,6 +706,41 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Accusé de réception du formulaire de contact public.
+   *
+   * Le texte est **fixe** : il ne reprend ni le nom, ni le message saisis.
+   * Une route publique qui écrit à l'adresse qu'on lui donne peut servir à
+   * envoyer des e-mails au nom d'Ojà à n'importe qui ; sans contenu fourni
+   * par le visiteur, elle ne transporte rien d'exploitable. Le piège à robots
+   * et la limite d'envois font le reste.
+   */
+  async contactReceived(ticketId: string): Promise<void> {
+    await this.safely('accusé de réception du contact', async () => {
+      const ticket = await this.prisma.supportTicket.findUnique({
+        where: { id: ticketId },
+        select: { reference: true, guestEmail: true },
+      });
+      if (!ticket?.guestEmail) return;
+
+      await this.email.send({
+        to: ticket.guestEmail,
+        subject: `Ojà — nous avons bien reçu votre message (${ticket.reference})`,
+        text: [
+          'Bonjour,',
+          '',
+          `Nous avons bien reçu votre message. Sa référence : ${ticket.reference}.`,
+          'Le service client Ojà vous répond par e-mail, en général sous 24 heures ouvrées.',
+          'Rappelez cette référence si vous nous écrivez à nouveau.',
+          '',
+          "Si vous n'êtes pas à l'origine de ce message, ignorez cet e-mail.",
+          '',
+          "L'équipe Ojà",
+        ].join('\n'),
+      });
+    });
+  }
+
   /** Une nouvelle demande attend le service client. */
   async supportTicketOpened(ticketId: string): Promise<void> {
     await this.safely('nouvelle demande au service client', async () => {
