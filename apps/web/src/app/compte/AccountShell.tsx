@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { Workspace, type WorkspaceLink } from "@/components/dashboard/Workspace";
 import { ApiError, apiFetch } from "@/lib/api";
+import { loginUrl } from "@/lib/login-redirect";
 
 /**
  * Coquille de l'espace client.
@@ -47,7 +48,7 @@ export function AccountShell({ children }: { children: ReactNode }) {
       } catch (cause) {
         if (cancelled) return;
         if (cause instanceof ApiError && cause.isUnauthorized) {
-          router.push("/connexion?suite=/compte");
+          router.push(loginUrl("/compte"));
           return;
         }
         setState("ready");

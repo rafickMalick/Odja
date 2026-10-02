@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
 import { Workspace, type WorkspaceLink } from "@/components/dashboard/Workspace";
+import { loginUrl } from "@/lib/login-redirect";
 
 import { MakerStatusProvider, useMakerStatus } from "./maker-context";
 
@@ -27,7 +28,7 @@ export function MakerShell({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   return (
-    <MakerStatusProvider onUnauthorized={() => router.push("/connexion?suite=/espace-createur")}>
+    <MakerStatusProvider onUnauthorized={() => router.push(loginUrl("/espace-createur"))}>
       <Gate>{children}</Gate>
     </MakerStatusProvider>
   );

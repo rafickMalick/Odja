@@ -14,6 +14,7 @@ import {
   type FieldTab,
 } from "@/components/dashboard/FieldShell";
 import { ApiError, apiFetch } from "@/lib/api";
+import { loginUrl } from "@/lib/login-redirect";
 
 /**
  * Coquille de l'espace livreur.
@@ -52,7 +53,7 @@ export function CourierShell({ children }: { children: ReactNode }) {
       setMissions(list.length);
     } catch (cause) {
       if (cause instanceof ApiError && cause.isUnauthorized) {
-        router.push("/connexion?suite=/espace-livreur");
+        router.push(loginUrl("/espace-livreur"));
         return;
       }
       // Compte livreur sans profil : c'est le cas normal juste après
