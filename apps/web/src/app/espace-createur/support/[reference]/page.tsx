@@ -5,16 +5,15 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import { SUPPORT_TONE } from "@/app/compte/status";
 import { Badge } from "@/components/Badge";
 import { PageHead, Panel, workspaceStyles as styles } from "@/components/dashboard/Workspace";
 import { TicketThread } from "@/components/support/TicketThread";
 import support from "@/components/support/support.module.css";
 import { ApiError, apiFetch } from "@/lib/api";
 
-import { SUPPORT_TONE } from "../../status";
-
-/** Une demande au service client, et son fil de discussion. */
-export default function AccountTicketPage() {
+/** Une demande du créateur au service client, et son fil de discussion. */
+export default function MakerTicketPage() {
   const params = useParams<{ reference: string }>();
   const [ticket, setTicket] = useState<TicketView | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -57,13 +56,7 @@ export default function AccountTicketPage() {
 
       <p className={support.meta}>
         <span>Ouverte le {new Date(ticket.createdAt).toLocaleDateString("fr-FR")}</span>
-        {ticket.orderReference ? (
-          <span>
-            Commande{" "}
-            <Link href={`/compte/commandes/${ticket.orderReference}`}>{ticket.orderReference}</Link>
-          </span>
-        ) : null}
-        <Link href="/compte/support">Toutes mes demandes</Link>
+        <Link href="/espace-createur/support">Toutes mes demandes</Link>
       </p>
 
       <Panel title="Échanges avec le service client">

@@ -51,12 +51,12 @@ export default function AdminTicketPage() {
   if (error && !ticket) return <p className={styles.error}>{error}</p>;
   if (!ticket) return <p className={styles.muted}>Chargement…</p>;
 
-  const send = async (body: string, internal: boolean) => {
+  const send = async (body: string, internal: boolean, fileKeys: string[]) => {
     try {
       setTicket(
         await apiFetch<AdminTicketView>(`/admin/support/tickets/${ticket.reference}/messages`, {
           method: "POST",
-          body: { body, internal },
+          body: { body, internal, fileKeys },
         }),
       );
     } catch (cause) {
@@ -162,6 +162,13 @@ export default function AdminTicketPage() {
           side="staff"
           closed={false}
           onSend={send}
+          resolveAttachment={async (key) =>
+            (
+              await apiFetch<{ url: string }>(
+                `/admin/support/tickets/${ticket.reference}/attachment?key=${encodeURIComponent(key)}`,
+              )
+            ).url
+          }
         />
       </Panel>
     </>
