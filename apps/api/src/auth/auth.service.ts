@@ -130,11 +130,11 @@ export class AuthService {
       return { tokens: null, user: null, pendingPhone: true };
     }
 
-    /* L'e-mail de confirmation part, mais n'arrête personne : le compte est
-       utilisable immédiatement. Bloquer l'accès derrière un clic dans une
-       boîte aux lettres perd le visiteur au moment précis où il vient
-       d'arriver. */
+    /* E-mail de confirmation (Brevo) désactivé tant qu'il n'y a pas de nom de
+       domaine pour l'expéditeur. Il n'arrêtait personne : le compte reste
+       utilisable immédiatement. À réactiver avec le domaine.
     await this.emailVerification.sendVerification(user.id, user.email, user.firstName);
+    */
 
     const tokens = await this.tokens.issue(user, context);
     return { tokens, user: toPublicUser(user), pendingPhone: false };
