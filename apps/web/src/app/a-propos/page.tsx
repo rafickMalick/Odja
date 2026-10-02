@@ -10,17 +10,17 @@ import styles from "./page.module.css";
 const STATS = [
   { value: "5 %", label: "de commission, affichée au client" },
   { value: "8", label: "pays de la zone UEMOA préparés" },
-  { value: "24 h", label: "pour verser au fabricant après votre validation" },
+  { value: "24 h", label: "pour verser au créateur après votre validation" },
 ];
 
 const STEPS = [
   {
     title: "Un catalogue de pièces uniques",
-    text: "Chaque fiche indique l’atelier qui fabrique, la matière employée et le délai réel de façonnage  jamais un stock anonyme.",
+    text: "Chaque fiche indique l’atelier qui fabrique, la matière employée et le délai réel de façonnage, jamais un stock anonyme.",
   },
   {
     title: "Un paiement protégé",
-    text: "Mobile Money ou carte. Ojà conserve le montant : le fabricant n’est réglé qu’une fois la pièce entre vos mains.",
+    text: "Mobile Money ou carte. Ojà conserve le montant : le créateur n’est réglé qu’une fois la pièce entre vos mains.",
   },
   {
     title: "Une livraison suivie",
@@ -28,7 +28,7 @@ const STEPS = [
   },
   {
     title: "Une validation qui compte",
-    text: "Vous inspectez la pièce à la remise. C’est votre validation qui déclenche le versement au fabricant, 24 h plus tard.",
+    text: "Vous inspectez la pièce à la remise. C’est votre validation qui déclenche le versement au créateur, 24 h plus tard.",
   },
 ];
 
@@ -36,17 +36,17 @@ const VALUES = [
   {
     icon: "/images/icon-package.svg",
     title: "Des ateliers vérifiés",
-    text: "Chaque fabricant dépose un dossier  identité, savoir-faire, adresse d’atelier  vérifié avant sa première mise en vente.",
+    text: "Chaque créateur dépose un dossier (identité, savoir-faire, adresse d’atelier), vérifié avant sa première mise en vente.",
   },
   {
     icon: "/images/icon-secure-payment.svg",
     title: "L’argent ne circule qu’au bon moment",
-    text: "Le client paie à la commande, le fabricant est payé à la validation. Ojà ne prend jamais de commission sur ce qui n’a pas été livré.",
+    text: "Le client paie à la commande, le créateur est payé à la validation. Ojà ne prend jamais de commission sur ce qui n’a pas été livré.",
   },
   {
     icon: "/images/icon-delivery.svg",
     title: "Une seule intermédiation",
-    text: "Le téléphone du client et celui du fabricant ne se croisent jamais. Toute question passe par le Support Ojà.",
+    text: "Le téléphone du client et celui du créateur ne se croisent jamais. Toute question passe par le Support Ojà.",
   },
 ];
 
@@ -75,8 +75,8 @@ export default function AboutPage() {
         <p className={styles.paragraph}>
           Ojà met en relation des ateliers identifiés et des acheteurs, et
           reste l’intermédiaire du début à la fin : le paiement, la livraison,
-          et le service après-vente passent par la plateforme. Le fabricant
-          touche le prix qu’il a fixé, en entier  la commission d’Ojà
+          et le service après-vente passent par la plateforme. Le créateur
+          touche le prix qu’il a fixé, en entier : la commission d’Ojà
           s’ajoute au prix affiché, elle ne le rogne jamais.
         </p>
       </section>
@@ -134,13 +134,13 @@ export default function AboutPage() {
         </div>
         <div className={styles.ctaInner}>
           <div>
-            <p className={styles.ctaTitle}>Vous êtes un fabricant ?</p>
+            <p className={styles.ctaTitle}>Vous êtes un créateur ?</p>
             <p className={styles.ctaText}>
               Ouvrez votre boutique et mettez vos pièces en vente.
             </p>
           </div>
           <ButtonLink href="/inscription" variant="outline">
-            Devenir fabricant
+            Devenir créateur
           </ButtonLink>
         </div>
       </section>

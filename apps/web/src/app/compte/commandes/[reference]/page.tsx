@@ -164,7 +164,16 @@ export default function OrderDetailPage() {
             </div>
           ) : null}
           <div className={order.total}>
-            <span>Payé</span>
+            {/* « Payé » seulement si l'argent est réellement arrivé : sur une
+                commande en attente de paiement, le client croirait l'avoir
+                réglée. */}
+            <span>
+              {data.status === "PENDING_PAYMENT"
+                ? "À payer"
+                : data.status === "CANCELLED"
+                  ? "Total"
+                  : "Payé"}
+            </span>
             <strong>{formatFcfa(data.totalXof)}</strong>
           </div>
         </div>

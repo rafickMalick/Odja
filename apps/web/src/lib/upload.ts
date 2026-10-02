@@ -1,3 +1,4 @@
+import { formatNumber } from "./format";
 import { apiFetch } from "./api";
 
 /**
@@ -102,5 +103,7 @@ export async function uploadFile(
 }
 
 function mb(bytes: number): string {
-  return (bytes / 1024 / 1024).toFixed(1).replace(".0", "");
+  // « 5 », « 2,5 » : une décimale seulement quand elle compte.
+  const rounded = Math.round((bytes / 1024 / 1024) * 10) / 10;
+  return formatNumber(rounded, Number.isInteger(rounded) ? 0 : 1);
 }

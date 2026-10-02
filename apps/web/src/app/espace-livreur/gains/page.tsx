@@ -121,6 +121,6 @@ export default function CourierEarningsPage() {
 }
 
 function formatDate(iso: string | null): string {
-  if (!iso) return "";
+  if (!iso) return "Non programmé";
   return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
 }

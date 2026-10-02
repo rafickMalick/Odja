@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function StepperQuantity({ value, onChange, min = 1, label }: Props) {
-  const suffix = label ? `  ${label}` : "";
+  const suffix = label ? `, ${label}` : "";
 
   return (
     <div className={styles.root}>

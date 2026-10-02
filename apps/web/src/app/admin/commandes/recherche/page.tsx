@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
@@ -26,10 +26,11 @@ import { ORDER_TONE, SUB_ORDER_TONE } from "../../../compte/status";
 interface Order {
   reference: string;
   status: string;
+  statusLabel: string;
   shipFullName: string;
   shipPhone: string;
   totalXof: number;
-  subOrders: { reference: string; shopName: string; status: string }[];
+  subOrders: { reference: string; shopName: string; status: string; statusLabel: string }[];
   placedAt: string | null;
   createdAt: string;
 }
@@ -39,15 +40,36 @@ export default function AdminOrderSearchPage() {
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const search = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const runSearch = async (term: string) => {
     setBusy(true);
     setOrders(
-      await apiFetch<Order[]>(
-        `/admin/orders/search?q=${encodeURIComponent(query.trim())}`,
-      ).catch(() => []),
+      await apiFetch<Order[]>(`/admin/orders/search?q=${encodeURIComponent(term)}`).catch(
+        () => [],
+      ),
     );
     setBusy(false);
+  };
+
+  /* La recherche vit dans l'adresse (`?q=CMD-2026-000412`) : un lien envoyé
+     à un collègue ouvre directement le résultat, et le retour arrière le
+     retrouve. Lu au montage plutôt qu'avec useSearchParams, qui exigerait
+     une frontière Suspense pour un seul champ. */
+  useEffect(() => {
+    const initial = new URLSearchParams(window.location.search).get("q")?.trim();
+    if (initial) {
+      setQuery(initial);
+      void runSearch(initial);
+    }
+  }, []);
+
+  const search = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const term = query.trim();
+    const url = new URL(window.location.href);
+    if (term) url.searchParams.set("q", term);
+    else url.searchParams.delete("q");
+    window.history.replaceState(null, "", url);
+    await runSearch(term);
   };
 
   return (
@@ -107,7 +129,7 @@ export default function AdminOrderSearchPage() {
                       </td>
                       <td>
                         <Badge type={ORDER_TONE[order.status] ?? "pending"}>
-                          {order.status}
+                          {order.statusLabel}
                         </Badge>
                       </td>
                       <td>
@@ -115,7 +137,7 @@ export default function AdminOrderSearchPage() {
                           <p key={subOrder.reference}>
                             {subOrder.shopName}{" "}
                             <Badge type={SUB_ORDER_TONE[subOrder.status] ?? "pending"}>
-                              {subOrder.status}
+                              {subOrder.statusLabel}
                             </Badge>
                           </p>
                         ))}

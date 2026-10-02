@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { CatalogCard } from "@/components/CatalogCard";
 import { fetchMaker, fetchProducts } from "@/lib/catalog";
+import { formatNumber } from "@/lib/format";
 
 import styles from "./page.module.css";
 
@@ -40,7 +41,7 @@ export default async function AtelierPage({
           <p className={styles.count}>
             {maker.productCount} pièce{maker.productCount > 1 ? "s" : ""} en vente
             {maker.ratingCount > 0
-              ? ` · ${maker.ratingAvg.toFixed(1)} / 5 sur ${maker.ratingCount} avis`
+              ? ` · ${formatNumber(maker.ratingAvg, 1)} / 5 sur ${maker.ratingCount} avis`
               : ""}
           </p>
         </div>

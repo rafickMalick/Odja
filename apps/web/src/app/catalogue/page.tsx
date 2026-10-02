@@ -91,7 +91,7 @@ export default async function CataloguePage({
               <p className={styles.empty}>
                 {active
                   ? `Aucune pièce dans cette catégorie pour le moment.`
-                  : `Le catalogue est encore vide  les premiers ateliers arrivent.`}
+                  : `Le catalogue est encore vide. Les premiers ateliers arrivent.`}
               </p>
             )}
           </div>

@@ -108,7 +108,7 @@ export function PhotoGallery({
   return (
     <Panel title={`Photos (${images.length} / ${MAX_PHOTOS})`}>
       <p className={styles.muted}>
-        Trois photos au minimum. La première est celle qui apparaît au catalogue  montrez la
+        Trois photos au minimum. La première est celle qui apparaît au catalogue : montrez la
         pièce entière, sur fond neutre.
       </p>
 

@@ -11,6 +11,7 @@ import {
   fieldShellStyles as styles,
 } from "@/components/dashboard/FieldShell";
 import { apiFetch } from "@/lib/api";
+import { formatNumber } from "@/lib/format";
 
 import type { Mission } from "./mission";
 import { NEXT_ACTION, VEHICLES } from "./mission";
@@ -53,8 +54,9 @@ export default function CourierMissionsPage() {
       ) : missions.length === 0 ? (
         <FieldCard>
           <p className={styles.muted}>
-            Aucune mission pour l’instant. Déclarez-vous disponible en haut de l’écran : Ojà
-            vous affecte les courses selon votre véhicule et votre position.
+            Aucune mission pour l’instant. Une fois votre dossier validé, déclarez-vous
+            disponible en haut de l’écran : Ojà vous affecte les courses selon votre véhicule
+            et votre position.
           </p>
         </FieldCard>
       ) : (
@@ -80,7 +82,7 @@ export default function CourierMissionsPage() {
               </div>
               <div>
                 <span>Distance</span>
-                <strong>{mission.distanceKm.toFixed(1)} km</strong>
+                <strong>{formatNumber(mission.distanceKm, 1)} km</strong>
               </div>
               <div>
                 <span>Véhicule</span>

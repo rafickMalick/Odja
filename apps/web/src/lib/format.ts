@@ -1,15 +1,24 @@
-/* Les maquettes affichent les montants sous deux formes :
-   « 7500 FCFA » sur les cartes du catalogue, « 194 250 F CFA » sur la fiche
-   produit. On garde les deux plutôt que d'uniformiser. */
+/* Une seule écriture des montants sur tout le site : « 194 250 F CFA ».
+   Les maquettes en montraient deux (« 7500 FCFA » sur les cartes), ce qui
+   faisait lire deux écritures différentes pour la même pièce d'une page à
+   l'autre. */
 
 export function formatFcfa(value: number): string {
-  return `${value.toLocaleString("fr-FR").replace(/ | /g, " ")} F CFA`;
+  return `${formatNumber(value)} F CFA`;
 }
 
-/* La maquette écrit « 7500 FCFA » sans séparateur, ce qui reste lisible à
-   quatre chiffres. Le catalogue réel monte à six chiffres (168 000), où le
-   collage devient illisible : on garde la forme courte « FCFA » de la carte
-   mais on rétablit le séparateur de milliers. */
-export function formatCompactFcfa(value: number): string {
-  return `${value.toLocaleString("fr-FR").replace(/ | /g, " ")} FCFA`;
+/** Ancien nom de la forme « carte » : même écriture que partout ailleurs. */
+export const formatCompactFcfa = formatFcfa;
+
+/**
+ * Nombres à la française : virgule décimale, espace pour les milliers
+ * (« 1 200 », « 4,1 »). `toFixed()` donnerait « 4.1 », à l'anglaise.
+ */
+export function formatNumber(value: number, fractionDigits = 0): string {
+  return value
+    .toLocaleString("fr-FR", {
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    })
+    .replace(/ | /g, " ");
 }

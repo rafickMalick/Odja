@@ -140,8 +140,8 @@ export default async function ConfirmationPage({
           <div className={styles.rule} />
 
           <p className={styles.lineMeta}>
-            Livrée à {order.shipFullName}, {order.shipLine1}
-            {order.shipLandmark ? `  ${order.shipLandmark}` : ""}
+            Livraison à {order.shipFullName}, {order.shipLine1}
+            {order.shipLandmark ? ` · ${order.shipLandmark}` : ""}
           </p>
 
           <div className={styles.actions}>

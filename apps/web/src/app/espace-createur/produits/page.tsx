@@ -59,7 +59,7 @@ export default function MakerProductsPage() {
         ) : products.length === 0 ? (
           <EmptyState
             title="Aucune pièce"
-            text="Une fiche demande trois photos au minimum, un prix, et les dimensions  celles-ci servent à calculer la livraison."
+            text="Une fiche demande trois photos au minimum, un prix, et les dimensions : celles-ci servent à calculer la livraison."
             action={
               <ButtonLink href="/espace-createur/produits/nouveau">
                 Ajouter ma première pièce

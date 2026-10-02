@@ -6,11 +6,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { Prisma, ShipmentStatus } from '@oja/db';
 import {
   assessProof,
   assertShipmentTransition,
   assertSubOrderTransition,
+  billableDistanceKm,
   deriveOrderStatus,
   formatDeliveryOtp,
   haversineKm,
@@ -18,6 +20,7 @@ import {
   type ProofSubmission,
 } from '@oja/domain';
 
+import { pointOf } from '../checkout/quote.service';
 import { SmsService } from '../notifications/sms.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../notifications/notification.service';
@@ -34,13 +37,17 @@ import { ShipmentEventsBus } from './shipment-events.bus';
 @Injectable()
 export class ShipmentService {
   private readonly logger = new Logger(ShipmentService.name);
+  private readonly sinuosityFactor: number;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly sms: SmsService,
     private readonly notifications: NotificationService,
     private readonly events: ShipmentEventsBus,
-  ) {}
+    config: ConfigService,
+  ) {
+    this.sinuosityFactor = config.get<number>('DISTANCE_SINUOSITY_FACTOR', 1.3);
+  }
 
   /**
    * Crée l'expédition d'une sous-commande prête à enlever.
@@ -54,10 +61,13 @@ export class ShipmentService {
       where: { id: subOrderId },
       include: {
         shipment: true,
-        maker: true,
+        maker: { include: { city: true } },
         order: true,
         lines: { include: { product: true } },
       },
+    });
+    const shipCity = await this.prisma.city.findUniqueOrThrow({
+      where: { id: subOrder.order.shipCityId },
     });
 
     if (subOrder.shipment) return { reference: subOrder.shipment.reference };
@@ -76,7 +86,7 @@ export class ShipmentService {
       { weightGrams: 0, volumeL: 0 },
     );
 
-    const distanceKm = this.distanceFor(subOrder.maker, subOrder.order);
+    const distanceKm = this.distanceFor(subOrder.maker, subOrder.order, shipCity);
 
     /* Le code de réception est tiré maintenant et envoyé au client : il doit
        l'avoir en main avant que le livreur ne sonne. */
@@ -669,24 +679,26 @@ export class ShipmentService {
     });
   }
 
+  /**
+   * Distance de la course, calculée **comme au chiffrage** : point précis,
+   * sinon centre de la ville, et le même facteur de sinuosité. Calculée
+   * autrement, l'expédition affichait 0 km pour une livraison facturée sur
+   * 4,1 km dès qu'une adresse n'avait pas de coordonnées.
+   */
   private distanceFor(
-    maker: { pickupLatitude: number | null; pickupLongitude: number | null },
+    maker: {
+      pickupLatitude: number | null;
+      pickupLongitude: number | null;
+      city: { latitude: number | null; longitude: number | null };
+    },
     order: { shipLatitude: number | null; shipLongitude: number | null },
+    shipCity: { latitude: number | null; longitude: number | null },
   ): number {
-    if (
-      maker.pickupLatitude === null ||
-      maker.pickupLongitude === null ||
-      order.shipLatitude === null ||
-      order.shipLongitude === null
-    ) {
-      return 0;
-    }
-    return (
-      haversineKm(
-        { latitude: maker.pickupLatitude, longitude: maker.pickupLongitude },
-        { latitude: order.shipLatitude, longitude: order.shipLongitude },
-      ) * 1.3
-    );
+    const from = pointOf(maker.pickupLatitude, maker.pickupLongitude, maker.city);
+    const to = pointOf(order.shipLatitude, order.shipLongitude, shipCity);
+    // Le chiffrage refuse une commande sans position : ce cas n'arrive pas.
+    if (!from || !to) return 0;
+    return Math.round(billableDistanceKm(from, to, this.sinuosityFactor) * 10) / 10;
   }
 
   private async vehicleFor(

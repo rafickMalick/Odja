@@ -10,7 +10,7 @@ import {
   workspaceStyles as styles,
 } from "@/components/dashboard/Workspace";
 import { ApiError, apiFetch } from "@/lib/api";
-import { formatFcfa } from "@/lib/format";
+import { formatFcfa, formatNumber } from "@/lib/format";
 
 import admin from "../admin.module.css";
 
@@ -124,7 +124,7 @@ export default function AdminCatalogPage() {
                   ))}
                 </div>
               ) : (
-                <p className={styles.error}>Aucune photo  la fiche ne devrait pas être ici.</p>
+                <p className={styles.error}>Aucune photo : la fiche ne devrait pas être ici.</p>
               )}
 
               <p className={admin.description}>{product.description}</p>
@@ -136,7 +136,7 @@ export default function AdminCatalogPage() {
                 </div>
                 <div>
                   <dt>Matériau</dt>
-                  <dd>{product.material ?? ""}</dd>
+                  <dd>{product.material ?? "Non renseignée"}</dd>
                 </div>
                 <div>
                   <dt>Prix créateur</dt>
@@ -165,7 +165,7 @@ export default function AdminCatalogPage() {
                   <dd>
                     {product.dimensions.lengthMm} × {product.dimensions.widthMm} ×{" "}
                     {product.dimensions.heightMm} mm ·{" "}
-                    {(product.dimensions.weightGrams / 1000).toFixed(1)} kg
+                    {formatNumber(product.dimensions.weightGrams / 1000, 1)} kg
                   </dd>
                 </div>
                 <div>
@@ -173,7 +173,7 @@ export default function AdminCatalogPage() {
                   <dd>
                     {product.submittedAt
                       ? new Date(product.submittedAt).toLocaleDateString("fr-FR")
-                      : ""}
+                      : "Non renseignée"}
                   </dd>
                 </div>
               </dl>

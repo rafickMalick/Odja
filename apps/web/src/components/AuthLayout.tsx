@@ -9,7 +9,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
     <main className={styles.root}>
       <div className={styles.visual}>
         <img src="/images/auth-side.png" alt="" className={styles.visualImage} />
-        <Link href="/" aria-label="Ojà accueil">
+        <Link href="/" aria-label="Ojà, accueil">
           <img
             src="/images/logo-oja-white.svg"
             alt=""

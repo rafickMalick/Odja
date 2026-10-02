@@ -27,7 +27,7 @@ const PIECES = [
     description:
       "Fauteuil sculpté à la main dans un bloc d'iroko massif, finition à l'huile de lin. Chaque pièce présente de légères variations qui font son unicité.",
     makerPriceXof: 168_000,
-    images: ['/images/bundle-1.png'],
+    images: ['/images/bundle-1.png', '/images/listing-thumb-1.png', '/images/listing-thumb-2.png'],
     weightGrams: 18_000,
     lengthMm: 900,
     widthMm: 750,
@@ -42,7 +42,7 @@ const PIECES = [
     description:
       'Globe lumineux monté sur pied de laiton recyclé, patiné à la main. Diffuse une lumière chaude et rasante.',
     makerPriceXof: 52_000,
-    images: ['/images/bundle-2.png'],
+    images: ['/images/bundle-2.png', '/images/listing-thumb-3.png', '/images/bundle-3.png'],
     weightGrams: 3_200,
     lengthMm: 280,
     widthMm: 280,
@@ -57,7 +57,7 @@ const PIECES = [
     description:
       "Nappe tissée au métier traditionnel, en lin écru. Les motifs sont repris d'un répertoire transmis depuis trois générations.",
     makerPriceXof: 28_000,
-    images: ['/images/order-item-2.png'],
+    images: ['/images/order-item-2.png', '/images/home-thumb-1.png', '/images/home-hero-fabric.png'],
     weightGrams: 900,
     lengthMm: 400,
     widthMm: 300,
@@ -74,7 +74,7 @@ const PIECES = [
     description:
       'Tapis de jute natté à la main, tressage serré. Robuste, il se patine sans se déformer.',
     makerPriceXof: 45_000,
-    images: ['/images/order-item-3.png'],
+    images: ['/images/order-item-3.png', '/images/listing-thumb-4.png', '/images/home-thumb-2.png'],
     weightGrams: 7_500,
     lengthMm: 1_600,
     widthMm: 300,
@@ -159,13 +159,16 @@ async function main() {
       },
     });
 
+    /* Trois photos au minimum, comme l'exige la mise en vente (L1) : une
+       démo publiée avec une seule photo contredirait la règle qu'elle montre.
+       On complète les fiches existantes sans dupliquer ce qui y est déjà. */
     const existing = await prisma.productImage.count({ where: { productId: product.id } });
-    if (existing === 0) {
+    if (existing < piece.images.length) {
       await prisma.productImage.createMany({
-        data: piece.images.map((url, position) => ({
+        data: piece.images.slice(existing).map((url, index) => ({
           productId: product.id,
           fileKey: url,
-          position,
+          position: existing + index,
         })),
       });
     }

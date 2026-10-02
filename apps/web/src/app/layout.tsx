@@ -40,7 +40,7 @@ const rubik = Rubik({
 });
 
 export const metadata: Metadata = {
-  title: "Ojà  Marketplace d'artisanat africain",
+  title: "Ojà · Marketplace d'artisanat africain",
   description:
     "Mobilier, design, décoration et artisanat façonnés à la main par des ateliers partenaires.",
   icons: {

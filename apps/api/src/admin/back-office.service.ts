@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { LedgerAccountType, Prisma } from '@oja/db';
+import { ORDER_LABELS, SUB_ORDER_LABELS } from '@oja/domain';
 
 import { LedgerService } from '../ledger/ledger.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -87,6 +88,8 @@ export class BackOfficeService {
       kind: string;
       refType: string;
       refId: string;
+      /** Référence lisible (CMD-2026-000123, LIT-…) : celle que l'agent cherche. */
+      reference: string | null;
       memo: string | null;
       createdAt: string;
       entries: { account: string; label: string; amountXof: number }[];
@@ -98,11 +101,14 @@ export class BackOfficeService {
       take: Math.min(limit, 200),
     });
 
+    const references = await this.ledgerReferences(transactions);
+
     return transactions.map((transaction) => ({
       id: transaction.id,
       kind: transaction.kind,
       refType: transaction.refType,
       refId: transaction.refId,
+      reference: references.get(`${transaction.refType}:${transaction.refId}`) ?? null,
       memo: transaction.memo,
       createdAt: transaction.createdAt.toISOString(),
       entries: transaction.entries.map((entry) => ({
@@ -111,6 +117,45 @@ export class BackOfficeService {
         amountXof: entry.amountXof,
       })),
     }));
+  }
+
+  /**
+   * Traduit les identifiants internes des écritures en références métier.
+   *
+   * Une écriture pointe un identifiant de base (`cmuq…`) que personne ne
+   * peut chercher. Une requête par type, pas une par ligne.
+   */
+  private async ledgerReferences(
+    transactions: { refType: string; refId: string }[],
+  ): Promise<Map<string, string>> {
+    const idsOf = (type: string) =>
+      [...new Set(transactions.filter((t) => t.refType === type).map((t) => t.refId))];
+
+    const [orders, payments, subOrders, disputes] = await Promise.all([
+      this.prisma.order.findMany({
+        where: { id: { in: idsOf('order') } },
+        select: { id: true, reference: true },
+      }),
+      this.prisma.payment.findMany({
+        where: { id: { in: idsOf('payment') } },
+        select: { id: true, order: { select: { reference: true } } },
+      }),
+      this.prisma.subOrder.findMany({
+        where: { id: { in: idsOf('sub_order') } },
+        select: { id: true, reference: true },
+      }),
+      this.prisma.dispute.findMany({
+        where: { id: { in: idsOf('dispute') } },
+        select: { id: true, reference: true },
+      }),
+    ]);
+
+    return new Map<string, string>([
+      ...orders.map((o) => [`order:${o.id}`, o.reference] as [string, string]),
+      ...payments.map((p) => [`payment:${p.id}`, p.order.reference] as [string, string]),
+      ...subOrders.map((s) => [`sub_order:${s.id}`, s.reference] as [string, string]),
+      ...disputes.map((d) => [`dispute:${d.id}`, d.reference] as [string, string]),
+    ]);
   }
 
   // ═══════════════════════════════ Journal d'audit
@@ -195,6 +240,9 @@ export class BackOfficeService {
     return orders.map((order) => ({
       reference: order.reference,
       status: order.status,
+      // Les mêmes libellés que ceux que voit le client : l'agent au téléphone
+      // doit pouvoir lui répéter ce qu'il lit.
+      statusLabel: ORDER_LABELS[order.status],
       shipFullName: order.shipFullName,
       shipPhone: order.shipPhone,
       totalXof: order.totalXof,
@@ -202,6 +250,7 @@ export class BackOfficeService {
         reference: subOrder.reference,
         shopName: subOrder.maker.shopName,
         status: subOrder.status,
+        statusLabel: SUB_ORDER_LABELS[subOrder.status],
       })),
       placedAt: order.placedAt?.toISOString() ?? null,
       createdAt: order.createdAt.toISOString(),

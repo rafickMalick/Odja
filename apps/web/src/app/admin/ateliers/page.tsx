@@ -183,7 +183,7 @@ function MakerCard({
       <dl className={admin.details}>
         <div>
           <dt>Responsable</dt>
-          <dd>{maker.managerName ?? ""}</dd>
+          <dd>{maker.managerName ?? "Non renseigné"}</dd>
         </div>
         <div>
           <dt>Ville</dt>
@@ -191,26 +191,26 @@ function MakerCard({
         </div>
         <div>
           <dt>Téléphone</dt>
-          <dd>{maker.contactPhone ?? ""}</dd>
+          <dd>{maker.contactPhone ?? "Non renseigné"}</dd>
         </div>
         <div>
           <dt>E-mail</dt>
-          <dd>{maker.contactEmail ?? ""}</dd>
+          <dd>{maker.contactEmail ?? "Non renseigné"}</dd>
         </div>
         <div>
           <dt>Adresse</dt>
-          <dd>{maker.postalAddress ?? ""}</dd>
+          <dd>{maker.postalAddress ?? "Non renseigné"}</dd>
         </div>
         <div>
           <dt>IFU / RCCM</dt>
-          <dd>{[maker.ifuNumber, maker.rccmNumber].filter(Boolean).join(" · ") || ""}</dd>
+          <dd>{[maker.ifuNumber, maker.rccmNumber].filter(Boolean).join(" · ") || "Non renseigné"}</dd>
         </div>
         <div>
           <dt>Déposé le</dt>
           <dd>
             {maker.kycSubmittedAt
               ? new Date(maker.kycSubmittedAt).toLocaleDateString("fr-FR")
-              : ""}
+              : "Pas encore déposé"}
           </dd>
         </div>
         <div>
