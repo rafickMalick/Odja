@@ -19,6 +19,11 @@ services:
       # les deux ferait échouer l'un des deux silencieusement.
       - key: DATABASE_URL
         sync: false
+      # Connexion DIRECTE Neon (sans « -pooler » dans l'hôte), utilisée par
+      # les migrations au démarrage (apps/api/docker-entrypoint.sh). Facultatif
+      # si DATABASE_URL est déjà une connexion directe.
+      - key: DIRECT_DATABASE_URL
+        sync: false
       - key: WEB_ORIGIN
         sync: false
       # oja.aworix.agency une fois le domaine branché (DEPLOIEMENT.md § 5 bis).
