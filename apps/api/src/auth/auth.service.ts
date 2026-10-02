@@ -130,11 +130,17 @@ export class AuthService {
       return { tokens: null, user: null, pendingPhone: true };
     }
 
-    /* E-mail de confirmation (Brevo) désactivé tant qu'il n'y a pas de nom de
-       domaine pour l'expéditeur. Il n'arrêtait personne : le compte reste
-       utilisable immédiatement. À réactiver avec le domaine.
+    /* Le lien de confirmation est créé à l'inscription, et l'e-mail part sans
+       être attendu (EmailVerificationService) : il n'arrête personne, et le
+       compte est utilisable tout de suite.
+
+       Il avait été désactivé parce qu'il bloquait l'inscription en ligne
+       (Render ferme les ports SMTP du plan gratuit). Depuis que l'envoi n'est
+       plus attendu, ce blocage n'existe plus. Tant que l'expéditeur Brevo
+       n'est pas configuré, l'envoi échoue en silence (une ligne dans les
+       journaux) ; le lien reste en base et « Renvoyer le lien » fonctionnera
+       dès que l'expéditeur le sera. */
     await this.emailVerification.sendVerification(user.id, user.email, user.firstName);
-    */
 
     const tokens = await this.tokens.issue(user, context);
     return { tokens, user: toPublicUser(user), pendingPhone: false };
