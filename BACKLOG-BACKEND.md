@@ -345,7 +345,7 @@ Dépend de `P-06`.
 - [x] **L6-10** Alertes de dépassement de SLA
 - [ ] **L6-11** Avis : **un avis exige une `OrderLine` réellement achetée**
 - [ ] **L6-12** Modération des avis, recalcul des notes moyennes produit et atelier
-- [ ] **L6-13** Formulaire de contact raccordé — ⚠️ **il affiche aujourd'hui « message envoyé » sans rien envoyer**
+- [x] **L6-13** Formulaire de contact raccordé (PR #13 : crée une demande au service client, pot de miel et limite d'envois)
 - [x] **L6-14** Toutes les demandes transitent par le Support, coordonnées masquées (§ 15.3)
 
 ---
@@ -367,7 +367,7 @@ Dépend de `P-06`.
 - [ ] **L7-13** Envoi d'e-mails aux utilisateurs et aux marchands
 - [x] **L7-14** Paramétrage consultable : pays, grilles de livraison, moyens de paiement
 - [x] **L7-15** **Ouverture d'un pays** : un interrupteur dans le back-office, aucun déploiement (§ 13)
-- [ ] **L7-16** Gestion des comptes admin et de leur MFA
+- [ ] **L7-16** Gestion des comptes admin et de leur MFA : page Administrateurs faite (PR #9) ; reste le MFA
 
 ---
 
