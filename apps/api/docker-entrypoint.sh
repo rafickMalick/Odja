@@ -23,5 +23,15 @@ echo "▸ Migrations de la base…"
 DATABASE_URL="$MIGRATION_URL" ./node_modules/.bin/prisma migrate deploy \
   --schema packages/db/prisma/schema.prisma
 
+# Données de référence (pays, villes, catégories, tarifs) : chargées une seule
+# fois, sur une base qui n'a encore aucun pays. Rejoué à chaque démarrage, le
+# seed écraserait les réglages faits depuis l'admin (un pays ouvert à la main
+# serait refermé) : `--if-empty` l'en empêche. Un échec ici n'empêche pas le
+# démarrage — l'API sans référentiel reste consultable, et le message figure
+# dans les logs.
+echo "▸ Données de référence…"
+./node_modules/.bin/tsx packages/db/prisma/seed.ts --if-empty \
+  || echo "⚠ Seed en échec : données de référence absentes, voir le message ci-dessus."
+
 echo "▸ Démarrage de l'API"
 exec node apps/api/dist/main.js
