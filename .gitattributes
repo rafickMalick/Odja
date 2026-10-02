@@ -1,0 +1,3 @@
+# Les scripts shell s'exécutent sous Linux (conteneurs, CI) : un retour
+# chariot Windows en fin de ligne les rend inexécutables.
+*.sh text eol=lf
