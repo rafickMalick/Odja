@@ -84,6 +84,7 @@ suffit de le connecter, pas de le reconfigurer à la main.
    | Variable | Valeur |
    |---|---|
    | `DATABASE_URL` | chaîne Neon (ou Supabase, si vous avez choisi cette option) |
+   | `DIRECT_DATABASE_URL` | chaîne Neon **directe**, sans `-pooler` dans l'hôte : les migrations ne passent pas par le pooler. Inutile si `DATABASE_URL` est déjà directe |
    | `WEB_ORIGIN` | URL Vercel (étape 5 — à revenir remplir après) |
    | `KADEVPAY_PUBLIC_KEY` / `KADEVPAY_SECRET_KEY` / `KADEVPAY_WEBHOOK_SECRET` | vos clés Kadev Pay de test |
    | `S3_ENDPOINT` / `S3_REGION` / `S3_BUCKET` / `S3_ACCESS_KEY` / `S3_SECRET_KEY` / `S3_PUBLIC_BASE_URL` | valeurs R2 ou Supabase Storage (§ 2) — `S3_REGION` vaut `auto` pour R2, la région du projet pour Supabase |
@@ -98,12 +99,23 @@ suffit de le connecter, pas de le reconfigurer à la main.
 4. Une fois déployé, Render donne une URL du type
    `https://oja-api.onrender.com`. Noter `https://oja-api.onrender.com/api/v1`.
 
-5. Exécuter les migrations et le seed **une seule fois**, depuis le shell
-   Render (*Shell* dans le tableau de bord du service) :
+5. **Les migrations s'appliquent seules** à chaque démarrage du conteneur
+   (`apps/api/docker-entrypoint.sh`) : rien à lancer à la main, et une
+   migration ajoutée plus tard part avec le déploiement suivant. Si l'une
+   échoue, le conteneur s'arrête et Render garde la version précédente en
+   ligne ; le message est dans les logs du déploiement.
+
+6. **Le seed** (pays, villes, catégories, tarifs) se lance **une fois**, sur
+   une base neuve, depuis un poste qui a le dépôt, avec la chaîne Neon
+   directe. Le shell Render n'existe pas sur le plan gratuit. Le seed est
+   idempotent : le relancer ne duplique rien.
    ```bash
-   npm run db:migrate
-   npm run db:seed
+   DATABASE_URL="<chaîne Neon directe>" npm run db:seed
    ```
+
+   Ne jamais lancer `npm run db:migrate` sur cette base : c'est la commande
+   de **développement** (`prisma migrate dev`), qui peut proposer de la
+   réinitialiser.
 
 **À savoir sur le plan gratuit Render** : le service s'endort après 15 min
 sans requête, et met quelques secondes à se réveiller à la suivante. Gênant
