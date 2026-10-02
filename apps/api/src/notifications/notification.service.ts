@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { TICKET_STATUS_LABELS } from '@oja/contracts';
 import type { Prisma } from '@oja/db';
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -629,6 +630,108 @@ export class NotificationService {
             to: admin.email,
             subject: `[Ojà — alerte] ${subject}`,
             text: [body, '', href ? `${this.webOrigin}${href}` : `${this.webOrigin}/admin`].join('\n'),
+          },
+        });
+      }
+    });
+  }
+
+  // ═══════════════════════════════ Service client
+
+  /**
+   * Le service client a répondu, ou a changé le statut d'une demande.
+   *
+   * Un compte reçoit l'avis in-app et par e-mail ; un visiteur non inscrit
+   * (formulaire de contact) seulement par e-mail, à l'adresse qu'il a donnée.
+   */
+  async supportTicketUpdated(
+    ticketId: string,
+    kind: 'reply' | 'status',
+  ): Promise<void> {
+    await this.safely('demande au service client mise à jour', async () => {
+      const ticket = await this.prisma.supportTicket.findUnique({
+        where: { id: ticketId },
+        include: { user: { select: { id: true, email: true, firstName: true, role: true } } },
+      });
+      if (!ticket) return;
+
+      const statusLabel = TICKET_STATUS_LABELS[ticket.status];
+      const href =
+        ticket.user?.role === 'MAKER'
+          ? `/espace-createur/support/${ticket.reference}`
+          : `/compte/support/${ticket.reference}`;
+      const email = {
+        to: ticket.user?.email ?? ticket.guestEmail ?? '',
+        subject:
+          kind === 'reply'
+            ? `${ticket.reference} — le service client vous a répondu`
+            : `${ticket.reference} — ${statusLabel}`,
+        text: [
+          `Bonjour ${ticket.user?.firstName ?? ticket.guestName ?? ''},`.replace(/ ,$/, ','),
+          '',
+          kind === 'reply'
+            ? `Le service client Ojà a répondu à votre demande « ${ticket.subject} ».`
+            : `Votre demande « ${ticket.subject} » est désormais : ${statusLabel.toLowerCase()}.`,
+          '',
+          ticket.user
+            ? `Lire et répondre : ${this.webOrigin}${href}`
+            : 'Répondez simplement à cet e-mail en rappelant la référence ci-dessus.',
+          '',
+          "L'équipe Ojà",
+        ].join('\n'),
+      };
+      if (!email.to) return;
+
+      if (!ticket.user) {
+        // Visiteur : pas de compte, donc pas d'avis in-app.
+        await this.email.send(email);
+        return;
+      }
+
+      await this.deliver(
+        kind === 'reply'
+          ? {
+              userId: ticket.user.id,
+              template: 'support_reply',
+              data: { reference: ticket.reference, subject: ticket.subject, href },
+              email,
+            }
+          : {
+              userId: ticket.user.id,
+              template: 'support_status_changed',
+              data: { reference: ticket.reference, statusLabel, href },
+              email,
+            },
+      );
+    });
+  }
+
+  /** Une nouvelle demande attend le service client. */
+  async supportTicketOpened(ticketId: string): Promise<void> {
+    await this.safely('nouvelle demande au service client', async () => {
+      const ticket = await this.prisma.supportTicket.findUnique({
+        where: { id: ticketId },
+        include: { user: { select: { firstName: true, lastName: true } } },
+      });
+      if (!ticket) return;
+
+      const author = ticket.user
+        ? `${ticket.user.firstName} ${ticket.user.lastName}`
+        : `${ticket.guestName ?? 'Visiteur'}, non inscrit`;
+
+      for (const admin of await this.adminUsers()) {
+        await this.deliver({
+          userId: admin.id,
+          template: 'support_ticket_opened',
+          data: { reference: ticket.reference, subject: ticket.subject, author },
+          email: {
+            to: admin.email,
+            subject: `Nouvelle demande ${ticket.reference} — ${ticket.subject}`,
+            text: [
+              `Demande de ${author}.`,
+              '',
+              `${this.webOrigin}/admin/support/${ticket.reference}`,
+            ].join('\n'),
           },
         });
       }

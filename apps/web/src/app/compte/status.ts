@@ -36,6 +36,16 @@ export const SUB_ORDER_TONE: Record<string, BadgeType> = {
   CANCELLED: "danger",
 };
 
+/* Demandes au service client. « En attente de votre réponse » est orange :
+   c'est au client d'agir. */
+export const SUPPORT_TONE: Record<string, BadgeType> = {
+  OPEN: "info",
+  IN_PROGRESS: "info",
+  WAITING_CUSTOMER: "warning",
+  RESOLVED: "success",
+  CLOSED: "pending",
+};
+
 export const DISPUTE_TONE: Record<string, BadgeType> = {
   OPEN: "warning",
   UNDER_REVIEW: "info",

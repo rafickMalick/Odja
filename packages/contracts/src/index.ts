@@ -5,4 +5,5 @@ export * from './disputes';
 export * from './logistics';
 export * from './notifications';
 export * from './promo';
+export * from './support';
 export * from './uploads';

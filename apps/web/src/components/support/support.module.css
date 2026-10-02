@@ -1,0 +1,130 @@
+/* Service client : fil d'une demande, et mise en page « demandes + suivi ».
+
+   Deux interlocuteurs seulement, la personne et Ojà, donc deux alignements.
+   Les notes internes ne s'affichent que côté administration, sur un fond
+   distinct pour qu'on ne les confonde jamais avec une réponse envoyée. */
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.mine,
+.theirs,
+.internal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 42rem;
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-card);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--color-black);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.mine {
+  align-self: flex-end;
+  background: var(--color-primary-light);
+}
+
+.theirs {
+  align-self: flex-start;
+  background: var(--color-gray-100);
+}
+
+.internal {
+  align-self: stretch;
+  max-width: none;
+  background: #fff8e6;
+  border: 1px dashed #e0b44c;
+}
+
+.author {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: var(--color-gray-700);
+}
+
+.time {
+  font-size: 12px;
+  color: var(--color-gray-700);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--color-gray-300);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+/* Demandes à gauche, suivi des commandes à droite ; empilés sur mobile. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--space-24);
+  align-items: start;
+}
+
+@media (max-width: 1000px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  margin-bottom: var(--space-12);
+}
+
+.filter,
+.filterActive {
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-gray-300);
+  background: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.filterActive {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  font-weight: 600;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-12);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-gray-700);
+}
