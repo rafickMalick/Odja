@@ -10,6 +10,7 @@ import {
   workspaceStyles as styles,
 } from "@/components/dashboard/Workspace";
 import { ApiError, apiFetch } from "@/lib/api";
+import { formatNumber } from "@/lib/format";
 
 import admin from "../admin.module.css";
 
@@ -163,11 +164,11 @@ function ShipmentCard({
         </div>
         <div>
           <dt>Distance</dt>
-          <dd>{shipment.distanceKm.toFixed(1)} km</dd>
+          <dd>{formatNumber(shipment.distanceKm, 1)} km</dd>
         </div>
         <div>
           <dt>Poids</dt>
-          <dd>{shipment.weightKg} kg</dd>
+          <dd>{formatNumber(shipment.weightKg, 1)} kg</dd>
         </div>
       </dl>
 
@@ -196,7 +197,7 @@ function ShipmentCard({
                   <td>{courier.name}</td>
                   <td>{VEHICLES[courier.vehicle] ?? courier.vehicle}</td>
                   <td className={styles.numeric}>
-                    {courier.ratingAvg > 0 ? courier.ratingAvg.toFixed(1) : ""}
+                    {courier.ratingAvg > 0 ? formatNumber(courier.ratingAvg, 1) : "Pas encore noté"}
                   </td>
                   <td className={styles.rowActions}>
                     {courier.suitable ? (

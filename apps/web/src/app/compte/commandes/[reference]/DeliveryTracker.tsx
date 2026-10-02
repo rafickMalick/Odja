@@ -110,7 +110,7 @@ export function DeliveryTracker({ reference }: { reference: string }) {
   return (
     <div className={order.tracker}>
       <p className={order.trackerHead}>
-        Suivi de la livraison  <strong>{view.statusLabel}</strong>
+        Suivi de la livraison : <strong>{view.statusLabel}</strong>
       </p>
 
       {view.lastPosition ? (
@@ -123,7 +123,7 @@ export function DeliveryTracker({ reference }: { reference: string }) {
         {timeline.map((event, index) => (
           <li key={`${event.at}-${index}`} data-current={index === 0 || undefined}>
             <span className={order.trackerStep}>{event.statusLabel}</span>
-            {event.note ? <span className={order.trackerNote}>  {event.note}</span> : null}
+            {event.note ? <span className={order.trackerNote}> · {event.note}</span> : null}
             <span className={order.trackerTime}>{formatTime(event.at)}</span>
           </li>
         ))}

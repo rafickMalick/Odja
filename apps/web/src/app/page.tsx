@@ -23,7 +23,7 @@ const ASSURANCES = [
   {
     icon: "/images/icon-package.svg",
     title: "Ateliers vérifiés",
-    text: "Chaque fabricant est identifié et validé avant sa première mise en vente.",
+    text: "Chaque créateur est identifié et validé avant sa première mise en vente.",
   },
   {
     icon: "/images/icon-return.svg",
@@ -76,11 +76,11 @@ const STEPS = [
   },
   {
     title: "L’atelier fabrique",
-    text: "Le fabricant reçoit la commande, confirme son délai et prépare la pièce dans son atelier.",
+    text: "Le créateur reçoit la commande, confirme son délai et prépare la pièce dans son atelier.",
   },
   {
     title: "Vous validez à la réception",
-    text: "Un livreur partenaire vous remet la pièce. Vous l’inspectez, puis vous validez  l’atelier est payé 24 h plus tard.",
+    text: "Un livreur partenaire vous remet la pièce. Vous l’inspectez, puis vous validez : l’atelier est payé 24 h plus tard.",
   },
 ];
 
@@ -102,7 +102,7 @@ const ROLES = [
   },
   {
     icon: "/images/icon-package.svg",
-    eyebrow: "Compte fabricant",
+    eyebrow: "Compte créateur",
     title: "Vendre son savoir-faire",
     text: "Votre atelier expose ses pièces à l’échelle du pays, sans boutique à louer ni site à construire.",
     points: [

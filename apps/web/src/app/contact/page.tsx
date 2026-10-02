@@ -13,7 +13,7 @@ import styles from "./page.module.css";
 const SUBJECTS = [
   "Une commande en cours",
   "Un produit du catalogue",
-  "Devenir fabricant sur Ojà",
+  "Devenir créateur sur Ojà",
   "Livraison et retours",
   "Autre demande",
 ];
@@ -34,7 +34,7 @@ const CHANNELS = [
   {
     icon: "/images/icon-vehicle.svg",
     title: "Ateliers partenaires",
-    text: "Cotonou, Bénin  les visites d'atelier se font sur rendez-vous.",
+    text: "Cotonou, Bénin. Les visites d'atelier se font sur rendez-vous.",
     value: "Du lundi au vendredi, 9 h – 18 h",
   },
 ];
@@ -109,7 +109,7 @@ export default function ContactPage() {
                     <Field
                       label="Numéro de commande"
                       name="order"
-                      placeholder="#CMD-2026-00000"
+                      placeholder="CMD-2026-000123"
                     />
                   </FieldRow>
 

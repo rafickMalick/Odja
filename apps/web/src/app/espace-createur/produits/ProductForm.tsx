@@ -6,7 +6,7 @@ import { Button } from "@/components/Button";
 import { Field, FieldRow, fieldStyles } from "@/components/Field";
 import { Panel, workspaceStyles as styles } from "@/components/dashboard/Workspace";
 import { ApiError, apiFetch } from "@/lib/api";
-import { formatFcfa } from "@/lib/format";
+import { formatFcfa, formatNumber } from "@/lib/format";
 
 import form from "./form.module.css";
 
@@ -196,7 +196,7 @@ export function ProductForm({
             <strong>{formatFcfa(makerPrice)}</strong>
           </div>
           <div>
-            <span>Commission Ojà ({(commissionBps / 100).toFixed(commissionBps % 100 ? 2 : 0)} %)</span>
+            <span>Commission Ojà ({formatNumber(commissionBps / 100, commissionBps % 100 ? 2 : 0)} %)</span>
             <strong>{formatFcfa(commission)}</strong>
           </div>
           <div className={form.priceTotal}>
@@ -306,7 +306,7 @@ function flatten(
   depth = 0,
 ): { id: string; label: string }[] {
   return categories.flatMap((category) => [
-    { id: category.id, label: `${" ".repeat(depth)}${category.name}` },
+    { id: category.id, label: `${"· ".repeat(depth)}${category.name}` },
     ...flatten(category.children ?? [], depth + 1),
   ]);
 }

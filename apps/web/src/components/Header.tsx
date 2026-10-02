@@ -150,7 +150,7 @@ export function Header() {
     <>
       <header className={styles.root} data-scrolled={scrolled || undefined}>
         <div className={styles.container}>
-          <Link href="/" className={styles.logo} aria-label="Ojà  accueil">
+          <Link href="/" className={styles.logo} aria-label="Ojà, accueil">
             <img
               src="/images/logo-oja-dark.svg"
               alt=""

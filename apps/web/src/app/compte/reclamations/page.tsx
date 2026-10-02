@@ -90,7 +90,7 @@ export default function DisputesPage() {
                       </Badge>
                     </td>
                     <td className={styles.numeric}>
-                      {dispute.refundXof !== null ? formatFcfa(dispute.refundXof) : ""}
+                      {dispute.refundXof !== null ? formatFcfa(dispute.refundXof) : "Aucun"}
                     </td>
                   </tr>
                 ))}
