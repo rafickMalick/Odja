@@ -89,6 +89,36 @@ export const createTicketSchema = z.object({
 });
 export type CreateTicketInput = z.input<typeof createTicketSchema>;
 
+/**
+ * Formulaire de contact public : visiteur, inscrit ou non.
+ *
+ * `website` est un **piège à robots** (honeypot) : invisible pour un humain,
+ * il est rempli par les robots qui complètent tous les champs d'un formulaire.
+ * Le schéma l'accepte pour que la requête paraisse aboutir ; c'est l'API qui
+ * décide de l'ignorer.
+ */
+export const contactMessageSchema = z.object({
+  name: z.string().trim().min(2, 'Indiquez votre nom').max(80),
+  email: z.string().trim().toLowerCase().email('Adresse e-mail invalide').max(180),
+  category: z.enum(
+    Object.keys(CONTACT_TICKET_CATEGORIES) as [ContactTicketCategory, ...ContactTicketCategory[]],
+    { errorMap: () => ({ message: 'Choisissez un sujet' }) },
+  ),
+  message: z
+    .string()
+    .trim()
+    .min(10, 'Votre message est trop court')
+    .max(5_000, 'Votre message est trop long (5 000 caractères au plus)'),
+  website: z.string().max(200).optional(),
+});
+export type ContactMessageInput = z.input<typeof contactMessageSchema>;
+
+/** Réponse au formulaire public. */
+export interface ContactReceipt {
+  /** Référence à rappeler au service client. */
+  reference: string;
+}
+
 export const ticketMessageSchema = z.object({
   body: z.string().trim().min(1, 'Message vide').max(5_000),
   fileKeys: fileKeysSchema,
