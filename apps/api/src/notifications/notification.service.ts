@@ -660,12 +660,25 @@ export class NotificationService {
         ticket.user?.role === 'MAKER'
           ? `/espace-createur/support/${ticket.reference}`
           : `/compte/support/${ticket.reference}`;
+
+      /* Un visiteur sans compte n'a aucun écran où lire la réponse : elle
+         figure donc en entier dans l'e-mail. Un compte, lui, la lit dans son
+         espace, où se trouvent aussi les pièces jointes. */
+      const lastReply =
+        kind === 'reply' && !ticket.user
+          ? await this.prisma.supportMessage.findFirst({
+              where: { ticketId: ticket.id, fromStaff: true, internal: false },
+              orderBy: { createdAt: 'desc' },
+              select: { body: true },
+            })
+          : null;
+
       const email = {
         to: ticket.user?.email ?? ticket.guestEmail ?? '',
         subject:
           kind === 'reply'
-            ? `${ticket.reference} — le service client vous a répondu`
-            : `${ticket.reference} — ${statusLabel}`,
+            ? `${ticket.reference} : le service client vous a répondu`
+            : `${ticket.reference} : ${statusLabel}`,
         text: [
           `Bonjour ${ticket.user?.firstName ?? ticket.guestName ?? ''},`.replace(/ ,$/, ','),
           '',
@@ -673,9 +686,12 @@ export class NotificationService {
             ? `Le service client Ojà a répondu à votre demande « ${ticket.subject} ».`
             : `Votre demande « ${ticket.subject} » est désormais : ${statusLabel.toLowerCase()}.`,
           '',
+          ...(lastReply ? ['-----', lastReply.body, '-----', ''] : []),
           ticket.user
             ? `Lire et répondre : ${this.webOrigin}${href}`
-            : 'Répondez simplement à cet e-mail en rappelant la référence ci-dessus.',
+            : // Les réponses par e-mail n'arrivent pas dans la demande : on
+              // renvoie vers le formulaire, avec la référence pour le lien.
+              `Pour compléter votre demande, écrivez-nous depuis ${this.webOrigin}/contact en rappelant la référence ${ticket.reference}.`,
           '',
           "L'équipe Ojà",
         ].join('\n'),
@@ -761,7 +777,7 @@ export class NotificationService {
           data: { reference: ticket.reference, subject: ticket.subject, author },
           email: {
             to: admin.email,
-            subject: `Nouvelle demande ${ticket.reference} — ${ticket.subject}`,
+            subject: `Nouvelle demande ${ticket.reference} : ${ticket.subject}`,
             text: [
               `Demande de ${author}.`,
               '',
