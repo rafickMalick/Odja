@@ -43,6 +43,10 @@ COPY --from=build --chown=oja:oja /app/package.json ./
 COPY --from=build --chown=oja:oja /app/apps/api/dist apps/api/dist/
 COPY --from=build --chown=oja:oja /app/apps/api/package.json apps/api/
 COPY --from=build --chown=oja:oja /app/packages packages/
+COPY --chown=oja:oja apps/api/docker-entrypoint.sh apps/api/
+# Fins de ligne Unix et droit d'exécution, quel que soit le poste qui a
+# poussé le fichier : un script en CRLF ne s'exécute pas sous Alpine.
+RUN sed -i 's/\r$//' apps/api/docker-entrypoint.sh && chmod +x apps/api/docker-entrypoint.sh
 
 USER oja
 EXPOSE 4000
@@ -52,4 +56,5 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:4000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-CMD ["node", "apps/api/dist/main.js"]
+# Migrations en attente appliquées à chaque démarrage, puis le serveur.
+CMD ["./apps/api/docker-entrypoint.sh"]
