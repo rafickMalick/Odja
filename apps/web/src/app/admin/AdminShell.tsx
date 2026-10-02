@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { Workspace, type WorkspaceLink } from "@/components/dashboard/Workspace";
 import { ApiError, apiFetch } from "@/lib/api";
+import { loginUrl } from "@/lib/login-redirect";
 
 /**
  * Coquille du back-office.
@@ -52,7 +53,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         /* 401 comme 404 mènent au même endroit : l'API répond 404 à qui n'a pas
            le rôle, précisément pour ne pas confirmer que ces routes existent. */
         if (cause instanceof ApiError && cause.isUnauthorized) {
-          router.push("/connexion?suite=/admin");
+          router.push(loginUrl("/admin"));
           return;
         }
         router.push("/");

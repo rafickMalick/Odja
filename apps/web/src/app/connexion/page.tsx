@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/Button";
 import { ApiError, apiFetch } from "@/lib/api";
 import { homeForRole } from "@/lib/home-for-role";
+import { safeReturnPath } from "@/lib/login-redirect";
 
 function ConnexionForm() {
   const router = useRouter();
@@ -20,7 +21,7 @@ function ConnexionForm() {
   /* Une destination explicite l'emporte : c'est celle d'où l'utilisateur a
      été renvoyé vers la connexion. Sinon, on l'envoie chez lui  un créateur
      dans son atelier, un livreur sur ses missions. */
-  const requested = params.get("suite");
+  const requested = safeReturnPath(params.get("suite"));
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
