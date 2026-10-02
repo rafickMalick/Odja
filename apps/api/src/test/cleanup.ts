@@ -13,6 +13,18 @@ import type { PrismaService } from '../prisma/prisma.service';
  * inverse des dépendances.
  */
 export async function resetTestData(prisma: PrismaService): Promise<void> {
+  // Les demandes au service client survivent à leur auteur (lien mis à nul) :
+  // on les retire explicitement, visiteurs de test compris. Les messages
+  // tombent en cascade.
+  await prisma.supportTicket.deleteMany({
+    where: {
+      OR: [
+        { user: { email: { endsWith: '@oja.market' } } },
+        { guestEmail: { endsWith: '@oja.market' } },
+      ],
+    },
+  });
+
   // Tous les comptes de test partagent ce domaine.
   const users = await prisma.user.findMany({
     where: { email: { endsWith: '@oja.market' } },
