@@ -89,7 +89,8 @@ suffit de le connecter, pas de le reconfigurer à la main.
    | `WEB_ORIGIN` | URL Vercel (étape 5 — à revenir remplir après) |
    | `KADEVPAY_PUBLIC_KEY` / `KADEVPAY_SECRET_KEY` / `KADEVPAY_WEBHOOK_SECRET` | vos clés Kadev Pay de test |
    | `S3_ENDPOINT` / `S3_REGION` / `S3_BUCKET` / `S3_ACCESS_KEY` / `S3_SECRET_KEY` / `S3_PUBLIC_BASE_URL` | valeurs R2 ou Supabase Storage (§ 2) — `S3_REGION` vaut `auto` pour R2, la région du projet pour Supabase |
-   | `SMTP_USER` / `SMTP_PASSWORD` | valeurs Brevo |
+   | `BREVO_API_KEY` | **clé API Brevo** (Brevo › SMTP & API › API Keys). Indispensable sur le plan gratuit : Render y bloque les ports SMTP depuis septembre 2025, et sans elle l'inscription attendrait un e-mail qui ne part jamais |
+   | `SMTP_USER` / `SMTP_PASSWORD` | valeurs Brevo (ignorées si `BREVO_API_KEY` est renseignée) |
    | `MAIL_FROM` | l'expéditeur vérifié dans Brevo, ex. `Ojà <bonjour@oja.market>` |
 
    `SMTP_HOST` (`smtp-relay.brevo.com`) et `SMTP_PORT` (`587`) sont déjà fixés
