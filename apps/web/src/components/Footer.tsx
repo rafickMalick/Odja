@@ -6,8 +6,7 @@ import styles from "./Footer.module.css";
 
 /* Les libellés du frame Figma étaient restés en anglais et sans destination
    (« Home / About / Service… », « Privacy Policy… »). Ils sont traduits et
-   raccordés aux routes qui existent réellement ; les pages légales, encore à
-   écrire, restent en « # ». */
+   raccordés aux routes qui existent réellement, pages légales comprises. */
 const MARKETPLACE_LINKS = [
   { label: "Tous les produits", href: "/catalogue" },
   { label: "Nouveautés", href: "/catalogue" },
@@ -16,16 +15,16 @@ const MARKETPLACE_LINKS = [
 
 const COMPANY_LINKS = [
   { label: "Accueil", href: "/" },
-  { label: "Vendre sur Ojà", href: "/inscription" },
-  { label: "Devenir livreur", href: "/inscription" },
+  { label: "Vendre sur Ojà", href: "/inscription?profil=createur" },
+  { label: "Devenir livreur", href: "/inscription?profil=livreur" },
   { label: "Contact", href: "/contact" },
 ];
 
 const LEGAL_LINKS = [
-  "Politique de confidentialité",
-  "Politique de cookies",
-  "Conditions de vente",
-  "Mentions légales",
+  { label: "Politique de confidentialité", href: "/confidentialite" },
+  { label: "Politique de cookies", href: "/cookies" },
+  { label: "Conditions de vente", href: "/conditions-de-vente" },
+  { label: "Mentions légales", href: "/mentions-legales" },
 ];
 
 export function Footer() {
@@ -133,10 +132,10 @@ export function Footer() {
             <div className={`${styles.column} ${styles.columnNarrow}`}>
               <p className={styles.columnLabel}>Informations légales</p>
               <div className={styles.list}>
-                {LEGAL_LINKS.map((label) => (
-                  <a key={label} href="#">
-                    {label}
-                  </a>
+                {LEGAL_LINKS.map((link) => (
+                  <Link key={link.label} href={link.href}>
+                    {link.label}
+                  </Link>
                 ))}
               </div>
             </div>
@@ -148,8 +147,8 @@ export function Footer() {
         <div className={styles.bottom}>
           <p>Copyright © 2026 Ojà. Tous droits réservés.</p>
           <div className={styles.bottomLinks}>
-            <a href="#">Conditions générales</a>
-            <a href="#">Politique de confidentialité</a>
+            <Link href="/conditions-generales">Conditions générales</Link>
+            <Link href="/confidentialite">Politique de confidentialité</Link>
           </div>
         </div>
       </div>
