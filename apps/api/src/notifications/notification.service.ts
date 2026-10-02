@@ -725,7 +725,7 @@ export class NotificationService {
 
       await this.email.send({
         to: ticket.guestEmail,
-        subject: `Ojà — nous avons bien reçu votre message (${ticket.reference})`,
+        subject: `Ojà : nous avons bien reçu votre message (${ticket.reference})`,
         text: [
           'Bonjour,',
           '',
