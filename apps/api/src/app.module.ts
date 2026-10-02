@@ -15,6 +15,7 @@ import { AdminModule } from './admin/admin.module';
 import { DisputeModule } from './disputes/dispute.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { LogisticsModule } from './logistics/logistics.module';
+import { NewsletterModule } from './newsletter/newsletter.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OrdersModule } from './orders/orders.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -41,6 +42,7 @@ import { SupportModule } from './support/support.module';
     LogisticsModule,
     DisputeModule,
     SupportModule,
+    NewsletterModule,
     AdminModule,
     SchedulerModule,
   ],
