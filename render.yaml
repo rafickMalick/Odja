@@ -31,6 +31,11 @@ services:
         sync: false
       - key: WEB_ORIGIN
         sync: false
+      # Relais devant l'API : Vercel (le site relaie /api/v1) puis Render.
+      # Sans lui, tous les visiteurs ont la même adresse vue par l'API, et la
+      # limitation de débit les bloque ensemble.
+      - key: TRUST_PROXY_HOPS
+        value: 2
       # oja.aworix.agency une fois le domaine branché (DEPLOIEMENT.md § 5 bis).
       # Vide tant que l'API reste sur onrender.com.
       - key: COOKIE_DOMAIN

@@ -33,6 +33,8 @@ export const envSchema = z
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     API_PORT: intFromEnv(4000),
     WEB_ORIGIN: z.string().url().default('http://localhost:3000'),
+    /** Relais devant l'API dont X-Forwarded-For fait foi (voir main.ts). 0 en local. */
+    TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
     /** Domaine partagé par le front et l'API (`oja.aworix.agency`). Absent en local. */
     COOKIE_DOMAIN: z
       .string()
