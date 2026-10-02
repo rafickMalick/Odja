@@ -103,7 +103,7 @@ export function ProofForm({
         <li data-done={otpReady || undefined}>Code du client</li>
         <li data-done={photoKey !== null || undefined}>Photo du colis remis</li>
         <li data-done={position !== null || undefined}>
-          Position {locating ? " recherche en cours…" : position ? "" : " indisponible"}
+          Position {locating ? ": recherche en cours…" : position ? "" : ": indisponible"}
         </li>
       </ol>
 

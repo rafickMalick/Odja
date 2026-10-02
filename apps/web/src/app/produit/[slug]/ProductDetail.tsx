@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Button, ButtonLink } from "@/components/Button";
 import { StepperQuantity } from "@/components/StepperQuantity";
 import { useCart } from "@/lib/cart";
-import { formatFcfa } from "@/lib/format";
+import { formatFcfa, formatNumber } from "@/lib/format";
 
 import styles from "./page.module.css";
 
@@ -48,7 +48,7 @@ export function ProductDetail({ product }: { product: PublicProduct }) {
      montre que ce qui est renseigné : une ligne vide vaut moins que pas de
      ligne du tout. */
   const specs: [string, string][] = [
-    ["Atelier", `${product.maker.shopName}  ${product.maker.city}`],
+    ["Atelier", `${product.maker.shopName} · ${product.maker.city}`],
     ...(product.material ? ([["Matière", product.material]] as [string, string][]) : []),
     [
       "Dimensions",
@@ -56,12 +56,12 @@ export function ProductDetail({ product }: { product: PublicProduct }) {
         product.dimensions.heightMm,
       )} cm`,
     ],
-    ["Poids", `${(product.dimensions.weightGrams / 1000).toFixed(1)} kg`],
+    ["Poids", `${formatNumber(product.dimensions.weightGrams / 1000, 1)} kg`],
     ["Catégorie", product.category.name],
     [
       "Disponibilité",
       product.isMadeToOrder
-        ? `Fabriquée sur commande  ${product.leadTimeDays ?? "?"} jours`
+        ? `Fabriquée sur commande (${product.leadTimeDays ?? "?"} jours)`
         : product.inStock
           ? `${product.quantityAvailable} pièce(s) disponible(s)`
           : "Momentanément indisponible",
@@ -126,7 +126,7 @@ export function ProductDetail({ product }: { product: PublicProduct }) {
                 {product.ratingCount > 0 ? (
                   <p className={styles.rating}>
                     <span className={styles.stars}>★★★★★</span>{" "}
-                    {product.ratingAvg.toFixed(1)} / 5 · {product.ratingCount} avis
+                    {formatNumber(product.ratingAvg, 1)} / 5 · {product.ratingCount} avis
                   </p>
                 ) : null}
 
@@ -236,7 +236,7 @@ export function ProductDetail({ product }: { product: PublicProduct }) {
                     product.ratingCount > 0 ? (
                       <p>
                         {product.ratingCount} avis, note moyenne{" "}
-                        {product.ratingAvg.toFixed(1)} sur 5.
+                        {formatNumber(product.ratingAvg, 1)} sur 5.
                       </p>
                     ) : (
                       /* Un avis exige un achat réellement livré et validé :

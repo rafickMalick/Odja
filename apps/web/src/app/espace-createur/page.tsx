@@ -130,7 +130,7 @@ export default function MakerDashboard() {
                     <td>
                       {subOrder.respondByAt
                         ? deadline(subOrder.respondByAt)
-                        : ""}
+                        : "Pas de délai"}
                     </td>
                   </tr>
                 ))}

@@ -166,7 +166,13 @@
   color: var(--color-black);
 }
 
+/* Libellé à gauche, montant à droite : sans flex, les deux se collaient
+   (« LIVRAISON1 621 F CFA »). */
 .shippingLine {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
   font-family: var(--font-body);
   font-weight: 400;
   font-size: 15px;

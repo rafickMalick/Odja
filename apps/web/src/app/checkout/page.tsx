@@ -10,7 +10,7 @@ import { PrivacyNoteBanner } from "@/components/PrivacyNoteBanner";
 import { ProgressStepper } from "@/components/ProgressStepper";
 import { ApiError, apiFetch } from "@/lib/api";
 import { useCart } from "@/lib/cart";
-import { formatFcfa } from "@/lib/format";
+import { formatFcfa, formatNumber } from "@/lib/format";
 import { isCheckoutClosedByUser, openKadevPayCheckout } from "@/lib/kadevpay";
 
 import styles from "./page.module.css";
@@ -301,7 +301,7 @@ export default function CheckoutPage() {
                         </span>
                         <span className={styles.optionText}>
                           {address.line1}
-                          {address.landmark ? `  ${address.landmark}` : ""}
+                          {address.landmark ? ` · ${address.landmark}` : ""}
                         </span>
                       </span>
                     </label>
@@ -318,22 +318,27 @@ export default function CheckoutPage() {
               {/* Pas de <form> imbriqué  c'est du HTML invalide, et le
                   navigateur en fait ce qu'il veut. La saisie vit dans un
                   simple bloc, et son bouton appelle directement le
-                  gestionnaire. */}
+                  gestionnaire.
+
+                  Aucun attribut `required` ici : ces champs appartiennent au
+                  formulaire de commande, et le navigateur bloquerait
+                  « Confirmer la commande » tant qu'ils sont vides, même avec
+                  une adresse enregistrée sélectionnée. L'API valide
+                  l'adresse à l'enregistrement et renvoie l'erreur affichée. */}
               <div className={styles.fields} ref={addressFormRef}>
                 <>
                   <FieldRow>
-                    <Field label="Nom et prénoms *" name="fullName" required />
+                    <Field label="Nom et prénoms *" name="fullName" />
                     <Field
                       label="Téléphone *"
                       name="phone"
                       placeholder="+229 01 00 00 00 00"
-                      required
                     />
                   </FieldRow>
 
                   <FieldRow>
                     <Field label="Ville *">
-                      <select name="cityId" className={fieldStyles.control} required>
+                      <select name="cityId" className={fieldStyles.control}>
                         {cities.map((city) => (
                           <option key={city.id} value={city.id}>
                             {city.name}
@@ -348,7 +353,7 @@ export default function CheckoutPage() {
                     />
                   </FieldRow>
 
-                  <Field label="Adresse *" name="line1" required />
+                  <Field label="Adresse *" name="line1" />
 
                   <Button type="button" variant="outline" onClick={handleCreateAddress}>
                     Enregistrer cette adresse
@@ -451,7 +456,7 @@ export default function CheckoutPage() {
                     Livraison · {delivery.shopName}
                     <br />
                     <small>
-                      {delivery.vehicle.toLowerCase()} · {delivery.distanceKm} km ·{" "}
+                      {delivery.vehicle.toLowerCase()} · {formatNumber(delivery.distanceKm, 1)} km ·{" "}
                       {delivery.etaMinDays}–{delivery.etaMaxDays} jours
                     </small>
                   </span>
@@ -512,7 +517,7 @@ export default function CheckoutPage() {
             <div className={styles.grandTotal}>
               <span className={styles.grandTotalLabel}>Total</span>
               <span className={styles.grandTotalValue}>
-                {quote ? formatFcfa(quote.totalXof) : ""}
+                {quote ? formatFcfa(quote.totalXof) : "À calculer"}
               </span>
             </div>
 

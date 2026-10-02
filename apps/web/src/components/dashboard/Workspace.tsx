@@ -65,7 +65,7 @@ export function Workspace({
     <div className={styles.root}>
       <aside className={styles.sidebar} data-open={open || undefined}>
         <div className={styles.brand}>
-          <Link href="/" className={styles.logo} aria-label="Ojà  accueil">
+          <Link href="/" className={styles.logo} aria-label="Ojà, accueil">
             <img src="/images/logo-oja.svg" alt="" className={styles.logoImage} />
           </Link>
           <span className={styles.space}>{title}</span>

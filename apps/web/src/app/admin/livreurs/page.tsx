@@ -176,11 +176,11 @@ function CourierCard({
         </div>
         <div>
           <dt>Immatriculation</dt>
-          <dd>{courier.plateNumber ?? ""}</dd>
+          <dd>{courier.plateNumber ?? "Non renseigné"}</dd>
         </div>
         <div>
           <dt>Mobile Money</dt>
-          <dd>{courier.payoutMsisdn ?? ""}</dd>
+          <dd>{courier.payoutMsisdn ?? "Non renseigné"}</dd>
         </div>
         <div>
           <dt>Courses livrées</dt>
@@ -191,7 +191,7 @@ function CourierCard({
           <dd>
             {courier.kycSubmittedAt
               ? new Date(courier.kycSubmittedAt).toLocaleDateString("fr-FR")
-              : ""}
+              : "Pas encore déposé"}
           </dd>
         </div>
         <div>

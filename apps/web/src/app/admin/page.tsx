@@ -62,7 +62,7 @@ export default function AdminHomePage() {
         subtitle={
           total === 0
             ? "Rien n’attend l’équipe. Toutes les files sont vides."
-            : `${total} élément${total > 1 ? "s" : ""} attendent une décision.`
+            : `${total} élément${total > 1 ? "s attendent" : " attend"} une décision.`
         }
       />
 
@@ -77,31 +77,31 @@ export default function AdminHomePage() {
       <Panel title="Où aller">
         <ul className={styles.muted}>
           <li>
-            <Link href="/admin/ateliers">Dossiers créateurs</Link>  un dossier en attente,
+            <Link href="/admin/ateliers">Dossiers créateurs</Link> : un dossier en attente,
             c’est un atelier qui ne peut rien vendre.
           </li>
           <li>
-            <Link href="/admin/livreurs">Dossiers livreurs</Link>  sans livreur validé,
+            <Link href="/admin/livreurs">Dossiers livreurs</Link> : sans livreur validé,
             aucune commande ne quitte l’atelier.
           </li>
           <li>
-            <Link href="/admin/catalogue">Fiches à valider</Link>  refuser demande un motif,
+            <Link href="/admin/catalogue">Fiches à valider</Link> : refuser demande un motif,
             il part au créateur.
           </li>
           <li>
-            <Link href="/admin/litiges">Réclamations</Link>  trois décisions distinctes :
-            rembourser, rendre la livraison, imputer la perte.
+            <Link href="/admin/litiges">Réclamations</Link> : trois décisions distinctes
+            (rembourser, rendre la livraison, imputer la perte).
           </li>
           <li>
-            <Link href="/admin/finances">Grand livre</Link>  soldes, écritures, contrôle des
+            <Link href="/admin/finances">Grand livre</Link> : soldes, écritures, contrôle des
             invariants.
           </li>
           <li>
-            <Link href="/admin/commandes">Expéditions</Link>  une expédition par atelier,
+            <Link href="/admin/commandes">Expéditions</Link> : une expédition par atelier,
             affectée à la main.
           </li>
           <li>
-            <Link href="/admin/outils">Outils</Link>  tâches périodiques et paiement simulé,
+            <Link href="/admin/outils">Outils</Link> : tâches périodiques et paiement simulé,
             tant que l’agrégateur n’est pas branché.
           </li>
         </ul>

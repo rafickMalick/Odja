@@ -133,7 +133,7 @@ export default function AdminAuditPage() {
                     </td>
                     <td>{ACTIONS[entry.action] ?? entry.action}</td>
                     <td>
-                      {entry.actorName ?? ""}
+                      {entry.actorName ?? "Système"}
                       {entry.actorRole ? (
                         <span className={styles.muted}> ({entry.actorRole})</span>
                       ) : null}

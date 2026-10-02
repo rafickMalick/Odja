@@ -6,7 +6,7 @@ import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
 import { PageHead, Panel, workspaceStyles as styles } from "@/components/dashboard/Workspace";
 import { ApiError, apiFetch } from "@/lib/api";
-import { formatFcfa } from "@/lib/format";
+import { formatFcfa, formatNumber } from "@/lib/format";
 
 /**
  * Paramétrage.
@@ -93,7 +93,7 @@ export default function AdminSettingsPage() {
     <>
       <PageHead
         title="Réglages"
-        subtitle="Ouvrir un pays est un interrupteur  aucun déploiement n’est nécessaire."
+        subtitle="Ouvrir un pays est un interrupteur : aucun déploiement n’est nécessaire."
       />
 
       {error ? <p className={styles.error}>{error}</p> : null}
@@ -120,7 +120,7 @@ export default function AdminSettingsPage() {
                   <td>{country.currency}</td>
                   <td className={styles.numeric}>{country.cityCount}</td>
                   <td className={styles.numeric}>
-                    {country.vatBps === 0 ? "" : `${(country.vatBps / 100).toFixed(2)} %`}
+                    {country.vatBps === 0 ? "Non définie" : `${formatNumber(country.vatBps / 100, 2)} %`}
                   </td>
                   <td>
                     {country.isActive ? (
@@ -175,7 +175,7 @@ export default function AdminSettingsPage() {
                   <td className={styles.numeric}>{formatFcfa(rate.baseFeeXof)}</td>
                   <td className={styles.numeric}>{formatFcfa(rate.perKmXof)}</td>
                   <td className={styles.numeric}>{formatFcfa(rate.minFeeXof)}</td>
-                  <td className={styles.numeric}>{rate.maxWeightKg} kg</td>
+                  <td className={styles.numeric}>{formatNumber(rate.maxWeightKg)} kg</td>
                 </tr>
               ))}
             </tbody>
@@ -201,7 +201,7 @@ export default function AdminSettingsPage() {
                   <td>{method.country}</td>
                   <td>{method.label}</td>
                   <td>{method.channel}</td>
-                  <td className={styles.numeric}>{(method.feeBps / 100).toFixed(2)} %</td>
+                  <td className={styles.numeric}>{formatNumber(method.feeBps / 100, 2)} %</td>
                   <td>
                     {method.isActive ? (
                       <Badge type="success">Actif</Badge>
