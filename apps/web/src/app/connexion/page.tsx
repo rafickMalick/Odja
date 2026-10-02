@@ -101,9 +101,9 @@ function ConnexionForm() {
       </form>
 
       <p className={styles.legal}>
-        En cliquant sur « Se connecter », vous acceptez les Conditions Générales
-        d&apos;Ojà, la Politique de Confidentialité et les Conditions
-        d&apos;Utilisation.
+        En cliquant sur « Se connecter », vous acceptez les{" "}
+        <Link href="/conditions-generales">conditions générales d&apos;utilisation</Link>{" "}
+        d&apos;Ojà et sa <Link href="/confidentialite">politique de confidentialité</Link>.
       </p>
 
       <p className={styles.switch}>

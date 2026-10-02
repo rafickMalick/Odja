@@ -3,7 +3,7 @@
 import { registerSchema } from "@oja/contracts";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   AuthField,
@@ -68,6 +68,16 @@ export default function InscriptionPage() {
   const { notify } = useToast();
 
   const [role, setRole] = useState<string>("CUSTOMER");
+
+  /* « Vendre sur Ojà » et « Devenir livreur » (pied de page) arrivent ici avec
+     `?profil=createur` ou `?profil=livreur` : le bon profil est déjà coché.
+     Lu au montage plutôt qu'avec useSearchParams, qui exigerait une
+     frontière Suspense pour un seul paramètre. */
+  useEffect(() => {
+    const profil = new URLSearchParams(window.location.search).get("profil");
+    if (profil === "createur") setRole("MAKER");
+    if (profil === "livreur") setRole("COURIER");
+  }, []);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -265,8 +275,15 @@ export default function InscriptionPage() {
             required
           />
           <span className={styles.checkText}>
-            J&apos;accepte les Conditions Générales et la Politique de
-            Confidentialité d&apos;Ojà.
+            J&apos;accepte les{" "}
+            <Link href="/conditions-generales" target="_blank">
+              conditions générales d&apos;utilisation
+            </Link>{" "}
+            et la{" "}
+            <Link href="/confidentialite" target="_blank">
+              politique de confidentialité
+            </Link>{" "}
+            d&apos;Ojà.
           </span>
         </label>
 
