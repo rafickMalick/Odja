@@ -142,7 +142,7 @@ function noticeFor(profile: CourierProfile | null, state: string): ReactNode {
     case "NOT_SUBMITTED":
       return (
         <>
-          Déposez votre dossier  pièce d&apos;identité, permis et carte grise  pour recevoir
+          Déposez votre dossier (pièce d&apos;identité, permis et carte grise) pour recevoir
           des missions. <Link href="/espace-livreur/profil">Compléter</Link>.
         </>
       );
@@ -151,7 +151,7 @@ function noticeFor(profile: CourierProfile | null, state: string): ReactNode {
     case "REJECTED":
       return (
         <>
-          Dossier refusé{profile.kycRejectReason ? `  ${profile.kycRejectReason}` : ""}.{" "}
+          Dossier refusé{profile.kycRejectReason ? ` : ${profile.kycRejectReason}` : ""}.{" "}
           <Link href="/espace-livreur/profil">Corrigez et redéposez</Link>.
         </>
       );

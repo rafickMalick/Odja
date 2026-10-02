@@ -162,7 +162,11 @@ export default function MakerOrdersPage() {
               </li>
             </ul>
 
-            {subOrder.respondByAt && subOrder.status !== "IN_PRODUCTION" ? (
+            {/* Le délai de réponse ne vaut que tant que la commande attend
+                l'atelier : une fois acceptée, l'annoncer encore ferait croire
+                qu'elle peut être annulée. */}
+            {subOrder.respondByAt &&
+            ["RECEIVED", "PAYMENT_CONFIRMED"].includes(subOrder.status) ? (
               <p className={styles.muted}>
                 À répondre {relative(subOrder.respondByAt)}. Sans réponse, la commande est
                 annulée et le client remboursé.
@@ -216,7 +220,7 @@ export default function MakerOrdersPage() {
 /** « dans 34 h », « depuis 2 j »  plus parlant qu'une date à l'heure près. */
 function relative(iso: string): string {
   const hours = Math.round((new Date(iso).getTime() - Date.now()) / 3_600_000);
-  if (hours <= 0) return ` délai dépassé depuis ${Math.abs(hours)} h`;
+  if (hours <= 0) return `immédiatement (délai dépassé depuis ${Math.abs(hours)} h)`;
   if (hours < 48) return `dans ${hours} h`;
   return `dans ${Math.round(hours / 24)} jours`;
 }

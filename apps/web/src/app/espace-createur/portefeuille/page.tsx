@@ -111,7 +111,7 @@ export default function MakerWalletPage() {
                   };
                   return (
                     <tr key={item.id}>
-                      <td>{item.subOrderReference ?? ""}</td>
+                      <td>{item.subOrderReference ?? "Aucune"}</td>
                       <td className={styles.numeric}>{formatFcfa(item.amountXof)}</td>
                       <td>
                         <Badge type={state.type}>{state.label}</Badge>
@@ -150,7 +150,7 @@ export default function MakerWalletPage() {
 }
 
 function formatDate(iso: string | null): string {
-  if (!iso) return "";
+  if (!iso) return "Non programmé";
   return new Date(iso).toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "short",

@@ -37,7 +37,7 @@ export default async function VerifierEmailPage({
           <>
             <h1 className={styles.title}>Adresse confirmée</h1>
             <p className={styles.text}>
-              Merci. Votre adresse e-mail est vérifiée  vous recevrez les
+              Merci. Votre adresse e-mail est vérifiée : vous recevrez les
               confirmations de commande et le suivi de vos livraisons.
             </p>
             <ButtonLink href="/catalogue">Découvrir le catalogue</ButtonLink>

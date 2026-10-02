@@ -61,12 +61,12 @@ export function FieldShell({
   return (
     <div className={styles.root}>
       <header className={styles.topbar}>
-        <Link href="/" className={styles.brand} aria-label="Ojà  accueil">
+        <Link href="/" className={styles.brand} aria-label="Ojà, accueil">
           <img src="/images/logo-oja.svg" alt="" className={styles.logo} />
           <span className={styles.space}>{title}</span>
         </Link>
         <button type="button" onClick={logout} className={styles.logout}>
-          Quitter
+          Se déconnecter
         </button>
       </header>
 

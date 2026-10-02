@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import {
@@ -37,6 +38,8 @@ interface Transaction {
   kind: string;
   refType: string;
   refId: string;
+  /** Référence métier (CMD-2026-000123…), quand l'API sait la retrouver. */
+  reference: string | null;
   memo: string | null;
   createdAt: string;
   entries: { account: string; label: string; amountXof: number }[];
@@ -150,7 +153,20 @@ export default function AdminLedgerPage() {
                     </td>
                     <td>{KINDS[transaction.kind] ?? transaction.kind}</td>
                     <td className={styles.muted}>
-                      {transaction.refType} · {transaction.refId.slice(-8)}
+                      {transaction.reference && transaction.refType === "dispute" ? (
+                        transaction.reference
+                      ) : transaction.reference ? (
+                        /* La sous-commande (…-A) se retrouve par sa commande. */
+                        <Link
+                          href={`/admin/commandes/recherche?q=${encodeURIComponent(
+                            transaction.reference.replace(/-[A-Z]$/, ""),
+                          )}`}
+                        >
+                          {transaction.reference}
+                        </Link>
+                      ) : (
+                        `${transaction.refType} · ${transaction.refId.slice(-8)}`
+                      )}
                     </td>
                     <td>
                       {transaction.entries.map((entry, index) => (

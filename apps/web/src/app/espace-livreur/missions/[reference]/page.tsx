@@ -11,6 +11,7 @@ import {
   fieldShellStyles as styles,
 } from "@/components/dashboard/FieldShell";
 import { ApiError, apiFetch } from "@/lib/api";
+import { formatNumber } from "@/lib/format";
 
 import { NEXT_ACTION, VEHICLES, currentPosition, mapLink, type Mission } from "../../mission";
 import { ProofForm } from "./ProofForm";
@@ -123,7 +124,7 @@ export default function MissionPage() {
           </div>
           <div>
             <span>Distance</span>
-            <strong>{mission.distanceKm.toFixed(1)} km</strong>
+            <strong>{formatNumber(mission.distanceKm, 1)} km</strong>
           </div>
           <div>
             <span>Véhicule</span>

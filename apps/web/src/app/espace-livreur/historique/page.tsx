@@ -10,6 +10,7 @@ import {
   fieldShellStyles as styles,
 } from "@/components/dashboard/FieldShell";
 import { apiFetch } from "@/lib/api";
+import { formatNumber } from "@/lib/format";
 
 import type { Mission } from "../mission";
 
@@ -52,7 +53,7 @@ export default function CourierHistoryPage() {
               </div>
               <div>
                 <span>{mission.pickup.shopName}</span>
-                <strong>{mission.distanceKm.toFixed(1)} km</strong>
+                <strong>{formatNumber(mission.distanceKm, 1)} km</strong>
               </div>
             </div>
           </FieldCard>

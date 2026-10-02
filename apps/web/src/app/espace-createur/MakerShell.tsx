@@ -86,7 +86,7 @@ function noticeFor(
   state: string,
 ): ReactNode {
   if (state === "no-shop") {
-    return "Bienvenue  renseignez votre boutique pour accéder à votre espace.";
+    return "Bienvenue ! Renseignez votre boutique pour accéder à votre espace.";
   }
 
   if (!maker) return null;
@@ -97,7 +97,7 @@ function noticeFor(
     case "PENDING":
       return "Dossier déposé, en cours de vérification par Ojà. Vous pouvez déjà préparer vos fiches : elles partiront en vente dès la validation.";
     case "REJECTED":
-      return `Dossier refusé${maker.kycRejectReason ? `  ${maker.kycRejectReason}` : ""}. Corrigez-le et redéposez-le pour retrouver votre espace.`;
+      return `Dossier refusé${maker.kycRejectReason ? ` : ${maker.kycRejectReason}` : ""}. Corrigez-le et redéposez-le pour retrouver votre espace.`;
     default:
       return null;
   }
