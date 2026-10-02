@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { Legal, LegalPage } from "@/components/legal/LegalPage";
+import { LegalPage } from "@/components/legal/LegalPage";
 import { LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = { title: "Conditions générales d’utilisation · Ojà" };
@@ -21,7 +21,7 @@ export default function ConditionsGeneralesPage() {
     >
       <h2>1. Ce qu’est Ojà</h2>
       <p>
-        Ojà, édité par <Legal value={LEGAL.companyName} label="Raison sociale" />, est une place
+        Ojà{LEGAL.companyName ? `, édité par ${LEGAL.companyName},` : ""} est une place
         de marché qui met en relation des ateliers indépendants (les <strong>créateurs</strong>)
         et des acheteurs (les <strong>clients</strong>), avec des <strong>livreurs</strong>{" "}
         partenaires. Ojà est l’intermédiaire unique : il encaisse les paiements, organise la

@@ -21,9 +21,8 @@ export default function ConfidentialitePage() {
     >
       <h2>1. Responsable du traitement</h2>
       <p>
-        <Legal value={LEGAL.companyName} label="Raison sociale" />,{" "}
-        <Legal value={LEGAL.address} label="Adresse du siège" />. Pour toute question sur vos
-        données : <a href={`mailto:${LEGAL.supportEmail}`}>{LEGAL.supportEmail}</a> ou le{" "}
+        <Legal value={LEGAL.companyName} fallback={LEGAL.brand} />
+        {LEGAL.address ? `, ${LEGAL.address}` : ""}. Pour toute question sur vos données : <a href={`mailto:${LEGAL.supportEmail}`}>{LEGAL.supportEmail}</a> ou le{" "}
         <Link href="/contact">formulaire de contact</Link>.
       </p>
 
