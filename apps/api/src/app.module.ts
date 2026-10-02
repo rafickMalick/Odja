@@ -19,6 +19,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { OrdersModule } from './orders/orders.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { StorageModule } from './storage/storage.module';
+import { SupportModule } from './support/support.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { StorageModule } from './storage/storage.module';
     OrdersModule,
     LogisticsModule,
     DisputeModule,
+    SupportModule,
     AdminModule,
     SchedulerModule,
   ],

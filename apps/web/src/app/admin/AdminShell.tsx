@@ -22,6 +22,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState(0);
   const [shipments, setShipments] = useState(0);
   const [disputes, setDisputes] = useState(0);
+  const [tickets, setTickets] = useState(0);
   const [state, setState] = useState<"loading" | "ready">("loading");
 
   useEffect(() => {
@@ -36,18 +37,22 @@ export function AdminShell({ children }: { children: ReactNode }) {
         setMakers(pendingMakers.length);
         setState("ready");
 
-        const [pendingCouriers, pendingProducts, unassigned, openDisputes] =
+        const [pendingCouriers, pendingProducts, unassigned, openDisputes, openTickets] =
           await Promise.all([
             apiFetch<unknown[]>("/admin/couriers?status=PENDING").catch(() => []),
             apiFetch<unknown[]>("/admin/catalog/products/pending").catch(() => []),
             apiFetch<unknown[]>("/admin/logistics/unassigned").catch(() => []),
             apiFetch<unknown[]>("/admin/disputes?open=true").catch(() => []),
+            apiFetch<{ count: number }>("/admin/support/tickets/pending-count").catch(() => ({
+              count: 0,
+            })),
           ]);
         if (cancelled) return;
         setCouriers(pendingCouriers.length);
         setProducts(pendingProducts.length);
         setShipments(unassigned.length);
         setDisputes(openDisputes.length);
+        setTickets(openTickets.count);
       } catch (cause) {
         if (cancelled) return;
         /* 401 comme 404 mènent au même endroit : l'API répond 404 à qui n'a pas
@@ -73,6 +78,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     { href: "/admin/commandes", label: "Expéditions", badge: shipments || undefined },
     { href: "/admin/commandes/recherche", label: "Rechercher" },
     { href: "/admin/litiges", label: "Réclamations", badge: disputes || undefined },
+    { href: "/admin/support", label: "Service client", badge: tickets || undefined },
     { href: "/admin/finances", label: "Grand livre" },
     { href: "/admin/promo-codes", label: "Codes promo" },
     { href: "/admin/journal", label: "Journal d'audit" },

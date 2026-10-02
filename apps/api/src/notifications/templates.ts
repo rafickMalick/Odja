@@ -196,6 +196,38 @@ export const NOTIFICATION_TEMPLATES = {
       href: d.href ?? '/admin',
     }),
   } satisfies NotificationTemplate<{ subject: string; body: string; href?: string }>,
+
+  // ── Service client ──
+
+  support_reply: {
+    version: 1,
+    channels: ['email', 'inapp'],
+    inapp: (d: { reference: string; subject: string; href: string }) => ({
+      title: 'Réponse du service client',
+      body: `${d.reference} · ${d.subject} : le service client vous a répondu.`,
+      href: d.href,
+    }),
+  } satisfies NotificationTemplate<{ reference: string; subject: string; href: string }>,
+
+  support_status_changed: {
+    version: 1,
+    channels: ['email', 'inapp'],
+    inapp: (d: { reference: string; statusLabel: string; href: string }) => ({
+      title: 'Demande mise à jour',
+      body: `${d.reference} : ${d.statusLabel.toLowerCase()}.`,
+      href: d.href,
+    }),
+  } satisfies NotificationTemplate<{ reference: string; statusLabel: string; href: string }>,
+
+  support_ticket_opened: {
+    version: 1,
+    channels: ['email', 'inapp'],
+    inapp: (d: { reference: string; subject: string; author: string }) => ({
+      title: 'Nouvelle demande au service client',
+      body: `${d.reference} · ${d.subject} (${d.author}).`,
+      href: `/admin/support/${d.reference}`,
+    }),
+  } satisfies NotificationTemplate<{ reference: string; subject: string; author: string }>,
 } as const;
 
 export type NotificationTemplateName = keyof typeof NOTIFICATION_TEMPLATES;
