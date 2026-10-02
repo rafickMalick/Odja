@@ -31,6 +31,7 @@ import {
 } from '@oja/contracts';
 import type { Request, Response } from 'express';
 
+import { cookieDomain } from '../common/cookie-domain';
 import { Throttle } from '../common/rate-limit.guard';
 import { zodBody } from '../common/zod.pipe';
 import { AuthService } from './auth.service';
@@ -271,6 +272,7 @@ function setAuthCookies(response: Response, tokens: IssuedTokens): void {
     sameSite: 'lax',
     maxAge: tokens.accessExpiresInSeconds * 1000,
     path: '/',
+    ...cookieDomain(),
   });
 
   response.cookie(REFRESH_COOKIE, tokens.refreshToken, {
@@ -278,6 +280,7 @@ function setAuthCookies(response: Response, tokens: IssuedTokens): void {
     secure,
     sameSite: 'lax',
     expires: tokens.refreshExpiresAt,
+    ...cookieDomain(),
     // Le jeton de rafraîchissement ne part que vers la route qui s'en sert :
     // il n'a aucune raison d'accompagner chaque appel d'API.
     path: '/api/v1/auth',
@@ -285,6 +288,6 @@ function setAuthCookies(response: Response, tokens: IssuedTokens): void {
 }
 
 function clearAuthCookies(response: Response): void {
-  response.clearCookie(ACCESS_COOKIE, { path: '/' });
-  response.clearCookie(REFRESH_COOKIE, { path: '/api/v1/auth' });
+  response.clearCookie(ACCESS_COOKIE, { path: '/', ...cookieDomain() });
+  response.clearCookie(REFRESH_COOKIE, { path: '/api/v1/auth', ...cookieDomain() });
 }

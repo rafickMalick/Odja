@@ -33,6 +33,12 @@ export const envSchema = z
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     API_PORT: intFromEnv(4000),
     WEB_ORIGIN: z.string().url().default('http://localhost:3000'),
+    /** Domaine partagé par le front et l'API (`oja.aworix.agency`). Absent en local. */
+    COOKIE_DOMAIN: z
+      .string()
+      .trim()
+      .regex(/^\.?[a-z0-9-]+(\.[a-z0-9-]+)+$/i, 'COOKIE_DOMAIN doit être un nom de domaine')
+      .optional(),
 
     DATABASE_URL: z.string().min(1, 'DATABASE_URL est obligatoire'),
     REDIS_URL: z.string().min(1).optional(),
