@@ -338,8 +338,9 @@ function cookiesOf(response: request.Response): string[] {
   return (Array.isArray(raw) ? raw : [raw]).map((cookie) => cookie.split(';')[0]!);
 }
 
-/** Les avis partent sans être attendus : on patiente un peu avant de lire. */
-async function waitFor(check: () => Promise<boolean>, timeoutMs = 5_000): Promise<void> {
+/** Les avis partent sans être attendus : on patiente un peu avant de lire.
+    15 s : dans la suite complète, la base est chargée par les autres fichiers. */
+async function waitFor(check: () => Promise<boolean>, timeoutMs = 15_000): Promise<void> {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     if (await check()) return;
