@@ -117,6 +117,7 @@ model User {
   notifications    Notification[]
   verifications    VerificationToken[]
   promoRedemptions PromoRedemption[]
+  supportTickets   SupportTicket[]
 
   @@index([role, status])
   @@map("users")
@@ -602,6 +603,7 @@ model Order {
   payments        Payment[]
   shipments       Shipment[]
   disputes        Dispute[]
+  supportTickets  SupportTicket[]
   invoice         Invoice?
   promoRedemption PromoRedemption?
 
@@ -1134,6 +1136,93 @@ model Message {
 
   @@index([threadId, createdAt])
   @@map("messages")
+}
+
+// ═══════════════════════════════════════════ Service client (tickets)
+
+/// Cycle d'une demande. « En attente de réponse » attend le **client** : le
+/// service client lui a posé une question.
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+/// D'où vient la demande : un espace connecté, ou le formulaire de contact
+/// public (visiteur, éventuellement relié après coup à un compte existant).
+enum TicketChannel {
+  ACCOUNT
+  CONTACT_FORM
+}
+
+/// Une demande au service client. Toujours entre une personne et Ojà : le
+/// client et le créateur ne s'écrivent jamais directement (§ 15.3).
+model SupportTicket {
+  id        String @id @default(cuid())
+  /// SUP-2026-000123 : la référence que le client cite au téléphone.
+  reference String @unique
+
+  channel TicketChannel @default(ACCOUNT)
+  /// Auteur inscrit. Nul pour un visiteur dont l'e-mail ne correspond à
+  /// aucun compte.
+  userId  String?
+  user    User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// Rôle de l'auteur à l'ouverture (CUSTOMER, MAKER…). Nul pour un visiteur.
+  authorRole UserRole?
+  /// Coordonnées saisies sur le formulaire public.
+  guestName  String?
+  guestEmail String?
+
+  /// Type de problème : clé stable de `@oja/contracts` (livraison, paiement…).
+  category String
+  subject  String
+  status   TicketStatus   @default(OPEN)
+  priority TicketPriority @default(NORMAL)
+
+  /// Commande concernée, facultative (espace acheteur).
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  /// Dernier message, interne compris : trie la file du service client.
+  lastMessageAt DateTime  @default(now())
+  resolvedAt    DateTime?
+  closedAt      DateTime?
+
+  messages SupportMessage[]
+
+  @@index([userId, status])
+  @@index([status, priority, lastMessageAt])
+  @@index([guestEmail])
+  @@map("support_tickets")
+}
+
+model SupportMessage {
+  id       String        @id @default(cuid())
+  ticketId String
+  ticket   SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  /// Nul pour un visiteur non inscrit.
+  authorId  String?
+  /// Écrit par le service client.
+  fromStaff Boolean       @default(false)
+  /// Note interne : jamais montrée au client, ni renvoyée par ses routes.
+  internal  Boolean       @default(false)
+  body      String
+  fileKeys  String[]      @default([])
+  createdAt DateTime      @default(now())
+
+  @@index([ticketId, createdAt])
+  @@map("support_messages")
 }
 
 model Review {

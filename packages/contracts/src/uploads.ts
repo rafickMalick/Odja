@@ -22,6 +22,8 @@ export const uploadPurposeSchema = z.enum([
   'dispute-evidence',
   /** Logo ou bannière de boutique. */
   'shop-image',
+  /** Capture ou photo jointe à une demande au service client. */
+  'support-attachment',
 ]);
 export type UploadPurpose = z.infer<typeof uploadPurposeSchema>;
 
@@ -56,6 +58,13 @@ export const UPLOAD_RULES: Readonly<
     public: false,
   },
   'dispute-evidence': {
+    maxBytes: 8 * 1024 * 1024,
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+    public: false,
+  },
+  /* Privée : une capture d'écran de compte ou de paiement ne regarde que la
+     personne et le service client. */
+  'support-attachment': {
     maxBytes: 8 * 1024 * 1024,
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
     public: false,
