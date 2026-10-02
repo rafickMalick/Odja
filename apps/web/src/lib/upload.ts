@@ -15,7 +15,8 @@ export type UploadPurpose =
   | "shop-image"
   | "kyc-document"
   | "delivery-proof"
-  | "dispute-evidence";
+  | "dispute-evidence"
+  | "support-attachment";
 
 interface UploadTicket {
   uploadUrl: string;
@@ -44,6 +45,10 @@ const RULES: Record<UploadPurpose, { maxBytes: number; mimeTypes: string[] }> = 
     mimeTypes: ["image/jpeg", "image/png", "image/webp"],
   },
   "dispute-evidence": {
+    maxBytes: 8 * 1024 * 1024,
+    mimeTypes: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
+  },
+  "support-attachment": {
     maxBytes: 8 * 1024 * 1024,
     mimeTypes: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
   },

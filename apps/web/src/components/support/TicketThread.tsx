@@ -7,6 +7,7 @@ import { Button } from "@/components/Button";
 import { Field, fieldStyles } from "@/components/Field";
 import { workspaceStyles as styles } from "@/components/dashboard/Workspace";
 
+import { AttachmentLinks, AttachmentPicker, type PendingAttachment } from "./Attachments";
 import support from "./support.module.css";
 
 /**
@@ -21,15 +22,19 @@ export function TicketThread({
   side,
   closed,
   onSend,
+  resolveAttachment,
 }: {
   messages: TicketMessageView[];
   side: "customer" | "staff";
   /** Demande fermée : plus de réponse côté client. */
   closed: boolean;
-  onSend: (body: string, internal: boolean) => Promise<void>;
+  onSend: (body: string, internal: boolean, fileKeys: string[]) => Promise<void>;
+  /** Lien de lecture temporaire d'une pièce jointe de cette demande. */
+  resolveAttachment: (fileKey: string) => Promise<string>;
 }) {
   const [body, setBody] = useState("");
   const [internal, setInternal] = useState(false);
+  const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,9 +43,14 @@ export function TicketThread({
     setBusy(true);
     setError(null);
     try {
-      await onSend(body.trim(), internal);
+      await onSend(
+        body.trim(),
+        internal,
+        attachments.map((file) => file.fileKey),
+      );
       setBody("");
       setInternal(false);
+      setAttachments([]);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Envoi impossible.");
     } finally {
@@ -67,6 +77,7 @@ export function TicketThread({
           <li key={message.id} className={classOf(message)}>
             <span className={support.author}>{authorOf(message)}</span>
             <p>{message.body}</p>
+            <AttachmentLinks fileKeys={message.fileKeys} resolve={resolveAttachment} />
             <time className={support.time} dateTime={message.createdAt}>
               {new Date(message.createdAt).toLocaleString("fr-FR", {
                 day: "2-digit",
@@ -99,6 +110,7 @@ export function TicketThread({
               }
             />
           </Field>
+          <AttachmentPicker value={attachments} onChange={setAttachments} />
           {side === "staff" ? (
             <label className={support.check}>
               <input

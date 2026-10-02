@@ -8,6 +8,7 @@ import { Field, FieldRow, fieldStyles } from "@/components/Field";
 import { workspaceStyles as styles } from "@/components/dashboard/Workspace";
 import { ApiError, apiFetch } from "@/lib/api";
 
+import { AttachmentPicker, type PendingAttachment } from "./Attachments";
 import support from "./support.module.css";
 
 /**
@@ -32,6 +33,7 @@ export function NewTicketForm({
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [orderReference, setOrderReference] = useState("");
+  const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | string | null>(null);
 
@@ -53,12 +55,14 @@ export function NewTicketForm({
           subject: subject.trim(),
           message: message.trim(),
           ...(orderReference ? { orderReference } : {}),
+          fileKeys: attachments.map((file) => file.fileKey),
         },
       });
       setCategory("");
       setSubject("");
       setMessage("");
       setOrderReference("");
+      setAttachments([]);
       onCreated(ticket);
     } catch (cause) {
       setError(cause instanceof ApiError ? cause : "Envoi impossible pour le moment.");
@@ -126,7 +130,7 @@ export function NewTicketForm({
           value={subject}
           maxLength={140}
           onChange={(event) => setSubject(event.target.value)}
-          placeholder="Ex. : colis toujours pas arrivé"
+          placeholder="Résumez votre demande en une phrase"
           required
         />
       </Field>
@@ -143,6 +147,8 @@ export function NewTicketForm({
           required
         />
       </Field>
+
+      <AttachmentPicker value={attachments} onChange={setAttachments} />
 
       {formError ? (
         <p className={styles.error} role="alert">
