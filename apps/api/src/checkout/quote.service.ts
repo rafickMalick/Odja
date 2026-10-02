@@ -257,7 +257,7 @@ export class QuoteService {
  * sinon. Le repli sur la ville donne un tarif approximatif mais plausible,
  * là où l'absence de position rendrait toute commande impossible.
  */
-function pointOf(
+export function pointOf(
   latitude: number | null,
   longitude: number | null,
   city: { latitude: number | null; longitude: number | null },
