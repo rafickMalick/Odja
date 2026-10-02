@@ -42,6 +42,7 @@ const ALLOWED: Record<string, readonly string[]> = {
   'kyc-document': ['MAKER', 'COURIER', 'ADMIN'],
   'delivery-proof': ['COURIER', 'ADMIN'],
   'dispute-evidence': ['CUSTOMER', 'MAKER', 'ADMIN'],
+  'support-attachment': ['CUSTOMER', 'MAKER', 'ADMIN'],
 };
 
 function assertAllowed(role: string, purpose: keyof typeof UPLOAD_RULES): void {

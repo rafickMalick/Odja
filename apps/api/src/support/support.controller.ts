@@ -14,11 +14,15 @@ import {
   type UpdateTicketInput,
 } from '@oja/contracts';
 
+import { z } from 'zod';
+
 import { CurrentUser, type AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Throttle } from '../common/rate-limit.guard';
 import { ZodValidationPipe, zodBody } from '../common/zod.pipe';
 import { SupportService } from './support.service';
+
+const attachmentQuerySchema = z.object({ key: z.string().trim().min(1).max(300) });
 
 /**
  * Demandes au service client, côté acheteur et créateur.
@@ -61,6 +65,16 @@ export class SupportController {
     return this.support.mine(user, reference);
   }
 
+  /** Lien de lecture temporaire d'une pièce jointe de ma demande. */
+  @Get(':reference/attachment')
+  async attachment(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('reference') reference: string,
+    @Query(new ZodValidationPipe(attachmentQuerySchema)) query: { key: string },
+  ) {
+    return this.support.myAttachmentUrl(user.id, reference, query.key);
+  }
+
   @Throttle(30, 3_600)
   @Post(':reference/messages')
   async reply(
@@ -91,6 +105,14 @@ export class SupportAdminController {
   @Get(':reference')
   async get(@Param('reference') reference: string) {
     return this.support.adminGet(reference);
+  }
+
+  @Get(':reference/attachment')
+  async attachment(
+    @Param('reference') reference: string,
+    @Query(new ZodValidationPipe(attachmentQuerySchema)) query: { key: string },
+  ) {
+    return this.support.adminAttachmentUrl(reference, query.key);
   }
 
   @Post(':reference/messages')

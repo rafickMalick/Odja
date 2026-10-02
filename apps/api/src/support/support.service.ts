@@ -25,6 +25,7 @@ import type { Prisma, UserRole } from '@oja/db';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { NotificationService } from '../notifications/notification.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { StorageService } from '../storage/storage.service';
 
 /**
  * Service client : demandes (tickets) et fil de discussion.
@@ -64,7 +65,58 @@ export class SupportService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationService,
+    private readonly storage: StorageService,
   ) {}
+
+  /**
+   * Pièces jointes : seulement les fichiers que l'auteur a lui-même envoyés.
+   *
+   * La clé porte l'usage et le propriétaire (`private/support-attachment/
+   * <jour>/<userId>/…`, voir StorageService). Sans ce contrôle, n'importe qui
+   * pourrait joindre à sa demande la clé d'un fichier d'autrui (une pièce
+   * d'identité, par exemple) et en obtenir ensuite un lien de lecture.
+   */
+  private async assertOwnAttachments(fileKeys: string[] | undefined, userId: string) {
+    for (const key of fileKeys ?? []) {
+      const parts = key.split('/');
+      const valid =
+        parts.length === 5 &&
+        parts[0] === 'private' &&
+        parts[1] === 'support-attachment' &&
+        parts[3] === userId &&
+        !key.includes('..');
+      if (!valid) throw new BadRequestException('Pièce jointe invalide.');
+      // Le fichier doit être réellement arrivé sur le stockage.
+      await this.storage.assertExists(key);
+    }
+  }
+
+  /** Lien de lecture à durée courte, pour une pièce jointe de la demande. */
+  private async attachmentUrl(
+    ticketWhere: Prisma.SupportTicketWhereInput,
+    fileKey: string,
+    includeInternal: boolean,
+  ): Promise<{ url: string }> {
+    const message = await this.prisma.supportMessage.findFirst({
+      where: {
+        fileKeys: { has: fileKey },
+        ticket: ticketWhere,
+        ...(includeInternal ? {} : { internal: false }),
+      },
+      select: { id: true },
+    });
+    // Même réponse qu'une demande inconnue : rien ne confirme l'existence.
+    if (!message) throw new NotFoundException('Pièce jointe introuvable.');
+    return { url: await this.storage.createReadUrl(fileKey) };
+  }
+
+  async myAttachmentUrl(userId: string, reference: string, fileKey: string) {
+    return this.attachmentUrl({ reference, userId }, fileKey, false);
+  }
+
+  async adminAttachmentUrl(reference: string, fileKey: string) {
+    return this.attachmentUrl({ reference }, fileKey, true);
+  }
 
   /** Types de problème proposés à un rôle. Les autres rôles n'ont pas d'espace support. */
   categoriesFor(role: string): Record<string, string> {
@@ -80,6 +132,7 @@ export class SupportService {
     if (!(input.category in categories)) {
       throw new BadRequestException('Type de problème inconnu pour votre espace.');
     }
+    await this.assertOwnAttachments(input.fileKeys, user.id);
 
     let orderId: string | undefined;
     if (input.orderReference) {
@@ -163,6 +216,7 @@ export class SupportService {
         'Cette demande est fermée. Ouvrez-en une nouvelle si le problème persiste.',
       );
     }
+    await this.assertOwnAttachments(input.fileKeys, user.id);
 
     const now = new Date();
     await this.prisma.$transaction([
@@ -304,6 +358,7 @@ export class SupportService {
       select: { id: true, status: true },
     });
     if (!ticket) throw new NotFoundException('Demande introuvable.');
+    await this.assertOwnAttachments(input.fileKeys, adminId);
 
     const internal = input.internal ?? false;
     const now = new Date();

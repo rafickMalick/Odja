@@ -9,6 +9,7 @@ import { loginUrl } from "@/lib/login-redirect";
 import { MakerStatusProvider, useMakerStatus } from "./maker-context";
 
 const ONBOARDING_PATH = "/espace-createur/boutique";
+const SUPPORT_PATH = "/espace-createur/support";
 
 /**
  * Coquille de l'espace créateur.
@@ -42,20 +43,29 @@ function Gate({ children }: { children: ReactNode }) {
   /* Le verrou agit sur l'URL, pas seulement sur ce qui s'affiche : sans ce
      remplacement, taper directement /espace-createur/produits dans la barre
      d'adresse suffirait à contourner l'étape. */
+  /* Le support reste ouvert pendant l'inscription : c'est précisément quand
+     un dossier bloque qu'on a besoin d'écrire à Ojà. */
+  const reachableWhileLocked =
+    pathname === ONBOARDING_PATH || pathname.startsWith(SUPPORT_PATH);
+
   useEffect(() => {
-    if (locked && pathname !== ONBOARDING_PATH) {
+    if (locked && !reachableWhileLocked) {
       router.replace(ONBOARDING_PATH);
     }
-  }, [locked, pathname, router]);
+  }, [locked, reachableWhileLocked, router]);
 
   const links: WorkspaceLink[] = locked
-    ? [{ href: ONBOARDING_PATH, label: "Ma boutique" }]
+    ? [
+        { href: ONBOARDING_PATH, label: "Ma boutique" },
+        { href: SUPPORT_PATH, label: "Support créateur" },
+      ]
     : [
         { href: "/espace-createur", label: "Tableau de bord" },
         { href: "/espace-createur/produits", label: "Mes pièces" },
         { href: "/espace-createur/commandes", label: "Commandes" },
         { href: "/espace-createur/portefeuille", label: "Portefeuille" },
         { href: "/espace-createur/boutique", label: "Ma boutique" },
+        { href: SUPPORT_PATH, label: "Support créateur" },
       ];
 
   if (state === "loading") {
@@ -71,7 +81,7 @@ function Gate({ children }: { children: ReactNode }) {
       {/* Tant que verrouillé, seule /boutique est jamais montée : les autres
           pages ne peuvent pas faire d'appel avant que la coquille les ait
           laissées passer. */}
-      {locked && pathname !== ONBOARDING_PATH ? null : children}
+      {locked && !reachableWhileLocked ? null : children}
     </Workspace>
   );
 }
