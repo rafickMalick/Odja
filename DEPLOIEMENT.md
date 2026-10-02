@@ -125,6 +125,45 @@ patiente le temps que le service redémarre.
    puis redéployer le service API — sans ça, le navigateur est bloqué par
    CORS.
 
+## 5 bis. Domaine personnalisé — `oja.aworix.agency`
+
+Le domaine `aworix.agency` est géré chez **OVH**. Ojà s'y installe en
+sous-domaines, sans toucher au site principal :
+
+| Adresse | Service |
+|---|---|
+| `oja.aworix.agency` | front (Vercel) |
+| `api.oja.aworix.agency` | API (Render) |
+
+1. **Vercel** → projet → *Settings → Domains* → ajouter `oja.aworix.agency`.
+2. **Render** → service `oja-api` → *Settings → Custom Domains* → ajouter
+   `api.oja.aworix.agency`.
+3. **OVH** → *Web Cloud → Noms de domaine → aworix.agency → Zone DNS* →
+   *Ajouter une entrée* → **CNAME**, deux fois :
+
+   | Sous-domaine | Cible |
+   |---|---|
+   | `oja` | la valeur affichée par Vercel (en général `cname.vercel-dns.com.`) |
+   | `api.oja` | `oja-api.onrender.com.` |
+
+   Le point final de la cible est exigé par OVH. Laisser la propagation se
+   faire (quelques minutes à quelques heures) ; Vercel et Render émettent le
+   certificat HTTPS d'eux-mêmes une fois le DNS vu.
+4. **Variables**, puis redéployer les deux services :
+   - Render : `WEB_ORIGIN=https://oja.aworix.agency` et
+     `COOKIE_DOMAIN=oja.aworix.agency`
+   - Vercel : `NEXT_PUBLIC_API_URL=https://api.oja.aworix.agency/api/v1` —
+     elle est figée au build, un simple redémarrage ne suffit pas.
+5. **Kadev Pay** : remplacer l'URL du webhook (§ 6) par
+   `https://api.oja.aworix.agency/api/v1/webhooks/kadevpay`.
+
+**Pourquoi `COOKIE_DOMAIN`.** Sans lui, les cookies de session posés par
+l'API n'appartiennent qu'à `api.oja.aworix.agency` : le serveur du front ne
+les reçoit pas et les pages rendues côté serveur voient tout le monde
+déconnecté. `oja.aworix.agency` les partage entre le front et l'API, et
+seulement eux — `aworix.agency` les enverrait aussi aux autres sites du
+domaine.
+
 ## 6. Kadev Pay — webhook
 
 Une fois l'API en ligne (étape 4), sur le tableau de bord Kadev Pay :
