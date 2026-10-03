@@ -118,6 +118,7 @@ model User {
   verifications    VerificationToken[]
   promoRedemptions PromoRedemption[]
   supportTickets   SupportTicket[]
+  idempotencyKeys  IdempotencyKey[]
 
   @@index([role, status])
   @@map("users")
@@ -1395,4 +1396,35 @@ model NewsletterSubscriber {
   brevoSyncedAt  DateTime?
 
   @@map("newsletter_subscribers")
+}
+
+// ═══════════════════════════════════════════ Idempotence
+
+/// Clé `Idempotency-Key` d'une requête qui engage de l'argent (cahier L0-25).
+/// Le client envoie la même clé quand il rejoue la même intention : un double
+/// clic ou un réseau qui renvoie la requête retrouve la première réponse au
+/// lieu de créer une seconde commande. Gardée 24 h, puis purgée.
+///
+/// En base plutôt que dans Redis, comme le prévoyait le backlog : Redis n'est
+/// pas déployé, et la ligne `IN_PROGRESS` doit survivre à un redémarrage
+/// pour qu'une requête interrompue ne soit pas rejouée en double.
+model IdempotencyKey {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Valeur de l'en-tête, choisie par le client. Unique par utilisateur.
+  key    String
+  /// Empreinte de la méthode, du chemin et du corps : la même clé ne peut
+  /// pas servir à une autre requête.
+  requestHash String
+  /// IN_PROGRESS tant que la requête tourne, COMPLETED une fois la réponse
+  /// mémorisée. Une requête en échec efface sa ligne : on peut réessayer.
+  status String @default("IN_PROGRESS")
+  responseBody Json?
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+
+  @@unique([userId, key])
+  @@index([expiresAt])
+  @@map("idempotency_keys")
 }

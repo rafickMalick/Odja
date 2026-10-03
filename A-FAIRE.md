@@ -83,7 +83,9 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
 - [ ] SMS (LN-03)
 - [ ] Avis clients (L6-11, L6-12)
 - [ ] MFA des admins (L0-22, L7-16)
-- [ ] Idempotence des requêtes (L0-25)
+- [x] Idempotence des requêtes (L0-25) : `POST /checkout` rejoue la commande
+  déjà créée pour la même `Idempotency-Key` ; à poser avec `@Idempotent()` sur
+  toute future route qui engage de l'argent (versements, remboursements)
 - [ ] Durcissement L8 : sauvegardes et test de restauration, alertes, audit,
   tests de charge k6, tests Playwright
 - [ ] OpenTelemetry, OpenAPI, cache du catalogue (L1-22)
