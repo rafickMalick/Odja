@@ -105,6 +105,13 @@ describe('Équipe d’administration (bout en bout)', () => {
       where: { action: 'user.admin.grant', targetId: awa.id },
     });
     expect(audit?.actorId).toBe(admin.id);
+
+    // L'audit automatique trace aussi la requête elle-même, adresse masquée.
+    const automatic = await prisma.auditLog.findFirst({
+      where: { action: 'http.POST /admin/team', actorId: admin.id },
+    });
+    expect(automatic).toMatchObject({ actorRole: 'ADMIN', targetType: 'team' });
+    expect(JSON.stringify(automatic?.after)).not.toContain('awa@oja.market');
   });
 
   it('refuse une adresse inconnue et un compte créateur', async () => {
@@ -121,6 +128,11 @@ describe('Équipe d’administration (bout en bout)', () => {
       .set('Cookie', admin.cookies)
       .send({ email: 'atelier@oja.market' })
       .expect(400);
+
+    // Une action refusée n'a rien fait : rien n'est écrit au journal.
+    expect(
+      await prisma.auditLog.count({ where: { action: { startsWith: 'http.' }, actorId: admin.id } }),
+    ).toBe(0);
   });
 
   it('retire un admin, avec effet immédiat sur sa session', async () => {
