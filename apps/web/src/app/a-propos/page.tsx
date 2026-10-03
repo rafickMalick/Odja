@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ButtonLink } from "@/components/Button";
+import { ForVisitors } from "@/components/ForVisitors";
 
 import styles from "./page.module.css";
 
@@ -132,17 +133,20 @@ export default function AboutPage() {
           </div>
           <ButtonLink href="/catalogue">Découvrir le catalogue</ButtonLink>
         </div>
-        <div className={styles.ctaInner}>
-          <div>
-            <p className={styles.ctaTitle}>Vous êtes un créateur ?</p>
-            <p className={styles.ctaText}>
-              Ouvrez votre boutique et mettez vos pièces en vente.
-            </p>
+        {/* Appel à s'inscrire : réservé aux visiteurs. */}
+        <ForVisitors>
+          <div className={styles.ctaInner}>
+            <div>
+              <p className={styles.ctaTitle}>Vous êtes un créateur ?</p>
+              <p className={styles.ctaText}>
+                Ouvrez votre boutique et mettez vos pièces en vente.
+              </p>
+            </div>
+            <ButtonLink href="/inscription?profil=createur" variant="outline">
+              Devenir créateur
+            </ButtonLink>
           </div>
-          <ButtonLink href="/inscription" variant="outline">
-            Devenir créateur
-          </ButtonLink>
-        </div>
+        </ForVisitors>
       </section>
 
       <p className={styles.footNote}>
