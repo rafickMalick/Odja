@@ -26,6 +26,13 @@ const COMPANY_LINKS = [
   { label: "Contact", href: "/contact" },
 ];
 
+/* Pages officielles d'Ojà. LinkedIn : la page de l'entreprise, pas une
+   publication. */
+const SOCIAL_LINKS = {
+  instagram: "https://www.instagram.com/oja.bj",
+  linkedin: "https://www.linkedin.com/company/%E1%BB%8Dj%C3%A0",
+};
+
 const LEGAL_LINKS = [
   { label: "Conditions générales", href: "/conditions-generales" },
   { label: "Politique de confidentialité", href: "/confidentialite" },
@@ -66,29 +73,30 @@ export function Footer() {
               />
             </Link>
 
+            {/* Seuls les comptes qui existent : X et Facebook pointaient vers
+                `#`. Liens externes ouverts dans un nouvel onglet, sans transmettre
+                la page d'origine (`noopener noreferrer`). */}
             <div className={styles.social}>
-              <a href="#" aria-label="Twitter">
-                <img
-                  src="/images/social-twitter.svg"
-                  alt=""
-                  className={styles.socialPlain}
-                />
-              </a>
-              <a href="#" aria-label="Facebook" className={styles.socialFramed}>
-                <img
-                  src="/images/social-facebook.svg"
-                  alt=""
-                  className={styles.socialIcon}
-                />
-              </a>
-              <a href="#" aria-label="Instagram" className={styles.socialFramed}>
+              <a
+                href={SOCIAL_LINKS.instagram}
+                aria-label="Instagram d’Ojà"
+                className={styles.socialFramed}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <img
                   src="/images/social-instagram.svg"
                   alt=""
                   className={styles.socialIcon}
                 />
               </a>
-              <a href="#" aria-label="LinkedIn" className={styles.socialFramed}>
+              <a
+                href={SOCIAL_LINKS.linkedin}
+                aria-label="LinkedIn d’Ojà"
+                className={styles.socialFramed}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <img
                   src="/images/social-linkedin.svg"
                   alt=""
