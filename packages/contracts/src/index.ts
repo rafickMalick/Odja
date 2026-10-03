@@ -3,6 +3,7 @@ export * from './catalog';
 export * from './checkout';
 export * from './disputes';
 export * from './logistics';
+export * from './newsletter';
 export * from './notifications';
 export * from './promo';
 export * from './support';
