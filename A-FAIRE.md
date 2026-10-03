@@ -56,7 +56,8 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
 
 ## 4. Site (front)
 
-- [ ] Liens des réseaux sociaux du pied de page : encore `href="#"`.
+- [x] Liens des réseaux sociaux du pied de page : Instagram (`@oja.bj`) et la
+  page LinkedIn d'Ojà ; X et Facebook retirés tant qu'il n'y a pas de compte.
 - [x] Affichage par rôle : les appels à créer un compte ne s'affichent plus
   qu'aux visiteurs (et à l'admin) ; `/connexion` et `/inscription` renvoient
   un compte connecté dans son espace.
