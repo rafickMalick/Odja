@@ -6,5 +6,6 @@ export * from './logistics';
 export * from './newsletter';
 export * from './notifications';
 export * from './promo';
+export * from './reviews';
 export * from './support';
 export * from './uploads';

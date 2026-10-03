@@ -343,8 +343,8 @@ Dépend de `P-06`.
 - [ ] **L6-08** Règle de prise en charge de la casse en transit (dépend de `P-06`)
 - [x] **L6-09** Retours produit et délai de rétractation
 - [x] **L6-10** Alertes de dépassement de SLA
-- [ ] **L6-11** Avis : **un avis exige une `OrderLine` réellement achetée**
-- [ ] **L6-12** Modération des avis, recalcul des notes moyennes produit et atelier
+- [x] **L6-11** Avis : **un avis exige une `OrderLine` réellement achetée** — et réception validée (`VALIDATED`), un seul par ligne (`POST /order-lines/:id/review`)
+- [x] **L6-12** Modération des avis, recalcul des notes moyennes produit et atelier — Admin › Avis clients ; publier, refuser avec motif, revenir sur une décision ; moyennes recalculées depuis les avis publiés, jamais incrémentées
 - [x] **L6-13** Formulaire de contact raccordé (PR #13 : crée une demande au service client, pot de miel et limite d'envois)
 - [x] **L6-14** Toutes les demandes transitent par le Support, coordonnées masquées (§ 15.3)
 
