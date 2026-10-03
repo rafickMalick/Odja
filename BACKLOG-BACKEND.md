@@ -200,7 +200,7 @@ recherche et dans les facettes, en moins de 200 ms au 95ᵉ centile.
 - [x] **L2-17** Machine à états `SubOrder` du § 5.2
 - [x] **L2-18** **Règle des 48 h** : relance du fabricant, puis refus automatique au silence
 - [x] **L2-19** Annulation et remboursement au prorata quand un atelier refuse
-- [x] **L2-20** Facture PDF numérotée, archivée, immuable, mention du pays de livraison — émise à l’encaissement, URL pré-signée
+- [x] **L2-20** Facture PDF numérotée, archivée, immuable, mention du pays de livraison — émise à l’encaissement (ordonnanceur, datée du paiement), numérotation sans trou sous verrou, mentions légales du vendeur depuis `LEGAL`, URL pré-signée
 
 **Sortie de lot** — Une commande à trois ateliers se crée, se chiffre au franc
 près et s'éclate correctement. Le stock est réservé. Aucune transition
