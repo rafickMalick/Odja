@@ -31,6 +31,9 @@ export interface Mission {
   };
 
   items: { productName: string; quantity: number }[];
+
+  /** Espèces à encaisser auprès du client en remettant le colis (0 = rien). */
+  cashToCollectXof: number;
 }
 
 export const VEHICLES: Record<string, string> = {

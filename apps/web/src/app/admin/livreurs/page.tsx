@@ -11,6 +11,7 @@ import {
   workspaceStyles as styles,
 } from "@/components/dashboard/Workspace";
 import { ApiError, apiFetch } from "@/lib/api";
+import { formatFcfa } from "@/lib/format";
 
 import admin from "../admin.module.css";
 
@@ -35,6 +36,12 @@ interface Courier {
   kycSubmittedAt: string | null;
   kycRejectReason: string | null;
   deliveredCount: number;
+}
+
+interface CourierCash {
+  courierId: string;
+  fullName: string;
+  cashHeldXof: number;
 }
 
 interface Document {
@@ -72,6 +79,41 @@ export default function AdminCouriersPage() {
   const [couriers, setCouriers] = useState<Courier[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cash, setCash] = useState<CourierCash[]>([]);
+
+  const loadCash = useCallback(async () => {
+    setCash(await apiFetch<CourierCash[]>("/admin/couriers/cash").catch(() => []));
+  }, []);
+
+  useEffect(() => {
+    void loadCash();
+  }, [loadCash]);
+
+  /* Le livreur a remis des espèces à l'équipe : on l'enregistre. Le serveur
+     refuse un montant supérieur à ce qu'il détient. */
+  const remit = async (row: CourierCash) => {
+    const answer = window.prompt(
+      `Montant reversé par ${row.fullName} (F CFA, au plus ${row.cashHeldXof}) :`,
+      String(row.cashHeldXof),
+    );
+    if (!answer) return;
+    const amountXof = Number(answer.replace(/\s/g, ""));
+    if (!Number.isInteger(amountXof) || amountXof <= 0) {
+      setError("Saisissez un montant entier positif.");
+      return;
+    }
+
+    setError(null);
+    try {
+      await apiFetch(`/admin/couriers/${row.courierId}/remittance`, {
+        method: "POST",
+        body: { amountXof },
+      });
+      await loadCash();
+    } catch (cause) {
+      setError(cause instanceof ApiError ? cause.message : "Enregistrement impossible.");
+    }
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -116,6 +158,28 @@ export default function AdminCouriersPage() {
         title="Dossiers livreurs"
         subtitle="Sans livreur validé, aucune commande ne quitte l’atelier."
       />
+
+      {cash.length > 0 ? (
+        <Panel title="Espèces à récupérer auprès des livreurs">
+          <dl className={admin.details}>
+            {cash.map((row) => (
+              <div key={row.courierId}>
+                <dt>{row.fullName}</dt>
+                <dd>
+                  {formatFcfa(row.cashHeldXof)}{" "}
+                  <Button type="button" variant="outline" onClick={() => void remit(row)}>
+                    Enregistrer un reversement
+                  </Button>
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className={styles.muted}>
+            Argent encaissé à la livraison pour le compte d’Ojà (paiement à la livraison ou solde
+            d’un acompte), pas encore remis à l’équipe.
+          </p>
+        </Panel>
+      ) : null}
 
       <div className={admin.filters}>
         {FILTERS.map((item) => (

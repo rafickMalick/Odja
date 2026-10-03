@@ -22,6 +22,7 @@ import { formatFcfa } from "@/lib/format";
 
 interface Earnings {
   deliveryFeesCollectedXof: number;
+  cashHeldXof: number;
   scheduledXof: number;
   readyXof: number;
   paidXof: number;
@@ -61,6 +62,21 @@ export default function CourierEarningsPage() {
   return (
     <>
       <FieldHead title="Mes gains" subtitle={`${earnings?.deliveredCount ?? 0} course(s) livrée(s)`} />
+
+      {(earnings?.cashHeldXof ?? 0) > 0 ? (
+        <FieldCard tone="action">
+          <div className={styles.rows}>
+            <div>
+              <span>Espèces à reverser à Ojà</span>
+              <strong>{formatFcfa(earnings?.cashHeldXof ?? 0)}</strong>
+            </div>
+          </div>
+          <p className={styles.muted}>
+            Vous avez encaissé cette somme pour Ojà à la livraison. Remettez-la à l’équipe :
+            elle enregistrera le reversement.
+          </p>
+        </FieldCard>
+      ) : null}
 
       <FieldCard>
         <div className={styles.rows}>
