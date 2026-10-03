@@ -82,7 +82,10 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
 - [ ] Versements aux créateurs et livreurs (lot L5)
 - [ ] SMS (LN-03)
 - [ ] Avis clients (L6-11, L6-12)
-- [ ] MFA des admins (L0-22, L7-16)
+- [x] MFA des admins (L0-22, L7-16) : obligatoire pour l'espace admin ; page
+  `/double-authentification`, réinitialisation dans Admin › Administrateurs
+- [ ] Après le déploiement de la MFA : chaque admin l'active à sa prochaine
+  visite de l'espace admin (il y est conduit). Garder ses codes de secours.
 - [x] Idempotence des requêtes (L0-25) : `POST /checkout` rejoue la commande
   déjà créée pour la même `Idempotency-Key` ; à poser avec `@Idempotent()` sur
   toute future route qui engage de l'argent (versements, remboursements)

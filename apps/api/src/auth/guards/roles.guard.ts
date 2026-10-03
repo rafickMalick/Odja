@@ -1,6 +1,7 @@
 import {
   type CanActivate,
   type ExecutionContext,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,6 +10,10 @@ import type { UserRole } from '@oja/db';
 
 import type { AuthenticatedUser } from '../decorators/current-user.decorator';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { MfaPolicy } from '../mfa-policy';
+
+/** Titre de l'erreur : le front s'y reconnaît pour mener à l'activation. */
+export const MFA_REQUIRED_TITLE = 'Double authentification requise';
 
 /**
  * Contrôle de profil.
@@ -24,7 +29,10 @@ import { ROLES_KEY } from '../decorators/roles.decorator';
  */
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly mfa: MfaPolicy,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
     const required = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [
@@ -39,6 +47,18 @@ export class RolesGuard implements CanActivate {
 
     if (!user || !required.includes(user.role)) {
       throw new NotFoundException();
+    }
+
+    /* L'espace admin exige une session ouverte avec le second facteur. Un
+       403 explicite, pas le 404 habituel : la personne est bien admin, elle
+       doit savoir quoi faire — activer, ou saisir, son code. */
+    if (this.mfa.isRequiredFor(user.role) && !user.mfa) {
+      throw new ForbiddenException({
+        error: MFA_REQUIRED_TITLE,
+        message:
+          'L’espace administrateur exige la double authentification. Activez-la, ' +
+          'ou reconnectez-vous avec votre code.',
+      });
     }
 
     return true;

@@ -12,7 +12,9 @@ import {
 import {
   changePasswordSchema,
   forgotPasswordSchema,
+  loginMfaSchema,
   loginSchema,
+  mfaCodeSchema,
   registerSchema,
   resendCodeSchema,
   resendEmailSchema,
@@ -23,6 +25,12 @@ import {
   type ChangePasswordInput,
   type ForgotPasswordInput,
   type LoginInput,
+  type LoginMfaInput,
+  type LoginResult,
+  type MfaCodeInput,
+  type MfaRecoveryCodes,
+  type MfaSetup,
+  type MfaStatus,
   type PublicUser,
   type RegisterInput,
   type ResetPasswordInput,
@@ -38,6 +46,7 @@ import { AuthService } from './auth.service';
 import { EmailVerificationService } from './email-verification.service';
 import { CurrentUser, type AuthenticatedUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
+import { MfaService } from './mfa.service';
 import type { IssuedTokens } from './token.service';
 
 const ACCESS_COOKIE = 'oja_access';
@@ -48,6 +57,7 @@ export class AuthController {
   constructor(
     private readonly auth: AuthService,
     private readonly emailVerification: EmailVerificationService,
+    private readonly mfa: MfaService,
   ) {}
 
   /**
@@ -137,14 +147,79 @@ export class AuthController {
     @Body(zodBody(loginSchema)) input: LoginInput,
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
+  ): Promise<LoginResult> {
+    const result = await this.auth.login(input.identifier, input.password, contextOf(request));
+
+    // Double authentification : aucun cookie tant que le code n'est pas saisi.
+    if ('mfaChallenge' in result) {
+      return { mfaRequired: true, challenge: result.mfaChallenge };
+    }
+
+    setAuthCookies(response, result.tokens);
+    return { user: result.user };
+  }
+
+  /* Cinq essais par quart d'heure : un million de codes possibles, un défi
+     qui expire en cinq minutes — deviner n'est pas une stratégie. */
+  @Public()
+  @Throttle(5, 900)
+  @Post('login/mfa')
+  @HttpCode(200)
+  async loginMfa(
+    @Body(zodBody(loginMfaSchema)) input: LoginMfaInput,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
   ): Promise<{ user: PublicUser }> {
-    const { tokens, user } = await this.auth.login(
-      input.identifier,
-      input.password,
+    const { tokens, user } = await this.auth.completeMfaLogin(
+      input.challenge,
+      input.code,
       contextOf(request),
     );
     setAuthCookies(response, tokens);
     return { user };
+  }
+
+  // ─── Double authentification du compte connecté ─────────────────────────
+
+  @Get('mfa')
+  async mfaStatus(@CurrentUser() user: AuthenticatedUser): Promise<MfaStatus> {
+    return this.mfa.status(user);
+  }
+
+  @Post('mfa/setup')
+  @HttpCode(200)
+  async mfaSetup(@CurrentUser() user: AuthenticatedUser): Promise<MfaSetup> {
+    return this.mfa.setup(user.id);
+  }
+
+  @Post('mfa/enable')
+  @Throttle(5, 900)
+  @HttpCode(200)
+  async mfaEnable(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(zodBody(mfaCodeSchema)) input: MfaCodeInput,
+  ): Promise<MfaRecoveryCodes> {
+    return this.mfa.enable(user, input.code);
+  }
+
+  @Post('mfa/disable')
+  @Throttle(5, 900)
+  @HttpCode(204)
+  async mfaDisable(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(zodBody(mfaCodeSchema)) input: MfaCodeInput,
+  ): Promise<void> {
+    await this.mfa.disable(user, input.code);
+  }
+
+  @Post('mfa/recovery-codes')
+  @Throttle(5, 900)
+  @HttpCode(200)
+  async mfaRecoveryCodes(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(zodBody(mfaCodeSchema)) input: MfaCodeInput,
+  ): Promise<MfaRecoveryCodes> {
+    return this.mfa.regenerateRecoveryCodes(user.id, input.code);
   }
 
   @Public()
@@ -240,7 +315,7 @@ export class AuthController {
   ): Promise<{ message: string }> {
     await this.auth.changePassword(user.id, input.currentPassword, input.password);
 
-    const tokens = await this.auth.reissueSession(user.id, contextOf(request));
+    const tokens = await this.auth.reissueSession(user.id, contextOf(request), user.mfa === true);
     setAuthCookies(response, tokens);
 
     return {

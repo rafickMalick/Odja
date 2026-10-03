@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
+import { MfaService } from '../auth/mfa.service';
 import { TokenService } from '../auth/token.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -10,6 +11,8 @@ export interface AdminMember {
   email: string;
   createdAt: string;
   isYou: boolean;
+  /** Double authentification activée. */
+  mfaEnabled: boolean;
 }
 
 /**
@@ -32,18 +35,27 @@ export class AdminTeamService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly tokens: TokenService,
+    private readonly mfa: MfaService,
   ) {}
 
   async list(currentAdminId: string): Promise<AdminMember[]> {
     const admins = await this.prisma.user.findMany({
       where: { role: 'ADMIN', deletedAt: null },
-      select: { id: true, firstName: true, lastName: true, email: true, createdAt: true },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        createdAt: true,
+        mfaEnabledAt: true,
+      },
       orderBy: { createdAt: 'asc' },
     });
-    return admins.map((admin) => ({
+    return admins.map(({ mfaEnabledAt, ...admin }) => ({
       ...admin,
       createdAt: admin.createdAt.toISOString(),
       isYou: admin.id === currentAdminId,
+      mfaEnabled: mfaEnabledAt !== null,
     }));
   }
 
@@ -93,6 +105,7 @@ export class AdminTeamService {
       email: user.email,
       createdAt: user.createdAt.toISOString(),
       isYou: false,
+      mfaEnabled: user.mfaEnabledAt !== null,
     };
   }
 
@@ -131,5 +144,40 @@ export class AdminTeamService {
     await this.tokens.revokeAllForUser(user.id);
 
     return { revoked: true };
+  }
+
+  /**
+   * Efface la double authentification d'un collègue qui a perdu son
+   * téléphone. Jamais la sienne : sinon un mot de passe volé suffirait à
+   * retirer le second facteur. Ses sessions sont fermées ; il réactivera à
+   * sa prochaine connexion.
+   */
+  async resetMfa(userId: string, actorId: string): Promise<{ reset: true }> {
+    if (userId === actorId) {
+      throw new BadRequestException(
+        'Vous ne pouvez pas réinitialiser votre propre double authentification. ' +
+          'Utilisez un code de secours, ou demandez à un autre administrateur.',
+      );
+    }
+
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, role: 'ADMIN', deletedAt: null },
+    });
+    if (!user) throw new NotFoundException('Administrateur introuvable.');
+
+    await this.mfa.resetFor(user.id);
+    await this.prisma.auditLog.create({
+      data: {
+        actorId,
+        actorRole: 'ADMIN',
+        action: 'user.mfa.reset',
+        targetType: 'User',
+        targetId: user.id,
+        before: { mfaEnabled: user.mfaEnabledAt !== null },
+        after: { mfaEnabled: false },
+      },
+    });
+
+    return { reset: true };
   }
 }

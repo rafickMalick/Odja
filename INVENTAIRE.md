@@ -370,7 +370,7 @@ Si c'est ouvert, la moitié de ce lot disparaît.
 | ~~Idempotence des routes de paiement~~ | **Fait** : `POST /checkout` accepte `Idempotency-Key` (L0-25) |
 | Filtre de secrets **dans le logger** | Ni mot de passe, ni code, ni clé dans les journaux |
 | Intercepteur d'audit automatique | Aujourd'hui, chaque action trace à la main : une oubliée passe |
-| TOTP obligatoire pour les administrateurs | Un compte admin compromis donne le grand livre |
+| ~~TOTP obligatoire pour les administrateurs~~ | **Fait** (L0-22) : espace admin fermé sans second facteur |
 | Traces et alertes | Un webhook en panne doit réveiller quelqu'un |
 | **Restauration de sauvegarde réellement testée** | Une sauvegarde jamais restaurée n'est pas une sauvegarde |
 | Politique de conservation | 10 ans comptable, 5 ans dossiers, 12 mois technique |
