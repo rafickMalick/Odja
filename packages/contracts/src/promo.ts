@@ -62,6 +62,8 @@ export interface PromoView {
   /** « -10 % », « -2 000 F CFA » — prêt à afficher. */
   label: string;
   discountXof: number;
+  /** Remise ramenée à la commission Ojà : moins que ce qu'annonce le libellé. */
+  capped: boolean;
 }
 
 export interface AdminPromoCode {

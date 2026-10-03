@@ -107,7 +107,7 @@ export class QuoteService {
           cart.commissionTotalXof,
         );
         discountXof = evaluation.discountXof;
-        promo = { code: evaluation.code, label: evaluation.label };
+        promo = { code: evaluation.code, label: evaluation.label, capped: evaluation.capped };
       } catch (error) {
         blockers.push(
           error instanceof Error ? error.message : `Code promo « ${promoCode} » refusé.`,
