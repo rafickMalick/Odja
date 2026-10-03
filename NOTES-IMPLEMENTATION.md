@@ -180,7 +180,7 @@ Hors périmètre : espace vendeur (`108:2532`, `108:2793`, `161:3414`) et sectio
 Home ──► Catalogue ──► Fiche produit ──► Panier ──► Checkout ──► Confirmation
                                              ▲                        │
                                              └──── Continuer mes achats┘
-Header : Marketplace · Vendre sur OJÀ · À propos · Contact · Rechercher · Compte · Panier
+Header : Marketplace · Vendre sur OJÀ (visiteurs) · À propos · Contact · Compte · Panier
 Compte ──► Connexion ⇄ Inscription
 ```
 
@@ -199,6 +199,16 @@ Chaque point est un choix délibéré, pas un oubli.
    est ajouté pour la cohérence de navigation.
 3. **Écrans d'authentification sans chrome** — Connexion et Inscription sont
    dessinés en pleine page ; `Chrome.tsx` retire header et footer sur ces routes.
+3 bis. **Appels à s'inscrire réservés aux visiteurs** — « Vendre sur Ojà »,
+   « Devenir livreur », « Ouvrir ma boutique », les cartes « Rejoindre Ojà »
+   et l'encart créateur de « À propos » disparaissent pour un client, un
+   créateur ou un livreur connecté : un compte porte un seul rôle, ces liens
+   ne lui offraient rien. L'administrateur les garde, il contrôle le site tel
+   qu'un visiteur le voit. Une seule requête `/auth/me`, partagée par
+   `SessionProvider` (`lib/session.tsx`) et relue à chaque navigation ; les
+   pages serveur passent par `ForVisitors`, qui rend son contenu tant que la
+   session est inconnue (moteurs de recherche, visiteurs) et le retire à la
+   réponse.
 4. **Titre du footer** — 49px/60px sur le frame Catalog, 56px/120% sur Listing,
    pour une même instance de composant. On retient 56px, valeur du token
    `H1/Desktop`.

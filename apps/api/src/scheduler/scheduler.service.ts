@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
+import { purgeExpiredIdempotencyKeys } from '../common/idempotency';
 import { PaymentService } from '../payments/payment.service';
 import { SubOrderService } from '../orders/sub-order.service';
 import { ValidationService } from '../orders/validation.service';
@@ -87,6 +88,12 @@ export class SchedulerService {
   @Cron(CronExpression.EVERY_5_MINUTES, { name: 'expire-stale-payments' })
   async expireStalePayments(): Promise<void> {
     await this.run('expiration des paiements', () => this.payments.expireStalePayments());
+  }
+
+  /** Clés d'idempotence de plus de 24 h : elles ne protègent plus rien. */
+  @Cron(CronExpression.EVERY_HOUR, { name: 'purge-idempotency-keys' })
+  async purgeIdempotencyKeys(): Promise<void> {
+    await this.run('purge des clés d’idempotence', () => purgeExpiredIdempotencyKeys(this.prisma));
   }
 
   /**

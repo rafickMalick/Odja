@@ -367,7 +367,7 @@ Si c'est ouvert, la moitié de ce lot disparaît.
 
 | Élément | Pourquoi cela compte |
 |---|---|
-| Idempotence des routes de paiement | Un double clic ne doit pas débiter deux fois |
+| ~~Idempotence des routes de paiement~~ | **Fait** : `POST /checkout` accepte `Idempotency-Key` (L0-25) |
 | Filtre de secrets **dans le logger** | Ni mot de passe, ni code, ni clé dans les journaux |
 | Intercepteur d'audit automatique | Aujourd'hui, chaque action trace à la main : une oubliée passe |
 | ~~TOTP obligatoire pour les administrateurs~~ | **Fait** (L0-22) : espace admin fermé sans second facteur |
@@ -534,8 +534,10 @@ Une action ajoutée sans sa ligne d'audit passera inaperçue. *(L0-31)*
 conteneurs, la limite effective est multipliée par leur nombre. Reste très
 au-dessous du seuil de nuisance, mais ce n'est pas une limite globale.
 
-**Aucune route de paiement n'est idempotente.** Sans agrégateur branché, cela
-ne se voit pas. Cela doit être fait avant le premier franc réel. *(L0-25)*
+**Le passage de commande est idempotent** *(L0-25, fait)*. Le site envoie une
+`Idempotency-Key` par intention : un double clic ou une requête rejouée retrouve
+la commande déjà créée. Les futures routes de versement et de remboursement
+devront porter `@Idempotent()` elles aussi.
 
 **Le catalogue n'a aucun cache.** Chaque affichage frappe PostgreSQL. Tenable au
 volume actuel, à revoir avant l'ouverture. *(L1-22)*
