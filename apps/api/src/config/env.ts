@@ -88,6 +88,12 @@ export const envSchema = z
     /** Clé de l'API Brevo. Renseignée, elle remplace SMTP : Render bloque les
         ports SMTP sur ses services gratuits. Voir EmailService. */
     BREVO_API_KEY: z.string().optional(),
+    /** Liste Brevo où copier les abonnés à la newsletter. Absente : ils
+        restent en base seulement. Voir NewsletterService. */
+    BREVO_NEWSLETTER_LIST_ID: z.preprocess(
+      (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+      z.coerce.number().int().positive().optional(),
+    ),
     SMTP_USER: z.string().optional(),
     SMTP_PASSWORD: z.string().optional(),
 

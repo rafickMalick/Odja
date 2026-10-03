@@ -25,6 +25,11 @@ export async function resetTestData(prisma: PrismaService): Promise<void> {
     },
   });
 
+  // Les abonnés à la newsletter ne sont liés à aucun compte.
+  await prisma.newsletterSubscriber.deleteMany({
+    where: { email: { endsWith: '@oja.market' } },
+  });
+
   // Tous les comptes de test partagent ce domaine.
   const users = await prisma.user.findMany({
     where: { email: { endsWith: '@oja.market' } },
