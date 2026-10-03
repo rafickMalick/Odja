@@ -81,7 +81,8 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
   (`https://api.oja.aworix.agency/api/v1/webhooks/kadevpay`)
 - [ ] Versements aux créateurs et livreurs (lot L5)
 - [ ] SMS (LN-03)
-- [ ] Avis clients (L6-11, L6-12)
+- [x] Avis clients (L6-11, L6-12) : note et commentaire après réception validée,
+  modération dans Admin › Avis clients, avis publiés sur la fiche produit
 - [x] MFA des admins (L0-22, L7-16) : obligatoire pour l'espace admin ; page
   `/double-authentification`, réinitialisation dans Admin › Administrateurs
 - [ ] Après le déploiement de la MFA : chaque admin l'active à sa prochaine
