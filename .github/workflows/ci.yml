@@ -16,7 +16,9 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Les tests navigateur ajoutent une dizaine de minutes : démarrage des
+    # deux serveurs, téléchargement de Chromium, parcours.
+    timeout-minutes: 30
 
     # Les tests de bout en bout tournent contre un vrai PostgreSQL et un vrai
     # MinIO. Des doublures les rendraient verts sans rien prouver : les
@@ -141,6 +143,52 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # ── Tests navigateur (Playwright) ──────────────────────────────────────
+      # Les parcours tels qu'une personne les vit : site et API construits
+      # ci-dessus, servis comme en production, contre la même base.
+
+      # Après `npm test`, jamais avant : le nettoyage des tests de l'API efface
+      # les comptes en @oja.market, atelier de démonstration compris.
+      - name: Charger le jeu de démonstration
+        run: npm run db:demo
+
+      - name: Démarrer l'API et le site
+        run: |
+          (cd apps/api && nohup node dist/main.js > ../../api.log 2>&1 &)
+          nohup npm run start -w @oja/web > web.log 2>&1 &
+
+          for url in http://localhost:4000/api/v1/health http://localhost:3000/; do
+            for i in $(seq 1 60); do
+              curl -sf -o /dev/null "$url" && break
+              sleep 1
+            done
+            if ! curl -sf -o /dev/null "$url"; then
+              echo "::error::$url ne répond pas."
+              tail -50 api.log web.log
+              exit 1
+            fi
+          done
+
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Tests navigateur
+        run: npm run test:browser
+
+      # La trace rejoue chaque étape d'un test en échec, réseau compris :
+      # de quoi comprendre sans relancer.
+      - name: Rapport des tests navigateur
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+            api.log
+            web.log
+          retention-days: 7
 
   # Une image qui ne se construit pas se découvre au déploiement, un vendredi
   # soir. On la construit ici, sans la pousser.
