@@ -89,6 +89,12 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
 - [x] Idempotence des requêtes (L0-25) : `POST /checkout` rejoue la commande
   déjà créée pour la même `Idempotency-Key` ; à poser avec `@Idempotent()` sur
   toute future route qui engage de l'argent (versements, remboursements)
+- [ ] Dépendances : `npm audit` laisse 7 alertes (aucune critique) qui exigent
+  chacune une migration de version majeure, à faire à part :
+  - **prisma 6 → 7** : `deepmerge-ts` figé par `@prisma/config` (lecture du
+    fichier de configuration, jamais de données utilisateur) ;
+  - **next 15 → 16** : `postcss` (compilation des CSS, pas l'exécution) ;
+  - **vitest 3 → 5** : outil de test seulement.
 - [ ] Durcissement L8 : sauvegardes et test de restauration, alertes, audit,
   tests de charge k6, tests Playwright
 - [ ] OpenTelemetry, OpenAPI, cache du catalogue (L1-22)
