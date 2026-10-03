@@ -4,16 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { apiFetchOrNull } from "@/lib/api";
 import { useCart } from "@/lib/cart";
 import { SPACE_LABEL, homeForRole } from "@/lib/home-for-role";
+import { seesSignupCalls, useSession } from "@/lib/session";
 
 import { NotificationsBell } from "./NotificationsBell";
 import styles from "./Header.module.css";
 
+/* `signup` : appel à créer un compte, retiré pour un compte connecté (voir
+   seesSignupCalls). */
 const NAV_LINKS = [
   { label: "Marketplace", href: "/catalogue" },
-  { label: "Vendre sur Ojà", href: "/inscription" },
+  { label: "Vendre sur Ojà", href: "/inscription?profil=createur", signup: true },
   { label: "À propos", href: "/a-propos" },
   { label: "Contact", href: "/contact" },
 ];
@@ -24,29 +26,6 @@ const DRAWER_ANONYMOUS = [
   { label: "Se connecter", href: "/connexion" },
   { label: "Créer un compte", href: "/inscription" },
 ];
-
-/**
- * Session courante, pour l'en-tête seulement.
- *
- * Sans elle, un artisan connecté voit « Se connecter » et n'a aucun chemin
- * vers son atelier  l'espace existe, mais rien n'y mène. La requête est
- * tolérante : un en-tête ne doit pas casser parce que l'API tarde.
- */
-function useSession() {
-  const [user, setUser] = useState<{ role: string; firstName: string } | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    void apiFetchOrNull<{ role: string; firstName: string }>("/auth/me").then((me) => {
-      if (!cancelled) setUser(me);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return user;
-}
 
 function BurgerIcon() {
   return (
@@ -93,7 +72,10 @@ function CloseIcon() {
 export function Header() {
   const pathname = usePathname();
   const { itemCount, ready } = useCart();
-  const user = useSession();
+  /* Sans la session, un artisan connecté voit « Se connecter » et n'a aucun
+     chemin vers son atelier. */
+  const { user } = useSession();
+  const navLinks = NAV_LINKS.filter((link) => !link.signup || seesSignupCalls(user));
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const burgerRef = useRef<HTMLButtonElement>(null);
@@ -159,7 +141,7 @@ export function Header() {
           </Link>
 
           <nav className={styles.nav} aria-label="Navigation principale">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
@@ -270,7 +252,7 @@ export function Header() {
           </div>
 
           <nav className={styles.drawerNav} aria-label="Navigation">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
@@ -308,12 +290,12 @@ export function Header() {
             ))}
           </div>
 
-          {/* L'appel à ouvrir une boutique ne s'adresse pas à qui en a déjà une. */}
-          {user?.role === "MAKER" ? null : (
-            <Link href="/inscription" className={styles.drawerCta}>
+          {/* L'appel à ouvrir une boutique ne s'adresse qu'aux visiteurs. */}
+          {seesSignupCalls(user) ? (
+            <Link href="/inscription?profil=createur" className={styles.drawerCta}>
               Ouvrir ma boutique d’artisan
             </Link>
-          )}
+          ) : null}
         </div>
       </div>
     </>
