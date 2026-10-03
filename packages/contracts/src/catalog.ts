@@ -100,6 +100,13 @@ export type KycReviewInput = z.infer<typeof kycReviewSchema>;
 
 // ═══════════════════════════════════════════ Produits
 
+/* Bornes hautes : les colonnes sont des entiers 32 bits en base. Sans plafond,
+   une saisie démesurée passe la validation puis fait échouer l'écriture (500
+   au lieu d'un message clair au créateur). */
+const MAX_QUANTITY = 100_000;
+const MAX_WEIGHT_GRAMS = 2_000_000;
+const MAX_DIMENSION_MM = 20_000;
+
 /**
  * Poids et dimensions sont **obligatoires**. Le cahier client ne les demande
  * pas dans son formulaire, mais le choix automatique du véhicule de livraison
@@ -121,14 +128,22 @@ export const productSchema = z
       .max(100_000_000),
 
     isMadeToOrder: z.boolean().default(false),
-    quantityAvailable: z.number().int().min(0).default(0),
+    quantityAvailable: z.number().int().min(0).max(MAX_QUANTITY, 'Quantité trop élevée').default(0),
     leadTimeDays: z.number().int().positive().max(365).optional(),
     observations: z.string().trim().max(1_000).optional(),
 
-    weightGrams: z.number().int().positive('Le poids est nécessaire au calcul de livraison'),
-    lengthMm: z.number().int().positive('Les dimensions sont nécessaires au calcul de livraison'),
-    widthMm: z.number().int().positive(),
-    heightMm: z.number().int().positive(),
+    weightGrams: z
+      .number()
+      .int()
+      .positive('Le poids est nécessaire au calcul de livraison')
+      .max(MAX_WEIGHT_GRAMS, 'Poids trop élevé (2 tonnes au maximum)'),
+    lengthMm: z
+      .number()
+      .int()
+      .positive('Les dimensions sont nécessaires au calcul de livraison')
+      .max(MAX_DIMENSION_MM, 'Dimension trop grande (20 m au maximum)'),
+    widthMm: z.number().int().positive().max(MAX_DIMENSION_MM, 'Dimension trop grande (20 m au maximum)'),
+    heightMm: z.number().int().positive().max(MAX_DIMENSION_MM, 'Dimension trop grande (20 m au maximum)'),
   })
   .refine((p) => !p.isMadeToOrder || p.leadTimeDays !== undefined, {
     path: ['leadTimeDays'],
@@ -140,7 +155,7 @@ export const productUpdateSchema = productSchema.innerType().partial();
 export type ProductUpdateInput = z.infer<typeof productUpdateSchema>;
 
 export const stockUpdateSchema = z.object({
-  quantityAvailable: z.number().int().min(0),
+  quantityAvailable: z.number().int().min(0).max(MAX_QUANTITY, 'Quantité trop élevée'),
 });
 
 export const productReviewSchema = z.object({
