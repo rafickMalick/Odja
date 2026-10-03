@@ -57,6 +57,11 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
 ## 4. Site (front)
 
 - [ ] Liens des réseaux sociaux du pied de page : encore `href="#"`.
+- [x] Affichage par rôle : les appels à créer un compte ne s'affichent plus
+  qu'aux visiteurs (et à l'admin) ; `/connexion` et `/inscription` renvoient
+  un compte connecté dans son espace.
+- [ ] À trancher : un créateur ou un livreur peut-il acheter ? Aujourd'hui oui
+  (aucune restriction côté API).
 - [x] Formulaire newsletter du pied de page : enregistre l'abonné en base
   (`newsletter_subscribers`) et le copie dans une liste Brevo.
 

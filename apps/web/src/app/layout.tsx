@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import { Chrome } from "@/components/Chrome";
 import { ToastProvider } from "@/components/Toast";
 import { CartProvider } from "@/lib/cart";
+import { SessionProvider } from "@/lib/session";
 import "./globals.css";
 
 /* Les 4 familles relevées dans les maquettes Figma.
@@ -60,9 +61,11 @@ export default function RootLayout({
     >
       <body>
         <ToastProvider>
-          <CartProvider>
-            <Chrome>{children}</Chrome>
-          </CartProvider>
+          <SessionProvider>
+            <CartProvider>
+              <Chrome>{children}</Chrome>
+            </CartProvider>
+          </SessionProvider>
         </ToastProvider>
       </body>
     </html>

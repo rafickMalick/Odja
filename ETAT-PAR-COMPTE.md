@@ -14,6 +14,12 @@ réellement faire aujourd'hui, et ce qui lui manque encore.
 « Se connecter » ; une fois connecté, « Mon compte » renvoie bien vers
 l'espace personnel (le bouton pointait à tort vers le catalogue — corrigé).
 
+**Site public, une fois connecté** (vaut aussi pour le créateur et le livreur) :
+les appels à créer un compte — « Vendre sur Ojà », « Devenir livreur », cartes
+« Rejoindre Ojà » de l'accueil, encart créateur de « À propos » — ne
+s'affichent plus, et `/connexion` ou `/inscription` renvoient dans l'espace.
+L'administrateur, lui, voit le site public comme un visiteur.
+
 **Ce qui existe et fonctionne :**
 - Inscription et connexion par e-mail + mot de passe, téléphone obligatoire,
   avec validation de chaque champ en direct (message vert/rouge sous le champ,

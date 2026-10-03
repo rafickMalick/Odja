@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { ApiError, apiFetch } from "@/lib/api";
+import { seesSignupCalls, useSession } from "@/lib/session";
 
 import styles from "./Footer.module.css";
 
@@ -17,10 +18,11 @@ const MARKETPLACE_LINKS = [
   { label: "Rechercher", href: "/recherche" },
 ];
 
+/* `signup` : appel à créer un compte, retiré pour un compte connecté. */
 const COMPANY_LINKS = [
   { label: "Accueil", href: "/" },
-  { label: "Vendre sur Ojà", href: "/inscription?profil=createur" },
-  { label: "Devenir livreur", href: "/inscription?profil=livreur" },
+  { label: "Vendre sur Ojà", href: "/inscription?profil=createur", signup: true },
+  { label: "Devenir livreur", href: "/inscription?profil=livreur", signup: true },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -33,6 +35,11 @@ const LEGAL_LINKS = [
 ];
 
 export function Footer() {
+  const { user } = useSession();
+  const companyLinks = COMPANY_LINKS.filter(
+    (link) => !link.signup || seesSignupCalls(user),
+  );
+
   return (
     <footer className={styles.root}>
       <div className={styles.callout}>
@@ -108,7 +115,7 @@ export function Footer() {
             <div className={`${styles.column} ${styles.columnNarrow}`}>
               <p className={styles.columnLabel}>Ojà</p>
               <div className={styles.list}>
-                {COMPANY_LINKS.map((link) => (
+                {companyLinks.map((link) => (
                   <Link key={link.label} href={link.href}>
                     {link.label}
                   </Link>
