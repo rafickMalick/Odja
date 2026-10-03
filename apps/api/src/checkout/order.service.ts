@@ -22,6 +22,7 @@ import { CartService } from '../cart/cart.service';
 import { cursorArgs, toPage, type CursorQuery, type Page } from '../common/pagination';
 import { PaymentService } from '../payments/payment.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { toOwnView } from '../reviews/review.service';
 import { PromoService } from './promo.service';
 import { QuoteService } from './quote.service';
 
@@ -378,7 +379,16 @@ export class OrderService {
 
 const FULL_ORDER = {
   subOrders: {
-    include: { lines: true, maker: { select: { shopName: true } }, shipment: true },
+    include: {
+      lines: {
+        include: {
+          product: { select: { slug: true } },
+          review: { select: { rating: true, status: true, rejectReason: true } },
+        },
+      },
+      maker: { select: { shopName: true } },
+      shipment: true,
+    },
     orderBy: { reference: 'asc' as const },
   },
   promoCode: { select: { code: true } },
@@ -405,11 +415,16 @@ function toOrderView(order: OrderWithRelations): OrderView {
       status: subOrder.status,
       statusLabel: SUB_ORDER_LABELS[subOrder.status],
       lines: subOrder.lines.map((line) => ({
+        id: line.id,
         productName: line.productName,
+        productSlug: line.product.slug,
         quantity: line.quantity,
         // Le client ne voit que le prix qu'il a payé, commission comprise.
         finalPriceXof: line.finalPriceXof,
         lineTotalXof: line.lineTotalXof,
+        // On note une pièce reçue : seulement une fois la réception validée.
+        canReview: subOrder.status === 'VALIDATED' && !line.review,
+        review: line.review ? toOwnView(line.review) : null,
       })),
       deliveryFeeXof: subOrder.deliveryFeeXof,
       vehicle: subOrder.shipment?.vehicle ?? null,

@@ -13,6 +13,8 @@ export interface PromoEvaluation {
   /** « -10 % », « -2 000 F CFA » — prêt à afficher. */
   label: string;
   discountXof: number;
+  /** Remise ramenée à la commission Ojà : moins que ce qu'annonce le libellé. */
+  capped: boolean;
   /** Plafond global d'utilisations, pour l'incrément gardé à la commande. */
   maxRedemptions: number | null;
 }
@@ -92,6 +94,8 @@ export class PromoService {
       code,
       label: labelOf(promo),
       discountXof,
+      // Le client doit savoir qu'il reçoit moins que le libellé n'annonce.
+      capped: discountXof < raw,
       maxRedemptions: promo.maxRedemptions,
     };
   }

@@ -1,10 +1,12 @@
 # Ojà : ce qui reste à faire
 
-Point de départ pour la prochaine session de travail. Mis à jour le 2 octobre 2026,
-après la fusion de la PR #17.
+Mis à jour le 4 octobre 2026, après la fusion de la PR #27. Le point d'étape
+détaillé (ce qui vient d'être fait, PR ouvertes, diagnostics en cours,
+prochaines étapes) est dans [`REPRISE.md`](REPRISE.md).
 
-Pour reprendre : « lis `A-FAIRE.md` et continuons ». Cocher les cases au fur et à
-mesure et mettre ce fichier à jour dans la même PR que le travail fait.
+Pour reprendre : « lis `REPRISE.md` puis `A-FAIRE.md`, et continuons ». Cocher
+les cases au fur et à mesure et mettre ces fichiers à jour dans la même PR que
+le travail fait.
 
 ## Où on en est
 
@@ -15,26 +17,42 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
   le site (cookies gardés), gestion des administrateurs depuis le site, service
   client complet (demandes, fil, file d'équipe, formulaire de contact, pièces
   jointes), pages légales, incohérences du front.
+- Puis (PR #19 à #27) : newsletter, affichage par rôle, idempotence des
+  commandes, double authentification des admins, `npm audit`, tests Playwright,
+  garde-fou `COOKIE_DOMAIN`, réseaux sociaux. PR #28 à #32 ouvertes : voir
+  `REPRISE.md` § 3.
 - Configuration réelle du domaine et des variables : `DEPLOIEMENT.md` § 5 bis.
 
-## 1. Malik (Render et Vercel)
+## 1. Malik (Render et Vercel) — fait
 
-- [ ] Vérifier les variables de l'API sur Render :
+Malik a tout réglé (4 octobre). `COOKIE_DOMAIN` valait `oja.ox`, ce qui
+déconnectait tout le monde juste après la connexion : corrigé, et l'API ignore
+désormais une valeur incohérente (PR #26).
+
+- [x] Vérifier les variables de l'API sur Render :
   - `MAIL_FROM="Ojà <noreply@oja.aworix.agency>"` et `BREVO_API_KEY`
   - `WEB_ORIGIN=https://oja.aworix.agency` (liens des e-mails)
-  - `COOKIE_DOMAIN` **vide** (une valeur casserait la session)
+  - `COOKIE_DOMAIN` vide, ou `oja.aworix.agency` (sa valeur actuelle) ; toute
+    autre valeur est ignorée par l'API depuis la PR #26
   - `TRUST_PROXY_HOPS=2`
   - `ADMIN_BOOTSTRAP_EMAIL` (ne sert que tant qu'aucun admin n'existe)
   - `DIRECT_DATABASE_URL` si `DATABASE_URL` passe par le pooler Neon
   - `S3_*` : sans stockage, pas de photos produits, pièces jointes, factures ni
     documents des livreurs
-- [ ] Newsletter : créer une liste dans Brevo (Contacts › Listes) et mettre son
+- [x] `NODE_ENV=production` (drapeau `Secure` des cookies)
+- [x] Newsletter : créer une liste dans Brevo (Contacts › Listes) et mettre son
   identifiant dans `BREVO_NEWSLETTER_LIST_ID` sur Render. Sans elle, les
   abonnés sont gardés en base mais aucune campagne ne peut leur partir.
-- [ ] Vercel : `NEXT_PUBLIC_API_URL` reste l'adresse Render ; cliquer « Refresh »
+- [x] Vercel : `NEXT_PUBLIC_API_URL` reste l'adresse Render ; cliquer « Refresh »
   sur le domaine si Vercel le montre encore en erreur.
-- [ ] Le prévenir que la PR #15 a réactivé l'e-mail de confirmation à
+- [x] Le prévenir que la PR #15 a réactivé l'e-mail de confirmation à
   l'inscription (son commit l'avait coupé et la CI de main était rouge).
+
+- [ ] Si les photos échouent encore à l'envoi : compartiments
+  `<S3_BUCKET>-public` et `<S3_BUCKET>-private`, et règle CORS pour
+  `https://oja.aworix.agency` (voir `REPRISE.md` § 4).
+- [ ] Chaque admin active sa double authentification à sa prochaine visite de
+  l'espace admin, et garde ses codes de secours.
 
 ## 2. Princesse
 
@@ -82,7 +100,8 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
   (`https://api.oja.aworix.agency/api/v1/webhooks/kadevpay`)
 - [ ] Versements aux créateurs et livreurs (lot L5)
 - [ ] SMS (LN-03)
-- [ ] Avis clients (L6-11, L6-12)
+- [x] Avis clients (L6-11, L6-12) : note et commentaire après réception validée,
+  modération dans Admin › Avis clients, avis publiés sur la fiche produit
 - [x] MFA des admins (L0-22, L7-16) : obligatoire pour l'espace admin ; page
   `/double-authentification`, réinitialisation dans Admin › Administrateurs
 - [ ] Après le déploiement de la MFA : chaque admin l'active à sa prochaine
@@ -96,7 +115,7 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
     fichier de configuration, jamais de données utilisateur) ;
   - **next 15 → 16** : `postcss` (compilation des CSS, pas l'exécution) ;
   - **vitest 3 → 5** : outil de test seulement.
-- [ ] Durcissement L8 : sauvegardes et test de restauration, alertes, audit,
+- [ ] Durcissement L8 : sauvegardes et test de restauration, alertes,
   tests de charge k6 (Playwright fait : `e2e/`, joué en CI)
 - [ ] OpenTelemetry, OpenAPI, cache du catalogue (L1-22)
 

@@ -13,6 +13,8 @@ plateforme.
 |---|---|
 | [`SPEC-ALIGNEMENT.md`](SPEC-ALIGNEMENT.md) | **Fait autorité.** Modèle financier, statuts, livraison, ordre des lots |
 | [`CAHIER-DES-CHARGES-BACKEND.md`](CAHIER-DES-CHARGES-BACKEND.md) | Architecture détaillée. Valable partout où l'alignement est muet |
+| [`REPRISE.md`](REPRISE.md) | **Point d'étape le plus récent** : ce qui vient d'être fait, PR ouvertes, prochaines étapes. À lire pour reprendre |
+| [`A-FAIRE.md`](A-FAIRE.md) | La liste de ce qui reste, par personne |
 | [`INVENTAIRE.md`](INVENTAIRE.md) | **Tout ce qui est fait et ce qu'il reste**, écran par écran |
 | [`ETAT-PROJET.md`](ETAT-PROJET.md) | Le résumé de l'inventaire, pour le client |
 | [`BACKLOG-BACKEND.md`](BACKLOG-BACKEND.md) | 234 tâches identifiées, ordonnées, avec critères de sortie |
@@ -192,7 +194,7 @@ joue à chaque poussée et joint la trace des échecs.
 ## Ce qui n'est pas encore là
 
 L'agrégateur de paiement et l'exécution des versements — les deux dépendent
-d'un compte marchand Kadev Pay. Puis les SMS réels, l'OpenAPI, les avis clients et le suivi du
+d'un compte marchand Kadev Pay. Puis les SMS réels, l'OpenAPI et le suivi du
 livreur en temps réel.
 Voir [`BACKLOG-BACKEND.md`](BACKLOG-BACKEND.md) et [`ETAT-PROJET.md`](ETAT-PROJET.md).
 

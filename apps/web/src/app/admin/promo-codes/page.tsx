@@ -128,6 +128,21 @@ export default function PromoCodesPage() {
               required
             />
           </Field>
+          {/* Une remise ne dépasse jamais la commission Ojà de la commande : au-delà,
+              le code paraît « ne pas marcher ». On le dit avant de le créer. */}
+          {kind === "PERCENT" && Number(value) > 5 ? (
+            <p className={styles.error} role="status">
+              Attention : la remise réelle sera ramenée à la commission Ojà de la
+              commande, soit environ 5 % du prix des pièces. Un code à {value} % donnera en
+              pratique autour de 5 %.
+            </p>
+          ) : kind === "FIXED" && Number(value) > 0 ? (
+            <p className={styles.muted}>
+              La remise réelle ne dépassera pas la commission Ojà de la commande (environ 5 %
+              du prix des pièces) : elle n&apos;atteint {formatFcfa(Number(value))} qu&apos;à
+              partir d&apos;environ {formatFcfa(Number(value) * 20)} de pièces.
+            </p>
+          ) : null}
           <Field label="Montant minimum de commande (F CFA, facultatif)">
             <input
               className={fieldStyles.control}
