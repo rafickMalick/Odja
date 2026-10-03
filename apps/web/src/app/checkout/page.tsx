@@ -8,7 +8,7 @@ import { Button } from "@/components/Button";
 import { Field, FieldRow, fieldStyles } from "@/components/Field";
 import { PrivacyNoteBanner } from "@/components/PrivacyNoteBanner";
 import { ProgressStepper } from "@/components/ProgressStepper";
-import { ApiError, apiFetch } from "@/lib/api";
+import { ApiError, apiFetch, newIdempotencyKey } from "@/lib/api";
 import { useCart } from "@/lib/cart";
 import { formatFcfa, formatNumber } from "@/lib/format";
 import { isCheckoutClosedByUser, openKadevPayCheckout } from "@/lib/kadevpay";
@@ -46,6 +46,11 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const addressFormRef = useRef<HTMLDivElement>(null);
+  /* Une clé d'idempotence par intention de commande : la même tant que le
+     contenu envoyé ne change pas. Un double clic, ou un nouvel essai après
+     une réponse perdue, retrouve la commande déjà créée au lieu d'en créer
+     une seconde ; changer d'adresse ou de total en fait une nouvelle. */
+  const orderIntentRef = useRef<{ body: string; key: string } | null>(null);
 
   // ── Chargement des adresses du client ──
   useEffect(() => {
@@ -145,11 +150,22 @@ export default function CheckoutPage() {
     event.preventDefault();
     if (!quote || quote.blockers.length > 0) return;
 
+    /* On renvoie le total affiché : le serveur refuse s'il a changé
+       entre-temps. Le client confirme un montant, il ne le fixe pas. */
+    const orderBody = {
+      addressId,
+      expectedTotalXof: quote.totalXof,
+      ...(quote.promo ? { promoCode: quote.promo.code } : {}),
+    };
+    const signature = JSON.stringify(orderBody);
+    if (orderIntentRef.current?.body !== signature) {
+      orderIntentRef.current = { body: signature, key: newIdempotencyKey() };
+    }
+    const orderKey = orderIntentRef.current.key;
+
     setSubmitting(true);
     setError(null);
     try {
-      /* On renvoie le total affiché : le serveur refuse s'il a changé
-         entre-temps. Le client confirme un montant, il ne le fixe pas. */
       const order = await apiFetch<{
         reference: string;
         shipFullName: string;
@@ -162,11 +178,8 @@ export default function CheckoutPage() {
         };
       }>("/checkout", {
         method: "POST",
-        body: {
-          addressId,
-          expectedTotalXof: quote.totalXof,
-          ...(quote.promo ? { promoCode: quote.promo.code } : {}),
-        },
+        body: orderBody,
+        idempotencyKey: orderKey,
       });
       await refresh();
 

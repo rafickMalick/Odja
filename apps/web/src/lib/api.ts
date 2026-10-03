@@ -64,6 +64,20 @@ interface RequestOptions {
   /** Revalidation ISR côté serveur. `0` désactive le cache. */
   revalidate?: number;
   signal?: AbortSignal;
+  /**
+   * En-tête `Idempotency-Key`. La même clé pour la même intention : rejouée,
+   * la requête renvoie la première réponse au lieu de recommencer (voir
+   * newIdempotencyKey).
+   */
+  idempotencyKey?: string;
+}
+
+/** Clé d'idempotence aléatoire, une par intention (une commande, un paiement). */
+export function newIdempotencyKey(): string {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  // Navigateurs anciens ou contexte non sécurisé : 16 octets aléatoires.
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 /**
@@ -144,10 +158,11 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
 }
 
 async function rawFetch<T>(path: string, options: RequestOptions): Promise<T> {
-  const { method = 'GET', body, revalidate, signal } = options;
+  const { method = 'GET', body, revalidate, signal, idempotencyKey } = options;
 
   const headers: Record<string, string> = {};
   if (body !== undefined) headers['Content-Type'] = 'application/json';
+  if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey;
 
   /* Sur le serveur, `next/headers` n'existe qu'à l'exécution : l'import
      dynamique évite de l'embarquer dans le bundle navigateur. */

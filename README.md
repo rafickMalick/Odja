@@ -86,6 +86,15 @@ curl http://localhost:4000/api/v1/health/reference-data
 | `/espace-livreur` | Livreur | Missions, itinéraires, **preuve de remise**, gains — pensé pour un téléphone |
 | `/admin` | Équipe Ojà | Dossiers, modération, affectation, litiges, grand livre, journal, réglages |
 
+**Ce que voit chaque rôle sur le site public.** Un compte porte un seul rôle :
+les appels à créer un compte (« Vendre sur Ojà », « Devenir livreur », les
+trois cartes « Rejoindre Ojà » de l'accueil…) ne s'affichent donc qu'aux
+**visiteurs**. Un client, un créateur ou un livreur connecté ne les voit plus,
+et `/connexion` ou `/inscription` le renvoie dans son espace. L'**administrateur**
+voit le site public comme un visiteur, pour pouvoir le contrôler. La règle tient
+dans `seesSignupCalls` (`apps/web/src/lib/session.tsx`), et le composant
+`ForVisitors` l'applique dans les pages. Tous les rôles peuvent acheter.
+
 ### Conteneurs
 
 ```bash
@@ -176,8 +185,7 @@ npm run build
 ## Ce qui n'est pas encore là
 
 L'agrégateur de paiement et l'exécution des versements — les deux dépendent
-d'un compte marchand Kadev Pay. Puis les SMS réels, l'idempotence des routes de
-paiement, l'OpenAPI, les avis clients et le suivi du
+d'un compte marchand Kadev Pay. Puis les SMS réels, l'OpenAPI, les avis clients et le suivi du
 livreur en temps réel.
 Voir [`BACKLOG-BACKEND.md`](BACKLOG-BACKEND.md) et [`ETAT-PROJET.md`](ETAT-PROJET.md).
 

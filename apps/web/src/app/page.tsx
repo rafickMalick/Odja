@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ButtonLink } from "@/components/Button";
+import { ForVisitors } from "@/components/ForVisitors";
 import { CatalogCard } from "@/components/CatalogCard";
 import { fetchProducts } from "@/lib/catalog";
 
@@ -99,6 +100,7 @@ const ROLES = [
       "Support Ojà en cas de litige",
     ],
     cta: "Créer un compte client",
+    href: "/inscription",
   },
   {
     icon: "/images/icon-package.svg",
@@ -111,6 +113,7 @@ const ROLES = [
       "Tableau de bord des commandes et des stocks",
     ],
     cta: "Ouvrir ma boutique",
+    href: "/inscription?profil=createur",
   },
   {
     icon: "/images/icon-vehicle.svg",
@@ -123,6 +126,7 @@ const ROLES = [
       "Preuve de remise directement depuis le téléphone",
     ],
     cta: "Devenir livreur",
+    href: "/inscription?profil=livreur",
   },
 ];
 
@@ -264,10 +268,13 @@ export default async function HomePage() {
           /* Au lancement, le catalogue est vide. Mieux vaut le dire et inviter
              les artisans que d'afficher une grille fantôme. */
           <p className={styles.lead}>
-            Les premiers ateliers rejoignent Ojà en ce moment. Vous fabriquez ?
-            <ButtonLink href="/inscription" variant="secondary">
-              Ouvrir votre boutique
-            </ButtonLink>
+            Les premiers ateliers rejoignent Ojà en ce moment.
+            <ForVisitors>
+              {" "}Vous fabriquez ?
+              <ButtonLink href="/inscription?profil=createur" variant="secondary">
+                Ouvrir votre boutique
+              </ButtonLink>
+            </ForVisitors>
           </p>
         )}
       </section>
@@ -335,7 +342,8 @@ export default async function HomePage() {
         </ol>
       </section>
 
-      {/* ── Les trois profils ── */}
+      {/* ── Les trois profils ── appel à s'inscrire, réservé aux visiteurs */}
+      <ForVisitors>
       <section className={styles.roles}>
         <div className={styles.rolesInner}>
           <div className={styles.sectionHeadCentered}>
@@ -373,7 +381,7 @@ export default async function HomePage() {
                 </ul>
 
                 <div className={styles.roleCta}>
-                  <ButtonLink href="/inscription" variant="secondary" fullWidth>
+                  <ButtonLink href={role.href} variant="secondary" fullWidth>
                     {role.cta}
                   </ButtonLink>
                 </div>
@@ -388,6 +396,7 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+      </ForVisitors>
 
       {/* ── Appel final ── */}
       <section className={styles.finalCta}>
@@ -396,13 +405,17 @@ export default async function HomePage() {
             Votre intérieur peut faire vivre un atelier.
           </h2>
           <p className={styles.finalCtaText}>
-            Parcourez le catalogue, ou ouvrez votre boutique si vous fabriquez.
+            <ForVisitors fallback="Parcourez le catalogue des ateliers partenaires.">
+              Parcourez le catalogue, ou ouvrez votre boutique si vous fabriquez.
+            </ForVisitors>
           </p>
           <div className={styles.finalCtaActions}>
             <ButtonLink href="/catalogue">Découvrir le catalogue</ButtonLink>
-            <ButtonLink href="/inscription" variant="secondary">
-              Vendre sur Ojà
-            </ButtonLink>
+            <ForVisitors>
+              <ButtonLink href="/inscription?profil=createur" variant="secondary">
+                Vendre sur Ojà
+              </ButtonLink>
+            </ForVisitors>
           </div>
         </div>
       </section>
