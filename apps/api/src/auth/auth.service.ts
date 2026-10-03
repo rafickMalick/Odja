@@ -13,6 +13,7 @@ import { EmailService } from '../notifications/email.service';
 import { SmsService } from '../notifications/sms.service';
 import { AdminBootstrapService } from './admin-bootstrap.service';
 import { EmailVerificationService } from './email-verification.service';
+import { MfaService } from './mfa.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { OtpService } from './otp.service';
 import { PasswordService } from './password.service';
@@ -58,6 +59,7 @@ export class AuthService {
     private readonly mail: EmailService,
     private readonly emailVerification: EmailVerificationService,
     private readonly adminBootstrap: AdminBootstrapService,
+    private readonly mfa: MfaService,
     config: ConfigService,
   ) {
     this.requirePhoneVerification = config.get<boolean>('REQUIRE_PHONE_VERIFICATION', false);
@@ -198,7 +200,7 @@ export class AuthService {
     identifier: string,
     password: string,
     context: { userAgent?: string; ip?: string },
-  ): Promise<{ tokens: IssuedTokens; user: PublicUser }> {
+  ): Promise<{ tokens: IssuedTokens; user: PublicUser } | { mfaChallenge: string }> {
     const user = await this.prisma.user.findFirst({
       where: {
         OR: [{ email: identifier.toLowerCase() }, { phone: identifier }],
@@ -241,12 +243,46 @@ export class AuthService {
       await this.prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
     }
 
+    /* Double authentification : le mot de passe ne suffit plus. Pas de
+       session, un défi de cinq minutes que seul le code transforme en
+       session (completeMfaLogin). */
+    if (user.mfaEnabledAt) {
+      return { mfaChallenge: await this.mfa.createChallenge(user.id) };
+    }
+
     await this.prisma.user.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
     });
 
     const tokens = await this.tokens.issue(user, context);
+    return { tokens, user: toPublicUser(user) };
+  }
+
+  /** Seconde étape de la connexion : le défi et le code ouvrent la session. */
+  async completeMfaLogin(
+    challenge: string,
+    code: string,
+    context: { userAgent?: string; ip?: string },
+  ): Promise<{ tokens: IssuedTokens; user: PublicUser }> {
+    const userId = await this.mfa.readChallenge(challenge);
+
+    if (!(await this.mfa.verifyCode(userId, code))) {
+      throw new UnauthorizedException('Code incorrect.');
+    }
+
+    // Le compte a pu être suspendu pendant les cinq minutes du défi.
+    const user = await this.prisma.user.findFirst({ where: { id: userId, deletedAt: null } });
+    if (!user || user.status === 'SUSPENDED' || user.status === 'REJECTED') {
+      throw new UnauthorizedException('Ce compte est suspendu. Contactez le support.');
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+    });
+
+    const tokens = await this.tokens.issue(user, context, { mfaVerifiedAt: new Date() });
     return { tokens, user: toPublicUser(user) };
   }
 
@@ -395,10 +431,12 @@ export class AuthService {
   async reissueSession(
     userId: string,
     context: { userAgent?: string; ip?: string },
+    /** La session remplacée avait été ouverte avec le second facteur. */
+    mfaVerified = false,
   ): Promise<IssuedTokens> {
     const user = await this.prisma.user.findFirst({ where: { id: userId, deletedAt: null } });
     if (!user) throw new UnauthorizedException('Compte introuvable.');
-    return this.tokens.issue(user, context);
+    return this.tokens.issue(user, context, mfaVerified ? { mfaVerifiedAt: new Date() } : {});
   }
 
   async currentUser(userId: string): Promise<PublicUser> {
@@ -427,5 +465,6 @@ export function toPublicUser(user: User): PublicUser {
     phone: user.phone,
     phoneVerified: user.phoneVerifiedAt !== null,
     emailVerified: user.emailVerifiedAt !== null,
+    mfaEnabled: user.mfaEnabledAt !== null,
   };
 }

@@ -99,8 +99,14 @@ model User {
   firstName String
   lastName  String
   locale    String  @default("fr")
-  /// TOTP. Obligatoire pour ADMIN, optionnel pour MAKER.
-  mfaSecret String?
+  /// Double authentification (TOTP, cahier L0-22) : obligatoire pour ADMIN,
+  /// facultative pour les autres. Le secret est chiffré (AES-256-GCM) : une
+  /// fuite de la base ne donne pas les codes. Renseigné sans `mfaEnabledAt`,
+  /// c'est une activation commencée et pas encore confirmée.
+  mfaSecret    String?
+  mfaEnabledAt DateTime?
+  /// Dernier pas de 30 s accepté : un code déjà utilisé ne passe pas deux fois.
+  mfaLastStep  Int?
 
   lastLoginAt DateTime?
   deletedAt   DateTime?
@@ -118,6 +124,7 @@ model User {
   verifications    VerificationToken[]
   promoRedemptions PromoRedemption[]
   supportTickets   SupportTicket[]
+  recoveryCodes    MfaRecoveryCode[]
 
   @@index([role, status])
   @@map("users")
@@ -136,9 +143,25 @@ model Session {
   expiresAt   DateTime
   revokedAt   DateTime?
   createdAt   DateTime  @default(now())
+  /// Ouverte avec un second facteur. Suit la session à chaque
+  /// rafraîchissement ; exigée pour l'espace admin.
+  mfaVerifiedAt DateTime?
 
   @@index([userId, revokedAt])
   @@map("sessions")
+}
+
+/// Code de secours de la double authentification : sert une fois, quand le
+/// téléphone est perdu. Jamais stocké en clair.
+model MfaRecoveryCode {
+  id       String    @id @default(cuid())
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash String
+  usedAt   DateTime?
+
+  @@index([userId])
+  @@map("mfa_recovery_codes")
 }
 
 enum VerificationPurpose {

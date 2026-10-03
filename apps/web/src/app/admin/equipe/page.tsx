@@ -30,6 +30,7 @@ interface AdminMember {
   email: string;
   createdAt: string;
   isYou: boolean;
+  mfaEnabled: boolean;
 }
 
 export default function AdminTeamPage() {
@@ -98,6 +99,32 @@ export default function AdminTeamPage() {
     }
   };
 
+  /* Téléphone perdu : un collègue efface la double authentification. Jamais
+     la sienne — l'API le refuse, l'écran n'en propose pas le geste. */
+  const resetMfa = async (member: AdminMember) => {
+    const confirmed = window.confirm(
+      `Réinitialiser la double authentification de ${member.firstName} ${member.lastName} ?
+` +
+        "Ses sessions sont fermées ; à sa prochaine connexion, il ou elle la réactivera.",
+    );
+    if (!confirmed) return;
+
+    setBusy(`mfa:${member.id}`);
+    setError(null);
+    setNotice(null);
+    try {
+      await apiFetch(`/admin/team/${member.id}/mfa/reset`, { method: "POST" });
+      setNotice(
+        `Double authentification de ${member.firstName} ${member.lastName} réinitialisée.`,
+      );
+      await load();
+    } catch (cause) {
+      setError(cause instanceof ApiError ? cause.message : "Réinitialisation refusée.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <>
       <PageHead
@@ -151,6 +178,7 @@ export default function AdminTeamPage() {
                   <th>Nom</th>
                   <th>E-mail</th>
                   <th>Compte créé le</th>
+                  <th>Double authentification</th>
                   <th />
                 </tr>
               </thead>
@@ -165,7 +193,24 @@ export default function AdminTeamPage() {
                     </td>
                     <td>{member.email}</td>
                     <td>{new Date(member.createdAt).toLocaleDateString("fr-FR")}</td>
+                    <td>
+                      {member.mfaEnabled ? (
+                        <Badge type="success">Activée</Badge>
+                      ) : (
+                        <Badge type="pending">À activer</Badge>
+                      )}
+                    </td>
                     <td className={styles.rowActions}>
+                      {!member.isYou && member.mfaEnabled ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={busy !== null}
+                          onClick={() => void resetMfa(member)}
+                        >
+                          {busy === `mfa:${member.id}` ? "Réinitialisation…" : "Réinitialiser la 2FA"}
+                        </Button>
+                      ) : null}
                       {/* Ni retrait de soi-même, ni retrait du dernier admin :
                           l'API les refuse, l'écran n'en propose pas le geste. */}
                       {!member.isYou && members.length > 1 ? (

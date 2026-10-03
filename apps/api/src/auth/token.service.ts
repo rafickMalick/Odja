@@ -59,6 +59,8 @@ export class TokenService {
   async issue(
     user: { id: string; role: UserRole },
     context: { userAgent?: string; ip?: string } = {},
+    /** Session ouverte avec le second facteur : exigée pour l'espace admin. */
+    options: { mfaVerifiedAt?: Date | null } = {},
   ): Promise<IssuedTokens> {
     const refreshToken = randomBytes(48).toString('base64url');
     const refreshExpiresAt = new Date(Date.now() + REFRESH_TTL_DAYS * 86_400_000);
@@ -70,6 +72,7 @@ export class TokenService {
         expiresAt: refreshExpiresAt,
         ...(context.userAgent ? { userAgent: context.userAgent } : {}),
         ...(context.ip ? { ip: context.ip } : {}),
+        ...(options.mfaVerifiedAt ? { mfaVerifiedAt: options.mfaVerifiedAt } : {}),
       },
     });
 
@@ -134,7 +137,11 @@ export class TokenService {
       data: { revokedAt: new Date() },
     });
 
-    return this.issue({ id: session.user.id, role: session.user.role }, context);
+    // Le second facteur suit la session : sans cela, un admin le perdrait
+    // au bout de quinze minutes, au premier rafraîchissement.
+    return this.issue({ id: session.user.id, role: session.user.role }, context, {
+      mfaVerifiedAt: session.mfaVerifiedAt,
+    });
   }
 
   async revokeSession(sessionId: string): Promise<void> {
@@ -159,11 +166,24 @@ export class TokenService {
    * l'ancien jeton valide jusqu'à 15 minutes.
    */
   async isSessionActive(sessionId: string): Promise<boolean> {
+    return (await this.activeSession(sessionId)) !== null;
+  }
+
+  /** La session si elle est encore ouverte, avec son état de second facteur. */
+  async activeSession(sessionId: string): Promise<{ mfaVerified: boolean } | null> {
     const session = await this.prisma.session.findUnique({
       where: { id: sessionId },
-      select: { revokedAt: true, expiresAt: true },
+      select: { revokedAt: true, expiresAt: true, mfaVerifiedAt: true },
     });
-    return Boolean(session && !session.revokedAt && session.expiresAt > new Date());
+    if (!session || session.revokedAt || session.expiresAt <= new Date()) return null;
+    return { mfaVerified: session.mfaVerifiedAt !== null };
+  }
+
+  async markMfaVerified(sessionId: string): Promise<void> {
+    await this.prisma.session.update({
+      where: { id: sessionId },
+      data: { mfaVerifiedAt: new Date() },
+    });
   }
 }
 

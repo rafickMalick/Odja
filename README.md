@@ -177,7 +177,7 @@ npm run build
 
 L'agrégateur de paiement et l'exécution des versements — les deux dépendent
 d'un compte marchand Kadev Pay. Puis les SMS réels, l'idempotence des routes de
-paiement, l'OpenAPI, le TOTP administrateur, les avis clients et le suivi du
+paiement, l'OpenAPI, les avis clients et le suivi du
 livreur en temps réel.
 Voir [`BACKLOG-BACKEND.md`](BACKLOG-BACKEND.md) et [`ETAT-PROJET.md`](ETAT-PROJET.md).
 

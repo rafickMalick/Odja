@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Workspace, type WorkspaceLink } from "@/components/dashboard/Workspace";
-import { ApiError, apiFetch } from "@/lib/api";
+import { ApiError, apiFetch, isMfaRequired } from "@/lib/api";
 import { loginUrl } from "@/lib/login-redirect";
 
 /**
@@ -55,6 +55,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
         setTickets(openTickets.count);
       } catch (cause) {
         if (cancelled) return;
+        // Double authentification à activer : apiFetch y emmène déjà.
+        if (isMfaRequired(cause)) return;
         /* 401 comme 404 mènent au même endroit : l'API répond 404 à qui n'a pas
            le rôle, précisément pour ne pas confirmer que ces routes existent. */
         if (cause instanceof ApiError && cause.isUnauthorized) {
@@ -83,6 +85,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     { href: "/admin/promo-codes", label: "Codes promo" },
     { href: "/admin/journal", label: "Journal d'audit" },
     { href: "/admin/equipe", label: "Administrateurs" },
+    { href: "/double-authentification", label: "Double authentification" },
     { href: "/admin/reglages", label: "Réglages" },
     { href: "/admin/outils", label: "Outils" },
   ];

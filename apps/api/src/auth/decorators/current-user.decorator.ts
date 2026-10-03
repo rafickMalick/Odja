@@ -5,6 +5,8 @@ export interface AuthenticatedUser {
   id: string;
   role: UserRole;
   sessionId: string;
+  /** Session ouverte avec le second facteur (double authentification). */
+  mfa?: boolean;
 }
 
 /** Injecte l'utilisateur authentifié dans une méthode de contrôleur. */

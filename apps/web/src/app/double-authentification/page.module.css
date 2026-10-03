@@ -1,0 +1,43 @@
+/* Clé de configuration : groupée par quatre, en chasse fixe, pour être
+   recopiée sans se tromper de ligne. */
+.secret {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-16);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.04);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  word-spacing: 0.3em;
+  text-align: center;
+  user-select: all;
+  overflow-wrap: anywhere;
+}
+
+.appLink {
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.codes {
+  width: 100%;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-8);
+  margin: 0;
+  padding: var(--space-16);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.04);
+  list-style: none;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 16px;
+  text-align: center;
+}
+
+@media (max-width: 400px) {
+  .codes {
+    grid-template-columns: 1fr;
+  }
+}

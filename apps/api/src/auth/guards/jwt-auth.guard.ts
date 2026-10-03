@@ -46,8 +46,14 @@ export class JwtAuthGuard implements CanActivate {
       if (token) {
         try {
           const payload = await this.tokens.verifyAccess(token);
-          if (await this.tokens.isSessionActive(payload.sid)) {
-            request.user = { id: payload.sub, role: payload.role, sessionId: payload.sid };
+          const session = await this.tokens.activeSession(payload.sid);
+          if (session) {
+            request.user = {
+              id: payload.sub,
+              role: payload.role,
+              sessionId: payload.sid,
+              mfa: session.mfaVerified,
+            };
           }
         } catch {
           // Visiteur non identifié : c'est un cas normal sur une route ouverte.
@@ -64,10 +70,15 @@ export class JwtAuthGuard implements CanActivate {
        entre-temps (déconnexion, mot de passe changé, compte suspendu). Sans ce
        contrôle, un jeton reste utilisable jusqu'à 15 minutes après une
        déconnexion, ce qui vide la déconnexion de son sens. */
-    const active = await this.tokens.isSessionActive(payload.sid);
-    if (!active) throw new UnauthorizedException('Session fermée. Reconnectez-vous.');
+    const session = await this.tokens.activeSession(payload.sid);
+    if (!session) throw new UnauthorizedException('Session fermée. Reconnectez-vous.');
 
-    request.user = { id: payload.sub, role: payload.role, sessionId: payload.sid };
+    request.user = {
+      id: payload.sub,
+      role: payload.role,
+      sessionId: payload.sid,
+      mfa: session.mfaVerified,
+    };
     return true;
   }
 }

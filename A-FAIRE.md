@@ -77,7 +77,10 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
 - [ ] Versements aux créateurs et livreurs (lot L5)
 - [ ] SMS (LN-03)
 - [ ] Avis clients (L6-11, L6-12)
-- [ ] MFA des admins (L0-22, L7-16)
+- [x] MFA des admins (L0-22, L7-16) : obligatoire pour l'espace admin ; page
+  `/double-authentification`, réinitialisation dans Admin › Administrateurs
+- [ ] Après le déploiement de la MFA : chaque admin l'active à sa prochaine
+  visite de l'espace admin (il y est conduit). Garder ses codes de secours.
 - [ ] Idempotence des requêtes (L0-25)
 - [ ] Durcissement L8 : sauvegardes et test de restauration, alertes, audit,
   tests de charge k6, tests Playwright

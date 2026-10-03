@@ -94,7 +94,7 @@ l'API refuse ce qu'elle doit refuser.
 - [x] **L0-19** Acceptation des CGU horodatée et versionnée en base (dépend de `P-10`)
 - [x] **L0-20** Vérification d'adresse e-mail
 - [x] **L0-21** Mot de passe oublié / réinitialisation, jeton à usage unique
-- [ ] **L0-22** TOTP obligatoire pour `ADMIN`, optionnel pour `MAKER`
+- [x] **L0-22** TOTP obligatoire pour `ADMIN` (espace admin fermé sans session vérifiée), facultatif pour tous les autres comptes ; secret chiffré AES-256-GCM, 10 codes de secours, anti-rejeu (`auth/totp.ts`, `auth/mfa.service.ts`)
 - [x] **L0-23** Révocation de session, déconnexion de tous les appareils
 
 ### Transverse
@@ -367,7 +367,7 @@ Dépend de `P-06`.
 - [ ] **L7-13** Envoi d'e-mails aux utilisateurs et aux marchands
 - [x] **L7-14** Paramétrage consultable : pays, grilles de livraison, moyens de paiement
 - [x] **L7-15** **Ouverture d'un pays** : un interrupteur dans le back-office, aucun déploiement (§ 13)
-- [ ] **L7-16** Gestion des comptes admin et de leur MFA : page Administrateurs faite (PR #9) ; reste le MFA
+- [x] **L7-16** Gestion des comptes admin et de leur MFA : page Administrateurs (PR #9), état de la double authentification de chacun et réinitialisation par un collègue
 
 ---
 
@@ -458,7 +458,7 @@ commande attendait la validation automatique de 72 h.
 ### F4 — Back-office admin · 4 semaines
 
 - [x] **F4-01** Conception (amorce Figma `161:3414`)
-- [x] **F4-02** Interfaces des tâches L7-01 → L7-16 — reste : annulation de commande, lots de versement, MFA admin
+- [x] **F4-02** Interfaces des tâches L7-01 → L7-16 — reste : annulation de commande, lots de versement
 
 ---
 
