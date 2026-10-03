@@ -481,6 +481,52 @@ describe('Parcours d’achat (bout en bout)', () => {
       expect(next).toBe(first + 1);
     });
 
+    it('ne crée qu’une commande quand la même requête arrive deux fois', async () => {
+      await api()
+        .post('/api/v1/cart/items')
+        .set('Cookie', customerCookies)
+        .send({ productId: productA.id, quantity: 1 })
+        .expect(201);
+      const quote = await api()
+        .post('/api/v1/checkout/quote')
+        .set('Cookie', customerCookies)
+        .send({ addressId })
+        .expect(201);
+      const body = { addressId, expectedTotalXof: quote.body.totalXof };
+      const key = 'e2e-double-clic-0001';
+      const mine = { customer: { email: 'acheteur@oja.market' } };
+      const before = await prisma.order.count({ where: mine });
+      const placeWithKey = () =>
+        api()
+          .post('/api/v1/checkout')
+          .set('Cookie', customerCookies)
+          .set('Idempotency-Key', key)
+          .send(body);
+
+      // Double clic : deux requêtes simultanées, même clé. L'une crée, l'autre
+      // rejoue sa réponse ou attend son tour (409) — jamais deux créations.
+      const [a, b] = await Promise.all([placeWithKey(), placeWithKey()]);
+      expect([
+        [201, 201],
+        [201, 409],
+      ]).toContainEqual([a.status, b.status].sort());
+
+      // Réponse perdue, le client réessaie : la même commande revient.
+      const retry = await placeWithKey().expect(201);
+      expect(retry.headers['idempotent-replayed']).toBe('true');
+      const created = [a, b].find((r) => r.status === 201)!;
+      expect(retry.body.reference).toBe(created.body.reference);
+      expect(await prisma.order.count({ where: mine })).toBe(before + 1);
+
+      // La même clé ne peut pas servir à une autre commande.
+      await api()
+        .post('/api/v1/checkout')
+        .set('Cookie', customerCookies)
+        .set('Idempotency-Key', key)
+        .send({ ...body, expectedTotalXof: body.expectedTotalXof + 1 })
+        .expect(422);
+    });
+
     it('ne montre pas la commande d’un autre client', async () => {
       const other = await signUp('CUSTOMER', 'curieux@oja.market', '+2250780000008');
       await api()
