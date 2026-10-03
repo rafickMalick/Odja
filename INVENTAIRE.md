@@ -376,7 +376,7 @@ Si c'est ouvert, la moitié de ce lot disparaît.
 | Politique de conservation | 10 ans comptable, 5 ans dossiers, 12 mois technique |
 | Anonymisation sur demande d'effacement | Sans détruire les pièces comptables |
 | Audit de sécurité externe | Ce document n'en tient pas lieu |
-| Bout en bout Playwright, charge k6 | Ce que les tests d'API ne voient pas |
+| ~~Bout en bout Playwright~~, charge k6 | Playwright **fait** (L8-02, `e2e/`) ; reste la charge k6 |
 
 ### 3.4 Confort — utile, pas bloquant
 
