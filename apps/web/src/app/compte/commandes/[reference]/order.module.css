@@ -94,14 +94,3 @@
   font-size: 0.75rem;
   color: #999;
 }
-
-@media (prefers-color-scheme: dark) {
-  .tracker {
-    border-color: rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.03);
-  }
-  .trackerList li {
-    color: #aaa;
-    border-left-color: rgba(255, 255, 255, 0.2);
-  }
-}

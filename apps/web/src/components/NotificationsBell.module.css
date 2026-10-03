@@ -43,7 +43,12 @@
   border-radius: 999px;
 }
 
+/* Le site n'a qu'un thème, clair : le panneau suit le site, pas le thème de
+   l'appareil. Il avait un mode sombre à lui seul — fond noir, mais texte
+   hérité de la page, sombre lui aussi : titres illisibles. Couleurs posées
+   ici plutôt qu'héritées, pour qu'aucun réglage extérieur ne les brouille. */
 .panel {
+  color: #1c1c1e;
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
@@ -105,11 +110,13 @@
 .itemTitle {
   font-weight: 600;
   font-size: 0.9rem;
+  color: #1c1c1e;
 }
 
 .itemBody {
   font-size: 0.82rem;
-  color: #555;
+  color: #4a4a4a;
+  line-height: 1.4;
 }
 
 .empty {
@@ -125,23 +132,4 @@
   padding: 0.7rem 1rem;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  .panel {
-    background: #1c1c1e;
-    border-color: rgba(255, 255, 255, 0.12);
-  }
-  .head {
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  .item {
-    border-color: rgba(255, 255, 255, 0.07);
-  }
-  .itemBody {
-    color: #aaa;
-  }
-  .bell:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
 }
