@@ -124,6 +124,7 @@ model User {
   verifications    VerificationToken[]
   promoRedemptions PromoRedemption[]
   supportTickets   SupportTicket[]
+  reviews          Review[]
   idempotencyKeys  IdempotencyKey[]
   recoveryCodes    MfaRecoveryCode[]
 
@@ -722,6 +723,8 @@ model OrderLine {
   /// finalPriceXof × quantity
   lineTotalXof  Int
 
+  review Review?
+
   @@index([subOrderId])
   @@map("order_lines")
 }
@@ -1285,20 +1288,35 @@ model SupportMessage {
   @@map("support_messages")
 }
 
+/// Avis client (cahier L6-11, L6-12). Un avis exige une ligne de commande
+/// réellement achetée **et** dont la réception a été validée : on ne note
+/// pas une pièce qu'on n'a pas eue entre les mains. Un seul par ligne.
+/// Publié après modération ; la publication recalcule les notes moyennes
+/// de la pièce et de l'atelier.
 model Review {
-  id          String  @id @default(cuid())
+  id          String    @id @default(cuid())
   productId   String
-  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   authorId    String
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   /// Un avis exige une ligne de commande réellement achetée et validée.
-  orderLineId String  @unique
+  orderLineId String    @unique
+  orderLine   OrderLine @relation(fields: [orderLineId], references: [id], onDelete: Cascade)
 
   rating    Int // 1..5
   body      String?
+  /// PENDING (en modération) | PUBLISHED | REJECTED
   status    String   @default("PENDING")
   createdAt DateTime @default(now())
 
+  moderatedAt  DateTime?
+  moderatorId  String?
+  /// Motif d'un refus, montré à l'auteur.
+  rejectReason String?
+
   @@index([productId, status])
+  @@index([status, createdAt])
+  @@index([authorId])
   @@map("reviews")
 }
 

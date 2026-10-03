@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { phoneSchema } from './auth';
+import type { OwnReviewView } from './reviews';
 
 /**
  * Contrats du panier, des adresses et du passage de commande.
@@ -143,8 +144,12 @@ export interface CheckoutQuote {
   vatXof: number;
   /** Remise d'un code promo, déjà retranchée de `totalXof`. */
   discountXof: number;
-  /** Code appliqué et son libellé, `null` si aucun (ou code refusé). */
-  promo: { code: string; label: string } | null;
+  /**
+   * Code appliqué et son libellé, `null` si aucun (ou code refusé).
+   * `capped` : la remise a été ramenée à la commission Ojà — le libellé
+   * (« -20 % ») annonce plus que ce qui est réellement retranché.
+   */
+  promo: { code: string; label: string; capped: boolean } | null;
   totalXof: number;
 
   /** Modes de règlement possibles et ce que chacun fait payer maintenant. */
@@ -192,11 +197,17 @@ export type OrderStatusName =
   | 'REFUNDED';
 
 export interface OrderLineView {
+  id: string;
   productName: string;
+  /** Pour revenir à la fiche, si la pièce est encore en ligne. */
+  productSlug: string;
   quantity: number;
   /** Prix affiché au client, commission comprise — jamais le détail. */
   finalPriceXof: number;
   lineTotalXof: number;
+  /** Réception validée et pas encore d'avis : le client peut noter la pièce. */
+  canReview: boolean;
+  review: OwnReviewView | null;
 }
 
 export interface SubOrderView {

@@ -197,6 +197,15 @@ describe('Codes promo, facture, notifications, suivi', () => {
       expect(quote.body.promo).toBeNull();
       expect(quote.body.discountXof).toBe(0);
       expect(quote.body.blockers.some((b: string) => b.includes('NEXISTEPAS'))).toBe(true);
+
+      // Le bouton « Appliquer » vérifie le code seul : la raison du refus lui
+      // revient, pour s'afficher sous le champ.
+      const preview = await api()
+        .post('/api/v1/checkout/promo')
+        .set('Cookie', customerCookies)
+        .send({ addressId, code: 'NEXISTEPAS' })
+        .expect(400);
+      expect(preview.body.detail).toContain('NEXISTEPAS');
     });
 
     it('plafonne une remise en pourcentage à la commission Ojà', async () => {
@@ -223,6 +232,15 @@ describe('Codes promo, facture, notifications, suivi', () => {
       // créateur reste payé en entier.
       expect(quote.body.discountXof).toBe(5_000);
       expect(quote.body.totalXof).toBe(bare.body.totalXof - quote.body.discountXof);
+      // Le client est prévenu : il reçoit moins que les « -50 % » annoncés.
+      expect(quote.body.promo).toMatchObject({ code: 'MOITIE', capped: true });
+
+      const preview = await api()
+        .post('/api/v1/checkout/promo')
+        .set('Cookie', customerCookies)
+        .send({ addressId, code: 'MOITIE' })
+        .expect(201);
+      expect(preview.body).toMatchObject({ code: 'MOITIE', discountXof: 5_000, capped: true });
       // Le chiffrage ne divulgue pas la commission.
       expect(bare.body.commissionTotalXof).toBeUndefined();
     });
@@ -246,7 +264,8 @@ describe('Codes promo, facture, notifications, suivi', () => {
         .send({ addressId, promoCode: 'MOINS2000' })
         .expect(201);
       expect(quote.body.discountXof).toBe(2_000);
-      expect(quote.body.promo).toMatchObject({ code: 'MOINS2000' });
+      // Sous la commission : la remise est entière, rien à signaler.
+      expect(quote.body.promo).toMatchObject({ code: 'MOINS2000', capped: false });
 
       const order = await api()
         .post('/api/v1/checkout')

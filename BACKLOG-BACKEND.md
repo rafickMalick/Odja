@@ -105,8 +105,8 @@ l'API refuse ce qu'elle doit refuser.
 - [x] **L0-27** Validation Zod aux frontières, schémas partagés dans `packages/contracts`
 - [x] **L0-28** Erreurs au format RFC 9457 (`application/problem+json`)
 - [x] **L0-29** Pagination par curseur générique (`common/pagination.ts`) — pas d'`OFFSET` ; appliquée à `/orders` et `/notifications`, extension mécanique aux autres listes
-- [ ] **L0-30** Logger avec filtre de secrets **au niveau du logger** : ni mot de passe, ni OTP, ni clé, ni PAN
-- [ ] **L0-31** `AuditLog` + intercepteur automatique sur toute action d'administration
+- [x] **L0-30** Logger avec filtre de secrets **au niveau du logger** : ni mot de passe, ni OTP, ni clé, ni PAN — `RedactingLogger` posé au démarrage, masquage par nom de champ et par motif (JWT, Bearer, clés Brevo / Kadev Pay, e-mails) dans `common/redact.ts`
+- [x] **L0-31** `AuditLog` + intercepteur automatique sur toute action d'administration — `AuditInterceptor` global : toute requête réussie POST/PUT/PATCH/DELETE sur une route `@Roles('ADMIN')`, action `http.<MÉTHODE> <route>`, corps masqué ; `@NoAudit()` pour s'en exclure
 - [ ] **L0-32** OpenTelemetry (traces avec `orderId` / `paymentId` en attributs) + Sentry
 - [x] **L0-33** Ordonnanceur des 4 échéances métier, verrou consultatif Postgres (BullMQ non nécessaire à ce stade)
 - [x] **L0-34** Stockage S3 : upload signé, URL pré-signées à 5 min, chiffrement au repos pour les pièces KYC
@@ -343,8 +343,8 @@ Dépend de `P-06`.
 - [ ] **L6-08** Règle de prise en charge de la casse en transit (dépend de `P-06`)
 - [x] **L6-09** Retours produit et délai de rétractation
 - [x] **L6-10** Alertes de dépassement de SLA
-- [ ] **L6-11** Avis : **un avis exige une `OrderLine` réellement achetée**
-- [ ] **L6-12** Modération des avis, recalcul des notes moyennes produit et atelier
+- [x] **L6-11** Avis : **un avis exige une `OrderLine` réellement achetée** — et réception validée (`VALIDATED`), un seul par ligne (`POST /order-lines/:id/review`)
+- [x] **L6-12** Modération des avis, recalcul des notes moyennes produit et atelier — Admin › Avis clients ; publier, refuser avec motif, revenir sur une décision ; moyennes recalculées depuis les avis publiés, jamais incrémentées
 - [x] **L6-13** Formulaire de contact raccordé (PR #13 : crée une demande au service client, pot de miel et limite d'envois)
 - [x] **L6-14** Toutes les demandes transitent par le Support, coordonnées masquées (§ 15.3)
 

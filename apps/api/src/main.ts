@@ -10,6 +10,7 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { DomainErrorFilter } from './common/domain-error.filter';
 import { ProblemFilter } from './common/problem.filter';
+import { RedactingLogger } from './common/redacting-logger';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -23,7 +24,12 @@ async function bootstrap(): Promise<void> {
      * fois pour toutes.
      */
     rawBody: true,
+    // Les journaux du démarrage attendent le journaliseur filtrant.
+    bufferLogs: true,
   });
+  /* Tous les journaux, ceux de NestJS compris, passent par le filtre des
+     secrets : ni mot de passe, ni jeton, ni clé en clair (L0-30). */
+  app.useLogger(new RedactingLogger());
 
   // Les valeurs viennent de la configuration validée au démarrage, pas de
   // `process.env` : ce sont les mêmes clés, mais celles-ci ont été vérifiées.
