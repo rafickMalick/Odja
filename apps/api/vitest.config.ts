@@ -23,8 +23,12 @@ export default defineConfig({
     /* La suite martèle volontairement la connexion depuis une seule adresse :
        la limitation de débit y verrait une attaque, à juste titre. Son
        comportement est couvert par ses propres tests unitaires, qui
-       l'instancient directement. */
-    env: { RATE_LIMIT_ENABLED: 'false' },
+       l'instancient directement.
+
+       Même logique pour la double authentification des admins : la plupart
+       des fichiers passent par l'espace admin sans activer de TOTP.
+       mfa.e2e.test.ts l'impose lui-même. */
+    env: { RATE_LIMIT_ENABLED: 'false', ADMIN_MFA_REQUIRED: 'false' },
     globals: false,
     environment: 'node',
     include: ['src/**/*.{test,spec}.ts'],

@@ -119,6 +119,15 @@ suffit de le connecter, pas de le reconfigurer à la main.
    compte devient ADMIN à l'inscription, ou au démarrage suivant s'il existait
    déjà. Une trace `user.admin.bootstrap` est écrite au journal d'audit.
 
+   **Double authentification.** L'espace admin l'exige (`ADMIN_MFA_REQUIRED`,
+   vrai par défaut : ne pas la poser sur Render). À sa première visite, chaque
+   admin est conduit vers `/double-authentification` : il ajoute Ojà à une
+   application (Google Authenticator, 1Password…), saisit un premier code et
+   **met de côté ses 10 codes de secours**. Téléphone perdu : un autre admin
+   réinitialise depuis Admin › Administrateurs. Seul admin et plus aucun
+   code de secours : effacer `mfaSecret` et `mfaEnabledAt` de son compte en
+   base, puis réactiver.
+
    Ne jamais lancer `npm run db:migrate` sur cette base : c'est la commande
    de **développement** (`prisma migrate dev`), qui peut proposer de la
    réinitialiser.

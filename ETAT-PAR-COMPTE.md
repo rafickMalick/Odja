@@ -114,8 +114,12 @@ missions.
   inactive, prête à être rouverte d'un simple bascule sans redéploiement.
 - **Outils** : tâches d'ordonnancement manuelles.
 
+**Double authentification** : obligatoire pour l'espace admin. Un admin qui
+ne l'a pas activée y est conduit vers `/double-authentification` ; la page
+Administrateurs montre qui l'a activée et permet de la réinitialiser pour un
+collègue qui a perdu son téléphone.
+
 **Ce qui manque :**
-- MFA sur les comptes admin.
 - Rapprochement quotidien des paiements, traces et alertes.
 
 ---
@@ -143,5 +147,5 @@ réglage admin, pas un chantier.
 2. **Exécution réelle des versements** (fabricant et livreur) — dépend de la
    réponse Kadev Pay sur le *split*/sous-comptes.
 3. **Connexion Google** — décidée, pas commencée.
-4. Le reste : voir `ETAT-PROJET.md` § 3 (SMS réels, avis clients, MFA admin,
+4. Le reste : voir `ETAT-PROJET.md` § 3 (SMS réels, avis clients,
    juridique…).

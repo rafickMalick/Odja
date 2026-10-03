@@ -74,6 +74,10 @@ export const envSchema = z
        livraison. Par défaut active : la défaut sûre est celle qui protège. */
     RATE_LIMIT_ENABLED: booleanFromEnv(true),
 
+    /** Double authentification exigée pour l'espace admin (cahier L0-22).
+        Coupée seulement dans les tests qui ne la concernent pas. */
+    ADMIN_MFA_REQUIRED: booleanFromEnv(true),
+
     /** Vérification du téléphone par SMS. Mise de côté : voir AuthService. */
     REQUIRE_PHONE_VERIFICATION: booleanFromEnv(false),
     MAIL_FROM: z.string().default('Ojà <bonjour@oja.market>'),
