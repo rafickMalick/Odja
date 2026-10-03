@@ -87,7 +87,7 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
   déjà créée pour la même `Idempotency-Key` ; à poser avec `@Idempotent()` sur
   toute future route qui engage de l'argent (versements, remboursements)
 - [ ] Durcissement L8 : sauvegardes et test de restauration, alertes, audit,
-  tests de charge k6, tests Playwright
+  tests de charge k6 (Playwright fait : `e2e/`, joué en CI)
 - [ ] OpenTelemetry, OpenAPI, cache du catalogue (L1-22)
 
 ## 7. Décisions produit en attente (P-01 à P-12)
