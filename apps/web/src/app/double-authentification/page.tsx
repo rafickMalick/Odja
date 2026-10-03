@@ -8,6 +8,7 @@ import type {
 } from "@oja/contracts";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import QRCode from "qrcode";
 import { Suspense, useEffect, useState } from "react";
 
 import { AuthField, AuthLayout, authStyles } from "@/components/AuthLayout";
@@ -41,6 +42,7 @@ function DoubleAuthentification() {
   const [user, setUser] = useState<PublicUser | null>(null);
   const [step, setStep] = useState<Step>("status");
   const [setup, setSetup] = useState<MfaSetup | null>(null);
+  const [qrCode, setQrCode] = useState<string | null>(null);
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [code, setCode] = useState("");
   const [pending, setPending] = useState(false);
@@ -63,6 +65,23 @@ function DoubleAuthentification() {
         }
       });
   }, [router]);
+
+  /* Le QR code est dessiné **dans le navigateur** : la clé ne part vers aucun
+     service tiers de génération d'images. */
+  useEffect(() => {
+    if (!setup) return;
+    let cancelled = false;
+    void QRCode.toDataURL(setup.otpauthUrl, { margin: 1, width: 200 })
+      .then((url) => {
+        if (!cancelled) setQrCode(url);
+      })
+      .catch(() => {
+        if (!cancelled) setQrCode(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [setup]);
 
   const run = async (action: () => Promise<void>) => {
     setPending(true);
@@ -166,8 +185,21 @@ function DoubleAuthentification() {
         <form className={authStyles.group} onSubmit={confirm}>
           <p className={authStyles.groupTitle}>1. Ajoutez Ojà à votre application</p>
           <p className={authStyles.legal}>
-            Dans Google Authenticator, Microsoft Authenticator ou 1Password, choisissez
-            « Saisir une clé de configuration » et recopiez cette clé :
+            Dans Google Authenticator, Microsoft Authenticator ou 1Password, ajoutez un
+            compte et scannez ce code :
+          </p>
+          {qrCode ? (
+            <img
+              src={qrCode}
+              alt="QR code de configuration de la double authentification"
+              className={styles.qr}
+              width={200}
+              height={200}
+            />
+          ) : null}
+          <p className={authStyles.legal}>
+            Impossible de scanner ? Choisissez « Saisir une clé de configuration » et
+            recopiez cette clé :
           </p>
           <p className={styles.secret} aria-label="Clé de configuration">
             {setup.secret.match(/.{1,4}/g)?.join(" ")}

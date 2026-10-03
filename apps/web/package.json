@@ -10,13 +10,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@oja/contracts": "*",
     "next": "15.5.26",
+    "qrcode": "^1.5.4",
     "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "@oja/contracts": "*"
+    "react-dom": "19.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "typescript": "^5.7.2"
