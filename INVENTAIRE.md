@@ -157,7 +157,7 @@ et à quelle date. Il manque le geste final.
 | Choix explicite : rendre aussi la livraison (geste commercial) | ✅ |
 | Choix explicite : qui supporte la perte, le créateur ou Ojà | ✅ |
 | Délai de traitement suivi, dépassement signalé | ✅ |
-| Avis clients | ❌ |
+| Avis clients | ✅ |
 
 ### 2.8 Les quatre espaces
 
@@ -384,7 +384,7 @@ Si c'est ouvert, la moitié de ce lot disparaît.
 |---|---|
 | SMS réels (compte fournisseur nécessaire) | ❌ |
 | Suivi du livreur en temps réel (SSE) | ❌ |
-| Avis clients et notes | ❌ |
+| Avis clients et notes | ✅ |
 | Facture PDF numérotée | ❌ |
 | Codes promo | ❌ |
 | Mode dégradé hors ligne pour le livreur | ❌ |

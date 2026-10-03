@@ -20,6 +20,7 @@ import { NewsletterModule } from './newsletter/newsletter.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OrdersModule } from './orders/orders.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ReviewModule } from './reviews/review.module';
 import { StorageModule } from './storage/storage.module';
 import { SupportModule } from './support/support.module';
 
@@ -43,6 +44,7 @@ import { SupportModule } from './support/support.module';
     LogisticsModule,
     DisputeModule,
     SupportModule,
+    ReviewModule,
     NewsletterModule,
     AdminModule,
     SchedulerModule,
