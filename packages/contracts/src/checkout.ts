@@ -130,8 +130,12 @@ export interface CheckoutQuote {
   vatXof: number;
   /** Remise d'un code promo, déjà retranchée de `totalXof`. */
   discountXof: number;
-  /** Code appliqué et son libellé, `null` si aucun (ou code refusé). */
-  promo: { code: string; label: string } | null;
+  /**
+   * Code appliqué et son libellé, `null` si aucun (ou code refusé).
+   * `capped` : la remise a été ramenée à la commission Ojà — le libellé
+   * (« -20 % ») annonce plus que ce qui est réellement retranché.
+   */
+  promo: { code: string; label: string; capped: boolean } | null;
   totalXof: number;
 
   /** Ce qui empêche encore de commander, s'il y a lieu. */
