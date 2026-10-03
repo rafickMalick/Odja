@@ -100,7 +100,7 @@ l'API refuse ce qu'elle doit refuser.
 ### Transverse
 
 - [x] **L0-24** Guard `@Roles()` **plus** vérification de propriété dans chaque service — un accès non autorisé renvoie `404`, jamais `403` (§ 2.1)
-- [ ] **L0-25** Middleware `Idempotency-Key` + mémorisation Redis 24 h, réponse rejouée à l'identique
+- [x] **L0-25** `Idempotency-Key` + mémorisation 24 h, réponse rejouée à l'identique — en **PostgreSQL** plutôt que Redis (non déployé) ; posé sur `POST /checkout` par `@Idempotent()` (`common/idempotency.ts`)
 - [x] **L0-26** Limitation de débit sur connexion, inscription, codes et preuve de livraison — par utilisateur quand il est connu
 - [x] **L0-27** Validation Zod aux frontières, schémas partagés dans `packages/contracts`
 - [x] **L0-28** Erreurs au format RFC 9457 (`application/problem+json`)
