@@ -368,8 +368,8 @@ Si c'est ouvert, la moitié de ce lot disparaît.
 | Élément | Pourquoi cela compte |
 |---|---|
 | ~~Idempotence des routes de paiement~~ | **Fait** : `POST /checkout` accepte `Idempotency-Key` (L0-25) |
-| Filtre de secrets **dans le logger** | Ni mot de passe, ni code, ni clé dans les journaux |
-| Intercepteur d'audit automatique | Aujourd'hui, chaque action trace à la main : une oubliée passe |
+| ~~Filtre de secrets dans le logger~~ | **Fait** (L0-30) : `RedactingLogger` |
+| ~~Intercepteur d'audit automatique~~ | **Fait** (L0-31) : `AuditInterceptor`, plus aucune action admin sans trace |
 | ~~TOTP obligatoire pour les administrateurs~~ | **Fait** (L0-22) : espace admin fermé sans second facteur |
 | Traces et alertes | Un webhook en panne doit réveiller quelqu'un |
 | **Restauration de sauvegarde réellement testée** | Une sauvegarde jamais restaurée n'est pas une sauvegarde |

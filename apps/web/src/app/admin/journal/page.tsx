@@ -47,6 +47,26 @@ const ACTIONS: Record<string, string> = {
   "country.close": "Pays fermé",
 };
 
+const METHODS: Record<string, string> = {
+  POST: "Création ou action",
+  PUT: "Remplacement",
+  PATCH: "Modification",
+  DELETE: "Suppression",
+};
+
+/* Les entrées de l'audit automatique (`http.POST /admin/makers/:id/approve`)
+   se lisent comme la route qu'elles tracent : l'action et son chemin. */
+function actionLabel(action: string): string {
+  const known = ACTIONS[action];
+  if (known) return known;
+  const automatic = /^http\.(\w+) (.+)$/.exec(action);
+  if (automatic) {
+    const [, method = "", route = ""] = automatic;
+    return `${METHODS[method] ?? method} · ${route}`;
+  }
+  return action;
+}
+
 export default function AdminAuditPage() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [action, setAction] = useState("");
@@ -131,7 +151,7 @@ export default function AdminAuditPage() {
                         minute: "2-digit",
                       })}
                     </td>
-                    <td>{ACTIONS[entry.action] ?? entry.action}</td>
+                    <td>{actionLabel(entry.action)}</td>
                     <td>
                       {entry.actorName ?? "Système"}
                       {entry.actorRole ? (

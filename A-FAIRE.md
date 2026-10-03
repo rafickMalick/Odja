@@ -96,7 +96,7 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
     fichier de configuration, jamais de données utilisateur) ;
   - **next 15 → 16** : `postcss` (compilation des CSS, pas l'exécution) ;
   - **vitest 3 → 5** : outil de test seulement.
-- [ ] Durcissement L8 : sauvegardes et test de restauration, alertes, audit,
+- [ ] Durcissement L8 : sauvegardes et test de restauration, alertes,
   tests de charge k6 (Playwright fait : `e2e/`, joué en CI)
 - [ ] OpenTelemetry, OpenAPI, cache du catalogue (L1-22)
 
