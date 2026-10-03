@@ -302,20 +302,6 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-.bottomLinks {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-20);
-  width: 401px;
-  text-align: center;
-}
-
-.bottomLinks a {
-  flex: 1 0 0;
-  min-width: 0;
-}
-
 @media (max-width: 900px) {
   .callout {
     padding: var(--space-56) var(--mobile-margin);
@@ -357,18 +343,5 @@
   .bottom {
     flex-direction: column;
     gap: var(--space-16);
-  }
-
-  /* Les deux mentions légales se chevauchent en une seule rangée à 390px. */
-  .bottomLinks {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-8);
-    text-align: left;
-  }
-
-  .bottomLinks a {
-    flex: none;
   }
 }
