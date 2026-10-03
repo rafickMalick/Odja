@@ -1,5 +1,10 @@
 # Ojà — état du projet
 
+> **Document daté du 15 août 2026, en partie dépassé.** Depuis : double
+> authentification des admins, idempotence des commandes, affichage par rôle,
+> newsletter, tests Playwright… L'état à jour est dans
+> [`REPRISE.md`](REPRISE.md) et [`A-FAIRE.md`](A-FAIRE.md).
+
 **15 août 2026 · 162 tâches sur 234 · 308 tests au vert**
 
 Ce document remplace la question « où en est-on ». Il dit ce qui marche, ce qui
