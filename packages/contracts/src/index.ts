@@ -2,6 +2,7 @@ export * from './auth';
 export * from './catalog';
 export * from './checkout';
 export * from './disputes';
+export * from './legal';
 export * from './logistics';
 export * from './newsletter';
 export * from './notifications';

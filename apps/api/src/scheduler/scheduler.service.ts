@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { purgeExpiredIdempotencyKeys } from '../common/idempotency';
+import { InvoiceService } from '../checkout/invoice.service';
 import { PaymentService } from '../payments/payment.service';
 import { SubOrderService } from '../orders/sub-order.service';
 import { ValidationService } from '../orders/validation.service';
@@ -37,6 +38,7 @@ export class SchedulerService {
     private readonly validation: ValidationService,
     private readonly subOrders: SubOrderService,
     private readonly payments: PaymentService,
+    private readonly invoices: InvoiceService,
     private readonly prisma: PrismaService,
     config: ConfigService,
   ) {
@@ -88,6 +90,16 @@ export class SchedulerService {
   @Cron(CronExpression.EVERY_5_MINUTES, { name: 'expire-stale-payments' })
   async expireStalePayments(): Promise<void> {
     await this.run('expiration des paiements', () => this.payments.expireStalePayments());
+  }
+
+  /**
+   * Factures des commandes payées (cahier L2-20 : émise à l'encaissement).
+   * Toutes les cinq minutes : le client qui vient de payer trouve sa facture
+   * dans son espace sans avoir à la demander.
+   */
+  @Cron(CronExpression.EVERY_5_MINUTES, { name: 'issue-invoices' })
+  async issueInvoices(): Promise<void> {
+    await this.run('émission des factures', () => this.invoices.issuePending());
   }
 
   /** Clés d'idempotence de plus de 24 h : elles ne protègent plus rien. */
