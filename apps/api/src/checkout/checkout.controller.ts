@@ -69,6 +69,7 @@ export class CheckoutController {
       code: quote.promo.code,
       label: quote.promo.label,
       discountXof: quote.discountXof,
+      capped: quote.promo.capped,
     };
   }
 

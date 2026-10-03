@@ -1,6 +1,6 @@
 "use client";
 
-import type { CheckoutQuote, PublicAddress } from "@oja/contracts";
+import type { CheckoutQuote, PromoView, PublicAddress } from "@oja/contracts";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -38,6 +38,11 @@ export default function CheckoutPage() {
   const [addressId, setAddressId] = useState<string>("");
   const [quote, setQuote] = useState<CheckoutQuote | null>(null);
   const [promoInput, setPromoInput] = useState("");
+  /* Raison d'un refus, sous le champ. Gardée à part du chiffrage : sinon le
+     second chiffrage, refait sans le code refusé, l'effaçait aussitôt et le
+     client ne voyait rien se passer. */
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoPending, setPromoPending] = useState(false);
   // Code effectivement appliqué au chiffrage  repassé tel quel à la commande.
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
   // Mobile Money par défaut : c'est le moyen dominant sur ce marché.
@@ -92,7 +97,14 @@ export default function CheckoutPage() {
         body: { addressId: selected, ...(code ? { promoCode: code } : {}) },
       });
       setQuote(result);
-      // Le code n'est « appliqué » que si le serveur l'a retenu.
+      // Le code n'est « appliqué » que si le serveur l'a retenu. S'il tombe
+      // entre-temps (épuisé, expiré), on dit pourquoi au lieu de l'effacer.
+      if (code && !result.promo) {
+        setPromoError(
+          result.blockers.find((message) => message.includes(code)) ??
+            `Le code « ${code} » ne s’applique plus.`,
+        );
+      }
       setAppliedPromo(result.promo?.code ?? null);
     } catch (cause) {
       setQuote(null);
@@ -104,14 +116,36 @@ export default function CheckoutPage() {
     void requestQuote(addressId, appliedPromo);
   }, [addressId, appliedPromo, requestQuote]);
 
-  const applyPromo = () => {
+  /* Le code est d'abord vérifié seul : refusé, sa raison s'affiche sous le
+     champ et le chiffrage n'est pas touché ; accepté, il entre dans le
+     chiffrage (l'effet ci-dessus). */
+  const applyPromo = async () => {
     const code = promoInput.trim().toUpperCase();
-    // Passe par l'effet ci-dessus : il refait le chiffrage avec le code.
-    if (code) setAppliedPromo(code);
+    if (!code) return;
+    if (!addressId) {
+      setPromoError("Choisissez d’abord une adresse de livraison : la remise en dépend.");
+      return;
+    }
+    setPromoPending(true);
+    setPromoError(null);
+    try {
+      await apiFetch<PromoView>("/checkout/promo", {
+        method: "POST",
+        body: { addressId, code },
+      });
+      setAppliedPromo(code);
+    } catch (cause) {
+      setPromoError(
+        cause instanceof ApiError ? cause.message : "Vérification du code impossible. Réessayez.",
+      );
+    } finally {
+      setPromoPending(false);
+    }
   };
 
   const clearPromo = () => {
     setPromoInput("");
+    setPromoError(null);
     setAppliedPromo(null);
   };
 
@@ -497,8 +531,17 @@ export default function CheckoutPage() {
             {/* Code promo (cahier L2-11). */}
             <div className={styles.promoRow}>
               {quote?.promo ? (
-                <p className={styles.promoApplied}>
-                  Code <strong>{quote.promo.code}</strong> appliqué ({quote.promo.label}).{" "}
+                <p className={styles.promoApplied} role="status">
+                  Code <strong>{quote.promo.code}</strong> appliqué : −{" "}
+                  {formatFcfa(quote.discountXof)}
+                  {quote.promo.capped ? (
+                    <>
+                      {" "}
+                      (annoncé {quote.promo.label}, ramené au plafond de la remise Ojà sur
+                      cette commande)
+                    </>
+                  ) : null}
+                  .{" "}
                   <button type="button" className={styles.promoClear} onClick={clearPromo}>
                     Retirer
                   </button>
@@ -511,20 +554,36 @@ export default function CheckoutPage() {
                     autoCapitalize="characters"
                     placeholder="Code promo"
                     value={promoInput}
-                    onChange={(event) => setPromoInput(event.target.value)}
+                    onChange={(event) => {
+                      setPromoInput(event.target.value);
+                      setPromoError(null);
+                    }}
                     onKeyDown={(event) => {
                       if (event.key === "Enter") {
                         event.preventDefault();
-                        applyPromo();
+                        void applyPromo();
                       }
                     }}
+                    aria-label="Code promo"
+                    aria-invalid={promoError ? true : undefined}
+                    aria-describedby={promoError ? "promo-error" : undefined}
                     className={styles.promoInput}
                   />
-                  <Button type="button" variant="secondary" onClick={applyPromo}>
-                    Appliquer
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => void applyPromo()}
+                    disabled={promoPending || !promoInput.trim()}
+                  >
+                    {promoPending ? "Vérification…" : "Appliquer"}
                   </Button>
                 </div>
               )}
+              {promoError && !quote?.promo ? (
+                <p id="promo-error" className={styles.secureNote} role="alert">
+                  {promoError}
+                </p>
+              ) : null}
             </div>
 
             <div className={styles.grandTotal}>
