@@ -91,10 +91,17 @@ export class MakerService {
        doit repasser devant l'administration : ce sont précisément les pièces
        qu'elle a vérifiées. Le reste — description, logo — se modifie
        librement. */
+    const changed = (next: string | null | undefined, current: string | null): boolean =>
+      next !== undefined && (next ?? '').trim() !== (current ?? '').trim();
+
+    /* « Modifié » veut dire une valeur différente de celle en base : le
+       formulaire de la boutique renvoie tous ses champs à chaque
+       enregistrement, et un simple changement de description ne doit pas
+       renvoyer un atelier validé en attente de validation. */
     const touchesIdentity =
-      input.ifuNumber !== undefined ||
-      input.rccmNumber !== undefined ||
-      input.managerName !== undefined;
+      changed(input.ifuNumber, maker.ifuNumber) ||
+      changed(input.rccmNumber, maker.rccmNumber) ||
+      changed(input.managerName, maker.managerName);
 
     const updated = await this.prisma.makerProfile.update({
       where: { userId },
