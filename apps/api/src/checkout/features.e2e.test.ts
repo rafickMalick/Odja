@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AppModule } from '../app.module';
 import { DomainErrorFilter } from '../common/domain-error.filter';
 import { ProblemFilter } from '../common/problem.filter';
+import { InvoiceService } from './invoice.service';
 import { LedgerService } from '../ledger/ledger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { resetTestData } from '../test/cleanup';
@@ -311,11 +312,42 @@ describe('Codes promo, facture, notifications, suivi', () => {
         .set('Cookie', adminCookies)
         .expect(201);
 
+      // Payée : le bouton s'affiche, avant même que le PDF soit composé.
+      const view = await api()
+        .get(`/api/v1/orders/${reference}`)
+        .set('Cookie', customerCookies)
+        .expect(200);
+      expect(view.body.hasInvoice).toBe(true);
+
+      /* L'ordonnanceur et un clic en même temps : un seul numéro, et le
+         compteur n'avance que d'un cran — la numérotation reste sans trou. */
+      const invoices = app.get(InvoiceService);
+      const [first, second] = await Promise.all([
+        invoices.generateForOrder(order.body.id),
+        invoices.generateForOrder(order.body.id),
+      ]);
+      expect(second.number).toBe(first.number);
+      const year = first.issuedAt.getFullYear();
+      const counter = await prisma.referenceCounter.findUniqueOrThrow({
+        where: { scope_year: { scope: 'invoice', year } },
+      });
+      expect(first.number).toBe(`FAC-${year}-${String(counter.value).padStart(6, '0')}`);
+
+      // Datée de l'encaissement, pas du premier téléchargement.
+      const payment = await prisma.payment.findFirstOrThrow({
+        where: { orderId: order.body.id, status: 'PAID' },
+      });
+      expect(first.issuedAt.toISOString()).toBe(payment.paidAt!.toISOString());
+
+      // Déjà émise : l'ordonnanceur ne la refait pas.
+      await invoices.issuePending();
+      expect(await prisma.invoice.count({ where: { orderId: order.body.id } })).toBe(1);
+
       const invoice = await api()
         .get(`/api/v1/orders/${reference}/invoice`)
         .set('Cookie', customerCookies)
         .expect(200);
-      expect(invoice.body.number).toMatch(/^FAC-\d{4}-\d{6}$/);
+      expect(invoice.body.number).toBe(first.number);
       expect(invoice.body.url).toContain('http');
 
       // Idempotent : un second appel renvoie le même numéro.
