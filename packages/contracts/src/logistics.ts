@@ -71,6 +71,8 @@ export interface CourierEarnings {
    * là où un « dû » nominatif serait inventé.
    */
   deliveryFeesCollectedXof: number;
+  /** Espèces encaissées pour Ojà et pas encore reversées à la plateforme. */
+  cashHeldXof: number;
   scheduledXof: number;
   readyXof: number;
   paidXof: number;
@@ -116,3 +118,18 @@ export interface ShipmentTrackView {
   lastPosition: { latitude: number; longitude: number; at: string } | null;
   events: ShipmentTrackEvent[];
 }
+
+/** Espèces détenues par un livreur, vues de l'administration. */
+export interface CourierCashView {
+  courierId: string;
+  userId: string;
+  fullName: string;
+  /** Ce que le livreur a encaissé pour Ojà et doit encore reverser. */
+  cashHeldXof: number;
+}
+
+export const courierRemittanceSchema = z.object({
+  amountXof: z.number().int().positive().max(100_000_000),
+  note: z.string().trim().max(200).optional(),
+});
+export type CourierRemittanceInput = z.infer<typeof courierRemittanceSchema>;

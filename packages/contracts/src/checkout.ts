@@ -119,6 +119,20 @@ export interface DeliveryQuoteLine {
   etaMaxDays: number;
 }
 
+/** Les trois façons de régler une commande. Voir `splitPayment` (domaine). */
+export const PAYMENT_MODE_VALUES = ['ONLINE_FULL', 'DEPOSIT_50', 'CASH_ON_DELIVERY'] as const;
+export type PaymentModeName = (typeof PAYMENT_MODE_VALUES)[number];
+
+/** Ce que le client paierait selon le mode choisi — affiché avant de confirmer. */
+export interface PaymentOption {
+  mode: PaymentModeName;
+  label: string;
+  /** À payer en ligne maintenant. */
+  upfrontXof: number;
+  /** À remettre au livreur à la réception. */
+  balanceXof: number;
+}
+
 export interface CheckoutQuote {
   cart: CartView;
   /** Une livraison par atelier — décision produit assumée. */
@@ -133,6 +147,9 @@ export interface CheckoutQuote {
   promo: { code: string; label: string } | null;
   totalXof: number;
 
+  /** Modes de règlement possibles et ce que chacun fait payer maintenant. */
+  paymentOptions: PaymentOption[];
+
   /** Ce qui empêche encore de commander, s'il y a lieu. */
   blockers: string[];
 }
@@ -143,6 +160,8 @@ export const placeOrderSchema = z.object({
   expectedTotalXof: z.number().int().positive(),
   /** Le même code qu'au chiffrage. Réévalué côté serveur avant l'engagement. */
   promoCode: z.string().trim().toUpperCase().min(3).max(40).optional(),
+  /** Mode de règlement. Absent : tout en ligne, comme avant. */
+  paymentMode: z.enum(PAYMENT_MODE_VALUES).default('ONLINE_FULL'),
 });
 export type PlaceOrderInput = z.infer<typeof placeOrderSchema>;
 
@@ -191,6 +210,10 @@ export interface SubOrderView {
   dueReadyAt: string | null;
   /** Référence de l'expédition, dès qu'elle existe — sert au suivi en direct. */
   shipmentReference: string | null;
+  /** Part à remettre au livreur à la réception de cette sous-commande. */
+  balanceDueXof: number;
+  /** Vrai une fois que le livreur a déclaré avoir encaissé cette part. */
+  cashCollected: boolean;
 }
 
 export interface OrderView {
@@ -215,6 +238,12 @@ export interface OrderView {
   /** Code promo utilisé, figé sur la commande. */
   promoCode: string | null;
   totalXof: number;
+
+  paymentMode: PaymentModeName;
+  /** Part payée en ligne à la commande. */
+  upfrontXof: number;
+  /** Part à remettre au livreur à la réception. */
+  balanceXof: number;
 
   placedAt: string | null;
   createdAt: string;

@@ -606,6 +606,13 @@ model Order {
   discountXof        Int @default(0)
   totalXof           Int
 
+  /// Mode de règlement choisi à la caisse.
+  paymentMode PaymentMode @default(ONLINE_FULL)
+  /// Part payée en ligne à la commande (`totalXof` si tout est en ligne).
+  upfrontXof  Int         @default(0)
+  /// Part remise au livreur à la réception. `upfrontXof + balanceXof = totalXof`.
+  balanceXof  Int         @default(0)
+
   /// Code promo utilisé, figé sur la commande.
   promoCodeId String?
   promoCode   PromoCode? @relation(fields: [promoCodeId], references: [id])
@@ -627,6 +634,7 @@ model Order {
   payments        Payment[]
   shipments       Shipment[]
   disputes        Dispute[]
+  refunds         Refund[]
   supportTickets  SupportTicket[]
   invoice         Invoice?
   promoRedemption PromoRedemption?
@@ -656,6 +664,13 @@ model SubOrder {
   itemsMakerSubtotalXof Int
   commissionSubtotalXof Int
   deliveryFeeXof        Int @default(0)
+
+  /// Part du solde que le livreur encaisse en remettant CETTE sous-commande.
+  /// Chaque atelier a sa livraison, donc son livreur : le solde de la commande
+  /// est réparti entre elles (somme des parts = `Order.balanceXof`).
+  balanceDueXof    Int       @default(0)
+  cashCollectedAt  DateTime?
+  cashCollectedXof Int?
 
   acceptedAt     DateTime?
   rejectedAt     DateTime?
@@ -720,6 +735,16 @@ enum PaymentStatus {
   FAILED
   EXPIRED
   REFUNDED
+}
+
+/// Comment la commande se règle (SPEC mode de paiement).
+///   ONLINE_FULL       tout en ligne à la commande ;
+///   DEPOSIT_50        la moitié en ligne, le solde remis au livreur ;
+///   CASH_ON_DELIVERY  tout remis au livreur à la réception.
+enum PaymentMode {
+  ONLINE_FULL
+  DEPOSIT_50
+  CASH_ON_DELIVERY
 }
 
 enum PaymentChannel {
@@ -815,9 +840,13 @@ model PaymentEvent {
 /// Règle du cahier client : le remboursement porte sur 100 % du prix produit.
 /// Les frais de livraison et la commission Ojà restent acquis.
 model Refund {
-  id        String  @id @default(cuid())
-  paymentId String
-  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  /// Absent quand rien n'a été payé en ligne (paiement à la livraison).
+  paymentId String?
+  payment   Payment? @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  /// Toujours renseigné : la commande remboursée, avec ou sans paiement en ligne.
+  orderId   String?
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   /// Σ (makerPriceXof × quantité) des lignes remboursées.
   amountXof   Int
@@ -829,6 +858,7 @@ model Refund {
   settledAt   DateTime?
 
   @@index([paymentId])
+  @@index([orderId])
   @@map("refunds")
 }
 
@@ -842,6 +872,12 @@ enum LedgerAccountType {
   CUSTOMER_REFUNDABLE
   PSP_FEE
   VAT_PAYABLE
+  /// Actif : ce que les clients doivent encore remettre au livreur à la
+  /// réception. S'éteint quand le livreur déclare avoir encaissé.
+  RECEIVABLE_ON_DELIVERY
+  /// Actif, nominatif (userId du livreur) : espèces encaissées pour Ojà et pas
+  /// encore reversées.
+  COURIER_CASH_HELD
 }
 
 model LedgerAccount {
