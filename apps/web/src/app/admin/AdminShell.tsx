@@ -77,6 +77,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     { href: "/admin/ateliers", label: "Dossiers créateurs", badge: makers || undefined },
     { href: "/admin/livreurs", label: "Dossiers livreurs", badge: couriers || undefined },
     { href: "/admin/catalogue", label: "Fiches à valider", badge: products || undefined },
+    { href: "/admin/avis", label: "Avis clients" },
     { href: "/admin/commandes", label: "Expéditions", badge: shipments || undefined },
     { href: "/admin/commandes/recherche", label: "Rechercher" },
     { href: "/admin/litiges", label: "Réclamations", badge: disputes || undefined },
