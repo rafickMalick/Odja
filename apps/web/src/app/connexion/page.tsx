@@ -14,8 +14,10 @@ import { Button } from "@/components/Button";
 import { ApiError, apiFetch } from "@/lib/api";
 import { homeForRole } from "@/lib/home-for-role";
 import { safeReturnPath } from "@/lib/login-redirect";
+import { useRedirectSignedIn } from "@/lib/session";
 
 function ConnexionForm() {
+  useRedirectSignedIn();
   const router = useRouter();
   const params = useSearchParams();
   /* Une destination explicite l'emporte : c'est celle d'où l'utilisateur a

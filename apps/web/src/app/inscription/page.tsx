@@ -15,6 +15,7 @@ import { Button } from "@/components/Button";
 import { useToast } from "@/components/Toast";
 import { ApiError, apiFetch } from "@/lib/api";
 import { homeForRole } from "@/lib/home-for-role";
+import { useRedirectSignedIn } from "@/lib/session";
 
 /**
  * Inscription.
@@ -64,6 +65,7 @@ function validateField(name: FieldName, value: string): string | null {
 }
 
 export default function InscriptionPage() {
+  useRedirectSignedIn();
   const router = useRouter();
   const { notify } = useToast();
 
