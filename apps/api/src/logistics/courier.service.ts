@@ -6,14 +6,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type {
+  CourierCashView,
   CourierEarnings,
   CourierProfileInput,
   CourierProfileUpdateInput,
   CourierProfileView,
+  CourierRemittanceInput,
   KycReviewInput,
 } from '@oja/contracts';
 import type { CourierProfile, User } from '@oja/db';
 
+import { LedgerService } from '../ledger/ledger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../notifications/notification.service';
 
@@ -38,6 +41,7 @@ export class CourierService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationService,
+    private readonly ledger: LedgerService,
   ) {}
 
   async createProfile(userId: string, input: CourierProfileInput): Promise<CourierProfileView> {
@@ -135,6 +139,98 @@ export class CourierService {
     return { status: 'PENDING' };
   }
 
+  // ═══════════════════════════════ Espèces encaissées à la livraison
+
+  /** Livreurs qui détiennent des espèces d'Ojà, avec le montant à récupérer. */
+  async cashHeld(): Promise<CourierCashView[]> {
+    const accounts = await this.prisma.ledgerAccount.findMany({
+      where: { type: 'COURIER_CASH_HELD', ownerId: { not: null } },
+      select: { id: true, ownerId: true },
+    });
+    if (accounts.length === 0) return [];
+
+    const sums = await this.prisma.ledgerEntry.groupBy({
+      by: ['accountId'],
+      where: { accountId: { in: accounts.map((account) => account.id) } },
+      _sum: { amountXof: true },
+    });
+    const heldByAccount = new Map(sums.map((row) => [row.accountId, row._sum.amountXof ?? 0]));
+
+    const couriers = await this.prisma.courierProfile.findMany({
+      where: { userId: { in: accounts.map((account) => account.ownerId!) } },
+      include: { user: { select: { firstName: true, lastName: true } } },
+    });
+    const byUser = new Map(couriers.map((courier) => [courier.userId, courier]));
+
+    return accounts
+      .map((account) => {
+        const courier = byUser.get(account.ownerId!);
+        return courier
+          ? {
+              courierId: courier.id,
+              userId: courier.userId,
+              fullName: `${courier.user.firstName} ${courier.user.lastName}`,
+              cashHeldXof: heldByAccount.get(account.id) ?? 0,
+            }
+          : null;
+      })
+      .filter((row): row is CourierCashView => row !== null && row.cashHeldXof !== 0)
+      .sort((a, b) => b.cashHeldXof - a.cashHeldXof);
+  }
+
+  /**
+   * Enregistre qu'un livreur a reversé des espèces à Ojà.
+   *
+   * On refuse un montant supérieur à ce qu'il détient : il rendrait son
+   * compte négatif, c'est-à-dire que c'est Ojà qui lui devrait de l'argent sur
+   * une erreur de saisie.
+   */
+  async recordRemittance(
+    courierId: string,
+    adminId: string,
+    input: CourierRemittanceInput,
+  ): Promise<CourierCashView> {
+    const courier = await this.prisma.courierProfile.findUnique({
+      where: { id: courierId },
+      include: { user: { select: { firstName: true, lastName: true } } },
+    });
+    if (!courier) throw new NotFoundException();
+
+    await this.prisma.$transaction(async (tx) => {
+      const held = await this.ledger.balanceOfIn(tx, 'COURIER_CASH_HELD', courier.userId);
+      if (input.amountXof > held) {
+        throw new BadRequestException(
+          `Ce livreur ne détient que ${held} F CFA : impossible d'enregistrer ${input.amountXof} F CFA.`,
+        );
+      }
+
+      await this.ledger.recordCourierRemittance(tx, {
+        courierUserId: courier.userId,
+        amountXof: input.amountXof,
+        ...(input.note ? { memo: input.note } : {}),
+      });
+
+      await tx.auditLog.create({
+        data: {
+          actorId: adminId,
+          actorRole: 'ADMIN',
+          action: 'courier.cash.remitted',
+          targetType: 'CourierProfile',
+          targetId: courierId,
+          after: { amountXof: input.amountXof, note: input.note ?? null },
+        },
+      });
+    });
+
+    this.logger.log(`Reversement de ${input.amountXof} F CFA enregistré pour le livreur ${courierId}`);
+    return {
+      courierId,
+      userId: courier.userId,
+      fullName: `${courier.user.firstName} ${courier.user.lastName}`,
+      cashHeldXof: await this.ledger.balanceOf('COURIER_CASH_HELD', courier.userId),
+    };
+  }
+
   // ═══════════════════════════════ Administration
 
   async listForAdmin(status?: string): Promise<CourierProfileView[]> {
@@ -226,7 +322,7 @@ export class CourierService {
     const courier = await this.prisma.courierProfile.findUnique({ where: { userId } });
     if (!courier) throw new NotFoundException('Aucun profil livreur pour ce compte.');
 
-    const [delivered, grouped, items] = await Promise.all([
+    const [delivered, grouped, items, cashHeldXof] = await Promise.all([
       /* On agrège sur ses propres courses livrées. Le compte COURIER_PAYABLE
          du grand livre ne convient pas : il est provisionné à l'encaissement,
          quand aucun livreur n'est encore affecté, donc sans propriétaire. */
@@ -246,12 +342,14 @@ export class CourierService {
         orderBy: { createdAt: 'desc' },
         take: 100,
       }),
+      this.ledger.balanceOf('COURIER_CASH_HELD', userId),
     ]);
 
     const byStatus = new Map(grouped.map((item) => [item.status, item._sum.amountXof ?? 0]));
 
     return {
       deliveryFeesCollectedXof: delivered._sum.feeXof ?? 0,
+      cashHeldXof,
       scheduledXof: byStatus.get('SCHEDULED') ?? 0,
       readyXof: byStatus.get('READY') ?? 0,
       paidXof: byStatus.get('PAID') ?? 0,

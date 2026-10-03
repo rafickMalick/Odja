@@ -21,6 +21,7 @@ import {
 } from '@oja/domain';
 
 import { pointOf } from '../checkout/quote.service';
+import { LedgerService } from '../ledger/ledger.service';
 import { SmsService } from '../notifications/sms.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../notifications/notification.service';
@@ -44,6 +45,7 @@ export class ShipmentService {
     private readonly sms: SmsService,
     private readonly notifications: NotificationService,
     private readonly events: ShipmentEventsBus,
+    private readonly ledger: LedgerService,
     config: ConfigService,
   ) {
     this.sinuosityFactor = config.get<number>('DISTANCE_SINUOSITY_FACTOR', 1.3);
@@ -358,6 +360,8 @@ export class ShipmentService {
     subOrder: {
       maker: { shopName: string };
       lines: { productName: string; quantity: number }[];
+      balanceDueXof: number;
+      cashCollectedAt: Date | null;
     };
     order: {
       reference: string;
@@ -400,6 +404,11 @@ export class ShipmentService {
       },
 
       items: shipment.subOrder.lines,
+
+      /* Ce que le livreur doit encaisser en remettant le colis (0 si tout a
+         été payé en ligne, ou si c'est déjà fait). Il ne peut pas confirmer
+         la remise sans l'avoir déclaré. */
+      cashToCollectXof: shipment.subOrder.cashCollectedAt ? 0 : shipment.subOrder.balanceDueXof,
     };
   }
 
@@ -564,9 +573,36 @@ export class ShipmentService {
     userId: string,
     reference: string,
     submission: ProofSubmission,
+    cashCollectedXof?: number,
   ): Promise<{ status: string; provided: string[] }> {
     const shipment = await this.requireOwnMission(userId, reference);
     assertShipmentTransition(shipment.status, 'DELIVERED');
+
+    /* Paiement à la livraison ou solde d'un acompte : le livreur ne peut pas
+       clore la remise sans déclarer avoir encaissé **exactement** la part due.
+       Un montant inférieur laisserait un trou dans la caisse que personne ne
+       verrait avant le reversement ; refuser tout de suite le rend visible
+       au moment où le client est encore là. */
+    const toCollect = await this.prisma.subOrder.findUniqueOrThrow({
+      where: { id: shipment.subOrderId },
+      select: { reference: true, balanceDueXof: true, cashCollectedAt: true },
+    });
+    const cashDue = toCollect.cashCollectedAt ? 0 : toCollect.balanceDueXof;
+    if (cashDue > 0 && cashCollectedXof !== cashDue) {
+      throw new BadRequestException({
+        error: 'Encaissement requis',
+        message: `Encaissez ${cashDue} F CFA auprès du client avant de confirmer la remise.`,
+        errors: [
+          {
+            field: 'cashCollectedXof',
+            message:
+              cashCollectedXof === undefined
+                ? `Montant à encaisser : ${cashDue} F CFA.`
+                : `Montant attendu : ${cashDue} F CFA (reçu ${cashCollectedXof}).`,
+          },
+        ],
+      });
+    }
 
     const order = await this.prisma.order.findUniqueOrThrow({
       where: { id: shipment.orderId },
@@ -616,6 +652,21 @@ export class ShipmentService {
       });
 
       await this.moveSubOrder(tx, shipment.subOrderId, 'DELIVERED');
+
+      if (cashDue > 0) {
+        await tx.subOrder.update({
+          where: { id: shipment.subOrderId },
+          data: { cashCollectedAt: new Date(), cashCollectedXof: cashDue },
+        });
+        // Les espèces sont chez le livreur, pas encore chez Ojà : le grand
+        // livre garde la trace de ce qu'il doit reverser.
+        await this.ledger.recordCashCollected(tx, {
+          subOrderId: shipment.subOrderId,
+          subOrderReference: toCollect.reference,
+          courierUserId: userId,
+          amountXof: cashDue,
+        });
+      }
     });
 
     this.events.publish(reference, {
@@ -659,8 +710,8 @@ export class ShipmentService {
 
     const [statuses, paid] = await Promise.all([
       tx.subOrder.findMany({ where: { orderId: subOrder.orderId }, select: { status: true } }),
-      tx.payment.findFirst({
-        where: { orderId: subOrder.orderId, status: 'PAID' },
+      tx.order.findFirst({
+        where: { id: subOrder.orderId, placedAt: { not: null } },
         select: { id: true },
       }),
     ]);

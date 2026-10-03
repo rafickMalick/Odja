@@ -4,7 +4,10 @@ import type { CheckoutQuote, DeliveryQuoteLine } from '@oja/contracts';
 import {
   billableDistanceKm,
   DeliveryError,
+  PAYMENT_MODE_LABELS,
+  PAYMENT_MODES,
   quoteDelivery,
+  splitPayment,
   type ParcelItem,
   type VehicleRate,
 } from '@oja/domain';
@@ -115,6 +118,8 @@ export class QuoteService {
       }
     }
 
+    const totalXof = Math.max(0, cart.itemsFinalTotalXof + deliveryTotalXof + vatXof - discountXof);
+
     return {
       // Le client ne reçoit que la vue publique : ni part créateur, ni marge Ojà.
       cart: toClientCart(cart),
@@ -124,7 +129,15 @@ export class QuoteService {
       vatXof,
       discountXof,
       promo,
-      totalXof: Math.max(0, cart.itemsFinalTotalXof + deliveryTotalXof + vatXof - discountXof),
+      totalXof,
+      paymentOptions:
+        totalXof > 0
+          ? PAYMENT_MODES.map((mode) => ({
+              mode,
+              label: PAYMENT_MODE_LABELS[mode],
+              ...splitPayment(totalXof, mode),
+            }))
+          : [],
       blockers,
     };
   }

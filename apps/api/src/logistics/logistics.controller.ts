@@ -3,12 +3,15 @@ import {
   attachKycDocumentSchema,
   courierProfileSchema,
   courierProfileUpdateSchema,
+  courierRemittanceSchema,
   kycReviewSchema,
   type AttachKycDocumentInput,
+  type CourierCashView,
   type CourierEarnings,
   type CourierProfileInput,
   type CourierProfileUpdateInput,
   type CourierProfileView,
+  type CourierRemittanceInput,
   type KycDocumentView,
   type KycReviewInput,
 } from '@oja/contracts';
@@ -32,6 +35,8 @@ const proofSchema = z.object({
   photoKey: z.string().trim().max(300).optional(),
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
+  /** Espèces encaissées auprès du client (paiement à la livraison ou solde). */
+  cashCollectedXof: z.number().int().min(0).max(100_000_000).optional(),
 });
 
 const assignSchema = z.object({ courierId: z.string().min(1) });
@@ -152,7 +157,8 @@ export class CourierController {
     @Param('reference') reference: string,
     @Body(zodBody(proofSchema)) proof: z.infer<typeof proofSchema>,
   ) {
-    return this.shipments.deliver(user.id, reference, proof);
+    const { cashCollectedXof, ...evidence } = proof;
+    return this.shipments.deliver(user.id, reference, evidence, cashCollectedXof);
   }
 
   @Post('availability')
@@ -176,6 +182,21 @@ export class CourierAdminController {
   @Get()
   async list(@Query('status') status?: string): Promise<CourierProfileView[]> {
     return this.couriers.listForAdmin(status);
+  }
+
+  /** Espèces encaissées à la livraison, à récupérer auprès de chaque livreur. */
+  @Get('cash')
+  async cash(): Promise<CourierCashView[]> {
+    return this.couriers.cashHeld();
+  }
+
+  @Post(':id/remittance')
+  async remit(
+    @Param('id') id: string,
+    @CurrentUser() admin: AuthenticatedUser,
+    @Body(zodBody(courierRemittanceSchema)) input: CourierRemittanceInput,
+  ): Promise<CourierCashView> {
+    return this.couriers.recordRemittance(id, admin.id, input);
   }
 
   /** Seul endroit du système qui délivre une URL de lecture d'une pièce. */
