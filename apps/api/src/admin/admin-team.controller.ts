@@ -34,4 +34,11 @@ export class AdminTeamController {
   async revoke(@CurrentUser() user: AuthenticatedUser, @Param('userId') userId: string) {
     return this.team.revoke(userId, user.id);
   }
+
+  /** Téléphone perdu : un collègue efface la double authentification. */
+  @Post(':userId/mfa/reset')
+  @HttpCode(200)
+  async resetMfa(@CurrentUser() user: AuthenticatedUser, @Param('userId') userId: string) {
+    return this.team.resetMfa(userId, user.id);
+  }
 }

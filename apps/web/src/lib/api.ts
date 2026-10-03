@@ -101,10 +101,35 @@ function refreshSession(): Promise<boolean> {
    lui-même ne doit pas boucler. */
 const NO_REFRESH = /^\/auth\/(login|register|refresh|logout)\b/;
 
+/** Titre de l'erreur de l'API quand l'espace admin exige le second facteur. */
+const MFA_REQUIRED_TITLE = 'Double authentification requise';
+export const MFA_PAGE = '/double-authentification';
+
+/** L'API refuse l'espace admin faute de double authentification. */
+export function isMfaRequired(error: unknown): boolean {
+  return (
+    error instanceof ApiError &&
+    error.problem.status === 403 &&
+    error.problem.title === MFA_REQUIRED_TITLE
+  );
+}
+
 export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
   try {
     return await rawFetch<T>(path, options);
   } catch (error) {
+    /* Un admin sans double authentification : chaque écran admin en a
+       besoin, on l'emmène l'activer depuis n'importe lequel, et on l'y
+       ramène ensuite. */
+    if (
+      typeof window !== 'undefined' &&
+      isMfaRequired(error) &&
+      window.location.pathname !== MFA_PAGE
+    ) {
+      window.location.assign(
+        `${MFA_PAGE}?suite=${encodeURIComponent(window.location.pathname)}`,
+      );
+    }
     if (
       typeof window !== 'undefined' &&
       error instanceof ApiError &&

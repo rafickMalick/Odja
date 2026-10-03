@@ -120,4 +120,49 @@ export interface PublicUser {
   phone: string;
   phoneVerified: boolean;
   emailVerified: boolean;
+  /** Double authentification activée sur le compte. */
+  mfaEnabled: boolean;
+}
+
+// ─── Double authentification (TOTP, cahier L0-22) ───────────────────────────
+
+/** Six chiffres de l'application, ou un code de secours `ABCD-EFGH-JKLM`. */
+export const mfaCodeSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(6, 'Saisissez le code à 6 chiffres')
+    .max(20, 'Code trop long'),
+});
+export type MfaCodeInput = z.infer<typeof mfaCodeSchema>;
+
+/** Seconde étape de la connexion, quand le compte a la double authentification. */
+export const loginMfaSchema = mfaCodeSchema.extend({
+  challenge: z.string().min(20, 'Reprenez la connexion depuis le début'),
+});
+export type LoginMfaInput = z.infer<typeof loginMfaSchema>;
+
+/** Réponse de `POST /auth/login` : une session, ou la demande d'un code. */
+export type LoginResult =
+  | { mfaRequired?: false; user: PublicUser }
+  | { mfaRequired: true; challenge: string };
+
+export interface MfaStatus {
+  enabled: boolean;
+  /** Imposée à ce compte (administrateur) : on ne peut pas la désactiver. */
+  required: boolean;
+  /** La session courante a été ouverte avec le second facteur. */
+  sessionVerified: boolean;
+  recoveryCodesLeft: number;
+}
+
+/** Début d'activation : à saisir ou à ouvrir dans l'application. */
+export interface MfaSetup {
+  secret: string;
+  otpauthUrl: string;
+}
+
+/** Fin d'activation : les codes de secours, montrés **une seule fois**. */
+export interface MfaRecoveryCodes {
+  recoveryCodes: string[];
 }

@@ -17,6 +17,7 @@ const BARE_ROUTES = [
   "/connexion",
   "/inscription",
   "/verifier-email",
+  "/double-authentification",
   "/espace-createur",
   "/espace-livreur",
   "/admin",
