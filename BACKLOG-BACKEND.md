@@ -391,7 +391,7 @@ Dépend de `P-06`.
 ## L8 — Durcissement · 2 semaines · 12 tâches
 
 - [ ] **L8-01** Charge k6 sur le catalogue et le checkout
-- [ ] **L8-02** Bout en bout Playwright du parcours complet en sandbox
+- [x] **L8-02** Bout en bout Playwright : achat client complet (fournisseur de paiement simulé), affichage par rôle, espace admin avec double authentification (`e2e/`, joué en CI)
 - [ ] **L8-03** Audit de sécurité externe
 - [ ] **L8-04** `npm audit` et Dependabot bloquants en CI
 - [ ] **L8-05** PITR Postgres + dump quotidien chiffré

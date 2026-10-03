@@ -109,10 +109,17 @@ qui exécute aussi les tests contre un vrai PostgreSQL et un vrai MinIO.
 ## Contrôles
 
 ```bash
-npm test         # 308 tests
+npm test              # unitaires et bout en bout de l'API
 npm run typecheck
 npm run build
+npm run test:browser  # parcours dans un navigateur (Playwright)
 ```
+
+Les tests navigateur (`e2e/`) supposent le site sur `:3000` et l'API sur
+`:4000`, avec le jeu de démonstration : `./start.sh --demo`, puis
+`npx playwright install chromium` la première fois. Ils créent des comptes
+`@exemple.com` uniques à chaque passage et ne nettoient pas la base. La CI les
+joue à chaque poussée et joint la trace des échecs.
 
 ## Ce qui est déjà en place
 

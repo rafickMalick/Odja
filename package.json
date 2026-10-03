@@ -26,9 +26,11 @@
     "build": "npm run build:packages && npm run build --workspaces --if-present",
     "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present",
     "test": "npm run build:packages && npm run test --workspaces --if-present",
+    "test:browser": "playwright test -c e2e",
     "lint": "npm run lint --workspaces --if-present"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "typescript": "^5.7.2"
   }
 }
