@@ -18,6 +18,7 @@ import type { Request } from 'express';
 import { CurrentUser, type AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CartService } from '../cart/cart.service';
+import { Idempotent } from '../common/idempotency';
 import { cursorQuerySchema, type CursorQuery, type Page } from '../common/pagination';
 import { ZodValidationPipe, zodBody } from '../common/zod.pipe';
 import { InvoiceService } from './invoice.service';
@@ -71,7 +72,13 @@ export class CheckoutController {
     };
   }
 
+  /**
+   * Passage de commande. Idempotent : un double clic, ou une requête rejouée
+   * par le réseau avec la même `Idempotency-Key`, renvoie la commande déjà
+   * créée au lieu d'en créer une seconde (cahier L0-25).
+   */
   @Post('checkout')
+  @Idempotent()
   async place(
     @CurrentUser() user: AuthenticatedUser,
     @Req() request: Request,
