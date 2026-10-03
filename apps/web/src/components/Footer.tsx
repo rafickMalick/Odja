@@ -25,6 +25,7 @@ const COMPANY_LINKS = [
 ];
 
 const LEGAL_LINKS = [
+  { label: "Conditions générales", href: "/conditions-generales" },
   { label: "Politique de confidentialité", href: "/confidentialite" },
   { label: "Politique de cookies", href: "/cookies" },
   { label: "Conditions de vente", href: "/conditions-de-vente" },
@@ -132,10 +133,6 @@ export function Footer() {
 
         <div className={styles.bottom}>
           <p>Copyright © 2026 Ojà. Tous droits réservés.</p>
-          <div className={styles.bottomLinks}>
-            <Link href="/conditions-generales">Conditions générales</Link>
-            <Link href="/confidentialite">Politique de confidentialité</Link>
-          </div>
         </div>
       </div>
     </footer>
