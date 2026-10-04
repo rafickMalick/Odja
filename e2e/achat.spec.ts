@@ -44,6 +44,10 @@ test('un client trouve une pièce, la commande et reçoit sa confirmation', asyn
   await page.getByRole('link', { name: 'Passer commande' }).click();
   await expect(page.getByRole('heading', { name: 'Livraison et paiement' })).toBeVisible();
 
+  // Les trois façons de payer sont visibles avant même l'adresse.
+  await expect(page.getByRole('radio', { name: /Payer à la livraison/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Enregistrez d’abord votre adresse' })).toBeDisabled();
+
   // Une adresse à Cotonou, la ville de l'atelier : la livraison se chiffre.
   await page.getByLabel('Nom et prénoms *').fill('Awa Koné');
   // Tapé comme au Bénin, sans indicatif : le site ajoute +229.
