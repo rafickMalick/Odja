@@ -15,6 +15,7 @@ import { cursorArgs, toPage, type CursorQuery, type Page } from '../common/pagin
 import { PaymentService } from '../payments/payment.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { toOwnView } from '../reviews/review.service';
+import { UNPAID } from './invoice.service';
 import { PromoService } from './promo.service';
 import { QuoteService } from './quote.service';
 
@@ -395,7 +396,10 @@ function toOrderView(order: OrderWithRelations): OrderView {
 
     placedAt: order.placedAt?.toISOString() ?? null,
     createdAt: order.createdAt.toISOString(),
-    hasInvoice: order.invoice !== null,
+    /* Dès le paiement, même si le PDF n'est pas encore composé : le clic
+       l'émet alors. Lié à l'existence de la facture, le bouton ne
+       s'affichait jamais, puisque c'est le clic qui l'émettait. */
+    hasInvoice: !(UNPAID as readonly string[]).includes(order.status),
   };
 }
 

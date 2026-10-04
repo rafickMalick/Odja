@@ -43,8 +43,10 @@ L'administrateur, lui, voit le site public comme un visiteur.
 - **Connexion Google** : seule la préparation en base existe (colonne
   `googleId`, mot de passe devenu facultatif). Ni bouton, ni route, ni écran
   « compléter mon inscription » ne sont codés — le chantier n'a pas commencé.
-- Facture PDF, codes promo (cf. lots L2/L6 de l'état global). Les **avis** sont
-  faits : une fois la réception validée, chaque pièce se note depuis la commande.
+- Codes promo côté client (cf. lots L2/L6 de l'état global). La **facture PDF**
+  existe : émise à l'encaissement, téléchargeable depuis la commande dès le
+  paiement. Les **avis** sont faits : une fois la réception validée, chaque pièce
+  se note depuis la commande.
 
 ---
 

@@ -1,5 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import type { InvoiceView } from '@oja/contracts';
+import { LEGAL, type InvoiceView } from '@oja/contracts';
+import type { Prisma } from '@oja/db';
 import PDFDocument from 'pdfkit';
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -15,7 +16,39 @@ import { StorageService } from '../storage/storage.service';
  *
  * Rien ne réécrit une facture : `generateForOrder` est idempotent et il
  * n'existe aucune route de modification.
+ *
+ * **Émise à l'encaissement** : l'ordonnanceur émet, toutes les cinq minutes,
+ * la facture de chaque commande payée qui n'en a pas encore (`issuePending`),
+ * dans l'ordre des paiements. Elle porte la date du paiement, quel que soit
+ * le moment où le PDF est composé. Le téléchargement l'émet aussi, s'il passe
+ * avant l'ordonnanceur.
+ *
+ * **Sans trou** : deux émissions simultanées (l'ordonnanceur et un clic) ne
+ * doivent pas consommer deux numéros. Toute émission prend un verrou
+ * PostgreSQL de transaction, et le compteur n'avance qu'une fois le PDF
+ * déposé : un dépôt qui échoue n'use aucun numéro.
  */
+/** Commandes sans facture : pas encore payées, ou annulées avant paiement. */
+export const UNPAID = ['PENDING_PAYMENT', 'CANCELLED'] as const;
+
+/** Verrou consultatif PostgreSQL de l'émission des factures (« FACT » en ASCII). */
+const INVOICE_LOCK = 0x46414354;
+
+/**
+ * Mentions légales du vendeur, telles que renseignées dans `LEGAL`
+ * (`@oja/contracts`). Une mention absente n'est pas imprimée : jamais
+ * d'information inventée sur une pièce comptable.
+ */
+export function sellerMentions(): string[] {
+  return [
+    LEGAL.legalForm,
+    LEGAL.address,
+    LEGAL.rccm ? `RCCM : ${LEGAL.rccm}` : null,
+    LEGAL.ifu ? `IFU : ${LEGAL.ifu}` : null,
+    LEGAL.supportEmail ? `Contact : ${LEGAL.supportEmail}` : null,
+  ].filter((mention): mention is string => Boolean(mention));
+}
+
 @Injectable()
 export class InvoiceService {
   private readonly logger = new Logger(InvoiceService.name);
@@ -36,7 +69,62 @@ export class InvoiceService {
       return { number: existing.number, issuedAt: existing.issuedAt, pdfKey: existing.pdfKey };
     }
 
-    const order = await this.prisma.order.findUnique({
+    /* Une transaction tient le verrou le temps de composer et déposer le
+       PDF — une à deux secondes. C'est l'exception à la règle « pas de
+       transaction ouverte pendant un appel externe » : la numérotation sans
+       trou l'exige, et rien d'autre n'attend ce verrou que l'émission des
+       factures. */
+    return this.prisma.$transaction(
+      async (tx) => {
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(${INVOICE_LOCK})`;
+
+        // Une émission concurrente a pu passer pendant l'attente du verrou.
+        const issued = await tx.invoice.findUnique({ where: { orderId } });
+        if (issued) {
+          return { number: issued.number, issuedAt: issued.issuedAt, pdfKey: issued.pdfKey };
+        }
+
+        return this.issue(tx, orderId);
+      },
+      { timeout: 60_000, maxWait: 60_000 },
+    );
+  }
+
+  /**
+   * Émet les factures en attente : commandes payées sans facture, dans
+   * l'ordre des paiements. Appelée par l'ordonnanceur ; une facture qui
+   * échoue (stockage indisponible) est réessayée au passage suivant.
+   */
+  async issuePending(limit = 50): Promise<number> {
+    const orders = await this.prisma.order.findMany({
+      where: { invoice: null, status: { notIn: [...UNPAID] } },
+      select: { id: true, reference: true },
+      orderBy: { createdAt: 'asc' },
+      take: limit,
+    });
+
+    let issued = 0;
+    for (const order of orders) {
+      try {
+        await this.generateForOrder(order.id);
+        issued++;
+      } catch (error) {
+        this.logger.error(
+          `Facture non émise pour ${order.reference} : ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
+    }
+    return issued;
+  }
+
+  /** Composition, dépôt, puis numéro et enregistrement — verrou tenu. */
+  private async issue(
+    tx: Prisma.TransactionClient,
+    orderId: string,
+  ): Promise<{ number: string; issuedAt: Date; pdfKey: string }> {
+    const order = await tx.order.findUnique({
       where: { id: orderId },
       include: {
         customer: { select: { email: true } },
@@ -49,34 +137,47 @@ export class InvoiceService {
     });
     if (!order) throw new NotFoundException();
 
-    const city = await this.prisma.city.findUnique({
+    const city = await tx.city.findUnique({
       where: { id: order.shipCityId },
       include: { country: true },
     });
     const country = city?.country.name ?? '—';
     const vatBps = city?.country.vatBps ?? 0;
 
-    const year = order.createdAt.getFullYear();
-    const number = await this.prisma.$transaction(async (tx) => {
-      const counter = await tx.referenceCounter.upsert({
-        where: { scope_year: { scope: 'invoice', year } },
-        update: { value: { increment: 1 } },
-        create: { scope: 'invoice', year, value: 1 },
-      });
-      return `FAC-${year}-${String(counter.value).padStart(6, '0')}`;
+    // Date d'émission : celle de l'encaissement, pas celle du premier clic.
+    const payment = await tx.payment.findFirst({
+      where: { orderId, status: 'PAID' },
+      orderBy: { paidAt: 'asc' },
+      select: { paidAt: true },
     });
+    const issuedAt = payment?.paidAt ?? new Date();
 
-    const pdf = await this.render(number, { ...order, country, vatBps });
+    /* Le numéro est lu, pas encore pris : sous le verrou, personne d'autre
+       ne peut le prendre, et il n'avance qu'après un dépôt réussi. */
+    const year = issuedAt.getFullYear();
+    const counter = await tx.referenceCounter.findUnique({
+      where: { scope_year: { scope: 'invoice', year } },
+    });
+    const value = (counter?.value ?? 0) + 1;
+    const number = `FAC-${year}-${String(value).padStart(6, '0')}`;
+
+    const pdf = await this.render(number, { ...order, country, vatBps, issuedAt });
     const pdfKey = await this.storage.putPrivateObject(
       `invoices/${year}/${number}.pdf`,
       pdf,
       'application/pdf',
     );
 
-    const invoice = await this.prisma.invoice.create({
+    await tx.referenceCounter.upsert({
+      where: { scope_year: { scope: 'invoice', year } },
+      update: { value },
+      create: { scope: 'invoice', year, value },
+    });
+    const invoice = await tx.invoice.create({
       data: {
         number,
         orderId: order.id,
+        issuedAt,
         pdfKey,
         totalXof: order.totalXof,
         vatXof: order.vatXof,
@@ -100,7 +201,7 @@ export class InvoiceService {
     });
     if (!order) throw new NotFoundException();
 
-    const unpaid = ['PENDING_PAYMENT', 'CANCELLED'].includes(order.status);
+    const unpaid = (UNPAID as readonly string[]).includes(order.status);
     if (unpaid) {
       throw new NotFoundException('Aucune facture : cette commande n’est pas payée.');
     }
@@ -120,19 +221,20 @@ export class InvoiceService {
       doc.on('end', () => resolve(Buffer.concat(chunks)));
     });
 
-    // ── En-tête ──
-    doc.fontSize(20).text('Ojà', { continued: false });
+    // ── En-tête : le vendeur, avec ses mentions légales quand elles existent ──
+    doc.fontSize(20).text(LEGAL.companyName ?? LEGAL.brand, { continued: false });
     doc
       .fontSize(9)
       .fillColor('#666')
-      .text('Ojà — place de marché du mobilier et de la décoration façonnés localement')
-      .moveDown(1);
+      .text('Ojà — place de marché du mobilier et de la décoration façonnés localement');
+    for (const mention of sellerMentions()) doc.text(mention);
+    doc.moveDown(1);
 
     doc.fillColor('#000').fontSize(14).text(`Facture ${number}`);
     doc
       .fontSize(10)
       .fillColor('#666')
-      .text(`Émise le ${formatDate(new Date())}`)
+      .text(`Émise le ${formatDate(order.issuedAt)}`)
       .text(`Commande ${order.reference} — passée le ${formatDate(order.createdAt)}`)
       .moveDown(1);
 
@@ -226,6 +328,8 @@ export class InvoiceService {
 interface InvoiceRenderData {
   reference: string;
   createdAt: Date;
+  /** Date de l'encaissement : celle qui figure sur la facture. */
+  issuedAt: Date;
   shipFullName: string;
   shipLine1: string;
   shipLandmark: string | null;
