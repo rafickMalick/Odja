@@ -52,7 +52,15 @@ test('un client trouve une pièce, la commande et reçoit sa confirmation', asyn
   await page.getByRole('button', { name: 'Enregistrer cette adresse' }).click();
   await expect(page.getByText('Awa Koné · Cotonou')).toBeVisible();
 
-  const confirm = page.getByRole('button', { name: 'Confirmer la commande' });
+  // Quand payer : en ligne par défaut ; à la livraison, le bouton ne parle
+  // plus de payer.
+  const payNow = page.getByRole('radio', { name: /Payer maintenant/ });
+  await expect(payNow).toBeChecked();
+  await page.getByRole('radio', { name: /Payer à la livraison/ }).check();
+  await expect(page.getByRole('button', { name: 'Confirmer la commande' })).toBeVisible();
+  await payNow.check();
+
+  const confirm = page.getByRole('button', { name: 'Confirmer et payer' });
   await expect(confirm).toBeEnabled();
 
   // La commande part avec une clé d'idempotence : un double clic n'en crée
@@ -61,7 +69,9 @@ test('un client trouve une pièce, la commande et reçoit sa confirmation', asyn
     (request) => request.url().endsWith('/api/v1/checkout') && request.method() === 'POST',
   );
   await confirm.click();
-  expect((await placed).headers()['idempotency-key']).toMatch(/^[A-Za-z0-9_.:-]{8,128}$/);
+  const request = await placed;
+  expect(request.headers()['idempotency-key']).toMatch(/^[A-Za-z0-9_.:-]{8,128}$/);
+  expect(request.postDataJSON()).toMatchObject({ paymentMode: 'ONLINE_FULL' });
 
   await expect(page).toHaveURL(/\/confirmation\?commande=CMD-/);
   await expect(
