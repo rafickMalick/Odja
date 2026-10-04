@@ -65,7 +65,8 @@ désormais une valeur incohérente (PR #26).
 
 ## 3. Informations légales
 
-- [ ] Remplir `apps/web/src/lib/legal.ts` dès que la société est immatriculée
+- [ ] Remplir `packages/contracts/src/legal.ts` dès que la société est immatriculée
+  (le site **et les factures PDF** le lisent)
   (raison sociale, forme et capital, siège, RCCM, IFU, directeur de la
   publication). Tant que c'est vide, rien ne s'affiche.
 - [ ] Faire relire les pages légales par un juriste (CGU, CGV, confidentialité).

@@ -385,7 +385,7 @@ Si c'est ouvert, la moitié de ce lot disparaît.
 | SMS réels (compte fournisseur nécessaire) | ❌ |
 | Suivi du livreur en temps réel (SSE) | ❌ |
 | Avis clients et notes | ✅ |
-| Facture PDF numérotée | ❌ |
+| Facture PDF numérotée | ✅ |
 | Codes promo | ❌ |
 | Mode dégradé hors ligne pour le livreur | ❌ |
 | Retour de colis après litige | ❌ |
@@ -600,7 +600,7 @@ docker build -f apps/web/Dockerfile -t oja-web .
 | **§ 0 — Pré-requis** | 0 | 12 | ⚠️ Rien n'est technique. Tout vous revient |
 | **L0 — Socle** | 24 | 11 | Reste OpenAPI, idempotence, TOTP, secrets, traces |
 | **L1 — Catalogue** | 24 | 1 | Reste le cache du catalogue |
-| **L2 — Commande** | 18 | 2 | Reste facture PDF et codes promo |
+| **L2 — Commande** | 18 | 2 | Facture PDF faite ; reste les codes promo côté client |
 | **L3 — Paiement** | 24 | 2 | Client, webhook, vérification active : faits. Reste rapprochement quotidien et essai réel |
 | **L4 — Logistique** | 18 | 4 | Reste suivi temps réel, majorations, relance d'affectation |
 | **L5 — Versements** | 1 | 11 | Le montant dû est connu ; **le virement n'existe pas** |
