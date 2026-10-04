@@ -15,10 +15,42 @@ import { z } from 'zod';
 export const phoneSchema = z
   .string()
   .trim()
-  .transform((value) => value.replace(/[\s.\-()]/g, ''))
+  .transform((value) => normalizePhone(value))
   .refine((value) => /^\+[1-9]\d{7,14}$/.test(value), {
-    message: 'Numéro attendu au format international, par exemple +2250708091011',
+    message: 'Numéro attendu au format +229 01 97 00 00 00 (ou +indicatif pour un autre pays).',
   });
+
+/**
+ * Écrit un numéro au format E.164, tel qu'il est tapé au Bénin.
+ *
+ * Depuis novembre 2024 les numéros béninois ont 10 chiffres : `01` devant
+ * les 8 anciens. On accepte donc `01 97 00 00 00`, `97 00 00 00` (ancien
+ * format) et `+229 97 00 00 00`, et on range tout sous `+22901…`. Un numéro
+ * qui commence par `+` (ou `00`) garde son indicatif : les autres pays
+ * passent tels quels.
+ */
+export function normalizePhone(value: string): string {
+  let digits = value.trim().replace(/[\s.\-()]/g, '');
+  if (digits.startsWith('00')) digits = '+' + digits.slice(2);
+  if (!digits.startsWith('+')) {
+    if (/^01\d{8}$/.test(digits)) return '+229' + digits;
+    if (/^\d{8}$/.test(digits)) return '+22901' + digits;
+    return digits;
+  }
+  if (/^\+229\d{8}$/.test(digits)) return '+22901' + digits.slice(4);
+  return digits;
+}
+
+/**
+ * Les écritures sous lesquelles un même numéro béninois a pu être enregistré
+ * (avant ou après le passage à 10 chiffres) — pour retrouver un compte créé
+ * avec l'ancien format.
+ */
+export function phoneVariants(value: string): string[] {
+  const n = normalizePhone(value);
+  const match = /^\+22901(\d{8})$/.exec(n);
+  return match ? [n, '+229' + match[1]] : [n];
+}
 
 export const emailSchema = z.string().trim().toLowerCase().email('Adresse e-mail invalide');
 

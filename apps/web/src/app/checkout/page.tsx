@@ -28,6 +28,21 @@ interface City {
  * affiche ce que la commande retiendra, puis **confirme** ce total au moment
  * de valider.
  */
+/* Les trois façons de payer, montrées avant même le chiffrage : sans elles,
+   « Payer à la livraison » semblait avoir disparu tant que l'adresse n'était
+   pas enregistrée. Les montants arrivent avec le chiffrage. */
+const PAYMENT_PREVIEW: {
+  mode: PaymentModeName;
+  label: string;
+  upfrontXof: number;
+  balanceXof: number;
+  preview: string;
+}[] = [
+  { mode: "ONLINE_FULL", label: "Payer maintenant", upfrontXof: 0, balanceXof: 0, preview: "Tout en ligne, par Mobile Money ou carte." },
+  { mode: "DEPOSIT_50", label: "Acompte de 50 % maintenant, le reste à la réception", upfrontXof: 0, balanceXof: 0, preview: "La moitié en ligne, le reste en espèces au livreur." },
+  { mode: "CASH_ON_DELIVERY", label: "Payer à la livraison", upfrontXof: 0, balanceXof: 0, preview: "Rien à payer en ligne : tout en espèces au livreur, à la réception." },
+];
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart, itemCount, ready, refresh } = useCart();
@@ -36,6 +51,7 @@ export default function CheckoutPage() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [cities, setCities] = useState<City[]>([]);
   const [addressId, setAddressId] = useState<string>("");
+  const [addressErrors, setAddressErrors] = useState<Record<string, string>>({});
   const [quote, setQuote] = useState<CheckoutQuote | null>(null);
   const [promoInput, setPromoInput] = useState("");
   /* Raison d'un refus, sous le champ. Gardée à part du chiffrage : sinon le
@@ -163,6 +179,7 @@ export default function CheckoutPage() {
         ?.value ?? '';
 
     setError(null);
+    setAddressErrors({});
 
     try {
       const created = await apiFetch<PublicAddress>("/me/addresses", {
@@ -178,7 +195,19 @@ export default function CheckoutPage() {
       setAddresses((current) => [created, ...current]);
       setAddressId(created.id);
     } catch (cause) {
-      setError(cause instanceof ApiError ? cause.message : "Adresse refusée.");
+      /* L'erreur s'affiche sous le champ fautif, à côté de l'adresse — pas
+         en bas de la page, où personne ne la voyait. */
+      if (cause instanceof ApiError) {
+        const fields = ["fullName", "phone", "cityId", "line1", "landmark"];
+        const byField = Object.fromEntries(
+          fields.map((field) => [field, cause.fieldError(field)]).filter(([, message]) => message),
+        ) as Record<string, string>;
+        setAddressErrors(
+          Object.keys(byField).length > 0 ? byField : { form: cause.message },
+        );
+      } else {
+        setAddressErrors({ form: "Adresse refusée. Vérifiez les champs et réessayez." });
+      }
     }
   };
 
@@ -378,11 +407,13 @@ export default function CheckoutPage() {
               <div className={styles.fields} ref={addressFormRef}>
                 <>
                   <FieldRow>
-                    <Field label="Nom et prénoms *" name="fullName" />
+                    <Field label="Nom et prénoms *" name="fullName" error={addressErrors["fullName"]} />
                     <Field
                       label="Téléphone *"
                       name="phone"
-                      placeholder="+229 01 00 00 00 00"
+                      type="tel"
+                      placeholder="01 97 00 00 00"
+                      error={addressErrors["phone"]}
                     />
                   </FieldRow>
 
@@ -403,11 +434,23 @@ export default function CheckoutPage() {
                     />
                   </FieldRow>
 
-                  <Field label="Adresse *" name="line1" />
+                  <Field label="Adresse *" name="line1" error={addressErrors["line1"]} />
+
+                  {addressErrors["form"] ? (
+                    <p className={styles.secureNote} role="alert">
+                      {addressErrors["form"]}
+                    </p>
+                  ) : null}
 
                   <Button type="button" variant="outline" onClick={handleCreateAddress}>
                     Enregistrer cette adresse
                   </Button>
+                  {!addressId ? (
+                    <p className={styles.subtitle}>
+                      Enregistrez l’adresse : le prix de la livraison se calcule à partir
+                      d’elle, puis vous pourrez confirmer.
+                    </p>
+                  ) : null}
                 </>
               </div>
             </div>
@@ -420,7 +463,7 @@ export default function CheckoutPage() {
               </p>
 
               <div className={styles.options}>
-                {(quote?.paymentOptions ?? []).map((option) => (
+                {(quote?.paymentOptions.length ? quote.paymentOptions : PAYMENT_PREVIEW).map((option) => (
                   <label
                     key={option.mode}
                     className={`${styles.option} ${
@@ -438,7 +481,9 @@ export default function CheckoutPage() {
                     <span className={styles.optionBody}>
                       <span className={styles.optionTitle}>{option.label}</span>
                       <span className={styles.optionText}>
-                        {option.balanceXof === 0
+                        {!quote
+                          ? PAYMENT_PREVIEW.find((preview) => preview.mode === option.mode)?.preview
+                          : option.balanceXof === 0
                           ? `Vous payez ${formatFcfa(option.upfrontXof)} maintenant.`
                           : option.upfrontXof === 0
                             ? `Rien à payer maintenant. ${formatFcfa(option.balanceXof)} en espèces au livreur à la réception.`
@@ -679,7 +724,9 @@ export default function CheckoutPage() {
             >
               {submitting
                 ? "Enregistrement…"
-                : paymentMode === "CASH_ON_DELIVERY"
+                : !addressId
+                  ? "Enregistrez d’abord votre adresse"
+                  : paymentMode === "CASH_ON_DELIVERY"
                   ? "Confirmer la commande"
                   : "Confirmer et payer"}
             </Button>
