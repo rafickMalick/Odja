@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 import request from 'supertest';
+import { DELIVERY_GPS_ENABLED } from '@oja/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AppModule } from '../app.module';
@@ -399,14 +400,16 @@ describe('Livraison et versement (bout en bout)', () => {
         const problems = JSON.stringify(response.body.errors);
         expect(problems).toContain('code');
         expect(problems).toContain('photo');
-        expect(problems).toContain('localisation');
+        // Localisation en pause : elle n'est pas réclamée au livreur.
+        if (DELIVERY_GPS_ENABLED) expect(problems).toContain('localisation');
+        else expect(problems).not.toContain('localisation');
       });
 
-      it('refuse un seul élément', async () => {
+      it('refuse une position seule', async () => {
         await api()
           .post(`/api/v1/courier/missions/${refs.shipment}/deliver`)
           .set('Cookie', courierCookies)
-          .send({ photoKey: 'proof/photo.jpg' })
+          .send(CHEZ_LE_CLIENT)
           .expect(400);
       });
 
@@ -414,7 +417,7 @@ describe('Livraison et versement (bout en bout)', () => {
         const response = await api()
           .post(`/api/v1/courier/missions/${refs.shipment}/deliver`)
           .set('Cookie', courierCookies)
-          .send({ otp: '0000', photoKey: 'proof/photo.jpg' })
+          .send({ otp: '0000' })
           .expect(400);
         expect(JSON.stringify(response.body.errors)).toContain('ne correspond pas');
       });
@@ -423,7 +426,7 @@ describe('Livraison et versement (bout en bout)', () => {
         await api()
           .post(`/api/v1/courier/missions/${refs.shipment}/deliver`)
           .set('Cookie', courierCookies)
-          .send({ photoKey: 'p.jpg', latitude: 5.5, longitude: -4.2 })
+          .send({ latitude: 5.5, longitude: -4.2 })
           .expect(400);
       });
 

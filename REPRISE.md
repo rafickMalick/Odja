@@ -38,6 +38,7 @@ rien redemander. À lire en premier, puis [`A-FAIRE.md`](A-FAIRE.md).
 | #27 | Instagram (`@oja.bj`) et LinkedIn dans le pied de page ; X et Facebook retirés | fusionnée |
 | (cette PR) | Parcours livreurs : onglet **« Inscrits, dossier incomplet »** dans Admin › Dossiers livreurs (visible dès l'inscription, ce qui manque, bouton « Relancer par e-mail ») ; **« Lui affecter une course »** depuis la fiche d'un livreur validé ; le client voit **« Votre livreur : Koffi A. · Moto · ★ 4,6 »** sur sa commande (jamais le téléphone) | à fusionner |
 | (cette PR) | Code de réception : **affiché dans la commande du client** (lui seul, tant que la livraison est en cours) et envoyé par e-mail ; un SMS en échec (aucun agrégateur branché en production) **ne bloque plus** « prête » ni la prévenance des livreurs. **Le livreur tape le code sur son téléphone et la remise est confirmée** (le code suffit ; sans code : photo + position) | à fusionner |
+| (cette PR) | **Localisation des livreurs en pause** pour la phase de test : interrupteur unique `DELIVERY_GPS_ENABLED` (contrats). Rien n'est demandé au téléphone ; remise = code du client, ou à défaut une photo. À réactiver sur signal | à fusionner |
 | `551987f` (Rafick) | Un atelier validé ne repasse en validation que si l'IFU, le RCCM ou le gérant **changent vraiment** | sur `main` |
 
 ## 3. PR ouvertes — à relire et fusionner

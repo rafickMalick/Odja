@@ -121,6 +121,15 @@ export interface ShipmentTrackView {
 
 /** Espèces détenues par un livreur, vues de l'administration. */
 /**
+ * Localisation des livreurs : position à la remise, partage pendant la course.
+ *
+ * **En pause pendant la phase de test** (4 octobre 2026) : rien n'est demandé
+ * au téléphone, rien n'est affiché, et la position ne compte pas comme preuve
+ * de remise. Pour la réactiver, passer à `true` — c'est le seul endroit.
+ */
+export const DELIVERY_GPS_ENABLED = false;
+
+/**
  * Livreur inscrit dont le dossier n'est pas encore déposé : visible de
  * l'administration dès l'inscription, avec ce qui lui manque.
  */

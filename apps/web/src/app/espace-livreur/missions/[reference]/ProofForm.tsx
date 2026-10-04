@@ -1,5 +1,6 @@
 "use client";
 
+import { DELIVERY_GPS_ENABLED } from "@oja/contracts";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/Button";
@@ -46,12 +47,14 @@ export function ProofForm({
     latitude: number;
     longitude: number;
   } | null>(null);
-  const [locating, setLocating] = useState(true);
+  const [locating, setLocating] = useState(DELIVERY_GPS_ENABLED);
   const [uploading, setUploading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Localisation en pause : on ne la demande même pas au téléphone.
+    if (!DELIVERY_GPS_ENABLED) return;
     let cancelled = false;
     void currentPosition().then((point) => {
       if (cancelled) return;
@@ -67,7 +70,8 @@ export function ProofForm({
   const provided = [otpReady, photoKey !== null, position !== null].filter(
     Boolean,
   ).length;
-  const proven = otpReady || provided >= 2;
+  const required = DELIVERY_GPS_ENABLED ? 2 : 1;
+  const proven = otpReady || provided >= required;
   const enough = proven && (cashToCollectXof === 0 || cashCollected);
   const [showFallback, setShowFallback] = useState(false);
 
@@ -146,7 +150,8 @@ export function ProofForm({
         />
       </div>
 
-      {/* Client injoignable ou sans code : photo + position prennent le relais. */}
+      {/* Client injoignable ou sans code : photo (+ position, si la
+          localisation est active) prennent le relais. */}
       {!showFallback ? (
         <button
           type="button"
@@ -161,14 +166,16 @@ export function ProofForm({
             <li data-done={photoKey !== null || undefined}>
               Photo du colis remis
             </li>
-            <li data-done={position !== null || undefined}>
-              Position{" "}
-              {locating
-                ? ": recherche en cours…"
-                : position
-                  ? ""
-                  : ": indisponible"}
-            </li>
+            {DELIVERY_GPS_ENABLED ? (
+              <li data-done={position !== null || undefined}>
+                Position{" "}
+                {locating
+                  ? ": recherche en cours…"
+                  : position
+                    ? ""
+                    : ": indisponible"}
+              </li>
+            ) : null}
           </ol>
           <label className={proof.photoButton}>
             <input
@@ -209,7 +216,9 @@ export function ProofForm({
             : proven
               ? "Encaissez d’abord le montant"
               : showFallback
-                ? `Encore ${2 - provided} élément${2 - provided > 1 ? "s" : ""}`
+                ? DELIVERY_GPS_ENABLED
+                  ? `Encore ${required - provided} élément${required - provided > 1 ? "s" : ""}`
+                  : "Prenez une photo du colis remis"
                 : "Saisissez le code du client"}
       </Button>
     </FieldCard>

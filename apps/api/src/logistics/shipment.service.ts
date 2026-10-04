@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DELIVERY_GPS_ENABLED } from '@oja/contracts';
 import type { Prisma, ShipmentStatus } from '@oja/db';
 import {
   assessProof,
@@ -674,6 +675,7 @@ export class ShipmentService {
 
     const assessment = assessProof(submission, {
       expectedOtp: shipment.proofOtp ?? '',
+      gpsEnabled: DELIVERY_GPS_ENABLED,
       destination,
       distanceMeters: destination
         ? (point) => haversineKm(destination, point) * 1000
@@ -683,8 +685,9 @@ export class ShipmentService {
     if (!assessment.accepted) {
       throw new BadRequestException({
         error: 'Preuve insuffisante',
-        message:
-          'Saisissez le code du client. Sans code, une photo et la position sont nécessaires.',
+        message: DELIVERY_GPS_ENABLED
+          ? 'Saisissez le code du client. Sans code, une photo et la position sont nécessaires.'
+          : 'Saisissez le code du client, ou à défaut prenez une photo du colis remis.',
         errors: assessment.problems.map((message) => ({ field: 'proof', message })),
       });
     }
