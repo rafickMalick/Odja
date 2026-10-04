@@ -71,7 +71,7 @@ désormais une valeur incohérente (PR #26).
   publication). Tant que c'est vide, rien ne s'affiche.
 - [ ] Faire relire les pages légales par un juriste (CGU, CGV, confidentialité).
 - [ ] Confirmer l'autorité compétente citée (APDP au Bénin ; ARTCI si la société
-  est en Côte d'Ivoire) et l'adresse `support@oja.market`.
+  est en Côte d'Ivoire) et l'adresse `oja@aworix.agency`.
 
 ## 4. Site (front)
 
