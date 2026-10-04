@@ -1,5 +1,6 @@
 "use client";
 
+import { DELIVERY_GPS_ENABLED } from "@oja/contracts";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -13,7 +14,13 @@ import {
 import { ApiError, apiFetch } from "@/lib/api";
 import { formatFcfa, formatNumber } from "@/lib/format";
 
-import { NEXT_ACTION, VEHICLES, currentPosition, mapLink, type Mission } from "../../mission";
+import {
+  NEXT_ACTION,
+  VEHICLES,
+  currentPosition,
+  mapLink,
+  type Mission,
+} from "../../mission";
 import { ProofForm } from "./ProofForm";
 
 /**
@@ -59,6 +66,7 @@ export default function MissionPage() {
      pour le suivi du client (cahier L4-15). Le livreur peut couper le
      partage ; il reprend au rechargement. */
   useEffect(() => {
+    if (!DELIVERY_GPS_ENABLED) return;
     if (!shareLocation || mission?.status !== "IN_DELIVERY") return;
 
     let stopped = false;
@@ -96,7 +104,9 @@ export default function MissionPage() {
       await load();
       router.refresh();
     } catch (cause) {
-      setError(cause instanceof ApiError ? cause.message : "Action impossible.");
+      setError(
+        cause instanceof ApiError ? cause.message : "Action impossible.",
+      );
     } finally {
       setBusy(false);
     }
@@ -106,7 +116,7 @@ export default function MissionPage() {
      n'est pas exigée : refuser de démarrer une course parce que le GPS met
      trente secondes à accrocher serait absurde. */
   const startDelivery = async () => {
-    const position = await currentPosition();
+    const position = DELIVERY_GPS_ENABLED ? await currentPosition() : null;
     await act("start", position ?? {});
   };
 
@@ -114,13 +124,18 @@ export default function MissionPage() {
 
   return (
     <>
-      <FieldHead title={mission.reference} subtitle={`Commande ${mission.orderReference}`} />
+      <FieldHead
+        title={mission.reference}
+        subtitle={`Commande ${mission.orderReference}`}
+      />
 
       <FieldCard>
         <div className={styles.rows}>
           <div>
             <span>État</span>
-            <Badge type={delivered ? "success" : "info"}>{mission.statusLabel}</Badge>
+            <Badge type={delivered ? "success" : "info"}>
+              {mission.statusLabel}
+            </Badge>
           </div>
           <div>
             <span>Distance</span>
@@ -139,7 +154,9 @@ export default function MissionPage() {
           <strong>{mission.pickup.shopName}</strong>
           <span className={styles.muted}>{mission.pickup.line1}</span>
           {mission.pickup.landmark ? (
-            <span className={styles.muted}>Repère : {mission.pickup.landmark}</span>
+            <span className={styles.muted}>
+              Repère : {mission.pickup.landmark}
+            </span>
           ) : null}
           <a className={styles.callLink} href={mapLink(mission.pickup)}>
             Ouvrir l’itinéraire
@@ -152,11 +169,15 @@ export default function MissionPage() {
         <div className={styles.stack}>
           <strong>{mission.drop.fullName}</strong>
           {mission.cashToCollectXof > 0 ? (
-            <strong>À encaisser en espèces : {formatFcfa(mission.cashToCollectXof)}</strong>
+            <strong>
+              À encaisser en espèces : {formatFcfa(mission.cashToCollectXof)}
+            </strong>
           ) : null}
           <span className={styles.muted}>{mission.drop.line1}</span>
           {mission.drop.landmark ? (
-            <span className={styles.muted}>Repère : {mission.drop.landmark}</span>
+            <span className={styles.muted}>
+              Repère : {mission.drop.landmark}
+            </span>
           ) : null}
           {mission.drop.phone ? (
             <a className={styles.callLink} href={`tel:${mission.drop.phone}`}>
@@ -190,39 +211,51 @@ export default function MissionPage() {
       {error ? <p className={styles.error}>{error}</p> : null}
 
       {mission.status === "TO_PICK_UP" ? (
-        <Button type="button" fullWidth disabled={busy} onClick={() => void act("pickup")}>
+        <Button
+          type="button"
+          fullWidth
+          disabled={busy}
+          onClick={() => void act("pickup")}
+        >
           {busy ? "…" : "J’ai récupéré le colis"}
         </Button>
       ) : null}
 
       {mission.status === "PICKED_UP" ? (
-        <Button type="button" fullWidth disabled={busy} onClick={() => void startDelivery()}>
+        <Button
+          type="button"
+          fullWidth
+          disabled={busy}
+          onClick={() => void startDelivery()}
+        >
           {busy ? "…" : "Je pars en livraison"}
         </Button>
       ) : null}
 
       {mission.status === "IN_DELIVERY" ? (
         <>
-          <p className={styles.muted}>
-            {shareLocation
-              ? "Votre position est partagée avec le client pendant la course."
-              : "Partage de position coupé."}{" "}
-            <button
-              type="button"
-              onClick={() => setShareLocation((value) => !value)}
-              style={{
-                border: "none",
-                background: "none",
-                color: "#d9480f",
-                font: "inherit",
-                textDecoration: "underline",
-                cursor: "pointer",
-                padding: 0,
-              }}
-            >
-              {shareLocation ? "Couper" : "Reprendre"}
-            </button>
-          </p>
+          {DELIVERY_GPS_ENABLED ? (
+            <p className={styles.muted}>
+              {shareLocation
+                ? "Votre position est partagée avec le client pendant la course."
+                : "Partage de position coupé."}{" "}
+              <button
+                type="button"
+                onClick={() => setShareLocation((value) => !value)}
+                style={{
+                  border: "none",
+                  background: "none",
+                  color: "#d9480f",
+                  font: "inherit",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              >
+                {shareLocation ? "Couper" : "Reprendre"}
+              </button>
+            </p>
+          ) : null}
           <ProofForm
             reference={reference}
             cashToCollectXof={mission.cashToCollectXof}
@@ -233,15 +266,15 @@ export default function MissionPage() {
 
       {delivered ? (
         <p className={styles.success}>
-          Colis remis. Le client dispose de 72 h pour valider ; passé ce délai, la validation
-          est automatique et votre course est réglée.
+          Colis remis. Le client dispose de 72 h pour valider ; passé ce délai,
+          la validation est automatique et votre course est réglée.
         </p>
       ) : null}
 
       {mission.status === "RETURN_REQUIRED" ? (
         <p className={styles.error}>
-          Le client a signalé un problème. Rapportez le colis à l’atelier ; Ojà vous
-          recontacte pour la suite.
+          Le client a signalé un problème. Rapportez le colis à l’atelier ; Ojà
+          vous recontacte pour la suite.
         </p>
       ) : null}
 

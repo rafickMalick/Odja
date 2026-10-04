@@ -12,6 +12,9 @@
  * Sans code (client injoignable, pas de réseau), **photo + position** prennent
  * le relais. Une photo seule ou une position seule ne suffisent pas : trop
  * faciles à fabriquer.
+ *
+ * Localisation en pause (`gpsEnabled: false`) : la position est ignorée, et
+ * sans code la photo suffit — il ne reste qu'elle.
  */
 
 export type ProofElement = 'otp' | 'photo' | 'gps';
@@ -32,6 +35,8 @@ export interface ProofSubmission {
 
 export interface ProofContext {
   expectedOtp: string;
+  /** Localisation active ? Sinon la position n'est ni demandée ni comptée. */
+  gpsEnabled?: boolean | undefined;
   /** Position de l'adresse de livraison, si le client l'a renseignée. */
   destination?: { latitude: number; longitude: number } | undefined;
   distanceMeters?: ((a: { latitude: number; longitude: number }) => number) | undefined;
@@ -81,7 +86,10 @@ export function assessProof(
   }
 
   // ── Position ──
-  if (submission.latitude !== undefined && submission.longitude !== undefined) {
+  const gpsEnabled = context.gpsEnabled ?? true;
+  if (!gpsEnabled) {
+    // En pause : ni comptée, ni réclamée au livreur.
+  } else if (submission.latitude !== undefined && submission.longitude !== undefined) {
     const here = { latitude: submission.latitude, longitude: submission.longitude };
 
     if (!context.destination || !context.distanceMeters) {
@@ -102,8 +110,8 @@ export function assessProof(
     problems.push('Activez la localisation au moment de la remise.');
   }
 
-  const accepted =
-    provided.includes('otp') || provided.length >= REQUIRED_PROOF_ELEMENTS;
+  const required = gpsEnabled ? REQUIRED_PROOF_ELEMENTS : 1;
+  const accepted = provided.includes('otp') || provided.length >= required;
 
   return {
     accepted,
