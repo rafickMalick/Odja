@@ -1,5 +1,6 @@
 "use client";
 
+import type { IncompleteCourierView, UnassignedShipmentView } from "@oja/contracts";
 import { useCallback, useEffect, useState } from "react";
 
 import { Badge } from "@/components/Badge";
@@ -51,8 +52,12 @@ interface Document {
   url?: string;
 }
 
+/** Filtre à part : ces livreurs n'ont pas encore de dossier à juger. */
+const INCOMPLETE = "INCOMPLETE";
+
 const FILTERS = [
   { value: "PENDING", label: "À traiter" },
+  { value: INCOMPLETE, label: "Inscrits, dossier incomplet" },
   { value: "APPROVED", label: "Validés" },
   { value: "REJECTED", label: "Refusés" },
   { value: "", label: "Tous" },
@@ -80,6 +85,8 @@ export default function AdminCouriersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cash, setCash] = useState<CourierCash[]>([]);
+  const [incomplete, setIncomplete] = useState<IncompleteCourierView[]>([]);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const loadCash = useCallback(async () => {
     setCash(await apiFetch<CourierCash[]>("/admin/couriers/cash").catch(() => []));
@@ -117,16 +124,34 @@ export default function AdminCouriersPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setNotice(null);
     try {
-      setCouriers(
-        await apiFetch<Courier[]>(`/admin/couriers${filter ? `?status=${filter}` : ""}`),
-      );
+      if (filter === INCOMPLETE) {
+        setIncomplete(await apiFetch<IncompleteCourierView[]>("/admin/couriers/incomplete"));
+        setCouriers([]);
+      } else {
+        setCouriers(
+          await apiFetch<Courier[]>(`/admin/couriers${filter ? `?status=${filter}` : ""}`),
+        );
+      }
     } catch {
       setCouriers([]);
+      setIncomplete([]);
     } finally {
       setLoading(false);
     }
   }, [filter]);
+
+  const remind = async (row: IncompleteCourierView) => {
+    setError(null);
+    setNotice(null);
+    try {
+      await apiFetch(`/admin/couriers/incomplete/${row.userId}/remind`, { method: "POST" });
+      setNotice(`Rappel envoyé à ${row.fullName} (${row.email}).`);
+    } catch (cause) {
+      setError(cause instanceof ApiError ? cause.message : "Envoi du rappel impossible.");
+    }
+  };
 
   useEffect(() => {
     void load();
@@ -195,9 +220,48 @@ export default function AdminCouriersPage() {
       </div>
 
       {error ? <p className={styles.error}>{error}</p> : null}
+      {notice ? (
+        <p className={styles.muted} role="status">
+          {notice}
+        </p>
+      ) : null}
 
       {loading ? (
         <p className={styles.muted}>Chargement…</p>
+      ) : filter === INCOMPLETE ? (
+        incomplete.length === 0 ? (
+          <Panel>
+            <EmptyState
+              title="Aucun dossier en attente de pièces"
+              text="Tous les livreurs inscrits ont déposé leur dossier."
+            />
+          </Panel>
+        ) : (
+          <Panel title="Inscrits dont le dossier n’est pas déposé">
+            <p className={styles.muted}>
+              Ils apparaissent ici dès l’inscription. Une fois leurs pièces déposées, ils passent
+              dans « À traiter », où vous les validez ou les refusez.
+            </p>
+            <dl className={admin.details}>
+              {incomplete.map((row) => (
+                <div key={row.userId}>
+                  <dt>{row.fullName}</dt>
+                  <dd>
+                    <span className={styles.muted}>
+                      {row.email} · inscrit le{" "}
+                      {new Date(row.registeredAt).toLocaleDateString("fr-FR")}
+                    </span>
+                    <br />
+                    Manque : {row.missing.join(", ")}{" "}
+                    <Button type="button" variant="outline" onClick={() => void remind(row)}>
+                      Relancer par e-mail
+                    </Button>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Panel>
+        )
       ) : couriers.length === 0 ? (
         <Panel>
           <EmptyState title="Rien à traiter" text="Aucun dossier ne correspond à ce filtre." />
@@ -230,6 +294,42 @@ function CourierCard({
   };
 
   const state = STATE[courier.kycStatus];
+
+  /* Affecter une course depuis la fiche du livreur : seules les expéditions
+     en attente que son véhicule peut porter sont proposées. */
+  const [assignable, setAssignable] = useState<UnassignedShipmentView[] | null>(null);
+  const [assignMessage, setAssignMessage] = useState<string | null>(null);
+
+  const loadAssignable = async () => {
+    setBusy(true);
+    setAssignMessage(null);
+    setAssignable(
+      await apiFetch<UnassignedShipmentView[]>(
+        `/admin/couriers/${courier.id}/assignable-shipments`,
+      ).catch(() => []),
+    );
+    setBusy(false);
+  };
+
+  const assign = async (shipment: UnassignedShipmentView) => {
+    setBusy(true);
+    try {
+      await apiFetch(`/admin/logistics/shipments/${shipment.reference}/assign`, {
+        method: "POST",
+        body: { courierId: courier.id },
+      });
+      setAssignMessage(
+        `Course ${shipment.reference} (commande ${shipment.orderReference}) confiée à ${courier.fullName}.`,
+      );
+      setAssignable((current) =>
+        current ? current.filter((item) => item.reference !== shipment.reference) : current,
+      );
+    } catch (cause) {
+      setAssignMessage(cause instanceof ApiError ? cause.message : "Affectation impossible.");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <Panel title={courier.fullName} action={<Badge type={state.type}>{state.label}</Badge>}>
@@ -290,6 +390,49 @@ function CourierCard({
           ))}
         </ul>
       )}
+
+      {courier.kycStatus === "APPROVED" ? (
+        assignable === null ? (
+          <div className={styles.rowActions}>
+            <Button type="button" onClick={() => void loadAssignable()} disabled={busy}>
+              Lui affecter une course
+            </Button>
+          </div>
+        ) : (
+          <>
+            {assignable.length === 0 ? (
+              <p className={styles.muted}>
+                Aucune course en attente que son véhicule puisse prendre.
+              </p>
+            ) : (
+              <ul className={admin.documents}>
+                {assignable.map((shipment) => (
+                  <li key={shipment.reference}>
+                    <span>
+                      {shipment.orderReference} · {shipment.shopName} · {shipment.pickupLine1} →{" "}
+                      {shipment.dropLine1} · {shipment.distanceKm.toFixed(1)} km ·{" "}
+                      {VEHICLES[shipment.vehicle] ?? shipment.vehicle}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => void assign(shipment)}
+                      disabled={busy}
+                    >
+                      Affecter
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )
+      ) : null}
+      {assignMessage ? (
+        <p className={styles.muted} role="status">
+          {assignMessage}
+        </p>
+      ) : null}
 
       {courier.kycStatus !== "APPROVED" ? (
         <div className={styles.rowActions}>

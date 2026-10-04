@@ -183,6 +183,22 @@ export class ShipmentService {
   }
 
   /**
+   * Expéditions qu'un livreur donné peut prendre : en attente, et dont la
+   * charge tient dans son véhicule. Pour affecter depuis la fiche du livreur,
+   * et pas seulement depuis la liste des expéditions.
+   */
+  async assignableFor(courierId: string) {
+    const courier = await this.prisma.courierProfile.findUnique({ where: { id: courierId } });
+    if (!courier) throw new NotFoundException('Livreur inconnu.');
+    if (courier.kycStatus !== 'APPROVED') return [];
+
+    const unassigned = await this.listUnassigned();
+    return unassigned.filter(
+      (shipment) => capacityRank(courier.vehicle) >= capacityRank(shipment.vehicle),
+    );
+  }
+
+  /**
    * Livreurs pouvant prendre cette expédition, les plus proches d'abord.
    *
    * L'administration décide, mais elle ne doit pas choisir dans une liste
