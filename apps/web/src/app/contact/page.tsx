@@ -30,7 +30,7 @@ const CHANNELS = [
     icon: "/images/icon-account.svg",
     title: "Support Ojà",
     text: "Toutes les demandes passent par le Support : acheteurs comme créateurs.",
-    value: "support@oja.market",
+    value: "oja@aworix.agency",
   },
   {
     icon: "/images/icon-package.svg",
