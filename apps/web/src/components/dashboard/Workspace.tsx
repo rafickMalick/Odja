@@ -129,6 +129,11 @@ export function Workspace({
             </svg>
           </button>
           <span className={styles.topbarTitle}>{title}</span>
+          {/* Retour au site public sans quitter son espace : la session reste
+              ouverte, on revient ici par le lien de son espace dans l'en-tête du site. */}
+          <Link href="/" className={styles.homeLink}>
+            <span aria-hidden="true">←</span> Accueil du site
+          </Link>
         </header>
 
         {notice ? <div className={styles.notice}>{notice}</div> : null}
