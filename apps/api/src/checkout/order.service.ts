@@ -408,6 +408,9 @@ const FULL_ORDER = {
   invoice: { select: { id: true } },
 };
 
+/** Statuts d'une expédition pendant lesquels le code de réception sert encore. */
+const IN_PROGRESS_SHIPMENT: string[] = ['TO_PICK_UP', 'PICKED_UP', 'IN_DELIVERY'];
+
 type OrderWithRelations = Prisma.OrderGetPayload<{ include: typeof FULL_ORDER }>;
 
 function toOrderView(order: OrderWithRelations): OrderView {
@@ -443,6 +446,13 @@ function toOrderView(order: OrderWithRelations): OrderView {
       vehicle: subOrder.shipment?.vehicle ?? null,
       dueReadyAt: subOrder.dueReadyAt?.toISOString() ?? null,
       shipmentReference: subOrder.shipment?.reference ?? null,
+      // Cette vue ne sert qu'au client propriétaire (WHERE customerId) : le
+      // code peut y figurer, tant que la pièce n'est pas remise.
+      deliveryCode:
+        subOrder.shipment &&
+        IN_PROGRESS_SHIPMENT.includes(subOrder.shipment.status)
+          ? subOrder.shipment.proofOtp
+          : null,
       courier: subOrder.shipment?.courier
         ? {
             displayName: publicName(subOrder.shipment.courier.user),

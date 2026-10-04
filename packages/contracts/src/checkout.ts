@@ -227,6 +227,11 @@ export interface SubOrderView {
    * support Ojà.
    */
   courier: { displayName: string; vehicle: string; ratingAvg: number } | null;
+  /**
+   * Code de réception à quatre chiffres, à donner au livreur. Présent tant que
+   * la livraison est en cours ; seul le client de la commande le reçoit.
+   */
+  deliveryCode: string | null;
   /** Part à remettre au livreur à la réception de cette sous-commande. */
   balanceDueXof: number;
   /** Vrai une fois que le livreur a déclaré avoir encaissé cette part. */
