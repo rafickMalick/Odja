@@ -22,7 +22,7 @@ import { CartService } from '../cart/cart.service';
 import { cursorArgs, toPage, type CursorQuery, type Page } from '../common/pagination';
 import { PaymentService } from '../payments/payment.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { toOwnView } from '../reviews/review.service';
+import { publicName, toOwnView } from '../reviews/review.service';
 import { UNPAID } from './invoice.service';
 import { PromoService } from './promo.service';
 import { QuoteService } from './quote.service';
@@ -388,7 +388,19 @@ const FULL_ORDER = {
         },
       },
       maker: { select: { shopName: true } },
-      shipment: true,
+      // Le livreur affecté, tel que le client le voit : « Koffi A. », son
+      // véhicule, sa note. Pas son téléphone.
+      shipment: {
+        include: {
+          courier: {
+            select: {
+              vehicle: true,
+              ratingAvg: true,
+              user: { select: { firstName: true, lastName: true } },
+            },
+          },
+        },
+      },
     },
     orderBy: { reference: 'asc' as const },
   },
@@ -431,6 +443,13 @@ function toOrderView(order: OrderWithRelations): OrderView {
       vehicle: subOrder.shipment?.vehicle ?? null,
       dueReadyAt: subOrder.dueReadyAt?.toISOString() ?? null,
       shipmentReference: subOrder.shipment?.reference ?? null,
+      courier: subOrder.shipment?.courier
+        ? {
+            displayName: publicName(subOrder.shipment.courier.user),
+            vehicle: subOrder.shipment.courier.vehicle,
+            ratingAvg: subOrder.shipment.courier.ratingAvg,
+          }
+        : null,
       balanceDueXof: subOrder.balanceDueXof,
       cashCollected: subOrder.cashCollectedAt !== null,
     })),

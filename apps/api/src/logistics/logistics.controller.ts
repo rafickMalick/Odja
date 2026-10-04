@@ -12,8 +12,10 @@ import {
   type CourierProfileUpdateInput,
   type CourierProfileView,
   type CourierRemittanceInput,
+  type IncompleteCourierView,
   type KycDocumentView,
   type KycReviewInput,
+  type UnassignedShipmentView,
 } from '@oja/contracts';
 import { z } from 'zod';
 
@@ -177,6 +179,7 @@ export class CourierAdminController {
   constructor(
     private readonly couriers: CourierService,
     private readonly documents: KycDocumentService,
+    private readonly shipments: ShipmentService,
   ) {}
 
   @Get()
@@ -188,6 +191,24 @@ export class CourierAdminController {
   @Get('cash')
   async cash(): Promise<CourierCashView[]> {
     return this.couriers.cashHeld();
+  }
+
+  /** Inscrits dont le dossier n'est pas déposé : visibles dès l'inscription. */
+  @Get('incomplete')
+  async incomplete(): Promise<IncompleteCourierView[]> {
+    return this.couriers.listIncompleteForAdmin();
+  }
+
+  @Post('incomplete/:userId/remind')
+  @HttpCode(200)
+  async remind(@Param('userId') userId: string): Promise<{ sent: true }> {
+    return this.couriers.remindIncomplete(userId);
+  }
+
+  /** Courses qu'on peut confier à ce livreur, depuis sa fiche. */
+  @Get(':id/assignable-shipments')
+  async assignable(@Param('id') id: string): Promise<UnassignedShipmentView[]> {
+    return this.shipments.assignableFor(id);
   }
 
   @Post(':id/remittance')
