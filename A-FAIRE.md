@@ -92,6 +92,9 @@ désormais une valeur incohérente (PR #26).
 - [ ] Tables inutilisées `message_threads` et `messages` : décider avec Malik
   avant toute suppression.
 - [ ] Parcours livreur complet jamais testé de bout en bout (il faut le stockage S3).
+- [x] Livreur inscrit visible de l'admin avant le dépôt de son dossier, avec
+  relance par e-mail ; affectation d'une course depuis la fiche du livreur ;
+  livreur affecté (prénom, initiale, véhicule, note) visible du client.
 - [ ] Local : Docker ne marche pas sur ce PC (pas de WSL). On utilise Postgres
   portable (voir « Démarrer en local »). Installer WSL si on veut S3 et Mailpit.
 

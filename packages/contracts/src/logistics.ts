@@ -120,6 +120,32 @@ export interface ShipmentTrackView {
 }
 
 /** Espèces détenues par un livreur, vues de l'administration. */
+/**
+ * Livreur inscrit dont le dossier n'est pas encore déposé : visible de
+ * l'administration dès l'inscription, avec ce qui lui manque.
+ */
+export interface IncompleteCourierView {
+  userId: string;
+  /** Nul tant que le livreur n'a pas créé son profil (véhicule). */
+  courierId: string | null;
+  fullName: string;
+  email: string;
+  registeredAt: string;
+  missing: string[];
+}
+
+/** Expédition en attente de livreur, telle que l'administration la choisit. */
+export interface UnassignedShipmentView {
+  reference: string;
+  orderReference: string;
+  shopName: string;
+  pickupLine1: string;
+  dropLine1: string;
+  vehicle: string;
+  distanceKm: number;
+  weightKg: number;
+}
+
 export interface CourierCashView {
   courierId: string;
   userId: string;

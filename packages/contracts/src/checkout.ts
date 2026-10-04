@@ -221,6 +221,12 @@ export interface SubOrderView {
   dueReadyAt: string | null;
   /** Référence de l'expédition, dès qu'elle existe — sert au suivi en direct. */
   shipmentReference: string | null;
+  /**
+   * Livreur affecté : « Koffi A. », son véhicule et sa note. Jamais son
+   * téléphone — les coordonnées ne circulent pas, le client passe par le
+   * support Ojà.
+   */
+  courier: { displayName: string; vehicle: string; ratingAvg: number } | null;
   /** Part à remettre au livreur à la réception de cette sous-commande. */
   balanceDueXof: number;
   /** Vrai une fois que le livreur a déclaré avoir encaissé cette part. */

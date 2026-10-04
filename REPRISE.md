@@ -36,6 +36,7 @@ rien redemander. À lire en premier, puis [`A-FAIRE.md`](A-FAIRE.md).
 | #25 | Tests navigateur Playwright (`e2e/`), joués en CI : achat complet, rôles, admin + MFA | fusionnée |
 | #26 | `COOKIE_DOMAIN` ignoré s'il ne couvre pas le site (garde-fou après l'incident `oja.ox`) | fusionnée |
 | #27 | Instagram (`@oja.bj`) et LinkedIn dans le pied de page ; X et Facebook retirés | fusionnée |
+| (cette PR) | Parcours livreurs : onglet **« Inscrits, dossier incomplet »** dans Admin › Dossiers livreurs (visible dès l'inscription, ce qui manque, bouton « Relancer par e-mail ») ; **« Lui affecter une course »** depuis la fiche d'un livreur validé ; le client voit **« Votre livreur : Koffi A. · Moto · ★ 4,6 »** sur sa commande (jamais le téléphone) | à fusionner |
 | `551987f` (Rafick) | Un atelier validé ne repasse en validation que si l'IFU, le RCCM ou le gérant **changent vraiment** | sur `main` |
 
 ## 3. PR ouvertes — à relire et fusionner
