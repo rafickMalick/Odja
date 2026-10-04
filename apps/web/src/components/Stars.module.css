@@ -1,0 +1,42 @@
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  line-height: 1;
+}
+
+.full {
+  color: var(--color-primary, #e8590c);
+}
+
+.empty {
+  color: rgba(0, 0, 0, 0.18);
+}
+
+/* Demi-étoile : la moitié gauche colorée. */
+.half {
+  background: linear-gradient(90deg, var(--color-primary, #e8590c) 50%, rgba(0, 0, 0, 0.18) 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.input {
+  display: inline-flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.input label {
+  cursor: pointer;
+}
+
+/* Le focus clavier doit se voir, même sur une étoile. */
+.input label:focus-within {
+  outline: 2px solid var(--color-primary, #e8590c);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

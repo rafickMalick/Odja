@@ -97,12 +97,6 @@
 }
 
 /* Twitter est exporté avec son propre cercle : pas de cadre supplémentaire. */
-.socialPlain {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-}
-
 .socialFramed {
   display: flex;
   align-items: center;

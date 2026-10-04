@@ -2,7 +2,7 @@
 
 import type { PublicProduct } from "@oja/contracts";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { Button, ButtonLink } from "@/components/Button";
 import { StepperQuantity } from "@/components/StepperQuantity";
@@ -18,7 +18,14 @@ const PANELS = [
   { id: "reviews", title: "Avis", ruleWidth: 106 },
 ] as const;
 
-export function ProductDetail({ product }: { product: PublicProduct }) {
+export function ProductDetail({
+  product,
+  children,
+}: {
+  product: PublicProduct;
+  /** Sections rendues côté serveur sous la fiche (les avis). */
+  children?: ReactNode;
+}) {
   const { add } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
@@ -254,6 +261,7 @@ export function ProductDetail({ product }: { product: PublicProduct }) {
           ))}
         </div>
       </div>
+      {children}
     </main>
   );
 }

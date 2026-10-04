@@ -1,5 +1,6 @@
 "use client";
 
+import type { OwnReviewView, ReviewStatus } from "@oja/contracts";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
 import { Field, fieldStyles } from "@/components/Field";
 import { PageHead, Panel, workspaceStyles as styles } from "@/components/dashboard/Workspace";
+import { Stars, StarsInput } from "@/components/Stars";
 import { ApiError, apiFetch } from "@/lib/api";
 import { formatFcfa } from "@/lib/format";
 
@@ -26,10 +28,14 @@ import order from "./order.module.css";
  */
 
 interface Line {
+  id: string;
   productName: string;
+  productSlug: string;
   quantity: number;
   finalPriceXof: number;
   lineTotalXof: number;
+  canReview: boolean;
+  review: OwnReviewView | null;
 }
 
 interface SubOrder {
@@ -281,6 +287,19 @@ function SubOrderPanel({
         </div>
       </div>
 
+      {/* Réception validée : chaque pièce peut être notée, une fois. */}
+      {subOrder.status === "VALIDATED" ? (
+        <div className={order.form}>
+          <p className={styles.muted}>
+            <strong>Votre avis</strong> — il aide les autres acheteurs et l&apos;atelier. Il est
+            publié après relecture par l&apos;équipe Ojà.
+          </p>
+          {subOrder.lines.map((line) => (
+            <LineReview key={line.id} line={line} onChanged={onChanged} />
+          ))}
+        </div>
+      ) : null}
+
       {subOrder.shipmentReference &&
       ["IN_DELIVERY", "DELIVERED", "VALIDATED"].includes(subOrder.status) ? (
         <DeliveryTracker reference={subOrder.shipmentReference} />
@@ -363,4 +382,90 @@ function SubOrderPanel({
 
 function vehicleLabel(vehicle: string): string {
   return { MOTO: "moto", TRICYCLE: "tricycle", CAMIONNETTE: "camionnette" }[vehicle] ?? vehicle;
+}
+
+const REVIEW_STATUS: Record<ReviewStatus, string> = {
+  PENDING: "en cours de relecture",
+  PUBLISHED: "publié sur la fiche",
+  REJECTED: "non retenu",
+};
+
+/** Avis sur une pièce reçue : le formulaire, ou l'avis déjà donné. */
+function LineReview({ line, onChanged }: { line: Line; onChanged: () => Promise<void> }) {
+  const [open, setOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [body, setBody] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (line.review) {
+    return (
+      <p className={styles.muted}>
+        {line.productName} : <Stars value={line.review.rating} /> —{" "}
+        {REVIEW_STATUS[line.review.status]}
+        {line.review.rejectReason ? ` (${line.review.rejectReason})` : ""}
+      </p>
+    );
+  }
+  if (!line.canReview) return null;
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (rating === 0) {
+      setError("Choisissez une note de 1 à 5 étoiles.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await apiFetch(`/order-lines/${line.id}/review`, {
+        method: "POST",
+        body: { rating, ...(body.trim() ? { body: body.trim() } : {}) },
+      });
+      await onChanged();
+    } catch (cause) {
+      setError(cause instanceof ApiError ? cause.message : "Envoi impossible.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!open) {
+    return (
+      <div className={styles.rowActions}>
+        <span>{line.productName}</span>
+        <Button type="button" variant="outline" onClick={() => setOpen(true)}>
+          Donner mon avis
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className={order.form}>
+      <p>
+        <strong>{line.productName}</strong>
+      </p>
+      <StarsInput value={rating} onChange={setRating} name={`note-${line.id}`} />
+      <Field label="Votre avis (facultatif)">
+        <textarea
+          className={fieldStyles.control}
+          rows={3}
+          maxLength={1000}
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
+          placeholder="Finition, conformité à la fiche, emballage…"
+        />
+      </Field>
+      {error ? <p className={styles.error}>{error}</p> : null}
+      <div className={styles.rowActions}>
+        <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+          Annuler
+        </Button>
+        <Button type="submit" disabled={busy}>
+          {busy ? "Envoi…" : "Publier mon avis"}
+        </Button>
+      </div>
+    </form>
+  );
 }

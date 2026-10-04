@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
@@ -8,6 +8,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
 import { CatalogModule } from './catalog/catalog.module';
 import { CheckoutModule } from './checkout/checkout.module';
 import { validateEnv } from './config/env';
+import { AuditInterceptor } from './common/audit.interceptor';
 import { RateLimitGuard } from './common/rate-limit.guard';
 import { HealthController } from './health/health.controller';
 import { MakerModule } from './makers/maker.module';
@@ -19,6 +20,7 @@ import { NewsletterModule } from './newsletter/newsletter.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OrdersModule } from './orders/orders.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ReviewModule } from './reviews/review.module';
 import { StorageModule } from './storage/storage.module';
 import { SupportModule } from './support/support.module';
 
@@ -42,6 +44,7 @@ import { SupportModule } from './support/support.module';
     LogisticsModule,
     DisputeModule,
     SupportModule,
+    ReviewModule,
     NewsletterModule,
     AdminModule,
     SchedulerModule,
@@ -59,6 +62,9 @@ import { SupportModule } from './support/support.module';
        utilisateur quand il y en a un, par adresse sinon. Comptée avant, deux
        collègues derrière le même NAT se bloqueraient mutuellement. */
     { provide: APP_GUARD, useClass: RateLimitGuard },
+    /* Toute action d'administration réussie est écrite au journal d'audit,
+       sans que le service ait à y penser (L0-31). */
+    { provide: APP_INTERCEPTOR, useClass: AuditInterceptor },
   ],
 })
 export class AppModule {}
