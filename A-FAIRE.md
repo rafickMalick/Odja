@@ -92,6 +92,10 @@ désormais une valeur incohérente (PR #26).
 - [ ] Tables inutilisées `message_threads` et `messages` : décider avec Malik
   avant toute suppression.
 - [ ] Parcours livreur complet jamais testé de bout en bout (il faut le stockage S3).
+- [x] Code de réception visible dans la commande du client et envoyé par
+  e-mail ; l'échec du SMS ne bloque plus la mise en livraison.
+- [ ] Brancher un vrai agrégateur SMS (`sms.service.ts`) : contrat et clés
+  à voir avec Malik.
 - [x] Livreur inscrit visible de l'admin avant le dépôt de son dossier, avec
   relance par e-mail ; affectation d'une course depuis la fiche du livreur ;
   livreur affecté (prénom, initiale, véhicule, note) visible du client.

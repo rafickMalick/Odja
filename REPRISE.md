@@ -37,6 +37,7 @@ rien redemander. À lire en premier, puis [`A-FAIRE.md`](A-FAIRE.md).
 | #26 | `COOKIE_DOMAIN` ignoré s'il ne couvre pas le site (garde-fou après l'incident `oja.ox`) | fusionnée |
 | #27 | Instagram (`@oja.bj`) et LinkedIn dans le pied de page ; X et Facebook retirés | fusionnée |
 | (cette PR) | Parcours livreurs : onglet **« Inscrits, dossier incomplet »** dans Admin › Dossiers livreurs (visible dès l'inscription, ce qui manque, bouton « Relancer par e-mail ») ; **« Lui affecter une course »** depuis la fiche d'un livreur validé ; le client voit **« Votre livreur : Koffi A. · Moto · ★ 4,6 »** sur sa commande (jamais le téléphone) | à fusionner |
+| (cette PR) | Code de réception : **affiché dans la commande du client** (lui seul, tant que la livraison est en cours) et envoyé par e-mail ; un SMS en échec (aucun agrégateur branché en production) **ne bloque plus** « prête » ni la prévenance des livreurs. Le livreur saisit toujours le code dans sa mission (2 preuves sur 3 : code, photo, GPS) | à fusionner |
 | `551987f` (Rafick) | Un atelier validé ne repasse en validation que si l'IFU, le RCCM ou le gérant **changent vraiment** | sur `main` |
 
 ## 3. PR ouvertes — à relire et fusionner

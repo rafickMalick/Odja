@@ -49,6 +49,7 @@ interface SubOrder {
   dueReadyAt: string | null;
   shipmentReference: string | null;
   courier: { displayName: string; vehicle: string; ratingAvg: number } | null;
+  deliveryCode: string | null;
 }
 
 interface Order {
@@ -287,6 +288,23 @@ function SubOrderPanel({
           <strong>{formatFcfa(subOrder.deliveryFeeXof)}</strong>
         </div>
       </div>
+
+      {/* Le code de réception : le livreur le saisit pour prouver la remise.
+          Le client ne le donne qu'une fois la pièce en main. */}
+      {subOrder.deliveryCode ? (
+        <div className={order.form} role="note" aria-label="Code de réception">
+          <p>
+            Code de réception :{" "}
+            <strong className={order.deliveryCode}>
+              {subOrder.deliveryCode}
+            </strong>
+          </p>
+          <p className={styles.muted}>
+            Donnez ce code au livreur à son arrivée, après avoir inspecté la pièce. Il lui sert
+            à confirmer la remise. Ne le communiquez à personne d’autre.
+          </p>
+        </div>
+      ) : null}
 
       {/* Le livreur affecté, sans ses coordonnées : on passe par le support. */}
       {subOrder.courier ? (

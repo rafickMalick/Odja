@@ -359,6 +359,8 @@ describe('Livraison et versement (bout en bout)', () => {
         .expect(200);
       expect(order.body.status).toBe('IN_DELIVERY');
       expect(order.body.statusLabel).toBe('En livraison');
+      // Le client retrouve son code de réception dans sa commande, sans SMS.
+      expect(order.body.subOrders[0].deliveryCode).toBe(refs.otp);
 
       await api()
         .post(`/api/v1/courier/missions/${refs.shipment}/start`)
@@ -495,6 +497,8 @@ describe('Livraison et versement (bout en bout)', () => {
           .set('Cookie', customerCookies)
           .expect(200);
         expect(order.body.status).toBe('COMPLETED');
+        // Pièce remise : le code ne sert plus, il n'est plus montré.
+        expect(order.body.subOrders[0].deliveryCode).toBeNull();
       });
 
       it('montre au créateur ce qui lui est dû', async () => {

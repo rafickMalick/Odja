@@ -94,3 +94,10 @@
   font-size: 0.75rem;
   color: #999;
 }
+
+/* Code de réception : lisible d'un coup d'œil, à dicter au livreur. */
+.deliveryCode {
+  font-size: 1.5rem;
+  letter-spacing: 0.3em;
+  font-variant-numeric: tabular-nums;
+}
