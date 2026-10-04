@@ -55,6 +55,29 @@ describe('Espace livreur (bout en bout)', () => {
   });
 
   describe('1 — profil', () => {
+    it('apparaît côté admin dès l’inscription, avant tout profil', async () => {
+      /* Un livreur qui venait de s'inscrire était invisible de
+         l'administration, même sous « Tous » : il n'avait pas de profil. */
+      const response = await api()
+        .get('/api/v1/admin/couriers/incomplete')
+        .set('Cookie', adminCookies)
+        .expect(200);
+
+      const row = (
+        response.body as { email: string; courierId: string | null; missing: string[] }[]
+      ).find((candidate) => candidate.email === COURIER_EMAIL);
+      expect(row, 'le livreur inscrit doit être listé').toBeDefined();
+      expect(row?.courierId).toBeNull();
+      expect(row?.missing).toContain('profil livreur (véhicule)');
+    });
+
+    it('refuse la liste des inscrits à un livreur', async () => {
+      await api()
+        .get('/api/v1/admin/couriers/incomplete')
+        .set('Cookie', courierCookies)
+        .expect((res) => expect([403, 404]).toContain(res.status));
+    });
+
     it('crée le profil livreur', async () => {
       const response = await api()
         .post('/api/v1/courier/profile')
@@ -84,6 +107,27 @@ describe('Espace livreur (bout en bout)', () => {
   });
 
   describe('2 — dossier', () => {
+    it('liste ce qui manque encore au dossier et permet de relancer', async () => {
+      const response = await api()
+        .get('/api/v1/admin/couriers/incomplete')
+        .set('Cookie', adminCookies)
+        .expect(200);
+
+      const row = (
+        response.body as { userId: string; courierId: string | null; missing: string[] }[]
+      ).find((candidate) => candidate.courierId === courierId);
+      expect(row?.missing).toEqual([
+        "pièce d'identité (recto)",
+        'permis de conduire',
+        'carte grise du véhicule',
+      ]);
+
+      await api()
+        .post(`/api/v1/admin/couriers/incomplete/${row?.userId}/remind`)
+        .set('Cookie', adminCookies)
+        .expect(200, { sent: true });
+    });
+
     it('énumère TOUS les manques d’un coup', async () => {
       const response = await api()
         .post('/api/v1/courier/kyc/submit')
@@ -113,6 +157,16 @@ describe('Espace livreur (bout en bout)', () => {
         .expect(201);
 
       expect(response.body.status).toBe('PENDING');
+    });
+
+    it('quitte la liste des inscrits une fois le dossier déposé', async () => {
+      const response = await api()
+        .get('/api/v1/admin/couriers/incomplete')
+        .set('Cookie', adminCookies)
+        .expect(200);
+
+      const ids = (response.body as { courierId: string | null }[]).map((row) => row.courierId);
+      expect(ids).not.toContain(courierId);
     });
 
     it('exige un motif pour refuser', async () => {
@@ -186,6 +240,47 @@ describe('Espace livreur (bout en bout)', () => {
          une base vierge casse au premier usage réel. */
       const ids = (response.body as { id: string }[]).map((courier) => courier.id);
       expect(ids).not.toContain(courierId);
+    });
+
+    it('propose la course depuis la fiche du livreur, et l’y affecte', async () => {
+      const response = await api()
+        .get(`/api/v1/admin/couriers/${courierId}/assignable-shipments`)
+        .set('Cookie', adminCookies)
+        .expect(200);
+
+      const references = (response.body as { reference: string }[]).map((row) => row.reference);
+      expect(references).toContain(shipmentReference);
+
+      await api()
+        .post(`/api/v1/admin/logistics/shipments/${shipmentReference}/assign`)
+        .set('Cookie', adminCookies)
+        .send({ courierId })
+        .expect(201);
+
+      const after = await api()
+        .get(`/api/v1/admin/couriers/${courierId}/assignable-shipments`)
+        .set('Cookie', adminCookies)
+        .expect(200);
+      expect((after.body as { reference: string }[]).map((row) => row.reference)).not.toContain(
+        shipmentReference,
+      );
+    });
+
+    it('montre au client son livreur, sans ses coordonnées', async () => {
+      const shipment = await prisma.shipment.findFirstOrThrow({
+        where: { reference: shipmentReference },
+        include: { order: { select: { reference: true } } },
+      });
+
+      // Le client de la commande de test est le compte admin (voir seedShipment).
+      const response = await api()
+        .get(`/api/v1/orders/${shipment.order.reference}`)
+        .set('Cookie', adminCookies)
+        .expect(200);
+
+      const courier = response.body.subOrders[0].courier;
+      expect(courier).toEqual({ displayName: 'Sekou T.', vehicle: 'CAMIONNETTE', ratingAvg: 0 });
+      expect(JSON.stringify(response.body)).not.toContain(COURIER_PHONE);
     });
   });
 

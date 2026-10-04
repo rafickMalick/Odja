@@ -5,6 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type {
   CourierCashView,
   CourierEarnings,
@@ -12,12 +13,14 @@ import type {
   CourierProfileUpdateInput,
   CourierProfileView,
   CourierRemittanceInput,
+  IncompleteCourierView,
   KycReviewInput,
 } from '@oja/contracts';
 import type { CourierProfile, User } from '@oja/db';
 
 import { LedgerService } from '../ledger/ledger.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../notifications/email.service';
 import { NotificationService } from '../notifications/notification.service';
 
 /**
@@ -38,11 +41,17 @@ type CourierWithUser = CourierProfile & {
 export class CourierService {
   private readonly logger = new Logger(CourierService.name);
 
+  private readonly webOrigin: string;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationService,
     private readonly ledger: LedgerService,
-  ) {}
+    private readonly email: EmailService,
+    config: ConfigService,
+  ) {
+    this.webOrigin = config.get<string>('WEB_ORIGIN', 'http://localhost:3000');
+  }
 
   async createProfile(userId: string, input: CourierProfileInput): Promise<CourierProfileView> {
     const existing = await this.prisma.courierProfile.findUnique({ where: { userId } });
@@ -117,13 +126,7 @@ export class CourierService {
       where: { courierId: courier.id },
       select: { type: true },
     });
-    const deposited = new Set(documents.map((document) => document.type));
-
-    const missing: string[] = [];
-    if (!courier.plateNumber) missing.push("numéro d'immatriculation");
-    if (!deposited.has('cni_recto')) missing.push("pièce d'identité (recto)");
-    if (!deposited.has('permis')) missing.push('permis de conduire');
-    if (!deposited.has('carte_grise')) missing.push('carte grise du véhicule');
+    const missing = missingForKyc(courier, documents.map((document) => document.type));
 
     if (missing.length > 0) {
       throw new BadRequestException(
@@ -232,6 +235,62 @@ export class CourierService {
   }
 
   // ═══════════════════════════════ Administration
+
+  /**
+   * Livreurs inscrits dont le dossier n'est pas déposé — sans profil, ou
+   * profil sans pièces. Sans cette liste, un livreur qui venait de
+   * s'inscrire était invisible de l'administration, même sous « Tous ».
+   */
+  async listIncompleteForAdmin(): Promise<IncompleteCourierView[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        role: 'COURIER',
+        deletedAt: null,
+        OR: [{ courier: null }, { courier: { kycStatus: 'NOT_SUBMITTED' } }],
+      },
+      include: {
+        courier: { include: { documents: { select: { type: true } } } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+
+    return users.map((user) => ({
+      userId: user.id,
+      courierId: user.courier?.id ?? null,
+      fullName: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      registeredAt: user.createdAt.toISOString(),
+      missing: user.courier
+        ? missingForKyc(
+            user.courier,
+            user.courier.documents.map((document) => document.type),
+          )
+        : ['profil livreur (véhicule)', ...missingForKyc(null, [])],
+    }));
+  }
+
+  /** Rappel par e-mail à un livreur inscrit dont le dossier n'est pas déposé. */
+  async remindIncomplete(userId: string): Promise<{ sent: true }> {
+    const [courier] = (await this.listIncompleteForAdmin()).filter(
+      (candidate) => candidate.userId === userId,
+    );
+    if (!courier) throw new NotFoundException('Aucun dossier incomplet pour ce livreur.');
+
+    const link = `${this.webOrigin}/espace-livreur`;
+    await this.email.send({
+      to: courier.email,
+      subject: 'Ojà — complétez votre dossier livreur',
+      text:
+        `Bonjour,${'\n\n'}` +
+        'Votre compte livreur Ojà est créé, mais votre dossier n\'est pas encore ' +
+        `complet. Il manque : ${courier.missing.join(', ')}.${'\n\n'}` +
+        `Complétez-le depuis votre espace : ${link}${'\n\n'}` +
+        'Dès qu\'il est validé par l\'équipe, vous recevez vos premières courses.' +
+        `${'\n\n'}L'équipe Ojà`,
+    });
+    return { sent: true };
+  }
 
   async listForAdmin(status?: string): Promise<CourierProfileView[]> {
     const couriers = await this.prisma.courierProfile.findMany({
@@ -401,4 +460,21 @@ export class CourierService {
       deliveredCount,
     };
   }
+}
+
+/**
+ * Ce qui manque à un dossier livreur pour être déposé. Une seule liste, pour
+ * le dépôt par le livreur et pour la vue de l'administration.
+ */
+export function missingForKyc(
+  courier: { plateNumber: string | null } | null,
+  depositedTypes: string[],
+): string[] {
+  const deposited = new Set(depositedTypes);
+  const missing: string[] = [];
+  if (!courier?.plateNumber) missing.push("numéro d'immatriculation");
+  if (!deposited.has('cni_recto')) missing.push("pièce d'identité (recto)");
+  if (!deposited.has('permis')) missing.push('permis de conduire');
+  if (!deposited.has('carte_grise')) missing.push('carte grise du véhicule');
+  return missing;
 }

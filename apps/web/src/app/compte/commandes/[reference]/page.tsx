@@ -48,6 +48,7 @@ interface SubOrder {
   vehicle: string | null;
   dueReadyAt: string | null;
   shipmentReference: string | null;
+  courier: { displayName: string; vehicle: string; ratingAvg: number } | null;
 }
 
 interface Order {
@@ -286,6 +287,19 @@ function SubOrderPanel({
           <strong>{formatFcfa(subOrder.deliveryFeeXof)}</strong>
         </div>
       </div>
+
+      {/* Le livreur affecté, sans ses coordonnées : on passe par le support. */}
+      {subOrder.courier ? (
+        <p className={styles.muted}>
+          Votre livreur : <strong>{subOrder.courier.displayName}</strong> ·{" "}
+          {vehicleLabel(subOrder.courier.vehicle)}
+          {subOrder.courier.ratingAvg > 0
+            ? ` · ★ ${subOrder.courier.ratingAvg.toLocaleString("fr-FR", {
+                maximumFractionDigits: 1,
+              })}`
+            : " · nouveau livreur"}
+        </p>
+      ) : null}
 
       {/* Réception validée : chaque pièce peut être notée, une fois. */}
       {subOrder.status === "VALIDATED" ? (
