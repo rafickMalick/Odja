@@ -683,7 +683,8 @@ export class ShipmentService {
     if (!assessment.accepted) {
       throw new BadRequestException({
         error: 'Preuve insuffisante',
-        message: 'Deux éléments de preuve sont nécessaires pour valider la remise.',
+        message:
+          'Saisissez le code du client. Sans code, une photo et la position sont nécessaires.',
         errors: assessment.problems.map((message) => ({ field: 'proof', message })),
       });
     }
