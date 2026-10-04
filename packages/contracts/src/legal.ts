@@ -23,7 +23,7 @@ export const LEGAL = {
   /** Directeur ou directrice de la publication. */
   publicationDirector: null as string | null,
   /** Adresse du service client, affichée partout sur le site. */
-  supportEmail: 'support@oja.market',
+  supportEmail: 'oja@aworix.agency',
   /** Pays dont le droit s'applique. */
   country: 'Bénin',
   /** Date de la version en vigueur des documents légaux. */
