@@ -135,8 +135,9 @@
 }
 
 .topbar {
-  display: none;
+  display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--space-12);
   padding: var(--space-12) var(--space-20);
   background: var(--color-white);
@@ -144,7 +145,7 @@
 }
 
 .burger {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   width: 44px;
@@ -160,10 +161,33 @@
 }
 
 .topbarTitle {
+  display: none;
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 15px;
   color: var(--color-black);
+}
+
+/* Retour au site public, visible dans tous les espaces. */
+.homeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: 40px;
+  padding: 0 var(--space-16);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-black);
+  white-space: nowrap;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.homeLink:hover {
+  background: var(--color-black);
+  color: var(--color-white);
 }
 
 .notice {
@@ -417,7 +441,20 @@
   }
 
   .topbar {
+    justify-content: flex-start;
+  }
+
+  .burger {
     display: flex;
+  }
+
+  .topbarTitle {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .content {
