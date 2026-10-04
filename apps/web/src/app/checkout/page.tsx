@@ -28,6 +28,21 @@ interface City {
  * affiche ce que la commande retiendra, puis **confirme** ce total au moment
  * de valider.
  */
+/* Les trois façons de payer, montrées avant même le chiffrage : sans elles,
+   « Payer à la livraison » semblait avoir disparu tant que l'adresse n'était
+   pas enregistrée. Les montants arrivent avec le chiffrage. */
+const PAYMENT_PREVIEW: {
+  mode: PaymentModeName;
+  label: string;
+  upfrontXof: number;
+  balanceXof: number;
+  preview: string;
+}[] = [
+  { mode: "ONLINE_FULL", label: "Payer maintenant", upfrontXof: 0, balanceXof: 0, preview: "Tout en ligne, par Mobile Money ou carte." },
+  { mode: "DEPOSIT_50", label: "Acompte de 50 % maintenant, le reste à la réception", upfrontXof: 0, balanceXof: 0, preview: "La moitié en ligne, le reste en espèces au livreur." },
+  { mode: "CASH_ON_DELIVERY", label: "Payer à la livraison", upfrontXof: 0, balanceXof: 0, preview: "Rien à payer en ligne : tout en espèces au livreur, à la réception." },
+];
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart, itemCount, ready, refresh } = useCart();
@@ -448,7 +463,7 @@ export default function CheckoutPage() {
               </p>
 
               <div className={styles.options}>
-                {(quote?.paymentOptions ?? []).map((option) => (
+                {(quote?.paymentOptions.length ? quote.paymentOptions : PAYMENT_PREVIEW).map((option) => (
                   <label
                     key={option.mode}
                     className={`${styles.option} ${
@@ -466,7 +481,9 @@ export default function CheckoutPage() {
                     <span className={styles.optionBody}>
                       <span className={styles.optionTitle}>{option.label}</span>
                       <span className={styles.optionText}>
-                        {option.balanceXof === 0
+                        {!quote
+                          ? PAYMENT_PREVIEW.find((preview) => preview.mode === option.mode)?.preview
+                          : option.balanceXof === 0
                           ? `Vous payez ${formatFcfa(option.upfrontXof)} maintenant.`
                           : option.upfrontXof === 0
                             ? `Rien à payer maintenant. ${formatFcfa(option.balanceXof)} en espèces au livreur à la réception.`
