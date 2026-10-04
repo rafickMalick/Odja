@@ -49,9 +49,35 @@
   color: var(--color-gray-500);
 }
 
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* Retour au site public, visible dans l'espace livreur. */
+.homeLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 var(--space-12);
+  border: 1px solid var(--color-gray-700);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-white);
+}
+
+.homeLink:hover {
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
 .logout {
   display: flex;
   align-items: center;
+  white-space: nowrap;
   min-height: 44px;
   padding-inline: var(--space-8);
   font-family: var(--font-body);

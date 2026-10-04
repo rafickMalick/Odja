@@ -65,9 +65,15 @@ export function FieldShell({
           <img src="/images/logo-oja.svg" alt="" className={styles.logo} />
           <span className={styles.space}>{title}</span>
         </Link>
-        <button type="button" onClick={logout} className={styles.logout}>
-          Se déconnecter
-        </button>
+        <div className={styles.topActions}>
+          {/* Retour au site public sans quitter son espace. */}
+          <Link href="/" className={styles.homeLink}>
+            Accueil
+          </Link>
+          <button type="button" onClick={logout} className={styles.logout}>
+            Se déconnecter
+          </button>
+        </div>
       </header>
 
       {status ? <div className={styles.statusBand}>{status}</div> : null}
