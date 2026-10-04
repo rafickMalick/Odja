@@ -94,6 +94,10 @@ désormais une valeur incohérente (PR #26).
 - [ ] Parcours livreur complet jamais testé de bout en bout (il faut le stockage S3).
 - [x] Code de réception visible dans la commande du client et envoyé par
   e-mail ; l'échec du SMS ne bloque plus la mise en livraison.
+- [ ] **Localisation des livreurs en pause** pendant les tests
+  (`DELIVERY_GPS_ENABLED = false` dans `packages/contracts/src/logistics.ts`).
+  Rien n'est demandé au téléphone ; remise = code du client, ou à défaut une
+  photo. À repasser à `true` quand l'équipe donne le signal.
 - [ ] Brancher un vrai agrégateur SMS (`sms.service.ts`) : contrat et clés
   à voir avec Malik.
 - [x] Livreur inscrit visible de l'admin avant le dépôt de son dossier, avec

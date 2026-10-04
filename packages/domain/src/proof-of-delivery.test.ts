@@ -130,6 +130,32 @@ describe('preuve de livraison', () => {
     expect(result.problems).toEqual([]);
   });
 
+  describe('localisation en pause', () => {
+    const paused = (): ProofContext => ({ ...context(), gpsEnabled: false });
+
+    it('accepte toujours le code seul', () => {
+      expect(assessProof({ otp: '4271' }, paused()).accepted).toBe(true);
+    });
+
+    it('accepte la photo seule, faute de position', () => {
+      const result = assessProof({ photoKey: 'proof/photo.jpg' }, paused());
+      expect(result.accepted).toBe(true);
+      expect(result.provided).toEqual(['photo']);
+    });
+
+    it('ignore la position envoyée et ne la réclame pas', () => {
+      const result = assessProof({ ...nearby(10) }, paused());
+      expect(result.accepted).toBe(false);
+      expect(result.provided).toEqual([]);
+      expect(result.problems.join(' ')).not.toContain('localisation');
+    });
+
+    it('refuse toujours un code erroné', () => {
+      const result = assessProof({ otp: '0000' }, paused());
+      expect(result.accepted).toBe(false);
+    });
+  });
+
   it('exige bien deux éléments sans le code', () => {
     expect(REQUIRED_PROOF_ELEMENTS).toBe(2);
   });
