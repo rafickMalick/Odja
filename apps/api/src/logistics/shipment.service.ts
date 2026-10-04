@@ -22,6 +22,7 @@ import {
 
 import { pointOf } from '../checkout/quote.service';
 import { LedgerService } from '../ledger/ledger.service';
+import { EmailService } from '../notifications/email.service';
 import { SmsService } from '../notifications/sms.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../notifications/notification.service';
@@ -46,6 +47,7 @@ export class ShipmentService {
     private readonly notifications: NotificationService,
     private readonly events: ShipmentEventsBus,
     private readonly ledger: LedgerService,
+    private readonly email: EmailService,
     config: ConfigService,
   ) {
     this.sinuosityFactor = config.get<number>('DISTANCE_SINUOSITY_FACTOR', 1.3);
@@ -123,12 +125,7 @@ export class ShipmentService {
       return created;
     });
 
-    await this.sms.send({
-      to: subOrder.order.shipPhone,
-      body:
-        `Ojà — votre commande ${subOrder.order.reference} part en livraison. ` +
-        `Code de réception à donner au livreur : ${otp}`,
-    });
+    await this.sendReceptionCode(subOrder.order, otp);
 
     /* Le client est prévenu que sa commande est prête et qu'un livreur va
        passer (LN-07) ; les livreurs de la zone voient l'offre dans leur
@@ -180,6 +177,52 @@ export class ShipmentService {
       distanceKm: shipment.distanceKm,
       weightKg: Math.round(shipment.totalWeightG / 100) / 10,
     }));
+  }
+
+  /**
+   * Le code de réception part par SMS et par e-mail, et reste affiché dans la
+   * commande du client. Aucun de ces envois ne doit faire échouer « prête » :
+   * sans agrégateur SMS branché, l'envoi lève une erreur, et elle empêchait
+   * jusqu'ici l'atelier de finir et les livreurs d'être prévenus.
+   */
+  private async sendReceptionCode(
+    order: { reference: string; shipPhone: string; customerId: string },
+    otp: string,
+  ): Promise<void> {
+    const text =
+      `Ojà — votre commande ${order.reference} part en livraison. ` +
+      `Code de réception à donner au livreur : ${otp}`;
+
+    try {
+      await this.sms.send({ to: order.shipPhone, body: text });
+    } catch (cause) {
+      this.logger.warn(
+        `SMS du code de réception non envoyé (${order.reference}) : ${(cause as Error).message}`,
+      );
+    }
+
+    try {
+      const customer = await this.prisma.user.findUnique({
+        where: { id: order.customerId },
+        select: { email: true, firstName: true },
+      });
+      if (!customer) return;
+      await this.email.send({
+        to: customer.email,
+        subject: `Ojà — code de réception de votre commande ${order.reference}`,
+        text:
+          `Bonjour ${customer.firstName},\n\n` +
+          `Votre commande ${order.reference} part en livraison.\n\n` +
+          `Code de réception : ${otp}\n\n` +
+          'Donnez-le au livreur à son arrivée, une fois la pièce inspectée. ' +
+          'Il reste aussi affiché dans votre commande, sur le site.\n\n' +
+          "L'équipe Ojà",
+      });
+    } catch (cause) {
+      this.logger.warn(
+        `E-mail du code de réception non envoyé (${order.reference}) : ${(cause as Error).message}`,
+      );
+    }
   }
 
   /**
@@ -640,7 +683,8 @@ export class ShipmentService {
     if (!assessment.accepted) {
       throw new BadRequestException({
         error: 'Preuve insuffisante',
-        message: 'Deux éléments de preuve sont nécessaires pour valider la remise.',
+        message:
+          'Saisissez le code du client. Sans code, une photo et la position sont nécessaires.',
         errors: assessment.problems.map((message) => ({ field: 'proof', message })),
       });
     }

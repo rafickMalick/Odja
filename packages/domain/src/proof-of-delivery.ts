@@ -5,15 +5,18 @@
  * fait (SPEC-ALIGNEMENT § 2) — mais elle reste la pièce qui tranche un litige
  * « je n'ai rien reçu ». Sans elle, c'est parole contre parole, et Ojà paie.
  *
- * Trois éléments possibles, **deux suffisent**. Exiger les trois bloquerait
- * des livraisons honnêtes : un client sans réseau ne reçoit pas son code, un
- * téléphone à court de batterie ne prend pas de photo, un GPS urbain dérive
- * entre deux immeubles. N'en exiger qu'un rendrait la preuve trop facile à
- * fabriquer.
+ * **Le code du client suffit à lui seul** : il n'est affiché que dans sa
+ * commande et ne sort de sa poche qu'une fois la pièce en main. Le livreur le
+ * tape sur son téléphone, et la remise est confirmée.
+ *
+ * Sans code (client injoignable, pas de réseau), **photo + position** prennent
+ * le relais. Une photo seule ou une position seule ne suffisent pas : trop
+ * faciles à fabriquer.
  */
 
 export type ProofElement = 'otp' | 'photo' | 'gps';
 
+/** Éléments exigés quand le client n'a pas donné son code. */
 export const REQUIRED_PROOF_ELEMENTS = 2;
 
 /** Rayon au-delà duquel le point de livraison ne correspond plus à l'adresse. */
@@ -99,7 +102,8 @@ export function assessProof(
     problems.push('Activez la localisation au moment de la remise.');
   }
 
-  const accepted = provided.length >= REQUIRED_PROOF_ELEMENTS;
+  const accepted =
+    provided.includes('otp') || provided.length >= REQUIRED_PROOF_ELEMENTS;
 
   return {
     accepted,
