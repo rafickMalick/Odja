@@ -427,19 +427,16 @@ describe('Livraison et versement (bout en bout)', () => {
           .expect(400);
       });
 
-      it('accepte deux éléments sur trois', async () => {
+      it('accepte le code du client à lui seul', async () => {
+        // Le livreur tape le code donné par le client : la remise est confirmée.
         const response = await api()
           .post(`/api/v1/courier/missions/${refs.shipment}/deliver`)
           .set('Cookie', courierCookies)
-          .send({
-            otp: refs.otp,
-            photoKey: 'proof/photo.jpg',
-            ...CHEZ_LE_CLIENT,
-          })
+          .send({ otp: refs.otp })
           .expect(201);
 
         expect(response.body.status).toBe('DELIVERED');
-        expect(response.body.provided).toEqual(['otp', 'photo', 'gps']);
+        expect(response.body.provided).toEqual(['otp']);
       });
 
       it('fait passer la commande en « Livrée »', async () => {

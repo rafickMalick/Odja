@@ -82,9 +82,9 @@ describe('preuve de livraison', () => {
       latitude: DESTINATION.latitude + 0.05, // ~5,5 km
       longitude: DESTINATION.longitude,
     };
-    const result = assessProof({ otp: '4271', ...far }, context());
+    const result = assessProof({ photoKey: 'proof/photo.jpg', ...far }, context());
 
-    expect(result.provided).toEqual(['otp']);
+    expect(result.provided).toEqual(['photo']);
     expect(result.accepted).toBe(false);
     expect(result.problems.join(' ')).toContain(`${GPS_TOLERANCE_METERS} m`);
   });
@@ -108,10 +108,19 @@ describe('preuve de livraison', () => {
     expect(result.problems.join(' ')).toContain('point GPS à comparer');
   });
 
+  it('accepte le code du client à lui seul', () => {
+    // Le livreur tape le code sur son téléphone : c'est confirmé.
+    const result = assessProof({ otp: '4271' }, context());
+    expect(result.accepted).toBe(true);
+    expect(result.provided).toEqual(['otp']);
+    expect(result.problems).toEqual([]);
+  });
+
   it('dit au livreur ce qui manque, pas seulement que ça manque', () => {
     // Un livreur qui lit « preuve insuffisante » reste planté devant la porte.
-    const result = assessProof({ otp: '4271' }, context());
+    const result = assessProof({}, context());
     expect(result.accepted).toBe(false);
+    expect(result.problems.join(' ')).toContain('code');
     expect(result.problems.join(' ')).toContain('photo');
     expect(result.problems.join(' ')).toContain('localisation');
   });
@@ -121,7 +130,7 @@ describe('preuve de livraison', () => {
     expect(result.problems).toEqual([]);
   });
 
-  it('exige bien deux éléments', () => {
+  it('exige bien deux éléments sans le code', () => {
     expect(REQUIRED_PROOF_ELEMENTS).toBe(2);
   });
 });

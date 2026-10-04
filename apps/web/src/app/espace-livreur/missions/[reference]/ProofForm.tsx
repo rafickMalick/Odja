@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
-import { FieldCard, fieldShellStyles as styles } from "@/components/dashboard/FieldShell";
+import {
+  FieldCard,
+  fieldShellStyles as styles,
+} from "@/components/dashboard/FieldShell";
 import { ApiError, apiFetch } from "@/lib/api";
 import { formatFcfa } from "@/lib/format";
 import { UploadError, uploadFile } from "@/lib/upload";
@@ -17,9 +20,9 @@ import proof from "./proof.module.css";
  *
  * C'est le verrou du circuit financier : c'est cette remise qui fait basculer
  * la sous-commande en « livrée », déclenche le compte à rebours de validation
- * du client, et in fine le versement au créateur. Le serveur exige **deux
- * éléments sur trois**  code du client, photo, position  et refuse la remise
- * en dessous.
+ * du client, et in fine le versement au créateur. **Le code du client suffit** :
+ * le livreur le tape, et c'est confirmé. Sans code, le serveur exige une photo
+ * et la position.
  *
  * L'écran reproduit ce décompte en direct plutôt que de laisser le livreur
  * découvrir le refus après avoir tout saisi. La position est relevée dès
@@ -39,9 +42,10 @@ export function ProofForm({
   const [cashCollected, setCashCollected] = useState(false);
   const [otp, setOtp] = useState("");
   const [photoKey, setPhotoKey] = useState<string | null>(null);
-  const [position, setPosition] = useState<{ latitude: number; longitude: number } | null>(
-    null,
-  );
+  const [position, setPosition] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const [locating, setLocating] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -60,8 +64,12 @@ export function ProofForm({
   }, []);
 
   const otpReady = /^\d{4}$/.test(otp);
-  const provided = [otpReady, photoKey !== null, position !== null].filter(Boolean).length;
-  const enough = provided >= 2 && (cashToCollectXof === 0 || cashCollected);
+  const provided = [otpReady, photoKey !== null, position !== null].filter(
+    Boolean,
+  ).length;
+  const proven = otpReady || provided >= 2;
+  const enough = proven && (cashToCollectXof === 0 || cashCollected);
+  const [showFallback, setShowFallback] = useState(false);
 
   const sendPhoto = async (file: File) => {
     setUploading(true);
@@ -70,7 +78,11 @@ export function ProofForm({
       const { fileKey } = await uploadFile(file, "delivery-proof");
       setPhotoKey(fileKey);
     } catch (cause) {
-      setError(cause instanceof UploadError ? cause.message : "L’envoi de la photo a échoué.");
+      setError(
+        cause instanceof UploadError
+          ? cause.message
+          : "L’envoi de la photo a échoué.",
+      );
     } finally {
       setUploading(false);
     }
@@ -87,7 +99,9 @@ export function ProofForm({
           ...(photoKey ? { photoKey } : {}),
           ...(position ?? {}),
           // Le serveur exige le montant exact : on déclare ce qui a été demandé.
-          ...(cashToCollectXof > 0 && cashCollected ? { cashCollectedXof: cashToCollectXof } : {}),
+          ...(cashToCollectXof > 0 && cashCollected
+            ? { cashCollectedXof: cashToCollectXof }
+            : {}),
         },
       });
       await onDelivered();
@@ -102,17 +116,9 @@ export function ProofForm({
     <FieldCard tone="action">
       <h2 className={styles.subtitle}>Remise au client</h2>
       <p className={styles.muted}>
-        Deux éléments sur trois sont nécessaires. Le code est celui que le client a reçu par
-        message.
+        Demandez au client son code à 4 chiffres : il l’a dans sa commande, sur
+        le site. Tapez-le ci-dessous et confirmez.
       </p>
-
-      <ol className={proof.checklist}>
-        <li data-done={otpReady || undefined}>Code du client</li>
-        <li data-done={photoKey !== null || undefined}>Photo du colis remis</li>
-        <li data-done={position !== null || undefined}>
-          Position {locating ? ": recherche en cours…" : position ? "" : ": indisponible"}
-        </li>
-      </ol>
 
       {cashToCollectXof > 0 ? (
         <label className={proof.photoButton} style={{ gap: 8 }}>
@@ -121,47 +127,90 @@ export function ProofForm({
             checked={cashCollected}
             onChange={(event) => setCashCollected(event.target.checked)}
           />
-          J’ai encaissé {formatFcfa(cashToCollectXof)} en espèces auprès du client
+          J’ai encaissé {formatFcfa(cashToCollectXof)} en espèces auprès du
+          client
         </label>
       ) : null}
 
-      <Field
-        label="Code à 4 chiffres"
-        inputMode="numeric"
-        maxLength={4}
-        value={otp}
-        onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 4))}
-        placeholder="1234"
-      />
+      <div className={proof.codeField}>
+        <Field
+          label="Code du client (4 chiffres)"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          maxLength={4}
+          value={otp}
+          onChange={(event) =>
+            setOtp(event.target.value.replace(/\D/g, "").slice(0, 4))
+          }
+          placeholder="1234"
+        />
+      </div>
 
-      <label className={proof.photoButton}>
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          /* `capture` ouvre directement l'appareil photo arrière : le livreur
+      {/* Client injoignable ou sans code : photo + position prennent le relais. */}
+      {!showFallback ? (
+        <button
+          type="button"
+          className={proof.fallbackLink}
+          onClick={() => setShowFallback(true)}
+        >
+          Le client n’a pas son code ?
+        </button>
+      ) : (
+        <>
+          <ol className={proof.checklist}>
+            <li data-done={photoKey !== null || undefined}>
+              Photo du colis remis
+            </li>
+            <li data-done={position !== null || undefined}>
+              Position{" "}
+              {locating
+                ? ": recherche en cours…"
+                : position
+                  ? ""
+                  : ": indisponible"}
+            </li>
+          </ol>
+          <label className={proof.photoButton}>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              /* `capture` ouvre directement l'appareil photo arrière : le livreur
              prend la photo sur place, il ne va pas la chercher dans sa
              galerie. */
-          capture="environment"
-          disabled={uploading}
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) void sendPhoto(file);
-            event.target.value = "";
-          }}
-        />
-        {uploading ? "Envoi de la photo…" : photoKey ? "Reprendre la photo" : "Prendre une photo"}
-      </label>
+              capture="environment"
+              disabled={uploading}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void sendPhoto(file);
+                event.target.value = "";
+              }}
+            />
+            {uploading
+              ? "Envoi de la photo…"
+              : photoKey
+                ? "Reprendre la photo"
+                : "Prendre une photo"}
+          </label>
+        </>
+      )}
 
       {error ? <p className={styles.error}>{error}</p> : null}
 
-      <Button type="button" fullWidth disabled={!enough || busy} onClick={() => void submit()}>
+      <Button
+        type="button"
+        fullWidth
+        disabled={!enough || busy}
+        onClick={() => void submit()}
+      >
         {busy
           ? "Enregistrement…"
           : enough
             ? "Confirmer la remise"
-            : provided >= 2
+            : proven
               ? "Encaissez d’abord le montant"
-              : `Encore ${2 - provided} élément${2 - provided > 1 ? "s" : ""}`}
+              : showFallback
+                ? `Encore ${2 - provided} élément${2 - provided > 1 ? "s" : ""}`
+                : "Saisissez le code du client"}
       </Button>
     </FieldCard>
   );

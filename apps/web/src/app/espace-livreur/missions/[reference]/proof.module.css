@@ -64,3 +64,23 @@
 .photoButton input {
   display: none;
 }
+
+/* Le code se tape sur le téléphone, devant le client : gros, espacé. */
+.codeField input {
+  font-size: 28px;
+  letter-spacing: 0.4em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.fallbackLink {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--color-gray-700);
+  text-decoration: underline;
+  cursor: pointer;
+}
