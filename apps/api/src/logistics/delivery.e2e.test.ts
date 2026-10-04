@@ -359,6 +359,8 @@ describe('Livraison et versement (bout en bout)', () => {
         .expect(200);
       expect(order.body.status).toBe('IN_DELIVERY');
       expect(order.body.statusLabel).toBe('En livraison');
+      // Le client retrouve son code de réception dans sa commande, sans SMS.
+      expect(order.body.subOrders[0].deliveryCode).toBe(refs.otp);
 
       await api()
         .post(`/api/v1/courier/missions/${refs.shipment}/start`)
@@ -425,19 +427,16 @@ describe('Livraison et versement (bout en bout)', () => {
           .expect(400);
       });
 
-      it('accepte deux éléments sur trois', async () => {
+      it('accepte le code du client à lui seul', async () => {
+        // Le livreur tape le code donné par le client : la remise est confirmée.
         const response = await api()
           .post(`/api/v1/courier/missions/${refs.shipment}/deliver`)
           .set('Cookie', courierCookies)
-          .send({
-            otp: refs.otp,
-            photoKey: 'proof/photo.jpg',
-            ...CHEZ_LE_CLIENT,
-          })
+          .send({ otp: refs.otp })
           .expect(201);
 
         expect(response.body.status).toBe('DELIVERED');
-        expect(response.body.provided).toEqual(['otp', 'photo', 'gps']);
+        expect(response.body.provided).toEqual(['otp']);
       });
 
       it('fait passer la commande en « Livrée »', async () => {
@@ -495,6 +494,8 @@ describe('Livraison et versement (bout en bout)', () => {
           .set('Cookie', customerCookies)
           .expect(200);
         expect(order.body.status).toBe('COMPLETED');
+        // Pièce remise : le code ne sert plus, il n'est plus montré.
+        expect(order.body.subOrders[0].deliveryCode).toBeNull();
       });
 
       it('montre au créateur ce qui lui est dû', async () => {

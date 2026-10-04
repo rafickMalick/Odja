@@ -145,7 +145,7 @@ export class CourierController {
   }
 
   /**
-   * Remise au client. Refusée sans deux éléments de preuve sur trois.
+   * Remise au client : le code du client suffit ; sans lui, photo + position.
    *
    * Le code de remise ne fait que quatre chiffres : sans limite de débit, dix
    * mille essais le trouvent en quelques minutes, et une livraison serait
