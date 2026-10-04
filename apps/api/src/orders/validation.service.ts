@@ -320,7 +320,7 @@ export class ValidationService {
   private async refreshOrder(tx: Prisma.TransactionClient, orderId: string): Promise<void> {
     const [statuses, paid] = await Promise.all([
       tx.subOrder.findMany({ where: { orderId }, select: { status: true } }),
-      tx.payment.findFirst({ where: { orderId, status: 'PAID' }, select: { id: true } }),
+      tx.order.findFirst({ where: { id: orderId, placedAt: { not: null } }, select: { id: true } }),
     ]);
 
     const next = deriveOrderStatus(

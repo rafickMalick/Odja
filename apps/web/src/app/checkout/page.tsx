@@ -1,6 +1,6 @@
 "use client";
 
-import type { CheckoutQuote, PromoView, PublicAddress } from "@oja/contracts";
+import type { CheckoutQuote, PaymentModeName, PromoView, PublicAddress } from "@oja/contracts";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -47,6 +47,8 @@ export default function CheckoutPage() {
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
   // Mobile Money par défaut : c'est le moyen dominant sur ce marché.
   const [paymentMethod, setPaymentMethod] = useState<"momo" | "card">("momo");
+  // Tout en ligne par défaut : c'est le parcours le plus court pour le client.
+  const [paymentMode, setPaymentMode] = useState<PaymentModeName>("ONLINE_FULL");
   const [needsAuth, setNeedsAuth] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -189,6 +191,7 @@ export default function CheckoutPage() {
     const orderBody = {
       addressId,
       expectedTotalXof: quote.totalXof,
+      paymentMode,
       ...(quote.promo ? { promoCode: quote.promo.code } : {}),
     };
     const signature = JSON.stringify(orderBody);
@@ -410,6 +413,45 @@ export default function CheckoutPage() {
             </div>
 
             <div className={styles.block}>
+              <h2 className={styles.blockTitle}>Quand payer ?</h2>
+              <p className={styles.subtitle}>
+                Le livreur encaisse pour Ojà : l&apos;atelier est payé par la plateforme
+                une fois votre réception validée.
+              </p>
+
+              <div className={styles.options}>
+                {(quote?.paymentOptions ?? []).map((option) => (
+                  <label
+                    key={option.mode}
+                    className={`${styles.option} ${
+                      paymentMode === option.mode ? styles.optionSelected : ""
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMode"
+                      value={option.mode}
+                      checked={paymentMode === option.mode}
+                      onChange={() => setPaymentMode(option.mode)}
+                      className={styles.checkbox}
+                    />
+                    <span className={styles.optionBody}>
+                      <span className={styles.optionTitle}>{option.label}</span>
+                      <span className={styles.optionText}>
+                        {option.balanceXof === 0
+                          ? `Vous payez ${formatFcfa(option.upfrontXof)} maintenant.`
+                          : option.upfrontXof === 0
+                            ? `Rien à payer maintenant. ${formatFcfa(option.balanceXof)} en espèces au livreur à la réception.`
+                            : `${formatFcfa(option.upfrontXof)} maintenant, puis ${formatFcfa(option.balanceXof)} en espèces au livreur à la réception.`}
+                      </span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {paymentMode !== "CASH_ON_DELIVERY" ? (
+            <div className={styles.block}>
               <h2 className={styles.blockTitle}>Moyen de paiement</h2>
               <p className={styles.subtitle}>
                 Le choix décide des frais affichés par l’agrégateur : 2,3 % en Mobile
@@ -456,6 +498,7 @@ export default function CheckoutPage() {
                 </label>
               </div>
             </div>
+            ) : null}
 
             <PrivacyNoteBanner />
           </div>
@@ -593,6 +636,32 @@ export default function CheckoutPage() {
               </span>
             </div>
 
+            {quote ? (
+              <div className={styles.totals}>
+                <div className={styles.totalsRow}>
+                  <span className={styles.totalsLabel}>À payer maintenant</span>
+                  <span className={styles.totalsValue}>
+                    {formatFcfa(
+                      quote.paymentOptions.find((option) => option.mode === paymentMode)
+                        ?.upfrontXof ?? quote.totalXof,
+                    )}
+                  </span>
+                </div>
+                {(quote.paymentOptions.find((option) => option.mode === paymentMode)
+                  ?.balanceXof ?? 0) > 0 ? (
+                  <div className={styles.totalsRow}>
+                    <span className={styles.totalsLabel}>À remettre au livreur</span>
+                    <span className={styles.totalsValue}>
+                      {formatFcfa(
+                        quote.paymentOptions.find((option) => option.mode === paymentMode)
+                          ?.balanceXof ?? 0,
+                      )}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
             {quote && quote.blockers.length > 0 ? (
               <ul className={styles.secureNote}>
                 {quote.blockers.map((blocker) => (
@@ -608,7 +677,11 @@ export default function CheckoutPage() {
               fullWidth
               disabled={!quote || quote.blockers.length > 0 || submitting}
             >
-              {submitting ? "Enregistrement…" : "Confirmer la commande"}
+              {submitting
+                ? "Enregistrement…"
+                : paymentMode === "CASH_ON_DELIVERY"
+                  ? "Confirmer la commande"
+                  : "Confirmer et payer"}
             </Button>
           </aside>
         </div>

@@ -137,6 +137,25 @@ export default async function ConfirmationPage({
             <span className={styles.grandTotalValue}>{formatFcfa(order.totalXof)}</span>
           </div>
 
+          {order.balanceXof > 0 ? (
+            <div className={styles.totals}>
+              <div className={styles.totalsRow}>
+                <span className={styles.totalsLabel}>
+                  {order.upfrontXof > 0 ? "Payé en ligne (acompte)" : "Payé en ligne"}
+                </span>
+                <span className={styles.totalsValue}>{formatFcfa(order.upfrontXof)}</span>
+              </div>
+              <div className={styles.totalsRow}>
+                <span className={styles.totalsLabel}>À remettre au livreur à la réception</span>
+                <span className={styles.totalsValue}>{formatFcfa(order.balanceXof)}</span>
+              </div>
+              <p className={styles.lineMeta}>
+                Préparez cette somme en espèces : le livreur ne pourra pas vous remettre
+                le colis sans l&apos;encaisser.
+              </p>
+            </div>
+          ) : null}
+
           <div className={styles.rule} />
 
           <p className={styles.lineMeta}>

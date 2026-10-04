@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { LedgerService } from '../ledger/ledger.service';
 import { MakerModule } from '../makers/maker.module';
 import { CourierService } from './courier.service';
 import {
@@ -22,7 +23,7 @@ import { TrackingController } from './tracking.controller';
     LogisticsAdminController,
     TrackingController,
   ],
-  providers: [ShipmentService, CourierService, ShipmentEventsBus],
+  providers: [ShipmentService, CourierService, ShipmentEventsBus, LedgerService],
   exports: [ShipmentService, CourierService],
 })
 export class LogisticsModule {}
