@@ -36,6 +36,7 @@ export default function CheckoutPage() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [cities, setCities] = useState<City[]>([]);
   const [addressId, setAddressId] = useState<string>("");
+  const [addressErrors, setAddressErrors] = useState<Record<string, string>>({});
   const [quote, setQuote] = useState<CheckoutQuote | null>(null);
   const [promoInput, setPromoInput] = useState("");
   /* Raison d'un refus, sous le champ. Gardée à part du chiffrage : sinon le
@@ -163,6 +164,7 @@ export default function CheckoutPage() {
         ?.value ?? '';
 
     setError(null);
+    setAddressErrors({});
 
     try {
       const created = await apiFetch<PublicAddress>("/me/addresses", {
@@ -178,7 +180,19 @@ export default function CheckoutPage() {
       setAddresses((current) => [created, ...current]);
       setAddressId(created.id);
     } catch (cause) {
-      setError(cause instanceof ApiError ? cause.message : "Adresse refusée.");
+      /* L'erreur s'affiche sous le champ fautif, à côté de l'adresse — pas
+         en bas de la page, où personne ne la voyait. */
+      if (cause instanceof ApiError) {
+        const fields = ["fullName", "phone", "cityId", "line1", "landmark"];
+        const byField = Object.fromEntries(
+          fields.map((field) => [field, cause.fieldError(field)]).filter(([, message]) => message),
+        ) as Record<string, string>;
+        setAddressErrors(
+          Object.keys(byField).length > 0 ? byField : { form: cause.message },
+        );
+      } else {
+        setAddressErrors({ form: "Adresse refusée. Vérifiez les champs et réessayez." });
+      }
     }
   };
 
@@ -378,11 +392,13 @@ export default function CheckoutPage() {
               <div className={styles.fields} ref={addressFormRef}>
                 <>
                   <FieldRow>
-                    <Field label="Nom et prénoms *" name="fullName" />
+                    <Field label="Nom et prénoms *" name="fullName" error={addressErrors["fullName"]} />
                     <Field
                       label="Téléphone *"
                       name="phone"
-                      placeholder="+229 01 00 00 00 00"
+                      type="tel"
+                      placeholder="01 97 00 00 00"
+                      error={addressErrors["phone"]}
                     />
                   </FieldRow>
 
@@ -403,11 +419,23 @@ export default function CheckoutPage() {
                     />
                   </FieldRow>
 
-                  <Field label="Adresse *" name="line1" />
+                  <Field label="Adresse *" name="line1" error={addressErrors["line1"]} />
+
+                  {addressErrors["form"] ? (
+                    <p className={styles.secureNote} role="alert">
+                      {addressErrors["form"]}
+                    </p>
+                  ) : null}
 
                   <Button type="button" variant="outline" onClick={handleCreateAddress}>
                     Enregistrer cette adresse
                   </Button>
+                  {!addressId ? (
+                    <p className={styles.subtitle}>
+                      Enregistrez l’adresse : le prix de la livraison se calcule à partir
+                      d’elle, puis vous pourrez confirmer.
+                    </p>
+                  ) : null}
                 </>
               </div>
             </div>
@@ -679,7 +707,9 @@ export default function CheckoutPage() {
             >
               {submitting
                 ? "Enregistrement…"
-                : paymentMode === "CASH_ON_DELIVERY"
+                : !addressId
+                  ? "Enregistrez d’abord votre adresse"
+                  : paymentMode === "CASH_ON_DELIVERY"
                   ? "Confirmer la commande"
                   : "Confirmer et payer"}
             </Button>

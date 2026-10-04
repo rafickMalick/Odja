@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { PublicUser, RegisterInput } from '@oja/contracts';
+import { phoneVariants, type PublicUser, type RegisterInput } from '@oja/contracts';
 import type { User } from '@oja/db';
 
 import { EmailService } from '../notifications/email.service';
@@ -70,7 +70,7 @@ export class AuthService {
     context: { userAgent?: string; ip?: string } = {},
   ): Promise<{ tokens: IssuedTokens | null; user: PublicUser | null; pendingPhone: boolean }> {
     const existing = await this.prisma.user.findFirst({
-      where: { OR: [{ email: input.email }, { phone: input.phone }], deletedAt: null },
+      where: { OR: [{ email: input.email }, { phone: { in: phoneVariants(input.phone) } }], deletedAt: null },
       select: { id: true, phoneVerifiedAt: true },
     });
 
@@ -203,7 +203,7 @@ export class AuthService {
   ): Promise<{ tokens: IssuedTokens; user: PublicUser } | { mfaChallenge: string }> {
     const user = await this.prisma.user.findFirst({
       where: {
-        OR: [{ email: identifier.toLowerCase() }, { phone: identifier }],
+        OR: [{ email: identifier.toLowerCase() }, { phone: { in: [identifier, ...phoneVariants(identifier)] } }],
         deletedAt: null,
       },
     });
@@ -304,7 +304,7 @@ export class AuthService {
   async forgotPassword(identifier: string): Promise<void> {
     const user = await this.prisma.user.findFirst({
       where: {
-        OR: [{ email: identifier.toLowerCase() }, { phone: identifier }],
+        OR: [{ email: identifier.toLowerCase() }, { phone: { in: [identifier, ...phoneVariants(identifier)] } }],
         deletedAt: null,
       },
       select: { id: true, phone: true, email: true, firstName: true },
@@ -344,7 +344,7 @@ export class AuthService {
   async resetPassword(identifier: string, code: string, password: string): Promise<void> {
     const user = await this.prisma.user.findFirst({
       where: {
-        OR: [{ email: identifier.toLowerCase() }, { phone: identifier }],
+        OR: [{ email: identifier.toLowerCase() }, { phone: { in: [identifier, ...phoneVariants(identifier)] } }],
         deletedAt: null,
       },
       select: { id: true },

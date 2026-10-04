@@ -46,7 +46,8 @@ test('un client trouve une pièce, la commande et reçoit sa confirmation', asyn
 
   // Une adresse à Cotonou, la ville de l'atelier : la livraison se chiffre.
   await page.getByLabel('Nom et prénoms *').fill('Awa Koné');
-  await page.getByLabel('Téléphone *').fill('+2290197000000');
+  // Tapé comme au Bénin, sans indicatif : le site ajoute +229.
+  await page.getByLabel('Téléphone *').fill('01 97 00 00 00');
   await page.getByLabel('Ville *').selectOption({ label: 'Cotonou' });
   await page.getByLabel('Adresse *').fill('Rue 12.034, Haie Vive');
   await page.getByRole('button', { name: 'Enregistrer cette adresse' }).click();
