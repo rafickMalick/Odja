@@ -182,7 +182,10 @@ session appartiennent ainsi au site, et le navigateur les garde.
 
 - Render : `WEB_ORIGIN=https://oja.aworix.agency` (liens des e-mails),
   **`COOKIE_DOMAIN` vide** (avec le relais, les cookies appartiennent déjà au
-  site ; une valeur les ferait refuser), `TRUST_PROXY_HOPS=2`,
+  site ; une valeur les ferait refuser — une valeur qui ne couvre pas
+  `WEB_ORIGIN`, comme `oja.ox`, est désormais ignorée et signalée dans les
+  journaux de l'API), `NODE_ENV=production` (sans lui, les cookies n'ont pas
+  le drapeau `Secure`), `TRUST_PROXY_HOPS=2`,
   `MAIL_FROM="Ojà <noreply@oja.aworix.agency>"`, `BREVO_API_KEY`.
 - Vercel : `NEXT_PUBLIC_API_URL` garde l'adresse Render
   (`https://oja-api-69ph.onrender.com/api/v1`) : c'est la cible du relais.

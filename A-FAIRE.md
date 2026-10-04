@@ -57,7 +57,8 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
 
 ## 4. Site (front)
 
-- [ ] Liens des réseaux sociaux du pied de page : encore `href="#"`.
+- [x] Liens des réseaux sociaux du pied de page : Instagram (`@oja.bj`) et la
+  page LinkedIn d'Ojà ; X et Facebook retirés tant qu'il n'y a pas de compte.
 - [x] Affichage par rôle : les appels à créer un compte ne s'affichent plus
   qu'aux visiteurs (et à l'admin) ; `/connexion` et `/inscription` renvoient
   un compte connecté dans son espace.
@@ -82,7 +83,8 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
   (`https://api.oja.aworix.agency/api/v1/webhooks/kadevpay`)
 - [ ] Versements aux créateurs et livreurs (lot L5)
 - [ ] SMS (LN-03)
-- [ ] Avis clients (L6-11, L6-12)
+- [x] Avis clients (L6-11, L6-12) : note et commentaire après réception validée,
+  modération dans Admin › Avis clients, avis publiés sur la fiche produit
 - [x] MFA des admins (L0-22, L7-16) : obligatoire pour l'espace admin ; page
   `/double-authentification`, réinitialisation dans Admin › Administrateurs
 - [ ] Après le déploiement de la MFA : chaque admin l'active à sa prochaine
@@ -96,7 +98,7 @@ mesure et mettre ce fichier à jour dans la même PR que le travail fait.
     fichier de configuration, jamais de données utilisateur) ;
   - **next 15 → 16** : `postcss` (compilation des CSS, pas l'exécution) ;
   - **vitest 3 → 5** : outil de test seulement.
-- [ ] Durcissement L8 : sauvegardes et test de restauration, alertes, audit,
+- [ ] Durcissement L8 : sauvegardes et test de restauration, alertes,
   tests de charge k6 (Playwright fait : `e2e/`, joué en CI)
 - [ ] OpenTelemetry, OpenAPI, cache du catalogue (L1-22)
 

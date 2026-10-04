@@ -569,6 +569,115 @@ describe('Parcours d’achat (bout en bout)', () => {
       expect(merged.groups[0]?.lines[0]?.quantity).toBe(3);
     });
   });
+
+  describe('5 — avis clients', () => {
+    it('n’ouvre l’avis qu’après la réception validée, une fois, et le publie après modération', async () => {
+      // La première commande du client, passée plus haut dans ce fichier.
+      const orders = await api().get('/api/v1/orders').set('Cookie', customerCookies).expect(200);
+      const reference: string = orders.body.items.at(-1).reference;
+      const order = await api()
+        .get(`/api/v1/orders/${reference}`)
+        .set('Cookie', customerCookies)
+        .expect(200);
+      const subOrder = order.body.subOrders[0];
+      const line = subOrder.lines[0];
+      expect(line).toMatchObject({ canReview: false, review: null });
+
+      // Pas encore reçue : on ne note pas une pièce qu'on n'a pas eue en main.
+      await api()
+        .post(`/api/v1/order-lines/${line.id}/review`)
+        .set('Cookie', customerCookies)
+        .send({ rating: 4 })
+        .expect(400);
+
+      await prisma.subOrder.update({
+        where: { reference: subOrder.reference },
+        data: { status: 'VALIDATED' },
+      });
+      const validated = await api()
+        .get(`/api/v1/orders/${reference}`)
+        .set('Cookie', customerCookies)
+        .expect(200);
+      expect(validated.body.subOrders[0].lines[0].canReview).toBe(true);
+
+      // La ligne d'un autre client n'existe pas pour lui.
+      const stranger = await signUp('CUSTOMER', 'avis.autre@oja.market', '+2250780000031');
+      await api()
+        .post(`/api/v1/order-lines/${line.id}/review`)
+        .set('Cookie', stranger)
+        .send({ rating: 1 })
+        .expect(404);
+
+      const created = await api()
+        .post(`/api/v1/order-lines/${line.id}/review`)
+        .set('Cookie', customerCookies)
+        .send({ rating: 4, body: '  Belle finition, livrée à temps.  ' })
+        .expect(201);
+      expect(created.body).toEqual({ rating: 4, status: 'PENDING', rejectReason: null });
+
+      // Un seul avis par ligne.
+      await api()
+        .post(`/api/v1/order-lines/${line.id}/review`)
+        .set('Cookie', customerCookies)
+        .send({ rating: 5 })
+        .expect(409);
+
+      // En modération : rien de public encore.
+      const before = await api()
+        .get(`/api/v1/catalog/products/${line.productSlug}/reviews`)
+        .expect(200);
+      expect(before.body.items).toHaveLength(0);
+
+      const queue = await api().get('/api/v1/admin/reviews').set('Cookie', adminCookies).expect(200);
+      const pending = queue.body.find(
+        (review: { body: string }) => review.body === 'Belle finition, livrée à temps.',
+      );
+      expect(pending).toMatchObject({ rating: 4, status: 'PENDING', authorName: 'Test U.' });
+
+      // Un refus exige son motif : il est montré à l'auteur.
+      await api()
+        .post(`/api/v1/admin/reviews/${pending.id}/moderate`)
+        .set('Cookie', adminCookies)
+        .send({ decision: 'REJECT' })
+        .expect(400);
+      await api()
+        .post(`/api/v1/admin/reviews/${pending.id}/moderate`)
+        .set('Cookie', adminCookies)
+        .send({ decision: 'PUBLISH' })
+        .expect(200);
+
+      const after = await api()
+        .get(`/api/v1/catalog/products/${line.productSlug}/reviews`)
+        .expect(200);
+      expect(after.body).toMatchObject({ ratingAvg: 4, ratingCount: 1 });
+      expect(after.body.items[0]).toMatchObject({ rating: 4, authorName: 'Test U.' });
+
+      // La note de l'atelier suit celle de ses pièces.
+      const product = await prisma.product.findUniqueOrThrow({
+        where: { slug: line.productSlug },
+        include: { maker: true },
+      });
+      expect(product.maker).toMatchObject({ ratingAvg: 4, ratingCount: 1 });
+
+      // Retirer l'avis remet les moyennes à zéro, sans dérive.
+      await api()
+        .post(`/api/v1/admin/reviews/${pending.id}/moderate`)
+        .set('Cookie', adminCookies)
+        .send({ decision: 'REJECT', reason: 'Hors sujet' })
+        .expect(200);
+      const withdrawn = await prisma.product.findUniqueOrThrow({ where: { id: product.id } });
+      expect(withdrawn).toMatchObject({ ratingAvg: 0, ratingCount: 0 });
+
+      const mine = await api()
+        .get(`/api/v1/orders/${reference}`)
+        .set('Cookie', customerCookies)
+        .expect(200);
+      expect(mine.body.subOrders[0].lines[0]).toMatchObject({
+        canReview: false,
+        review: { rating: 4, status: 'REJECTED', rejectReason: 'Hors sujet' },
+      });
+    });
+  });
 });
 
 function cookiesOf(response: request.Response): string[] {

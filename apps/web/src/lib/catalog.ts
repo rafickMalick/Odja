@@ -1,4 +1,10 @@
-import type { Page, PublicCategory, PublicMaker, PublicProduct } from '@oja/contracts';
+import type {
+  Page,
+  ProductReviews,
+  PublicCategory,
+  PublicMaker,
+  PublicProduct,
+} from '@oja/contracts';
 
 import { apiFetch, apiFetchOrNull } from './api';
 
@@ -43,6 +49,13 @@ export async function fetchProducts(filters: CatalogFilters = {}): Promise<Page<
 
 export async function fetchProduct(slug: string): Promise<PublicProduct | null> {
   return apiFetchOrNull<PublicProduct>(`/catalog/products/${encodeURIComponent(slug)}`, {
+    revalidate: CATALOG_TTL,
+  });
+}
+
+/** Avis publiés d'une pièce. Absents si l'API ne répond pas : la fiche s'affiche sans. */
+export async function fetchProductReviews(slug: string): Promise<ProductReviews | null> {
+  return apiFetchOrNull<ProductReviews>(`/catalog/products/${encodeURIComponent(slug)}/reviews`, {
     revalidate: CATALOG_TTL,
   });
 }

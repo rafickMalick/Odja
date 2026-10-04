@@ -45,7 +45,8 @@ L'administrateur, lui, voit le site public comme un visiteur.
   « compléter mon inscription » ne sont codés — le chantier n'a pas commencé.
 - Codes promo côté client (cf. lots L2/L6 de l'état global). La **facture PDF**
   existe : émise à l'encaissement, téléchargeable depuis la commande dès le
-  paiement.
+  paiement. Les **avis** sont faits : une fois la réception validée, chaque pièce
+  se note depuis la commande.
 
 ---
 
@@ -149,5 +150,5 @@ réglage admin, pas un chantier.
 2. **Exécution réelle des versements** (fabricant et livreur) — dépend de la
    réponse Kadev Pay sur le *split*/sous-comptes.
 3. **Connexion Google** — décidée, pas commencée.
-4. Le reste : voir `ETAT-PROJET.md` § 3 (SMS réels, avis clients,
+4. Le reste : voir `ETAT-PROJET.md` § 3 (SMS réels,
    juridique…).
