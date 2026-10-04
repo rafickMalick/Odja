@@ -230,6 +230,7 @@ export class DisputeService {
         await tx.refund.create({
           data: {
             paymentId: await this.paymentIdFor(tx, dispute.orderId),
+            orderId: dispute.orderId,
             amountXof: refundXof,
             reason: `${dispute.reference} — ${input.note}`,
             requestedBy: adminId,
@@ -339,12 +340,20 @@ export class DisputeService {
     return false;
   }
 
-  private async paymentIdFor(tx: Prisma.TransactionClient, orderId: string): Promise<string> {
-    const payment = await tx.payment.findFirstOrThrow({
+  /**
+   * Paiement en ligne à rembourser, s'il y en a un. Une commande réglée à la
+   * livraison n'en a pas : le remboursement est alors rendu en espèces ou par
+   * virement par l'équipe, d'où un `null` et non une erreur.
+   */
+  private async paymentIdFor(
+    tx: Prisma.TransactionClient,
+    orderId: string,
+  ): Promise<string | null> {
+    const payment = await tx.payment.findFirst({
       where: { orderId, status: 'PAID' },
       select: { id: true },
     });
-    return payment.id;
+    return payment?.id ?? null;
   }
 
   /**

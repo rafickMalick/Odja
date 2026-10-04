@@ -6,6 +6,7 @@ import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { FieldCard, fieldShellStyles as styles } from "@/components/dashboard/FieldShell";
 import { ApiError, apiFetch } from "@/lib/api";
+import { formatFcfa } from "@/lib/format";
 import { UploadError, uploadFile } from "@/lib/upload";
 
 import { currentPosition } from "../../mission";
@@ -27,11 +28,15 @@ import proof from "./proof.module.css";
  */
 export function ProofForm({
   reference,
+  cashToCollectXof,
   onDelivered,
 }: {
   reference: string;
+  /** Espèces à encaisser avant de pouvoir clore la remise (0 = rien à encaisser). */
+  cashToCollectXof: number;
   onDelivered: () => Promise<void>;
 }) {
+  const [cashCollected, setCashCollected] = useState(false);
   const [otp, setOtp] = useState("");
   const [photoKey, setPhotoKey] = useState<string | null>(null);
   const [position, setPosition] = useState<{ latitude: number; longitude: number } | null>(
@@ -56,7 +61,7 @@ export function ProofForm({
 
   const otpReady = /^\d{4}$/.test(otp);
   const provided = [otpReady, photoKey !== null, position !== null].filter(Boolean).length;
-  const enough = provided >= 2;
+  const enough = provided >= 2 && (cashToCollectXof === 0 || cashCollected);
 
   const sendPhoto = async (file: File) => {
     setUploading(true);
@@ -81,6 +86,8 @@ export function ProofForm({
           ...(otpReady ? { otp } : {}),
           ...(photoKey ? { photoKey } : {}),
           ...(position ?? {}),
+          // Le serveur exige le montant exact : on déclare ce qui a été demandé.
+          ...(cashToCollectXof > 0 && cashCollected ? { cashCollectedXof: cashToCollectXof } : {}),
         },
       });
       await onDelivered();
@@ -106,6 +113,17 @@ export function ProofForm({
           Position {locating ? ": recherche en cours…" : position ? "" : ": indisponible"}
         </li>
       </ol>
+
+      {cashToCollectXof > 0 ? (
+        <label className={proof.photoButton} style={{ gap: 8 }}>
+          <input
+            type="checkbox"
+            checked={cashCollected}
+            onChange={(event) => setCashCollected(event.target.checked)}
+          />
+          J’ai encaissé {formatFcfa(cashToCollectXof)} en espèces auprès du client
+        </label>
+      ) : null}
 
       <Field
         label="Code à 4 chiffres"
@@ -141,7 +159,9 @@ export function ProofForm({
           ? "Enregistrement…"
           : enough
             ? "Confirmer la remise"
-            : `Encore ${2 - provided} élément${2 - provided > 1 ? "s" : ""}`}
+            : provided >= 2
+              ? "Encaissez d’abord le montant"
+              : `Encore ${2 - provided} élément${2 - provided > 1 ? "s" : ""}`}
       </Button>
     </FieldCard>
   );

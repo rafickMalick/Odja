@@ -280,12 +280,12 @@ export class SubOrderService {
 
       /* L'écriture comptable n'a lieu que si l'argent est déjà entré. Une
          commande annulée avant paiement n'a créé aucune dette à éteindre. */
-      const paid = await tx.payment.findFirst({
-        where: { orderId: subOrder.orderId, status: 'PAID' },
+      const confirmed = await tx.order.findFirst({
+        where: { id: subOrder.orderId, placedAt: { not: null } },
         select: { id: true },
       });
 
-      if (paid) {
+      if (confirmed) {
         await this.ledger.recordSubOrderCancelled(
           tx,
           {
@@ -294,6 +294,8 @@ export class SubOrderService {
             makerId: subOrder.makerId,
             itemsMakerSubtotalXof: subOrder.itemsMakerSubtotalXof,
             deliveryFeeXof: subOrder.deliveryFeeXof,
+            // Ce que le livreur devait encore encaisser sur cette sous-commande.
+            outstandingBalanceXof: subOrder.cashCollectedAt ? 0 : subOrder.balanceDueXof,
           },
           subOrder.order.customerId,
         );
@@ -316,7 +318,7 @@ export class SubOrderService {
   ): Promise<void> {
     const [subOrders, paid] = await Promise.all([
       tx.subOrder.findMany({ where: { orderId }, select: { status: true } }),
-      tx.payment.findFirst({ where: { orderId, status: 'PAID' }, select: { id: true } }),
+      tx.order.findFirst({ where: { id: orderId, placedAt: { not: null } }, select: { id: true } }),
     ]);
 
     const next = deriveOrderStatus(

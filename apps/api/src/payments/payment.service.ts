@@ -199,24 +199,53 @@ export class PaymentService {
         include: { subOrders: { select: { makerId: true, itemsMakerSubtotalXof: true } } },
       });
 
+      // `order.upfrontXof` : ce qui a été payé en ligne. Le solde éventuel
+      // devient une créance que le livreur recouvrera à la réception.
       await this.ledger.recordOrderPaid(tx, order);
       await this.ledger.recordPspFee(tx, { id: paymentId, feeXof: status.feeXof });
     });
 
-    /* Les avis partent après la transaction : le délai de 48 h vient de
-       s'ouvrir pour chaque atelier, et un artisan qui l'apprend deux jours
-       plus tard en rafraîchissant sa page a déjà perdu la commande. Un envoi
-       qui échoue ne doit évidemment pas défaire l'encaissement. */
+    await this.announceConfirmedOrder(payment.orderId);
+
+    this.logger.log(`Paiement ${paymentId} encaissé (${status.amountXof} F CFA)`);
+    return { status: 'PAID' };
+  }
+
+  /**
+   * Confirme une commande qui n'attend aucun paiement en ligne (paiement à la
+   * livraison). Mêmes bascules et mêmes écritures qu'un encaissement : le
+   * montant tout entier est inscrit comme créance, que le livreur recouvrera.
+   *
+   * Appelée **dans la transaction de création de la commande** : une commande
+   * qui existe sans être confirmée, et sans paiement à expirer, ne se
+   * terminerait jamais.
+   */
+  async confirmWithoutOnlinePayment(tx: Prisma.TransactionClient, orderId: string): Promise<void> {
+    await this.confirmOrder(tx, orderId);
+
+    const order = await tx.order.findUniqueOrThrow({
+      where: { id: orderId },
+      include: { subOrders: { select: { makerId: true, itemsMakerSubtotalXof: true } } },
+    });
+    await this.ledger.recordOrderPaid(tx, order);
+  }
+
+  /**
+   * Prévient chaque atelier qu'une commande l'attend.
+   *
+   * Les avis partent après la transaction : le délai de 48 h vient de
+   * s'ouvrir pour chaque atelier, et un artisan qui l'apprend deux jours plus
+   * tard en rafraîchissant sa page a déjà perdu la commande. Un envoi qui
+   * échoue ne doit évidemment pas défaire l'encaissement.
+   */
+  async announceConfirmedOrder(orderId: string): Promise<void> {
     const confirmed = await this.prisma.subOrder.findMany({
-      where: { orderId: payment.orderId, status: 'PAYMENT_CONFIRMED' },
+      where: { orderId, status: 'PAYMENT_CONFIRMED' },
       select: { id: true },
     });
     for (const subOrder of confirmed) {
       await this.notifications.subOrderReceived(subOrder.id);
     }
-
-    this.logger.log(`Paiement ${paymentId} encaissé (${status.amountXof} F CFA)`);
-    return { status: 'PAID' };
   }
 
   /**
@@ -226,7 +255,7 @@ export class PaymentService {
    * signal qui ouvre son délai de réponse de 48 h. Le stock réservé devient
    * définitivement consommé.
    */
-  private async confirmOrder(tx: Prisma.TransactionClient, orderId: string): Promise<void> {
+  async confirmOrder(tx: Prisma.TransactionClient, orderId: string): Promise<void> {
     const order = await tx.order.findUniqueOrThrow({
       where: { id: orderId },
       include: { subOrders: { include: { lines: { include: { product: true } } } } },

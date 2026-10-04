@@ -24,6 +24,8 @@ const ACCOUNT_LABELS: Record<LedgerAccountType, string> = {
   CUSTOMER_REFUNDABLE: 'Dû aux clients',
   PSP_FEE: 'Frais de l’agrégateur',
   VAT_PAYABLE: 'TVA collectée',
+  RECEIVABLE_ON_DELIVERY: 'À encaisser à la livraison',
+  COURIER_CASH_HELD: 'Espèces chez les livreurs',
 };
 
 @Injectable()

@@ -109,6 +109,12 @@ export class LedgerService {
       vatXof: number;
       /** Remise d'un code promo, absorbée par la commission Ojà. */
       discountXof?: number;
+      /**
+       * Part réellement encaissée à la commande. Le reste (`totalXof` moins
+       * cette part) est une créance : le livreur l'encaissera à la réception.
+       * Absente : tout est encaissé, comme pour un paiement en ligne complet.
+       */
+      upfrontXof?: number;
       subOrders: { makerId: string; itemsMakerSubtotalXof: number }[];
     },
   ): Promise<void> {
@@ -127,8 +133,21 @@ export class LedgerService {
        encaisse le total remisé, la somme des lignes reste nulle. */
     const discountXof = order.discountXof ?? 0;
 
+    const upfrontXof = order.upfrontXof ?? order.totalXof;
+    const receivableXof = order.totalXof - upfrontXof;
+    if (upfrontXof < 0 || receivableXof < 0) {
+      throw new Error(
+        `commande ${order.reference} : encaissement ${upfrontXof} incohérent avec le total ${order.totalXof}`,
+      );
+    }
+
+    /* Les dettes envers les créateurs, la livraison, la commission et la TVA
+       sont dues pour le TOTAL, quelle que soit la part déjà encaissée : la
+       différence est une créance sur le client, que le livreur recouvrera. La
+       somme des lignes reste nulle. */
     const legs: LedgerLeg[] = [
-      { type: 'PLATFORM_CASH', amountXof: order.totalXof },
+      { type: 'PLATFORM_CASH', amountXof: upfrontXof },
+      { type: 'RECEIVABLE_ON_DELIVERY', amountXof: receivableXof },
       ...order.subOrders.map((subOrder) => ({
         type: 'MAKER_PAYABLE' as const,
         ownerId: makerUserIds.get(subOrder.makerId) ?? subOrder.makerId,
@@ -190,30 +209,101 @@ export class LedgerService {
       makerId: string;
       itemsMakerSubtotalXof: number;
       deliveryFeeXof: number;
+      /**
+       * Part du solde que le livreur devait encore encaisser, si elle ne l'a
+       * pas été. Zéro pour un paiement en ligne complet.
+       */
+      outstandingBalanceXof?: number;
     },
     customerId: string,
   ): Promise<void> {
     const makerUserIds = await this.makerUserIds(tx, [subOrder.makerId]);
+
+    const owedBack = subOrder.itemsMakerSubtotalXof + subOrder.deliveryFeeXof;
+    const outstanding = subOrder.outstandingBalanceXof ?? 0;
+
+    /* On ne rend au client que ce qu'il a réellement payé. S'il n'avait réglé
+       qu'une partie (acompte, ou rien du tout en paiement à la livraison), la
+       créance correspondante est annulée au lieu d'être « remboursée » :
+       personne n'a rien versé à Ojà pour cette part. Ce qui reste de la
+       commission et de la TVA sur la part non réglée est repris sur le revenu
+       d'Ojà — rien n'a été gagné sur une vente qui n'aura pas lieu. */
+    const refund = Math.min(owedBack, Math.max(0, owedBack - outstanding));
+    const revenueAdjustment = refund + outstanding - owedBack;
+
+    const legs: LedgerLeg[] = [
+      // La dette envers le créateur s'éteint…
+      {
+        type: 'MAKER_PAYABLE',
+        ownerId: makerUserIds.get(subOrder.makerId) ?? subOrder.makerId,
+        amountXof: subOrder.itemsMakerSubtotalXof,
+      },
+      // …ainsi que la provision de livraison qui n'aura pas lieu…
+      { type: 'COURIER_PAYABLE', amountXof: subOrder.deliveryFeeXof },
+      // …ce qui a été payé devient dû au client…
+      { type: 'CUSTOMER_REFUNDABLE', ownerId: customerId, amountXof: -refund },
+      // …et ce qui n'avait pas été payé cesse d'être une créance.
+      { type: 'RECEIVABLE_ON_DELIVERY', amountXof: -outstanding },
+      { type: 'PLATFORM_REVENUE', amountXof: revenueAdjustment },
+    ];
 
     await this.record(tx, {
       kind: 'sub_order_cancelled',
       refType: 'sub_order',
       refId: subOrder.id,
       memo: `Annulation ${subOrder.reference}`,
+      legs,
+    });
+  }
+
+  /**
+   * Le livreur a encaissé, à la remise, la part du solde d'une sous-commande.
+   *
+   * L'argent est entre ses mains, pas encore dans celles d'Ojà : la créance
+   * sur le client s'éteint, et une dette du livreur envers Ojà apparaît. Elle
+   * ne disparaît qu'au reversement (`recordCourierRemittance`).
+   */
+  async recordCashCollected(
+    tx: Prisma.TransactionClient,
+    collection: {
+      subOrderId: string;
+      subOrderReference: string;
+      courierUserId: string;
+      amountXof: number;
+    },
+  ): Promise<void> {
+    await this.record(tx, {
+      kind: 'cash_collected',
+      refType: 'sub_order',
+      refId: collection.subOrderId,
+      memo: `Encaissement à la livraison ${collection.subOrderReference}`,
       legs: [
-        // La dette envers le créateur s'éteint…
         {
-          type: 'MAKER_PAYABLE',
-          ownerId: makerUserIds.get(subOrder.makerId) ?? subOrder.makerId,
-          amountXof: subOrder.itemsMakerSubtotalXof,
+          type: 'COURIER_CASH_HELD',
+          ownerId: collection.courierUserId,
+          amountXof: collection.amountXof,
         },
-        // …ainsi que la provision de livraison qui n'aura pas lieu…
-        { type: 'COURIER_PAYABLE', amountXof: subOrder.deliveryFeeXof },
-        // …et le tout devient dû au client.
+        { type: 'RECEIVABLE_ON_DELIVERY', amountXof: -collection.amountXof },
+      ],
+    });
+  }
+
+  /** Le livreur reverse à Ojà une partie ou la totalité des espèces détenues. */
+  async recordCourierRemittance(
+    tx: Prisma.TransactionClient,
+    remittance: { courierUserId: string; amountXof: number; memo?: string },
+  ): Promise<void> {
+    await this.record(tx, {
+      kind: 'cash_remitted',
+      refType: 'courier',
+      refId: remittance.courierUserId,
+      memo: remittance.memo ?? 'Reversement des espèces par le livreur',
+      legs: [
+        { type: 'PLATFORM_CASH', amountXof: remittance.amountXof },
         {
-          type: 'CUSTOMER_REFUNDABLE',
-          ownerId: customerId,
-          amountXof: -(subOrder.itemsMakerSubtotalXof + subOrder.deliveryFeeXof),
+          type: 'COURIER_CASH_HELD',
+          ownerId: remittance.courierUserId,
+          amountXof: -remittance.amountXof,
         },
       ],
     });
@@ -285,6 +375,22 @@ export class LedgerService {
       memo: `Remboursement ${dispute.reference}`,
       legs,
     });
+  }
+
+  /** Même chose, dans une transaction : pour contrôler un solde avant d'écrire. */
+  async balanceOfIn(
+    tx: Prisma.TransactionClient,
+    type: LedgerAccountType,
+    ownerId: string | null = null,
+  ): Promise<number> {
+    const account = await tx.ledgerAccount.findFirst({ where: { type, ownerId } });
+    if (!account) return 0;
+
+    const aggregate = await tx.ledgerEntry.aggregate({
+      where: { accountId: account.id },
+      _sum: { amountXof: true },
+    });
+    return aggregate._sum.amountXof ?? 0;
   }
 
   /** Solde d'un compte, calculé depuis les écritures — jamais dénormalisé. */

@@ -11,7 +11,7 @@ import {
   fieldShellStyles as styles,
 } from "@/components/dashboard/FieldShell";
 import { ApiError, apiFetch } from "@/lib/api";
-import { formatNumber } from "@/lib/format";
+import { formatFcfa, formatNumber } from "@/lib/format";
 
 import { NEXT_ACTION, VEHICLES, currentPosition, mapLink, type Mission } from "../../mission";
 import { ProofForm } from "./ProofForm";
@@ -151,6 +151,9 @@ export default function MissionPage() {
         <h2 className={styles.subtitle}>Livraison</h2>
         <div className={styles.stack}>
           <strong>{mission.drop.fullName}</strong>
+          {mission.cashToCollectXof > 0 ? (
+            <strong>À encaisser en espèces : {formatFcfa(mission.cashToCollectXof)}</strong>
+          ) : null}
           <span className={styles.muted}>{mission.drop.line1}</span>
           {mission.drop.landmark ? (
             <span className={styles.muted}>Repère : {mission.drop.landmark}</span>
@@ -220,7 +223,11 @@ export default function MissionPage() {
               {shareLocation ? "Couper" : "Reprendre"}
             </button>
           </p>
-          <ProofForm reference={reference} onDelivered={load} />
+          <ProofForm
+            reference={reference}
+            cashToCollectXof={mission.cashToCollectXof}
+            onDelivered={load}
+          />
         </>
       ) : null}
 

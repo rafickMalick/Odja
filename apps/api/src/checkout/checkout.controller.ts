@@ -92,6 +92,7 @@ export class CheckoutController {
       input.addressId,
       input.expectedTotalXof,
       input.promoCode,
+      input.paymentMode,
     );
   }
 

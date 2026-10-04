@@ -7,7 +7,15 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { OrderView } from '@oja/contracts';
-import { ORDER_LABELS, SUB_ORDER_LABELS, subOrderRespondByAt } from '@oja/domain';
+import {
+  allocateBalance,
+  needsOnlinePayment,
+  ORDER_LABELS,
+  splitPayment,
+  SUB_ORDER_LABELS,
+  subOrderRespondByAt,
+  type PaymentMode,
+} from '@oja/domain';
 import type { Prisma } from '@oja/db';
 
 import { CartService } from '../cart/cart.service';
@@ -60,6 +68,7 @@ export class OrderService {
     addressId: string,
     expectedTotalXof: number,
     promoCode?: string,
+    paymentMode: PaymentMode = 'ONLINE_FULL',
   ): Promise<OrderView> {
     const quote = await this.quotes.quote(cartId, userId, addressId, promoCode);
 
@@ -93,6 +102,21 @@ export class OrderService {
 
     const deliveryByMaker = new Map(quote.deliveries.map((d) => [d.makerId, d]));
     const now = new Date();
+
+    /* Ce qui se paie en ligne maintenant, et ce que le livreur encaissera. Le
+       solde est ensuite réparti entre les ateliers : chacun a sa livraison,
+       donc son livreur, qui n'encaisse que sa part. */
+    const split = splitPayment(quote.totalXof, paymentMode);
+    const balanceShares = allocateBalance(
+      split.balanceXof,
+      pricedCart.groups.map(
+        (group) =>
+          group.itemsMakerSubtotalXof +
+          group.commissionSubtotalXof +
+          (deliveryByMaker.get(group.makerId)?.feeXof ?? 0),
+      ),
+    );
+    const online = needsOnlinePayment(paymentMode);
 
     const order = await this.prisma.$transaction(async (tx) => {
       const reference = await this.nextReference(tx, 'order', 'CMD');
@@ -150,6 +174,10 @@ export class OrderService {
           discountXof,
           promoCodeId,
           totalXof: quote.totalXof,
+
+          paymentMode,
+          upfrontXof: split.upfrontXof,
+          balanceXof: split.balanceXof,
         },
       });
 
@@ -173,6 +201,7 @@ export class OrderService {
             itemsMakerSubtotalXof: group.itemsMakerSubtotalXof,
             commissionSubtotalXof: group.commissionSubtotalXof,
             deliveryFeeXof: delivery?.feeXof ?? 0,
+            balanceDueXof: balanceShares[index] ?? 0,
             respondByAt: subOrderRespondByAt(now, this.acceptHours),
           },
         });
@@ -216,25 +245,34 @@ export class OrderService {
         }
       }
 
-      const payment = await tx.payment.create({
-        data: {
-          orderId: created.id,
-          status: 'INITIATED',
-          channel: 'MOBILE_MONEY',
-          // Le vrai nom est posé par `initiateCheckout`, une fois le
-          // fournisseur effectivement consulté — hors transaction, voir
-          // plus bas.
-          provider: 'pending',
-          amountXof: quote.totalXof,
-          idempotencyKey: `${created.id}:initial`,
-          expiresAt: new Date(now.getTime() + this.paymentExpiryMinutes * 60_000),
-        },
-      });
+      /* Paiement en ligne : pour le total, ou pour l'acompte seulement. Pas de
+         paiement du tout quand tout se règle à la livraison — la commande est
+         alors confirmée sur-le-champ, car il n'y a rien à attendre. */
+      let paymentId: string | null = null;
+      if (online) {
+        const payment = await tx.payment.create({
+          data: {
+            orderId: created.id,
+            status: 'INITIATED',
+            channel: 'MOBILE_MONEY',
+            // Le vrai nom est posé par `initiateCheckout`, une fois le
+            // fournisseur effectivement consulté — hors transaction, voir
+            // plus bas.
+            provider: 'pending',
+            amountXof: split.upfrontXof,
+            idempotencyKey: `${created.id}:initial`,
+            expiresAt: new Date(now.getTime() + this.paymentExpiryMinutes * 60_000),
+          },
+        });
+        paymentId = payment.id;
+      } else {
+        await this.payments.confirmWithoutOnlinePayment(tx, created.id);
+      }
 
       await tx.cartItem.deleteMany({ where: { cartId } });
 
-      return { orderId: created.id, paymentId: payment.id };
-    });
+      return { orderId: created.id, paymentId };
+    }, { timeout: 20_000, maxWait: 10_000 });
 
     /* L'amorce auprès du fournisseur se fait **hors transaction** : c'est un
        appel externe (ou, pour Kadev Pay, une préparation locale sans réseau),
@@ -246,15 +284,23 @@ export class OrderService {
       select: { email: true },
     });
 
-    const checkout = await this.payments.initiateCheckout(order.paymentId, {
-      fullName: address.fullName,
-      email: customer.email,
-      phone: address.phone,
-    });
+    const checkout = order.paymentId
+      ? await this.payments.initiateCheckout(order.paymentId, {
+          fullName: address.fullName,
+          email: customer.email,
+          phone: address.phone,
+        })
+      : null;
 
-    this.logger.log(`Commande ${order.orderId} créée (${pricedCart.groups.length} atelier(s))`);
+    // Paiement à la livraison : la commande est déjà confirmée, les ateliers
+    // doivent l'apprendre tout de suite.
+    if (!order.paymentId) await this.payments.announceConfirmedOrder(order.orderId);
+
+    this.logger.log(
+      `Commande ${order.orderId} créée (${pricedCart.groups.length} atelier(s), ${paymentMode})`,
+    );
     const view = await this.byId(order.orderId, userId);
-    return { ...view, checkout };
+    return checkout ? { ...view, checkout } : view;
   }
 
   async listMine(userId: string, query: CursorQuery): Promise<Page<OrderView>> {
@@ -385,6 +431,8 @@ function toOrderView(order: OrderWithRelations): OrderView {
       vehicle: subOrder.shipment?.vehicle ?? null,
       dueReadyAt: subOrder.dueReadyAt?.toISOString() ?? null,
       shipmentReference: subOrder.shipment?.reference ?? null,
+      balanceDueXof: subOrder.balanceDueXof,
+      cashCollected: subOrder.cashCollectedAt !== null,
     })),
 
     itemsFinalTotalXof: order.itemsFinalTotalXof,
@@ -393,6 +441,10 @@ function toOrderView(order: OrderWithRelations): OrderView {
     discountXof: order.discountXof,
     promoCode: order.promoCode?.code ?? null,
     totalXof: order.totalXof,
+
+    paymentMode: order.paymentMode,
+    upfrontXof: order.upfrontXof,
+    balanceXof: order.balanceXof,
 
     placedAt: order.placedAt?.toISOString() ?? null,
     createdAt: order.createdAt.toISOString(),
