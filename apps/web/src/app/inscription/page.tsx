@@ -15,6 +15,7 @@ import { Button } from "@/components/Button";
 import { useToast } from "@/components/Toast";
 import { ApiError, apiFetch } from "@/lib/api";
 import { homeForRole } from "@/lib/home-for-role";
+import { safeReturnPath } from "@/lib/login-redirect";
 import { useRedirectSignedIn } from "@/lib/session";
 
 /**
@@ -160,7 +161,12 @@ export default function InscriptionPage() {
          il vient d'arriver. Un créateur ou un livreur enchaîne aussitôt sur
          son dossier : c'est `homeForRole` qui l'y conduit. */
       router.refresh();
-      router.push(role === "CUSTOMER" ? "/catalogue" : homeForRole(role));
+      /* Un client arrivé depuis le panier retourne à la caisse : il vient de
+         créer son compte pour commander, pas pour parcourir le catalogue. */
+      const back = safeReturnPath(new URLSearchParams(window.location.search).get("suite"));
+      router.push(
+        role === "CUSTOMER" ? (back ?? "/catalogue") : homeForRole(role),
+      );
     } catch (cause) {
       if (cause instanceof ApiError && cause.problem.errors) {
         const fromApi = Object.fromEntries(

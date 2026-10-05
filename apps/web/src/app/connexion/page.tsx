@@ -174,7 +174,10 @@ function ConnexionForm() {
       </p>
 
       <p className={styles.switch}>
-        Pas encore de compte ? <Link href="/inscription">S&apos;inscrire</Link>
+        Pas encore de compte ?{" "}
+        <Link href={requested ? `/inscription?suite=${encodeURIComponent(requested)}` : "/inscription"}>
+          S&apos;inscrire
+        </Link>
       </p>
     </AuthLayout>
   );
