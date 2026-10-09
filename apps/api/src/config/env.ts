@@ -63,7 +63,7 @@ export const envSchema = z
     PAYMENT_EXPIRY_MINUTES: intFromEnv(30),
     DISTANCE_SINUOSITY_FACTOR: z.coerce.number().min(1).default(1.3),
 
-    PAYMENT_PROVIDER: z.enum(['simulated', 'kadevpay']).default('simulated'),
+    PAYMENT_PROVIDER: z.enum(['simulated', 'kadevpay', 'kkiapay']).default('simulated'),
 
     /* Ordonnanceur des échéances métier. Actif par défaut : une plateforme qui
        ne valide jamais automatiquement et ne libère jamais un versement est en
@@ -115,6 +115,14 @@ export const envSchema = z
     KADEVPAY_SECRET_KEY: z.string().optional(),
     KADEVPAY_WEBHOOK_SECRET: z.string().optional(),
     KADEVPAY_MODE: z.enum(['test', 'live']).default('test'),
+
+    /** Clés du tableau de bord KKiaPay (publique, privée, secrète) et « hash
+        secret » du webhook. `test` = sandbox, `live` = production. */
+    KKIAPAY_PUBLIC_KEY: z.string().optional(),
+    KKIAPAY_PRIVATE_KEY: z.string().optional(),
+    KKIAPAY_SECRET_KEY: z.string().optional(),
+    KKIAPAY_WEBHOOK_SECRET: z.string().optional(),
+    KKIAPAY_MODE: z.enum(['test', 'live']).default('test'),
   })
   /**
    * Garde-fou du § 7.7 du cahier : jamais de clé de test en production.
@@ -126,6 +134,48 @@ export const envSchema = z
    * développement.
    */
   .superRefine((env, ctx) => {
+    if (env.PAYMENT_PROVIDER === 'kkiapay') {
+      /* Les clés KKiaPay n'ont pas de préfixe `test` / `live` : seul
+         KKIAPAY_MODE dit dans quel monde on est. Il doit donc suivre
+         NODE_ENV dans les deux sens, sans quoi le widget s'ouvrirait en
+         sandbox en production (rien n'est encaissé) ou en réel hors
+         production (de vrais clients débités depuis un poste de dév). */
+      for (const key of [
+        'KKIAPAY_PUBLIC_KEY',
+        'KKIAPAY_PRIVATE_KEY',
+        'KKIAPAY_SECRET_KEY',
+        'KKIAPAY_WEBHOOK_SECRET',
+      ] as const) {
+        if (!env[key]) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [key],
+            message: `PAYMENT_PROVIDER=kkiapay exige ${key}`,
+          });
+        }
+      }
+
+      if (env.NODE_ENV === 'production' && env.KKIAPAY_MODE !== 'live') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['KKIAPAY_MODE'],
+          message:
+            'KKIAPAY_MODE doit valoir "live" en production : en sandbox, la boutique ' +
+            'semblerait encaisser sans jamais rien encaisser.',
+        });
+      }
+      if (env.NODE_ENV !== 'production' && env.KKIAPAY_MODE === 'live') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['KKIAPAY_MODE'],
+          message:
+            'KKIAPAY_MODE=live hors production : refus de démarrer. ' +
+            'De vrais clients seraient débités depuis cet environnement.',
+        });
+      }
+      return;
+    }
+
     if (env.PAYMENT_PROVIDER !== 'kadevpay') return;
 
     const secret = env.KADEVPAY_SECRET_KEY ?? '';

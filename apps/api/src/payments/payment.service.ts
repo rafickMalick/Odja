@@ -91,6 +91,9 @@ export class PaymentService {
       ...(initiated.checkout.redirectUrl !== undefined
         ? { redirectUrl: initiated.checkout.redirectUrl }
         : {}),
+      ...(initiated.checkout.sandbox !== undefined
+        ? { sandbox: initiated.checkout.sandbox }
+        : {}),
     };
   }
 
@@ -160,6 +163,17 @@ export class PaymentService {
       });
       await this.releaseStock(paymentId);
       return { status: 'FAILED' };
+    }
+
+    if (status.paymentId && status.paymentId !== payment.id) {
+      /* La transaction a été ouverte pour un autre paiement. Sans ce contrôle,
+         la transaction réglée pour une commande pourrait en confirmer une
+         autre du même montant, présentée à la vérification par le client. */
+      await this.flag(
+        paymentId,
+        `transaction rattachée à un autre paiement : ${status.paymentId}`,
+      );
+      throw new BadRequestException("Cette transaction n'appartient pas à cette commande.");
     }
 
     if (status.currency !== 'XOF') {
@@ -416,6 +430,14 @@ export class PaymentService {
   async handleWebhook(rawBody: Buffer, signature: string | undefined): Promise<{ status: string }> {
     const event = this.provider.parseWebhook(rawBody, signature);
 
+    /* Le statut annoncé n'est repris que s'il se confirme auprès du
+       fournisseur — voir `PaymentProvider.verifiesWebhooks`. Une erreur de
+       vérification remonte : le fournisseur réessaiera, ce qui vaut mieux que
+       d'appliquer un statut non confirmé. */
+    if (this.provider.verifiesWebhooks && event.status.status !== 'pending') {
+      event.status = await this.provider.verify(event.reference);
+    }
+
     /* `event.paymentId` — quand le fournisseur a pu le fournir — est NOTRE
        identifiant, posé dans les métadonnées à l'amorce du paiement : c'est
        la correspondance fiable. `providerRef` est un repli, utile tant que
@@ -454,7 +476,7 @@ export class PaymentService {
           paymentId: payment.id,
           providerRef: event.reference,
           eventType: event.eventType,
-          signature: signature ?? '',
+          signature: event.dedupeKey ?? signature ?? '',
           rawBody: rawBody.toString('utf8'),
           payload: JSON.parse(rawBody.toString('utf8')) as Prisma.InputJsonValue,
           signatureOk: true,

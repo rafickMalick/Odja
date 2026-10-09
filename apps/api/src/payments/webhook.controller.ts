@@ -7,7 +7,7 @@ import { Throttle } from '../common/rate-limit.guard';
 import { PaymentService } from './payment.service';
 
 /**
- * Réception des notifications Kadev Pay.
+ * Réception des notifications des agrégateurs (Kadev Pay, KKiaPay).
  *
  * Publique par nécessité — l'agrégateur n'a pas de session Ojà — mais
  * authentifiée par la signature, vérifiée à l'intérieur de
@@ -40,5 +40,18 @@ export class WebhookController {
       rawBody,
       typeof signature === 'string' ? signature : undefined,
     );
+  }
+
+  /* KKiaPay : l'en-tête `x-kkiapay-secret` porte le hash secret du tableau de
+     bord. Toute réponse hors 2xx est réessayée jusqu'à cinq fois. */
+  @Public()
+  @Throttle(100, 900)
+  @Post('kkiapay')
+  @HttpCode(200)
+  async kkiapay(@Req() request: RawBodyRequest<Request>): Promise<{ status: string }> {
+    const secret = request.headers['x-kkiapay-secret'];
+    const rawBody = request.rawBody ?? Buffer.from(JSON.stringify(request.body ?? {}));
+
+    return this.payments.handleWebhook(rawBody, typeof secret === 'string' ? secret : undefined);
   }
 }
