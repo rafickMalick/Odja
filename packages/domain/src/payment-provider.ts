@@ -26,6 +26,8 @@ export interface CheckoutConfig {
   publicKey?: string;
   redirectUrl?: string;
   amountXof: number;
+  /** Le widget doit s'ouvrir en mode test : aucun argent réel ne bouge. */
+  sandbox?: boolean;
 }
 
 export interface InitiatedPayment {
@@ -44,6 +46,13 @@ export type ProviderPaymentStatus =
       feeXof: number;
       currency: string;
       paidAt: Date;
+      /**
+       * Notre identifiant de paiement, tel que le fournisseur l'a enregistré
+       * sur la transaction — quand il le conserve. Sans lui, rien n'empêche de
+       * présenter la transaction d'une commande pour en confirmer une autre
+       * du même montant : `PaymentService` le compare à celui qu'il confirme.
+       */
+      paymentId?: string | null;
     }
   | { status: 'failed'; code: string; message: string };
 
@@ -52,10 +61,26 @@ export interface WebhookEvent {
   paymentId: string | null;
   eventType: string;
   status: ProviderPaymentStatus;
+  /**
+   * Empreinte stockée à la place de l'en-tête de signature, pour l'unicité de
+   * `PaymentEvent`. Nécessaire quand l'en-tête est un secret partagé, identique
+   * d'une notification à l'autre : il ne doit pas être écrit en base, et ne
+   * distinguerait de toute façon pas deux notifications.
+   */
+  dedupeKey?: string;
 }
 
 export interface PaymentProvider {
   readonly name: string;
+
+  /**
+   * Le webhook n'est qu'un signal : le statut qu'il annonce est relu auprès du
+   * fournisseur avant d'être appliqué. Pour un fournisseur dont le webhook ne
+   * porte qu'un secret partagé (pas de signature du corps), c'est ce qui
+   * empêche une notification forgée — ou un secret qui aurait fuité — de
+   * confirmer une commande.
+   */
+  readonly verifiesWebhooks?: boolean;
 
   initiate(input: InitiatePayment): Promise<InitiatedPayment>;
 

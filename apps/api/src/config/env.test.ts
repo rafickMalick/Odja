@@ -47,6 +47,45 @@ describe('validateEnv', () => {
     );
   });
 
+  describe('KKiaPay', () => {
+    const keys = {
+      KKIAPAY_PUBLIC_KEY: 'pk',
+      KKIAPAY_PRIVATE_KEY: 'prv',
+      KKIAPAY_SECRET_KEY: 'sec',
+      KKIAPAY_WEBHOOK_SECRET: 'wh',
+    };
+
+    it('exige les quatre variables dès que KKiaPay est activé', () => {
+      expect(() => validateEnv({ ...base, PAYMENT_PROVIDER: 'kkiapay' })).toThrow(
+        /KKIAPAY_PUBLIC_KEY[\s\S]*KKIAPAY_PRIVATE_KEY[\s\S]*KKIAPAY_SECRET_KEY[\s\S]*KKIAPAY_WEBHOOK_SECRET/,
+      );
+    });
+
+    it('démarre en développement avec les clés sandbox', () => {
+      expect(() =>
+        validateEnv({ ...base, PAYMENT_PROVIDER: 'kkiapay', ...keys, KKIAPAY_MODE: 'test' }),
+      ).not.toThrow();
+    });
+
+    it('refuse la sandbox en production', () => {
+      expect(() =>
+        validateEnv({
+          ...base,
+          NODE_ENV: 'production',
+          PAYMENT_PROVIDER: 'kkiapay',
+          ...keys,
+          KKIAPAY_MODE: 'test',
+        }),
+      ).toThrow(/KKIAPAY_MODE doit valoir "live"/);
+    });
+
+    it('refuse le mode réel hors production', () => {
+      expect(() =>
+        validateEnv({ ...base, PAYMENT_PROVIDER: 'kkiapay', ...keys, KKIAPAY_MODE: 'live' }),
+      ).toThrow(/débités/);
+    });
+  });
+
   describe('garde-fou des clés de paiement (cahier § 7.7)', () => {
     it("n'exige aucune clé tant que le fournisseur est simulé", () => {
       expect(() => validateEnv({ ...base, PAYMENT_PROVIDER: 'simulated' })).not.toThrow();

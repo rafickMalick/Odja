@@ -172,8 +172,8 @@ export type PlaceOrderInput = z.infer<typeof placeOrderSchema>;
 
 export const verifyPaymentSchema = z.object({
   /**
-   * Référence Kadev Pay apprise côté navigateur (`onSuccess`, voir
-   * `openKadevPayCheckout`). Optionnelle : sans elle, la vérification se fait
+   * Référence de transaction apprise côté navigateur (succès du widget, voir
+   * `openKkiapayCheckout`). Optionnelle : sans elle, la vérification se fait
    * avec la référence déjà connue du serveur — celle qu'un webhook aurait
    * corrigée, s'il en est arrivé un.
    */
@@ -298,6 +298,8 @@ export interface PaymentCheckoutConfig {
   amountXof: number;
   /** Référence à transmettre au widget, et que le webhook renverra. */
   reference: string;
+  /** Ouvrir le widget en mode test — aucun argent réel ne bouge. */
+  sandbox?: boolean;
 }
 
 // ═══════════════════════════════════════════ Facture
