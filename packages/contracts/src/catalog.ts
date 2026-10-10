@@ -14,6 +14,28 @@ const trimmed = (min: number, max: number, label: string) =>
 
 // ═══════════════════════════════════════════ Profil créateur
 
+/** Statuts professionnels (cahier des évolutions, § 4.2). */
+export const CREATOR_KINDS = [
+  'STUDIO',
+  'ARTISAN',
+  'DESIGNER',
+  'APPRENTICE_DESIGNER',
+  'APPRENTICE_ARTISAN',
+] as const;
+export type CreatorKind = (typeof CREATOR_KINDS)[number];
+
+/** Ceux qu'un créateur choisit seul. Les statuts d'apprenti passent par un
+ *  justificatif et une validation qui leur sont propres. */
+export const selfServiceCreatorKindSchema = z.enum(['STUDIO', 'ARTISAN', 'DESIGNER']);
+
+/* Spécialités et techniques : des étiquettes courtes, en nombre raisonnable.
+   Une liste de quarante mots-clés ne décrit plus rien. */
+const tagList = (label: string) =>
+  z
+    .array(z.string().trim().min(2, `${label} : 2 caractères au minimum`).max(60))
+    .max(12, `${label} : 12 au maximum`)
+    .transform((tags) => [...new Set(tags)]);
+
 /** Ce que le créateur renseigne à la création de sa boutique. */
 export const makerProfileSchema = z.object({
   // Informations publiques
@@ -35,6 +57,15 @@ export const makerProfileSchema = z.object({
   pickupLandmark: z.string().trim().max(200).optional(),
   pickupLatitude: z.number().min(-90).max(90).optional(),
   pickupLongitude: z.number().min(-180).max(180).optional(),
+
+  // Profil créatif — public (§ 2.2)
+  creatorKind: selfServiceCreatorKindSchema.optional(),
+  activityField: z.string().trim().max(80).optional(),
+  specialties: tagList('Spécialités').optional(),
+  techniques: tagList('Matériaux et techniques').optional(),
+  services: z.string().trim().max(1_000).optional(),
+  region: z.string().trim().max(80).optional(),
+  publicArea: z.string().trim().max(80).optional(),
 });
 export type MakerProfileInput = z.infer<typeof makerProfileSchema>;
 
@@ -58,6 +89,80 @@ export interface PublicMaker {
   ratingAvg: number;
   ratingCount: number;
   productCount: number;
+
+  creatorKind: CreatorKind;
+  activityField: string | null;
+  specialties: string[];
+  techniques: string[];
+  services: string | null;
+  region: string | null;
+  publicArea: string | null;
+  /** Badge de la formule en cours, s'il y en a un à montrer. Il signale une
+   *  visibilité achetée, jamais une certification (§ 3.4). */
+  badge: { code: string; name: string } | null;
+}
+
+/** Carte d'un créateur dans l'annuaire. */
+export type MakerCard = Pick<
+  PublicMaker,
+  | 'id'
+  | 'slug'
+  | 'shopName'
+  | 'logoUrl'
+  | 'coverUrl'
+  | 'city'
+  | 'country'
+  | 'region'
+  | 'creatorKind'
+  | 'activityField'
+  | 'specialties'
+  | 'badge'
+  | 'productCount'
+>;
+
+export const makerDirectoryQuerySchema = z.object({
+  q: z.string().trim().max(120).optional(),
+  country: z.string().trim().max(2).optional(),
+  city: z.string().trim().max(80).optional(),
+  kind: z.enum(CREATOR_KINDS).optional(),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(48).default(24),
+});
+export type MakerDirectoryQuery = z.infer<typeof makerDirectoryQuerySchema>;
+
+/** Logo ou bannière, une fois le fichier envoyé au stockage. */
+export const makerImageSchema = z.object({
+  slot: z.enum(['logo', 'cover']),
+  fileKey: z.string().trim().min(1).max(300),
+});
+export type MakerImageInput = z.infer<typeof makerImageSchema>;
+
+export type DisplayAvailability =
+  | 'AVAILABLE'
+  | 'MADE_TO_ORDER'
+  | 'SOLD'
+  | 'UNAVAILABLE'
+  | 'PORTFOLIO';
+
+/** Une réalisation de la galerie d'un atelier, vendable ou non (§ 2.2 E). */
+export interface MakerWork {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  material: string | null;
+  imageUrl: string | null;
+  /** Nul pour une réalisation de portfolio. */
+  finalPriceXof: number | null;
+  availability: DisplayAvailability;
+}
+
+export interface MakerPlanSummary {
+  code: string;
+  name: string;
+  /** Fin de la souscription en cours. Nulle pour la formule par défaut. */
+  endsAt: string | null;
+  maxPublications: number | null;
 }
 
 /** Vue administrateur : tout, y compris ce qui ne sort jamais côté client. */
@@ -74,6 +179,8 @@ export interface AdminMaker extends PublicMaker {
   kycReviewedAt: string | null;
   kycRejectReason: string | null;
   commissionBps: number;
+  /** Formule en cours. */
+  plan: MakerPlanSummary;
 }
 
 /**
@@ -120,12 +227,17 @@ export const productSchema = z
     description: trimmed(20, 5_000, 'Description'),
     material: z.string().trim().max(120).optional(),
 
+    /** Faux : réalisation présentée dans la galerie, sans mise en vente. */
+    isForSale: z.boolean().default(true),
+    availability: z.enum(['AVAILABLE', 'SOLD', 'UNAVAILABLE']).default('AVAILABLE'),
+
     /** Le prix que vous fixez et que vous toucherez en entier. */
     makerPriceXof: z
       .number()
       .int('Le prix doit être un nombre entier de francs')
       .positive('Le prix doit être supérieur à zéro')
-      .max(100_000_000),
+      .max(100_000_000)
+      .optional(),
 
     isMadeToOrder: z.boolean().default(false),
     quantityAvailable: z.number().int().min(0).max(MAX_QUANTITY, 'Quantité trop élevée').default(0),
@@ -136,22 +248,49 @@ export const productSchema = z
       .number()
       .int()
       .positive('Le poids est nécessaire au calcul de livraison')
-      .max(MAX_WEIGHT_GRAMS, 'Poids trop élevé (2 tonnes au maximum)'),
+      .max(MAX_WEIGHT_GRAMS, 'Poids trop élevé (2 tonnes au maximum)')
+      .optional(),
     lengthMm: z
       .number()
       .int()
       .positive('Les dimensions sont nécessaires au calcul de livraison')
-      .max(MAX_DIMENSION_MM, 'Dimension trop grande (20 m au maximum)'),
-    widthMm: z.number().int().positive().max(MAX_DIMENSION_MM, 'Dimension trop grande (20 m au maximum)'),
-    heightMm: z.number().int().positive().max(MAX_DIMENSION_MM, 'Dimension trop grande (20 m au maximum)'),
+      .max(MAX_DIMENSION_MM, 'Dimension trop grande (20 m au maximum)')
+      .optional(),
+    widthMm: z
+      .number()
+      .int()
+      .positive()
+      .max(MAX_DIMENSION_MM, 'Dimension trop grande (20 m au maximum)')
+      .optional(),
+    heightMm: z
+      .number()
+      .int()
+      .positive()
+      .max(MAX_DIMENSION_MM, 'Dimension trop grande (20 m au maximum)')
+      .optional(),
   })
   .refine((p) => !p.isMadeToOrder || p.leadTimeDays !== undefined, {
     path: ['leadTimeDays'],
     message: 'Une pièce fabriquée sur commande doit annoncer son délai',
+  })
+  /* Une pièce à vendre doit pouvoir être chiffrée et livrée. Une réalisation
+     de portfolio, elle, n'a besoin ni de prix ni de colis. */
+  .superRefine((p, ctx) => {
+    if (!p.isForSale) return;
+    const required = [
+      ['makerPriceXof', 'Indiquez le prix de vente'],
+      ['weightGrams', 'Le poids est nécessaire au calcul de livraison'],
+      ['lengthMm', 'Les dimensions sont nécessaires au calcul de livraison'],
+      ['widthMm', 'Les dimensions sont nécessaires au calcul de livraison'],
+      ['heightMm', 'Les dimensions sont nécessaires au calcul de livraison'],
+    ] as const;
+    for (const [field, message] of required) {
+      if (p[field] === undefined) ctx.addIssue({ code: 'custom', path: [field], message });
+    }
   });
 export type ProductInput = z.infer<typeof productSchema>;
 
-export const productUpdateSchema = productSchema.innerType().partial();
+export const productUpdateSchema = productSchema.innerType().innerType().partial();
 export type ProductUpdateInput = z.infer<typeof productUpdateSchema>;
 
 export const stockUpdateSchema = z.object({
@@ -188,6 +327,12 @@ export interface PublicProduct {
   leadTimeDays: number | null;
   quantityAvailable: number;
   inStock: boolean;
+  /** Faux pour une réalisation de portfolio : la fiche se consulte, elle ne
+   *  s'achète pas. */
+  isForSale: boolean;
+  availability: DisplayAvailability;
+  /** Peut aller au panier maintenant. */
+  purchasable: boolean;
 
   /** Encombrement, en millimètres et grammes. Sur du mobilier, un acheteur a
    *  besoin de savoir si la pièce passe la porte. */
@@ -252,4 +397,81 @@ export interface PublicCategory {
   position: number;
   productCount: number;
   children: PublicCategory[];
+}
+
+// ═══════════════════════════════════════════ Formules de visibilité
+
+export const visibilityPlanSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9-]{2,40}$/, 'Code en minuscules, chiffres et tirets'),
+  name: trimmed(2, 60, 'Nom'),
+  description: z.string().trim().max(500).optional(),
+  /** Nul : illimité. */
+  maxPublications: z.number().int().min(1).max(10_000).nullable(),
+  /** Nul : sans échéance. */
+  durationDays: z.number().int().min(1).max(3_650).nullable(),
+  priceXof: z.number().int().min(0).max(100_000_000),
+  perks: z.array(z.string().trim().min(2).max(160)).max(12),
+  showBadge: z.boolean(),
+  boostInDirectory: z.boolean(),
+  isActive: z.boolean(),
+  position: z.number().int().min(0).max(100),
+});
+export type VisibilityPlanInput = z.infer<typeof visibilityPlanSchema>;
+
+export const visibilityPlanUpdateSchema = visibilityPlanSchema.omit({ code: true }).partial();
+export type VisibilityPlanUpdateInput = z.infer<typeof visibilityPlanUpdateSchema>;
+
+export interface VisibilityPlanView {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  maxPublications: number | null;
+  durationDays: number | null;
+  priceXof: number;
+  perks: string[];
+  showBadge: boolean;
+  boostInDirectory: boolean;
+  isDefault: boolean;
+  isActive: boolean;
+  position: number;
+}
+
+/**
+ * Activation d'une formule par l'administration, après un paiement reçu hors
+ * plateforme. La durée par défaut est celle de la formule.
+ */
+export const grantSubscriptionSchema = z.object({
+  planId: z.string().min(1),
+  startsAt: z.string().datetime({ offset: true }).optional(),
+  durationDays: z.number().int().min(1).max(3_650).optional(),
+  amountXof: z.number().int().min(0).max(100_000_000).default(0),
+  paymentReference: z.string().trim().max(120).optional(),
+  note: z.string().trim().max(500).optional(),
+});
+export type GrantSubscriptionInput = z.infer<typeof grantSubscriptionSchema>;
+
+export interface MakerSubscriptionView {
+  id: string;
+  plan: { id: string; code: string; name: string };
+  startsAt: string;
+  endsAt: string | null;
+  amountXof: number;
+  paymentReference: string | null;
+  note: string | null;
+  cancelledAt: string | null;
+  createdAt: string;
+  /** En cours à l'instant de la lecture. */
+  active: boolean;
+}
+
+/** Ce que le créateur voit de sa formule. */
+export interface MyVisibility {
+  current: MakerPlanSummary;
+  activeCount: number;
+  plans: VisibilityPlanView[];
+  history: MakerSubscriptionView[];
 }

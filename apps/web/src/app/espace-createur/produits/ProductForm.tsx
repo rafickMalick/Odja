@@ -26,11 +26,16 @@ interface Category {
   children: Category[];
 }
 
+export type SaleState = "AVAILABLE" | "SOLD" | "UNAVAILABLE";
+
 export interface ProductFormValues {
   name: string;
   categoryId: string;
   description: string;
   material: string;
+  /** Faux : réalisation de portfolio, montrée dans la galerie sans être vendue. */
+  isForSale: boolean;
+  availability: SaleState;
   makerPriceXof: string;
   isMadeToOrder: boolean;
   quantityAvailable: string;
@@ -47,6 +52,8 @@ export const EMPTY_PRODUCT: ProductFormValues = {
   categoryId: "",
   description: "",
   material: "",
+  isForSale: true,
+  availability: "AVAILABLE",
   makerPriceXof: "",
   isMadeToOrder: false,
   quantityAvailable: "1",
@@ -100,19 +107,27 @@ export function ProductForm({
       name: values.name,
       categoryId: values.categoryId,
       description: values.description,
-      makerPriceXof: Number(values.makerPriceXof),
-      isMadeToOrder: values.isMadeToOrder,
-      quantityAvailable: Number(values.quantityAvailable) || 0,
-      weightGrams: Number(values.weightGrams),
-      lengthMm: Number(values.lengthMm),
-      widthMm: Number(values.widthMm),
-      heightMm: Number(values.heightMm),
+      isForSale: values.isForSale,
     };
+    /* Une réalisation de portfolio n'a ni prix ni colis : on n'envoie que ce
+       qui la décrit. */
+    if (values.isForSale) {
+      Object.assign(payload, {
+        availability: values.availability,
+        makerPriceXof: Number(values.makerPriceXof),
+        isMadeToOrder: values.isMadeToOrder,
+        quantityAvailable: Number(values.quantityAvailable) || 0,
+        weightGrams: Number(values.weightGrams),
+        lengthMm: Number(values.lengthMm),
+        widthMm: Number(values.widthMm),
+        heightMm: Number(values.heightMm),
+      });
+      if (values.isMadeToOrder && values.leadTimeDays) {
+        payload["leadTimeDays"] = Number(values.leadTimeDays);
+      }
+    }
     if (values.material.trim()) payload["material"] = values.material.trim();
     if (values.observations.trim()) payload["observations"] = values.observations.trim();
-    if (values.isMadeToOrder && values.leadTimeDays) {
-      payload["leadTimeDays"] = Number(values.leadTimeDays);
-    }
 
     try {
       await onSubmit(payload);
@@ -136,6 +151,37 @@ export function ProductForm({
 
   return (
     <form onSubmit={submit} className={form.form} noValidate>
+      <Panel title="Type de publication">
+        <div className={form.choices} role="radiogroup" aria-label="Type de publication">
+          <label className={values.isForSale ? form.choiceActive : form.choice}>
+            <input
+              type="radio"
+              name="isForSale"
+              checked={values.isForSale}
+              onChange={() => set("isForSale", true)}
+            />
+            <span>
+              <strong>Pièce à vendre</strong>
+              <span className={styles.muted}>Elle apparaît au catalogue et se commande.</span>
+            </span>
+          </label>
+          <label className={!values.isForSale ? form.choiceActive : form.choice}>
+            <input
+              type="radio"
+              name="isForSale"
+              checked={!values.isForSale}
+              onChange={() => set("isForSale", false)}
+            />
+            <span>
+              <strong>Réalisation de portfolio</strong>
+              <span className={styles.muted}>
+                Un projet déjà réalisé, montré sur votre profil sans être vendu. Une photo suffit.
+              </span>
+            </span>
+          </label>
+        </div>
+      </Panel>
+
       <Panel title="La pièce">
         <Field
           label="Nom"
@@ -179,6 +225,22 @@ export function ProductForm({
         />
       </Panel>
 
+      {!values.isForSale ? (
+        <Panel title="Observations">
+          <Field label="Observations (facultatif)" error={errors["observations"]}>
+            <textarea
+              className={fieldStyles.control}
+              rows={3}
+              value={values.observations}
+              onChange={(event) => set("observations", event.target.value)}
+              placeholder="Client, année, contexte du projet…"
+            />
+          </Field>
+        </Panel>
+      ) : null}
+
+      {values.isForSale ? (
+      <>
       <Panel title="Prix">
         <Field
           label="Votre prix, en francs CFA"
@@ -211,6 +273,18 @@ export function ProductForm({
       </Panel>
 
       <Panel title="Disponibilité">
+        <Field label="État de vente" error={errors["availability"]}>
+          <select
+            className={fieldStyles.control}
+            value={values.availability}
+            onChange={(event) => set("availability", event.target.value as SaleState)}
+          >
+            <option value="AVAILABLE">Disponible</option>
+            <option value="SOLD">Vendue — reste visible dans votre galerie</option>
+            <option value="UNAVAILABLE">Momentanément indisponible</option>
+          </select>
+        </Field>
+
         <label className={form.check}>
           <input
             type="checkbox"
@@ -288,6 +362,8 @@ export function ProductForm({
           error={errors["heightMm"]}
         />
       </Panel>
+      </>
+      ) : null}
 
       {message ? <p className={styles.error}>{message}</p> : null}
 

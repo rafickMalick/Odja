@@ -8,7 +8,10 @@ import { Button } from "@/components/Button";
 import { Field, FieldRow, fieldStyles } from "@/components/Field";
 import { useToast } from "@/components/Toast";
 import { PageHead, Panel, workspaceStyles as styles } from "@/components/dashboard/Workspace";
+import type { CreatorKind } from "@oja/contracts";
+
 import { ApiError, apiFetch } from "@/lib/api";
+import { CREATOR_KIND_LABELS, SELF_SERVICE_KINDS } from "@/lib/creators";
 import { UploadError, uploadFile } from "@/lib/upload";
 
 import { useMakerStatus } from "../maker-context";
@@ -24,6 +27,16 @@ import shop from "./shop.module.css";
  */
 
 interface Profile {
+  slug: string;
+  logoUrl: string | null;
+  coverUrl: string | null;
+  creatorKind: CreatorKind;
+  activityField: string | null;
+  specialties: string[];
+  techniques: string[];
+  services: string | null;
+  region: string | null;
+  publicArea: string | null;
   shopName: string;
   description: string | null;
   cityId: string;
@@ -132,9 +145,25 @@ export default function ShopPage() {
       postalAddress: values["postalAddress"],
       pickupLine1: values["pickupLine1"],
     };
-    for (const key of ["description", "ifuNumber", "rccmNumber", "pickupLandmark"]) {
+    for (const key of [
+      "description",
+      "ifuNumber",
+      "rccmNumber",
+      "pickupLandmark",
+      "activityField",
+      "services",
+      "region",
+      "publicArea",
+    ]) {
       if (values[key]?.trim()) payload[key] = values[key]!.trim();
     }
+    /* Un apprenti validé garde son statut : il ne figure pas parmi les choix
+       libres, et le renvoyer serait refusé. */
+    if (SELF_SERVICE_KINDS.includes(values["creatorKind"] as CreatorKind)) {
+      payload["creatorKind"] = values["creatorKind"];
+    }
+    payload["specialties"] = splitTags(values["specialties"]);
+    payload["techniques"] = splitTags(values["techniques"]);
 
     try {
       const wasNew = !exists;
@@ -228,11 +257,38 @@ export default function ShopPage() {
           </p>
 
           <Field
-            label="Nom de l’atelier"
+            label="Nom de l’atelier ou de l’entreprise"
             value={values["shopName"] ?? ""}
             onChange={(event) => set("shopName", event.target.value)}
             error={errors["shopName"]}
           />
+
+          <FieldRow>
+            <Field label="Statut" error={errors["creatorKind"]}>
+              <select
+                className={fieldStyles.control}
+                value={values["creatorKind"] ?? "ARTISAN"}
+                onChange={(event) => set("creatorKind", event.target.value)}
+                disabled={!isSelfService(values["creatorKind"])}
+              >
+                {(isSelfService(values["creatorKind"])
+                  ? SELF_SERVICE_KINDS
+                  : [values["creatorKind"] as CreatorKind]
+                ).map((kind) => (
+                  <option key={kind} value={kind}>
+                    {CREATOR_KIND_LABELS[kind]}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field
+              label="Domaine d’activité"
+              value={values["activityField"] ?? ""}
+              onChange={(event) => set("activityField", event.target.value)}
+              placeholder="Mobilier, céramique, textile…"
+              error={errors["activityField"]}
+            />
+          </FieldRow>
 
           <Field label="Présentation" error={errors["description"]}>
             <textarea
@@ -240,9 +296,40 @@ export default function ShopPage() {
               rows={5}
               value={values["description"] ?? ""}
               onChange={(event) => set("description", event.target.value)}
-              placeholder="Votre savoir-faire, vos matériaux, votre histoire…"
+              placeholder="Votre parcours, votre démarche, votre histoire…"
             />
           </Field>
+
+          <Field
+            label="Spécialités"
+            value={values["specialties"] ?? ""}
+            onChange={(event) => set("specialties", event.target.value)}
+            placeholder="Assises, tables basses, luminaires"
+            error={errors["specialties"]}
+          />
+          <Field
+            label="Matériaux et techniques"
+            value={values["techniques"] ?? ""}
+            onChange={(event) => set("techniques", event.target.value)}
+            placeholder="Iroko, tressage, teinture à l’indigo"
+            error={errors["techniques"]}
+          />
+          <p className={styles.muted}>Séparez-les par des virgules. Douze au maximum.</p>
+
+          <Field label="Services proposés (facultatif)" error={errors["services"]}>
+            <textarea
+              className={fieldStyles.control}
+              rows={3}
+              value={values["services"] ?? ""}
+              onChange={(event) => set("services", event.target.value)}
+              placeholder="Pièces sur mesure, restauration, ateliers de formation…"
+            />
+          </Field>
+
+          <p className={styles.muted}>
+            Pas de numéro de téléphone, d’e-mail ni de lien WhatsApp dans ces textes : ils
+            seraient refusés. Les acheteurs vous contactent par Ojà.
+          </p>
 
           <Field label="Ville" error={errors["cityId"]}>
             <select
@@ -258,6 +345,26 @@ export default function ShopPage() {
               ))}
             </select>
           </Field>
+
+          <FieldRow>
+            <Field
+              label="Région (facultatif)"
+              value={values["region"] ?? ""}
+              onChange={(event) => set("region", event.target.value)}
+              placeholder="Littoral"
+              error={errors["region"]}
+            />
+            <Field
+              label="Quartier affiché (facultatif)"
+              value={values["publicArea"] ?? ""}
+              onChange={(event) => set("publicArea", event.target.value)}
+              placeholder="Haie Vive"
+              error={errors["publicArea"]}
+            />
+          </FieldRow>
+          <p className={styles.muted}>
+            Le quartier aide les acheteurs à vous situer. Votre adresse exacte n’est jamais publiée.
+          </p>
         </Panel>
 
         <Panel title="Informations réservées à Ojà">
@@ -336,6 +443,18 @@ export default function ShopPage() {
         </div>
       </form>
 
+      {exists && profile ? (
+        <ShopImages logoUrl={profile.logoUrl} coverUrl={profile.coverUrl} onChange={setProfile} />
+      ) : null}
+
+      {profile?.kycStatus === "APPROVED" ? (
+        <p className={styles.muted}>
+          <a href={`/atelier/${profile.slug}`} target="_blank" rel="noreferrer">
+            Voir mon profil public
+          </a>
+        </p>
+      ) : null}
+
       {exists ? (
         <>
           <KycDocuments documents={documents} onChange={setDocuments} disabled={locked} />
@@ -367,6 +486,121 @@ export default function ShopPage() {
         </>
       ) : null}
     </>
+  );
+}
+
+/**
+ * Logo et bannière.
+ *
+ * Deux emplacements, deux gestes : envoyer remplace l'image en place, retirer
+ * la supprime. Le fichier part directement au stockage ; l'API ne fait que
+ * rattacher la clé.
+ */
+function ShopImages({
+  logoUrl,
+  coverUrl,
+  onChange,
+}: {
+  logoUrl: string | null;
+  coverUrl: string | null;
+  onChange: (profile: Profile) => void;
+}) {
+  const { notify } = useToast();
+  const [busy, setBusy] = useState<"logo" | "cover" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const send = async (slot: "logo" | "cover", file: File) => {
+    setBusy(slot);
+    setError(null);
+    try {
+      const { fileKey } = await uploadFile(file, "shop-image");
+      onChange(
+        await apiFetch<Profile>("/maker/profile/images", {
+          method: "POST",
+          body: { slot, fileKey },
+        }),
+      );
+      notify(slot === "logo" ? "Logo mis à jour." : "Bannière mise à jour.", { tone: "success" });
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof UploadError || uploadError instanceof ApiError
+          ? uploadError.message
+          : "L’envoi a échoué. Réessayez.",
+      );
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const remove = async (slot: "logo" | "cover") => {
+    setBusy(slot);
+    setError(null);
+    try {
+      onChange(await apiFetch<Profile>(`/maker/profile/images/${slot}`, { method: "DELETE" }));
+    } catch {
+      setError("Suppression impossible. Réessayez.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const slots: { slot: "logo" | "cover"; label: string; hint: string; url: string | null }[] = [
+    {
+      slot: "logo",
+      label: "Logo ou photo",
+      hint: "Carré, au moins 400 × 400 px. Un logo pour une entreprise, une photo pour un créateur indépendant.",
+      url: logoUrl,
+    },
+    {
+      slot: "cover",
+      label: "Bannière",
+      hint: "Paysage, au moins 1600 × 500 px : votre atelier, une pièce emblématique, votre univers.",
+      url: coverUrl,
+    },
+  ];
+
+  return (
+    <Panel title="Logo et bannière">
+      <div className={shop.images}>
+        {slots.map((item) => (
+          <div key={item.slot} className={shop.imageSlot}>
+            <div className={item.slot === "logo" ? shop.logoPreview : shop.coverPreview}>
+              {item.url ? <img src={item.url} alt="" /> : <span>Aucune image</span>}
+            </div>
+            <div className={shop.imageText}>
+              <p className={shop.imageLabel}>{item.label}</p>
+              <p className={styles.muted}>{item.hint}</p>
+              <div className={shop.actions}>
+                <label className={shop.uploadButton}>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    disabled={busy !== null}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) void send(item.slot, file);
+                      event.target.value = "";
+                    }}
+                  />
+                  {busy === item.slot ? "Envoi…" : item.url ? "Remplacer" : "Choisir une image"}
+                </label>
+                {item.url ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={busy !== null}
+                    onClick={() => void remove(item.slot)}
+                  >
+                    Retirer
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {error ? <p className={styles.error}>{error}</p> : null}
+    </Panel>
   );
 }
 
@@ -482,6 +716,13 @@ function KycDocuments({
 }
 
 const EMPTY: Record<string, string> = {
+  creatorKind: "ARTISAN",
+  activityField: "",
+  specialties: "",
+  techniques: "",
+  services: "",
+  region: "",
+  publicArea: "",
   shopName: "",
   description: "",
   cityId: "",
@@ -495,8 +736,27 @@ const EMPTY: Record<string, string> = {
   pickupLandmark: "",
 };
 
+function isSelfService(kind: string | undefined): boolean {
+  return SELF_SERVICE_KINDS.includes(kind as CreatorKind);
+}
+
+/** « Iroko, tressage , » → ["Iroko", "tressage"] */
+function splitTags(raw: string | undefined): string[] {
+  return (raw ?? "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
 function toValues(profile: Profile): Record<string, string> {
   return {
+    creatorKind: profile.creatorKind,
+    activityField: profile.activityField ?? "",
+    specialties: profile.specialties.join(", "),
+    techniques: profile.techniques.join(", "),
+    services: profile.services ?? "",
+    region: profile.region ?? "",
+    publicArea: profile.publicArea ?? "",
     shopName: profile.shopName,
     description: profile.description ?? "",
     cityId: profile.cityId,

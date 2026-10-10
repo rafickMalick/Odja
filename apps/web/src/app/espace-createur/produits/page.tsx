@@ -19,6 +19,8 @@ interface MakerProduct {
   slug: string;
   name: string;
   status: string;
+  isForSale: boolean;
+  availability: "AVAILABLE" | "SOLD" | "UNAVAILABLE";
   makerPriceXof: number;
   quantityAvailable: number;
   quantityReserved: number;
@@ -92,12 +94,24 @@ export default function MakerProductsPage() {
                     <td>
                       <StatusBadge status={product.status} />
                     </td>
-                    <td className={styles.numeric}>{formatFcfa(product.makerPriceXof)}</td>
                     <td className={styles.numeric}>
-                      {product.quantityAvailable - product.quantityReserved}
-                      {product.quantityReserved > 0 ? (
-                        <span className={styles.muted}> ({product.quantityReserved} réservé)</span>
-                      ) : null}
+                      {product.isForSale ? formatFcfa(product.makerPriceXof) : "Portfolio"}
+                    </td>
+                    <td className={styles.numeric}>
+                      {!product.isForSale ? (
+                        "—"
+                      ) : product.availability === "SOLD" ? (
+                        "Vendue"
+                      ) : product.availability === "UNAVAILABLE" ? (
+                        "Indisponible"
+                      ) : (
+                        <>
+                          {product.quantityAvailable - product.quantityReserved}
+                          {product.quantityReserved > 0 ? (
+                            <span className={styles.muted}> ({product.quantityReserved} réservé)</span>
+                          ) : null}
+                        </>
+                      )}
                     </td>
                     <td>
                       <span className={product.imageCount < 3 ? styles.error : undefined}>

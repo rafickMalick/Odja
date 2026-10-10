@@ -75,6 +75,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const links: WorkspaceLink[] = [
     { href: "/admin", label: "Vue d'ensemble" },
     { href: "/admin/ateliers", label: "Dossiers créateurs", badge: makers || undefined },
+    { href: "/admin/formules", label: "Formules de visibilité" },
     { href: "/admin/livreurs", label: "Dossiers livreurs", badge: couriers || undefined },
     { href: "/admin/catalogue", label: "Fiches à valider", badge: products || undefined },
     { href: "/admin/avis", label: "Avis clients" },

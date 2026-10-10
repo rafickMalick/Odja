@@ -145,3 +145,51 @@
   font-size: 14px;
   color: var(--color-success);
 }
+
+/* Formule de visibilité, dans la fiche d’un atelier. */
+.visibility {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--color-gray-300);
+}
+
+.visibility > * {
+  align-self: stretch;
+}
+
+.visibility > button {
+  align-self: flex-start;
+}
+
+/* Formules de visibilité. */
+.planForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-16) var(--space-24);
+  font-family: var(--font-body);
+  font-size: 15px;
+}
+
+.checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.checks input[type="checkbox"] {
+  accent-color: var(--color-primary);
+}
+
+.position input {
+  width: 72px;
+}

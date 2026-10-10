@@ -18,7 +18,15 @@ export class CategoryService {
         parentId: true,
         _count: {
           select: {
-            products: { where: { status: 'PUBLISHED', hiddenAt: null, deletedAt: null } },
+            products: {
+              where: {
+                status: 'PUBLISHED',
+                hiddenAt: null,
+                deletedAt: null,
+                isForSale: true,
+                availability: 'AVAILABLE',
+              },
+            },
           },
         },
       },

@@ -65,6 +65,7 @@ function Gate({ children }: { children: ReactNode }) {
         { href: "/espace-createur/commandes", label: "Commandes" },
         { href: "/espace-createur/portefeuille", label: "Portefeuille" },
         { href: "/espace-createur/boutique", label: "Ma boutique" },
+        { href: "/espace-createur/visibilite", label: "Visibilité" },
         { href: SUPPORT_PATH, label: "Support créateur" },
       ];
 

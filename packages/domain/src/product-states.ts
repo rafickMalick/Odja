@@ -74,6 +74,8 @@ export const MIN_PHOTOS = 3;
 export const MAX_PHOTOS = 5;
 
 export interface ProductReadiness {
+  /** Faux pour une réalisation de portfolio : ni prix, ni stock à vérifier. */
+  isForSale?: boolean;
   imageCount: number;
   makerKycApproved: boolean;
   isMadeToOrder: boolean;
@@ -94,19 +96,28 @@ export function whyNotSubmittable(product: ProductReadiness): string[] {
 
   if (!product.makerKycApproved) {
     problems.push(
-      'Votre compte doit être validé par Ojà avant toute mise en vente.',
+      'Votre compte doit être validé par Ojà avant toute publication.',
     );
   }
 
-  if (product.imageCount < MIN_PHOTOS) {
+  const forSale = product.isForSale ?? true;
+
+  /* Une réalisation de portfolio se montre, elle ne se vend pas : une photo
+     suffit, l'acheteur n'a pas besoin de l'examiner sous tous les angles. */
+  const minPhotos = forSale ? MIN_PHOTOS : 1;
+  if (product.imageCount < minPhotos) {
     problems.push(
-      `Ajoutez au moins ${MIN_PHOTOS} photos (${product.imageCount} pour l’instant).`,
+      minPhotos === 1
+        ? 'Ajoutez au moins une photo.'
+        : `Ajoutez au moins ${minPhotos} photos (${product.imageCount} pour l’instant).`,
     );
   }
 
   if (product.imageCount > MAX_PHOTOS) {
     problems.push(`Cinq photos au maximum (${product.imageCount} pour l’instant).`);
   }
+
+  if (!forSale) return problems;
 
   if (product.makerPriceXof <= 0) {
     problems.push('Indiquez le prix auquel vous vendez cette pièce.');
