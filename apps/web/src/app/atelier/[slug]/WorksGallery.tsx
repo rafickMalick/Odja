@@ -18,7 +18,7 @@ const FILTERS: { value: Filter; label: string; matches: (state: DisplayAvailabil
     label: "À vendre",
     matches: (state) => state === "AVAILABLE" || state === "MADE_TO_ORDER",
   },
-  { value: "SOLD", label: "Vendues", matches: (state) => state === "SOLD" || state === "UNAVAILABLE" },
+  { value: "SOLD", label: "Vendues", matches: (state) => state === "SOLD" || state === "RESERVED" || state === "UNAVAILABLE" },
   { value: "PORTFOLIO", label: "Portfolio", matches: (state) => state === "PORTFOLIO" },
 ];
 

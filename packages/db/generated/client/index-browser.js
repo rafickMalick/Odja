@@ -832,6 +832,107 @@ exports.Prisma.IdempotencyKeyScalarFieldEnum = {
   expiresAt: 'expiresAt'
 };
 
+exports.Prisma.ExhibitionPlanScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  maxWorks: 'maxWorks',
+  maxDurationDays: 'maxDurationDays',
+  priceXof: 'priceXof',
+  perks: 'perks',
+  featuredPlacement: 'featuredPlacement',
+  communicationSupport: 'communicationSupport',
+  isActive: 'isActive',
+  position: 'position',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ExhibitionScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  organizerId: 'organizerId',
+  makerId: 'makerId',
+  planId: 'planId',
+  title: 'title',
+  organizerName: 'organizerName',
+  summary: 'summary',
+  objective: 'objective',
+  discipline: 'discipline',
+  cityId: 'cityId',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  openingHours: 'openingHours',
+  format: 'format',
+  venueName: 'venueName',
+  venueAddress: 'venueAddress',
+  venueDescription: 'venueDescription',
+  venueImageKeys: 'venueImageKeys',
+  coverKey: 'coverKey',
+  dossierKey: 'dossierKey',
+  plannedWorkCount: 'plannedWorkCount',
+  status: 'status',
+  reviewNote: 'reviewNote',
+  submittedAt: 'submittedAt',
+  reviewedAt: 'reviewedAt',
+  reviewerId: 'reviewerId',
+  contractReference: 'contractReference',
+  contractSentAt: 'contractSentAt',
+  contractSignedAt: 'contractSignedAt',
+  paymentAmountXof: 'paymentAmountXof',
+  paymentReference: 'paymentReference',
+  paymentReceivedAt: 'paymentReceivedAt',
+  publishAt: 'publishAt',
+  publishedAt: 'publishedAt',
+  suspendedAt: 'suspendedAt',
+  suspendReason: 'suspendReason',
+  accessMode: 'accessMode',
+  ticketPriceXof: 'ticketPriceXof',
+  requiresRegistration: 'requiresRegistration',
+  accessCodeHash: 'accessCodeHash',
+  onsiteInfo: 'onsiteInfo',
+  remoteInfo: 'remoteInfo',
+  isFeatured: 'isFeatured',
+  viewCount: 'viewCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ExhibitionWorkScalarFieldEnum = {
+  id: 'id',
+  exhibitionId: 'exhibitionId',
+  position: 'position',
+  productId: 'productId',
+  title: 'title',
+  artistName: 'artistName',
+  description: 'description',
+  materials: 'materials',
+  dimensions: 'dimensions',
+  imageKeys: 'imageKeys',
+  proofKey: 'proofKey',
+  reviewStatus: 'reviewStatus',
+  reviewNote: 'reviewNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ExhibitionPassScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  exhibitionId: 'exhibitionId',
+  userId: 'userId',
+  kind: 'kind',
+  format: 'format',
+  status: 'status',
+  amountXof: 'amountXof',
+  provider: 'provider',
+  providerRef: 'providerRef',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1038,6 +1139,52 @@ exports.PromoKind = exports.$Enums.PromoKind = {
   FIXED: 'FIXED'
 };
 
+exports.ExhibitionFormat = exports.$Enums.ExhibitionFormat = {
+  PHYSICAL: 'PHYSICAL',
+  ONLINE: 'ONLINE',
+  HYBRID: 'HYBRID'
+};
+
+exports.ExhibitionStatus = exports.$Enums.ExhibitionStatus = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  CHANGES_REQUESTED: 'CHANGES_REQUESTED',
+  REJECTED: 'REJECTED',
+  ACCEPTED: 'ACCEPTED',
+  SCHEDULED: 'SCHEDULED',
+  PUBLISHED: 'PUBLISHED',
+  SUSPENDED: 'SUSPENDED'
+};
+
+exports.ExhibitionAccess = exports.$Enums.ExhibitionAccess = {
+  FREE: 'FREE',
+  PAID: 'PAID',
+  RESTRICTED: 'RESTRICTED'
+};
+
+exports.ExhibitionWorkReview = exports.$Enums.ExhibitionWorkReview = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
+exports.ExhibitionPassKind = exports.$Enums.ExhibitionPassKind = {
+  REGISTRATION: 'REGISTRATION',
+  TICKET: 'TICKET',
+  INVITATION: 'INVITATION'
+};
+
+exports.ExhibitionPassFormat = exports.$Enums.ExhibitionPassFormat = {
+  ONSITE: 'ONSITE',
+  ONLINE: 'ONLINE'
+};
+
+exports.ExhibitionPassStatus = exports.$Enums.ExhibitionPassStatus = {
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   Country: 'Country',
   City: 'City',
@@ -1087,7 +1234,11 @@ exports.Prisma.ModelName = {
   PromoRedemption: 'PromoRedemption',
   Invoice: 'Invoice',
   NewsletterSubscriber: 'NewsletterSubscriber',
-  IdempotencyKey: 'IdempotencyKey'
+  IdempotencyKey: 'IdempotencyKey',
+  ExhibitionPlan: 'ExhibitionPlan',
+  Exhibition: 'Exhibition',
+  ExhibitionWork: 'ExhibitionWork',
+  ExhibitionPass: 'ExhibitionPass'
 };
 
 /**

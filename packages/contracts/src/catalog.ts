@@ -147,6 +147,7 @@ export type MakerImageInput = z.infer<typeof makerImageSchema>;
 export type DisplayAvailability =
   | 'AVAILABLE'
   | 'MADE_TO_ORDER'
+  | 'RESERVED'
   | 'SOLD'
   | 'UNAVAILABLE'
   | 'PORTFOLIO';

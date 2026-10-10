@@ -43,6 +43,10 @@ const ALLOWED: Record<string, readonly string[]> = {
   'delivery-proof': ['COURIER', 'ADMIN'],
   'dispute-evidence': ['CUSTOMER', 'MAKER', 'ADMIN'],
   'support-attachment': ['CUSTOMER', 'MAKER', 'ADMIN'],
+  /* Un organisateur d'exposition n'est pas forcément un créateur inscrit
+     (§ 6.2, parcours B) : un compte client suffit pour monter un dossier. */
+  'exhibition-image': ['CUSTOMER', 'MAKER', 'ADMIN'],
+  'exhibition-document': ['CUSTOMER', 'MAKER', 'ADMIN'],
 };
 
 function assertAllowed(role: string, purpose: keyof typeof UPLOAD_RULES): void {

@@ -49,6 +49,7 @@ export function isApprenticeKind(kind: string | undefined | null): boolean {
 export const AVAILABILITY_LABELS: Record<DisplayAvailability, string> = {
   AVAILABLE: "Disponible",
   MADE_TO_ORDER: "Sur commande",
+  RESERVED: "Réservé",
   SOLD: "Vendu",
   UNAVAILABLE: "Indisponible",
   PORTFOLIO: "Réalisation",

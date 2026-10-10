@@ -62,8 +62,14 @@ describe('disponibilité affichée', () => {
     expect(isPurchasable(toOrder)).toBe(true);
   });
 
-  it('un stock entièrement réservé rend la pièce indisponible', () => {
-    expect(displayAvailability({ ...base, quantityReserved: 2 })).toBe('UNAVAILABLE');
+  it('un stock entièrement réservé rend la pièce réservée, plus achetable', () => {
+    const held = { ...base, quantityReserved: 2 };
+    expect(displayAvailability(held)).toBe('RESERVED');
+    expect(isPurchasable(held)).toBe(false);
+  });
+
+  it('une pièce unique payée devient vendue d’elle-même', () => {
+    expect(displayAvailability({ ...base, quantityAvailable: 0 })).toBe('SOLD');
   });
 });
 
