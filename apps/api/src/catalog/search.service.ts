@@ -63,6 +63,8 @@ export class SearchService {
          AND status = 'PUBLISHED'
          AND "hiddenAt" IS NULL
          AND "deletedAt" IS NULL
+         AND "isForSale"
+         AND availability = 'AVAILABLE'
        ORDER BY ts_rank("searchVector", websearch_to_tsquery('french', unaccent(${term}))) DESC,
                 "createdAt" DESC
        LIMIT ${query.limit + 1}
@@ -101,6 +103,8 @@ export class SearchService {
       status: 'PUBLISHED',
       hiddenAt: null,
       deletedAt: null,
+      isForSale: true,
+      availability: 'AVAILABLE',
     };
 
     const [categories, cities, aggregate] = await Promise.all([
@@ -118,6 +122,7 @@ export class SearchService {
           JOIN maker_profiles m ON m.id = p."makerId"
           JOIN cities c ON c.id = m."cityId"
          WHERE p.status = 'PUBLISHED' AND p."hiddenAt" IS NULL AND p."deletedAt" IS NULL
+           AND p."isForSale" AND p.availability = 'AVAILABLE'
          GROUP BY c.name
          ORDER BY count DESC
       `,
@@ -148,11 +153,17 @@ export class SearchService {
       status: 'PUBLISHED',
       hiddenAt: null,
       deletedAt: null,
+      /* Le catalogue ne montre que ce qui s'achète. Les pièces vendues et les
+         réalisations de portfolio restent visibles dans la galerie de leur
+         atelier. */
+      isForSale: true,
+      availability: 'AVAILABLE',
       // Un atelier dont l'agrément est retiré disparaît du catalogue, même si
       // ses fiches sont restées publiées.
       maker: {
         kycStatus: 'APPROVED',
         deletedAt: null,
+        suspendedAt: null,
         ...(query.maker ? { slug: query.maker } : {}),
         ...(query.city ? { city: { name: { equals: query.city, mode: 'insensitive' } } } : {}),
       },

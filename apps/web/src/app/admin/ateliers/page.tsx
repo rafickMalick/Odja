@@ -10,7 +10,17 @@ import {
   Panel,
   workspaceStyles as styles,
 } from "@/components/dashboard/Workspace";
+import type {
+  CreatorKind,
+  MakerPlanSummary,
+  MakerSubscriptionView,
+  VisibilityPlanView,
+} from "@oja/contracts";
+
+import { Field, FieldRow, fieldStyles } from "@/components/Field";
 import { ApiError, apiFetch } from "@/lib/api";
+import { CREATOR_KIND_LABELS, isApprenticeKind } from "@/lib/creators";
+import { formatFcfa } from "@/lib/format";
 
 import admin from "../admin.module.css";
 
@@ -38,6 +48,11 @@ interface AdminMaker {
   kycSubmittedAt: string | null;
   kycRejectReason: string | null;
   productCount: number;
+  creatorKind: CreatorKind;
+  plan: MakerPlanSummary;
+  training: { institution: string | null; specialty: string | null; level: string | null } | null;
+  suspendedAt: string | null;
+  suspendReason: string | null;
 }
 
 interface Document {
@@ -68,16 +83,34 @@ const STATE: Record<
 
 export default function AdminMakersPage() {
   const [filter, setFilter] = useState("PENDING");
+  /* Apprentis et professionnels ne se valident pas sur les mêmes pièces : on
+     peut les traiter en séries séparées. Le lien des alertes ouvre directement
+     la file des apprentis. */
+  const [profileFilter, setProfileFilter] = useState("");
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get("profil");
+    if (fromUrl === "apprentis" || fromUrl === "professionnels") setProfileFilter(fromUrl);
+  }, []);
   const [makers, setMakers] = useState<AdminMaker[]>([]);
+  const [plans, setPlans] = useState<VisibilityPlanView[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    void apiFetch<VisibilityPlanView[]>("/admin/visibility-plans")
+      .then(setPlans)
+      .catch(() => setPlans([]));
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       setMakers(
         await apiFetch<AdminMaker[]>(
-          `/admin/makers${filter ? `?status=${filter}` : ""}`,
+          `/admin/makers?${new URLSearchParams({
+            ...(filter ? { status: filter } : {}),
+            ...(profileFilter ? { profile: profileFilter } : {}),
+          }).toString()}`,
         ),
       );
     } catch {
@@ -85,7 +118,7 @@ export default function AdminMakersPage() {
     } finally {
       setLoading(false);
     }
-  }, [filter]);
+  }, [filter, profileFilter]);
 
   useEffect(() => {
     void load();
@@ -133,6 +166,23 @@ export default function AdminMakersPage() {
         ))}
       </div>
 
+      <div className={admin.filters}>
+        {[
+          { value: "", label: "Tous les profils" },
+          { value: "professionnels", label: "Professionnels" },
+          { value: "apprentis", label: "Apprentis" },
+        ].map((item) => (
+          <button
+            key={item.value || "all-profiles"}
+            type="button"
+            className={profileFilter === item.value ? admin.filterActive : admin.filter}
+            onClick={() => setProfileFilter(item.value)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
       {error ? <p className={styles.error}>{error}</p> : null}
 
       {loading ? (
@@ -146,7 +196,13 @@ export default function AdminMakersPage() {
         </Panel>
       ) : (
         makers.map((maker) => (
-          <MakerCard key={maker.id} maker={maker} onReview={review} />
+          <MakerCard
+            key={maker.id}
+            maker={maker}
+            plans={plans}
+            onReview={review}
+            onPlanChange={load}
+          />
         ))
       )}
     </>
@@ -155,10 +211,14 @@ export default function AdminMakersPage() {
 
 function MakerCard({
   maker,
+  plans,
   onReview,
+  onPlanChange,
 }: {
   maker: AdminMaker;
+  plans: VisibilityPlanView[];
   onReview: (id: string, decision: "APPROVE" | "REJECT") => Promise<void>;
+  onPlanChange: () => Promise<void>;
 }) {
   const [documents, setDocuments] = useState<Document[] | null>(null);
   const [busy, setBusy] = useState(false);
@@ -171,6 +231,42 @@ function MakerCard({
       await apiFetch<Document[]>(`/admin/makers/${maker.id}/documents`).catch(() => []),
     );
     setBusy(false);
+  };
+
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const toggleSuspension = async () => {
+    let body: { reason: string } | undefined;
+    if (!maker.suspendedAt) {
+      const reason = window.prompt("Motif de la suspension (transmis au créateur) :");
+      if (!reason?.trim()) return;
+      body = { reason: reason.trim() };
+    }
+    try {
+      await apiFetch(`/admin/makers/${maker.id}/${maker.suspendedAt ? "reinstate" : "suspend"}`, {
+        method: "POST",
+        ...(body ? { body } : {}),
+      });
+      await onPlanChange();
+    } catch (cause) {
+      setNotice(cause instanceof ApiError ? cause.message : "Action impossible.");
+    }
+  };
+
+  /* Demander une pièce plutôt que refuser : le dossier reste en attente, et
+     le créateur sait exactement quoi envoyer. */
+  const requestDocument = async () => {
+    const message = window.prompt("Pièce demandée (le message est transmis au créateur) :");
+    if (!message?.trim()) return;
+    try {
+      await apiFetch(`/admin/makers/${maker.id}/request-document`, {
+        method: "POST",
+        body: { message: message.trim() },
+      });
+      setNotice("Demande envoyée au créateur.");
+    } catch (cause) {
+      setNotice(cause instanceof ApiError ? cause.message : "Demande impossible.");
+    }
   };
 
   const state = STATE[maker.kycStatus];
@@ -217,7 +313,50 @@ function MakerCard({
           <dt>Pièces au catalogue</dt>
           <dd>{maker.productCount}</dd>
         </div>
+        <div>
+          <dt>Statut</dt>
+          <dd>{CREATOR_KIND_LABELS[maker.creatorKind]}</dd>
+        </div>
+        {maker.training ? (
+          <div>
+            <dt>Formation</dt>
+            <dd>
+              {[maker.training.specialty, maker.training.institution, maker.training.level]
+                .filter(Boolean)
+                .join(" · ")}
+            </dd>
+          </div>
+        ) : null}
+        <div>
+          <dt>Formule</dt>
+          <dd>
+            {maker.plan.name}
+            {maker.plan.endsAt
+              ? ` · jusqu’au ${new Date(maker.plan.endsAt).toLocaleDateString("fr-FR")}`
+              : ""}
+          </dd>
+        </div>
       </dl>
+
+      {maker.kycStatus === "APPROVED" ? (
+        <VisibilityManager makerId={maker.id} plans={plans} onChange={onPlanChange} />
+      ) : null}
+
+      {/* Suspension pour motif légitime (§ 11.1) : le profil et ses fiches
+          disparaissent du public, rien n'est supprimé. */}
+      {maker.suspendedAt ? (
+        <p className={styles.error}>
+          Profil suspendu le {new Date(maker.suspendedAt).toLocaleDateString("fr-FR")} :{" "}
+          {maker.suspendReason}
+        </p>
+      ) : null}
+      {maker.kycStatus === "APPROVED" ? (
+        <div className={styles.rowActions}>
+          <Button type="button" variant="outline" onClick={() => void toggleSuspension()}>
+            {maker.suspendedAt ? "Lever la suspension" : "Suspendre le profil"}
+          </Button>
+        </div>
+      ) : null}
 
       {maker.kycRejectReason ? (
         <p className={styles.muted}>Dernier refus : {maker.kycRejectReason}</p>
@@ -248,14 +387,213 @@ function MakerCard({
 
       {maker.kycStatus !== "APPROVED" ? (
         <div className={styles.rowActions}>
+          <Button type="button" variant="outline" onClick={() => void requestDocument()}>
+            Demander une pièce
+          </Button>
           <Button type="button" variant="outline" onClick={() => void onReview(maker.id, "REJECT")}>
             Refuser
           </Button>
           <Button type="button" onClick={() => void onReview(maker.id, "APPROVE")}>
-            Valider l’atelier
+            {isApprenticeKind(maker.creatorKind) ? "Valider l’apprenti" : "Valider l’atelier"}
           </Button>
         </div>
       ) : null}
+      {notice ? <p className={styles.muted}>{notice}</p> : null}
     </Panel>
+  );
+}
+
+/**
+ * Formule de visibilité d'un atelier.
+ *
+ * Tant que le paiement en ligne du Premium n'existe pas, l'agent active la
+ * formule après avoir reçu le règlement, et note la référence du paiement :
+ * c'est ce qui permettra de rapprocher les deux en comptabilité.
+ */
+function VisibilityManager({
+  makerId,
+  plans,
+  onChange,
+}: {
+  makerId: string;
+  plans: VisibilityPlanView[];
+  onChange: () => Promise<void>;
+}) {
+  const grantable = plans.filter((plan) => plan.isActive && !plan.isDefault);
+  const [open, setOpen] = useState(false);
+  const [history, setHistory] = useState<MakerSubscriptionView[] | null>(null);
+  const [planId, setPlanId] = useState("");
+  const [durationDays, setDurationDays] = useState("");
+  const [amountXof, setAmountXof] = useState("");
+  const [paymentReference, setPaymentReference] = useState("");
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const toggle = async () => {
+    if (!open && history === null) {
+      setHistory(
+        await apiFetch<MakerSubscriptionView[]>(`/admin/makers/${makerId}/subscriptions`).catch(
+          () => [],
+        ),
+      );
+    }
+    setOpen((current) => !current);
+  };
+
+  const choosePlan = (id: string) => {
+    setPlanId(id);
+    const plan = grantable.find((item) => item.id === id);
+    setDurationDays(plan?.durationDays ? String(plan.durationDays) : "");
+    setAmountXof(plan && plan.priceXof > 0 ? String(plan.priceXof) : "");
+  };
+
+  const grant = async () => {
+    if (!planId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      setHistory(
+        await apiFetch<MakerSubscriptionView[]>(`/admin/makers/${makerId}/subscriptions`, {
+          method: "POST",
+          body: {
+            planId,
+            amountXof: Number(amountXof) || 0,
+            ...(durationDays ? { durationDays: Number(durationDays) } : {}),
+            ...(paymentReference.trim() ? { paymentReference: paymentReference.trim() } : {}),
+            ...(note.trim() ? { note: note.trim() } : {}),
+          },
+        }),
+      );
+      setPlanId("");
+      setPaymentReference("");
+      setNote("");
+      await onChange();
+    } catch (cause) {
+      setError(cause instanceof ApiError ? cause.message : "Activation impossible.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const cancel = async (subscriptionId: string) => {
+    if (!window.confirm("Résilier cette période ? L’atelier repasse à la formule par défaut.")) return;
+    setBusy(true);
+    setError(null);
+    try {
+      setHistory(
+        await apiFetch<MakerSubscriptionView[]>(
+          `/admin/makers/${makerId}/subscriptions/${subscriptionId}/cancel`,
+          { method: "POST" },
+        ),
+      );
+      await onChange();
+    } catch (cause) {
+      setError(cause instanceof ApiError ? cause.message : "Résiliation impossible.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className={admin.visibility}>
+      <Button type="button" variant="outline" onClick={() => void toggle()}>
+        {open ? "Fermer la formule" : "Gérer la formule"}
+      </Button>
+
+      {open ? (
+        <>
+          {history && history.length > 0 ? (
+            <ul className={admin.documents}>
+              {history.map((period) => (
+                <li key={period.id}>
+                  <span>
+                    {period.plan.name} · du {new Date(period.startsAt).toLocaleDateString("fr-FR")}
+                    {period.endsAt
+                      ? ` au ${new Date(period.endsAt).toLocaleDateString("fr-FR")}`
+                      : ""}
+                    {period.amountXof > 0 ? ` · ${formatFcfa(period.amountXof)}` : ""}
+                    {period.paymentReference ? ` · réf. ${period.paymentReference}` : ""}
+                  </span>
+                  {period.cancelledAt ? (
+                    <Badge type="danger">Résiliée</Badge>
+                  ) : period.active ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={busy}
+                      onClick={() => void cancel(period.id)}
+                    >
+                      Résilier
+                    </Button>
+                  ) : (
+                    <Badge type="pending">Terminée</Badge>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.muted}>Aucune formule payante jusqu’ici.</p>
+          )}
+
+          {grantable.length > 0 ? (
+            <>
+              <FieldRow>
+                <Field label="Formule à activer">
+                  <select
+                    className={fieldStyles.control}
+                    value={planId}
+                    onChange={(event) => choosePlan(event.target.value)}
+                  >
+                    <option value="">Choisir</option>
+                    {grantable.map((plan) => (
+                      <option key={plan.id} value={plan.id}>
+                        {plan.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field
+                  label="Durée, en jours"
+                  inputMode="numeric"
+                  value={durationDays}
+                  onChange={(event) => setDurationDays(event.target.value.replace(/\D/g, ""))}
+                />
+              </FieldRow>
+              <FieldRow>
+                <Field
+                  label="Montant reçu (F CFA)"
+                  inputMode="numeric"
+                  value={amountXof}
+                  onChange={(event) => setAmountXof(event.target.value.replace(/\D/g, ""))}
+                />
+                <Field
+                  label="Référence du paiement"
+                  value={paymentReference}
+                  onChange={(event) => setPaymentReference(event.target.value)}
+                  placeholder="Transaction Mobile Money, virement…"
+                />
+              </FieldRow>
+              <Field
+                label="Note interne (facultatif)"
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+              />
+              <div className={styles.rowActions}>
+                <Button type="button" disabled={!planId || busy} onClick={() => void grant()}>
+                  {busy ? "Activation…" : "Activer la formule"}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <p className={styles.muted}>
+              Aucune formule payante active. Créez-en une dans « Formules de visibilité ».
+            </p>
+          )}
+
+          {error ? <p className={styles.error}>{error}</p> : null}
+        </>
+      ) : null}
+    </div>
   );
 }

@@ -153,6 +153,8 @@ exports.Prisma.UserScalarFieldEnum = {
   lastName: 'lastName',
   locale: 'locale',
   mfaSecret: 'mfaSecret',
+  mfaEnabledAt: 'mfaEnabledAt',
+  mfaLastStep: 'mfaLastStep',
   lastLoginAt: 'lastLoginAt',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
@@ -167,7 +169,15 @@ exports.Prisma.SessionScalarFieldEnum = {
   ip: 'ip',
   expiresAt: 'expiresAt',
   revokedAt: 'revokedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  mfaVerifiedAt: 'mfaVerifiedAt'
+};
+
+exports.Prisma.MfaRecoveryCodeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  codeHash: 'codeHash',
+  usedAt: 'usedAt'
 };
 
 exports.Prisma.VerificationTokenScalarFieldEnum = {
@@ -216,12 +226,24 @@ exports.Prisma.MakerProfileScalarFieldEnum = {
   logoUrl: 'logoUrl',
   coverUrl: 'coverUrl',
   cityId: 'cityId',
+  creatorKind: 'creatorKind',
+  activityField: 'activityField',
+  specialties: 'specialties',
+  techniques: 'techniques',
+  services: 'services',
+  region: 'region',
+  publicArea: 'publicArea',
+  trainingInstitution: 'trainingInstitution',
+  trainingSpecialty: 'trainingSpecialty',
+  trainingLevel: 'trainingLevel',
   managerName: 'managerName',
   contactPhone: 'contactPhone',
   contactEmail: 'contactEmail',
   postalAddress: 'postalAddress',
   ifuNumber: 'ifuNumber',
   rccmNumber: 'rccmNumber',
+  suspendedAt: 'suspendedAt',
+  suspendReason: 'suspendReason',
   kycStatus: 'kycStatus',
   kycSubmittedAt: 'kycSubmittedAt',
   kycReviewedAt: 'kycReviewedAt',
@@ -242,6 +264,40 @@ exports.Prisma.MakerProfileScalarFieldEnum = {
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.VisibilityPlanScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  maxPublications: 'maxPublications',
+  durationDays: 'durationDays',
+  priceXof: 'priceXof',
+  perks: 'perks',
+  showBadge: 'showBadge',
+  boostInDirectory: 'boostInDirectory',
+  isDefault: 'isDefault',
+  isActive: 'isActive',
+  position: 'position',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MakerSubscriptionScalarFieldEnum = {
+  id: 'id',
+  makerId: 'makerId',
+  planId: 'planId',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  amountXof: 'amountXof',
+  paymentReference: 'paymentReference',
+  note: 'note',
+  activatedById: 'activatedById',
+  cancelledAt: 'cancelledAt',
+  reminderSentAt: 'reminderSentAt',
+  expiredNoticeAt: 'expiredNoticeAt',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.KycDocumentScalarFieldEnum = {
@@ -304,9 +360,12 @@ exports.Prisma.ProductScalarFieldEnum = {
   makerPriceXof: 'makerPriceXof',
   quantityAvailable: 'quantityAvailable',
   quantityReserved: 'quantityReserved',
+  isForSale: 'isForSale',
+  availability: 'availability',
   isMadeToOrder: 'isMadeToOrder',
   leadTimeDays: 'leadTimeDays',
   observations: 'observations',
+  packagingNotes: 'packagingNotes',
   weightGrams: 'weightGrams',
   lengthMm: 'lengthMm',
   widthMm: 'widthMm',
@@ -367,6 +426,9 @@ exports.Prisma.OrderScalarFieldEnum = {
   vatXof: 'vatXof',
   discountXof: 'discountXof',
   totalXof: 'totalXof',
+  paymentMode: 'paymentMode',
+  upfrontXof: 'upfrontXof',
+  balanceXof: 'balanceXof',
   promoCodeId: 'promoCodeId',
   placedAt: 'placedAt',
   deliveredAt: 'deliveredAt',
@@ -388,6 +450,9 @@ exports.Prisma.SubOrderScalarFieldEnum = {
   itemsMakerSubtotalXof: 'itemsMakerSubtotalXof',
   commissionSubtotalXof: 'commissionSubtotalXof',
   deliveryFeeXof: 'deliveryFeeXof',
+  balanceDueXof: 'balanceDueXof',
+  cashCollectedAt: 'cashCollectedAt',
+  cashCollectedXof: 'cashCollectedXof',
   acceptedAt: 'acceptedAt',
   rejectedAt: 'rejectedAt',
   rejectReason: 'rejectReason',
@@ -465,6 +530,7 @@ exports.Prisma.PaymentEventScalarFieldEnum = {
 exports.Prisma.RefundScalarFieldEnum = {
   id: 'id',
   paymentId: 'paymentId',
+  orderId: 'orderId',
   amountXof: 'amountXof',
   reason: 'reason',
   status: 'status',
@@ -632,6 +698,37 @@ exports.Prisma.MessageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.SupportTicketScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  channel: 'channel',
+  userId: 'userId',
+  authorRole: 'authorRole',
+  guestName: 'guestName',
+  guestEmail: 'guestEmail',
+  category: 'category',
+  subject: 'subject',
+  status: 'status',
+  priority: 'priority',
+  orderId: 'orderId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  lastMessageAt: 'lastMessageAt',
+  resolvedAt: 'resolvedAt',
+  closedAt: 'closedAt'
+};
+
+exports.Prisma.SupportMessageScalarFieldEnum = {
+  id: 'id',
+  ticketId: 'ticketId',
+  authorId: 'authorId',
+  fromStaff: 'fromStaff',
+  internal: 'internal',
+  body: 'body',
+  fileKeys: 'fileKeys',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ReviewScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
@@ -640,7 +737,10 @@ exports.Prisma.ReviewScalarFieldEnum = {
   rating: 'rating',
   body: 'body',
   status: 'status',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  moderatedAt: 'moderatedAt',
+  moderatorId: 'moderatorId',
+  rejectReason: 'rejectReason'
 };
 
 exports.Prisma.NotificationScalarFieldEnum = {
@@ -715,6 +815,146 @@ exports.Prisma.InvoiceScalarFieldEnum = {
   country: 'country'
 };
 
+exports.Prisma.NewsletterSubscriberScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  source: 'source',
+  createdAt: 'createdAt',
+  subscribedAt: 'subscribedAt',
+  unsubscribedAt: 'unsubscribedAt',
+  brevoSyncedAt: 'brevoSyncedAt'
+};
+
+exports.Prisma.IdempotencyKeyScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  key: 'key',
+  requestHash: 'requestHash',
+  status: 'status',
+  responseBody: 'responseBody',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+};
+
+exports.Prisma.ExhibitionPlanScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  maxWorks: 'maxWorks',
+  maxDurationDays: 'maxDurationDays',
+  priceXof: 'priceXof',
+  perks: 'perks',
+  featuredPlacement: 'featuredPlacement',
+  communicationSupport: 'communicationSupport',
+  isActive: 'isActive',
+  position: 'position',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ExhibitionScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  organizerId: 'organizerId',
+  makerId: 'makerId',
+  planId: 'planId',
+  title: 'title',
+  organizerName: 'organizerName',
+  summary: 'summary',
+  objective: 'objective',
+  discipline: 'discipline',
+  cityId: 'cityId',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  openingHours: 'openingHours',
+  format: 'format',
+  venueName: 'venueName',
+  venueAddress: 'venueAddress',
+  venueDescription: 'venueDescription',
+  venueImageKeys: 'venueImageKeys',
+  coverKey: 'coverKey',
+  dossierKey: 'dossierKey',
+  plannedWorkCount: 'plannedWorkCount',
+  status: 'status',
+  reviewNote: 'reviewNote',
+  submittedAt: 'submittedAt',
+  reviewedAt: 'reviewedAt',
+  reviewerId: 'reviewerId',
+  contractReference: 'contractReference',
+  contractSentAt: 'contractSentAt',
+  contractSignedAt: 'contractSignedAt',
+  paymentAmountXof: 'paymentAmountXof',
+  paymentReference: 'paymentReference',
+  paymentReceivedAt: 'paymentReceivedAt',
+  publishAt: 'publishAt',
+  publishedAt: 'publishedAt',
+  suspendedAt: 'suspendedAt',
+  suspendReason: 'suspendReason',
+  accessMode: 'accessMode',
+  ticketPriceXof: 'ticketPriceXof',
+  requiresRegistration: 'requiresRegistration',
+  accessCodeHash: 'accessCodeHash',
+  onsiteInfo: 'onsiteInfo',
+  remoteInfo: 'remoteInfo',
+  isFeatured: 'isFeatured',
+  viewCount: 'viewCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ExhibitionWorkScalarFieldEnum = {
+  id: 'id',
+  exhibitionId: 'exhibitionId',
+  position: 'position',
+  productId: 'productId',
+  title: 'title',
+  artistName: 'artistName',
+  description: 'description',
+  materials: 'materials',
+  dimensions: 'dimensions',
+  imageKeys: 'imageKeys',
+  proofKey: 'proofKey',
+  reviewStatus: 'reviewStatus',
+  reviewNote: 'reviewNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ExhibitionPassScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  exhibitionId: 'exhibitionId',
+  userId: 'userId',
+  kind: 'kind',
+  format: 'format',
+  status: 'status',
+  amountXof: 'amountXof',
+  provider: 'provider',
+  providerRef: 'providerRef',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ContentReportScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  targetLabel: 'targetLabel',
+  reason: 'reason',
+  details: 'details',
+  reporterId: 'reporterId',
+  reporterEmail: 'reporterEmail',
+  status: 'status',
+  resolution: 'resolution',
+  contentHidden: 'contentHidden',
+  handledById: 'handledById',
+  handledAt: 'handledAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -764,6 +1004,14 @@ exports.VerificationPurpose = exports.$Enums.VerificationPurpose = {
   PASSWORD_RESET: 'PASSWORD_RESET'
 };
 
+exports.CreatorKind = exports.$Enums.CreatorKind = {
+  STUDIO: 'STUDIO',
+  ARTISAN: 'ARTISAN',
+  DESIGNER: 'DESIGNER',
+  APPRENTICE_DESIGNER: 'APPRENTICE_DESIGNER',
+  APPRENTICE_ARTISAN: 'APPRENTICE_ARTISAN'
+};
+
 exports.KycStatus = exports.$Enums.KycStatus = {
   NOT_SUBMITTED: 'NOT_SUBMITTED',
   PENDING: 'PENDING',
@@ -781,6 +1029,12 @@ exports.VehicleType = exports.$Enums.VehicleType = {
   MOTO: 'MOTO',
   TRICYCLE: 'TRICYCLE',
   CAMIONNETTE: 'CAMIONNETTE'
+};
+
+exports.ProductAvailability = exports.$Enums.ProductAvailability = {
+  AVAILABLE: 'AVAILABLE',
+  SOLD: 'SOLD',
+  UNAVAILABLE: 'UNAVAILABLE'
 };
 
 exports.ProductStatus = exports.$Enums.ProductStatus = {
@@ -803,6 +1057,12 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   DISPUTED: 'DISPUTED',
   CANCELLED: 'CANCELLED',
   REFUNDED: 'REFUNDED'
+};
+
+exports.PaymentMode = exports.$Enums.PaymentMode = {
+  ONLINE_FULL: 'ONLINE_FULL',
+  DEPOSIT_50: 'DEPOSIT_50',
+  CASH_ON_DELIVERY: 'CASH_ON_DELIVERY'
 };
 
 exports.SubOrderStatus = exports.$Enums.SubOrderStatus = {
@@ -839,7 +1099,9 @@ exports.LedgerAccountType = exports.$Enums.LedgerAccountType = {
   COURIER_PAYABLE: 'COURIER_PAYABLE',
   CUSTOMER_REFUNDABLE: 'CUSTOMER_REFUNDABLE',
   PSP_FEE: 'PSP_FEE',
-  VAT_PAYABLE: 'VAT_PAYABLE'
+  VAT_PAYABLE: 'VAT_PAYABLE',
+  RECEIVABLE_ON_DELIVERY: 'RECEIVABLE_ON_DELIVERY',
+  COURIER_CASH_HELD: 'COURIER_CASH_HELD'
 };
 
 exports.PayoutStatus = exports.$Enums.PayoutStatus = {
@@ -874,9 +1136,96 @@ exports.ThreadParty = exports.$Enums.ThreadParty = {
   COURIER: 'COURIER'
 };
 
+exports.TicketChannel = exports.$Enums.TicketChannel = {
+  ACCOUNT: 'ACCOUNT',
+  CONTACT_FORM: 'CONTACT_FORM'
+};
+
+exports.TicketStatus = exports.$Enums.TicketStatus = {
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  WAITING_CUSTOMER: 'WAITING_CUSTOMER',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED'
+};
+
+exports.TicketPriority = exports.$Enums.TicketPriority = {
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+};
+
 exports.PromoKind = exports.$Enums.PromoKind = {
   PERCENT: 'PERCENT',
   FIXED: 'FIXED'
+};
+
+exports.ExhibitionFormat = exports.$Enums.ExhibitionFormat = {
+  PHYSICAL: 'PHYSICAL',
+  ONLINE: 'ONLINE',
+  HYBRID: 'HYBRID'
+};
+
+exports.ExhibitionStatus = exports.$Enums.ExhibitionStatus = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  CHANGES_REQUESTED: 'CHANGES_REQUESTED',
+  REJECTED: 'REJECTED',
+  ACCEPTED: 'ACCEPTED',
+  SCHEDULED: 'SCHEDULED',
+  PUBLISHED: 'PUBLISHED',
+  SUSPENDED: 'SUSPENDED'
+};
+
+exports.ExhibitionAccess = exports.$Enums.ExhibitionAccess = {
+  FREE: 'FREE',
+  PAID: 'PAID',
+  RESTRICTED: 'RESTRICTED'
+};
+
+exports.ExhibitionWorkReview = exports.$Enums.ExhibitionWorkReview = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
+exports.ExhibitionPassKind = exports.$Enums.ExhibitionPassKind = {
+  REGISTRATION: 'REGISTRATION',
+  TICKET: 'TICKET',
+  INVITATION: 'INVITATION'
+};
+
+exports.ExhibitionPassFormat = exports.$Enums.ExhibitionPassFormat = {
+  ONSITE: 'ONSITE',
+  ONLINE: 'ONLINE'
+};
+
+exports.ExhibitionPassStatus = exports.$Enums.ExhibitionPassStatus = {
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.ReportTarget = exports.$Enums.ReportTarget = {
+  PRODUCT: 'PRODUCT',
+  MAKER: 'MAKER',
+  EXHIBITION: 'EXHIBITION',
+  EXHIBITION_WORK: 'EXHIBITION_WORK'
+};
+
+exports.ReportReason = exports.$Enums.ReportReason = {
+  UNAUTHORIZED_USE: 'UNAUTHORIZED_USE',
+  COUNTERFEIT: 'COUNTERFEIT',
+  INAPPROPRIATE: 'INAPPROPRIATE',
+  MISLEADING: 'MISLEADING',
+  OTHER: 'OTHER'
+};
+
+exports.ReportStatus = exports.$Enums.ReportStatus = {
+  OPEN: 'OPEN',
+  RESOLVED: 'RESOLVED',
+  DISMISSED: 'DISMISSED'
 };
 
 exports.Prisma.ModelName = {
@@ -884,10 +1233,13 @@ exports.Prisma.ModelName = {
   City: 'City',
   User: 'User',
   Session: 'Session',
+  MfaRecoveryCode: 'MfaRecoveryCode',
   VerificationToken: 'VerificationToken',
   TermsAcceptance: 'TermsAcceptance',
   Address: 'Address',
   MakerProfile: 'MakerProfile',
+  VisibilityPlan: 'VisibilityPlan',
+  MakerSubscription: 'MakerSubscription',
   KycDocument: 'KycDocument',
   CourierProfile: 'CourierProfile',
   VehicleRate: 'VehicleRate',
@@ -915,13 +1267,22 @@ exports.Prisma.ModelName = {
   DisputeMessage: 'DisputeMessage',
   MessageThread: 'MessageThread',
   Message: 'Message',
+  SupportTicket: 'SupportTicket',
+  SupportMessage: 'SupportMessage',
   Review: 'Review',
   Notification: 'Notification',
   AuditLog: 'AuditLog',
   ReferenceCounter: 'ReferenceCounter',
   PromoCode: 'PromoCode',
   PromoRedemption: 'PromoRedemption',
-  Invoice: 'Invoice'
+  Invoice: 'Invoice',
+  NewsletterSubscriber: 'NewsletterSubscriber',
+  IdempotencyKey: 'IdempotencyKey',
+  ExhibitionPlan: 'ExhibitionPlan',
+  Exhibition: 'Exhibition',
+  ExhibitionWork: 'ExhibitionWork',
+  ExhibitionPass: 'ExhibitionPass',
+  ContentReport: 'ContentReport'
 };
 
 /**

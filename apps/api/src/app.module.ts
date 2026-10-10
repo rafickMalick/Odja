@@ -11,6 +11,8 @@ import { validateEnv } from './config/env';
 import { AuditInterceptor } from './common/audit.interceptor';
 import { RateLimitGuard } from './common/rate-limit.guard';
 import { HealthController } from './health/health.controller';
+import { ExhibitionsModule } from './exhibitions/exhibitions.module';
+import { ReportsModule } from './reports/reports.module';
 import { MakerModule } from './makers/maker.module';
 import { AdminModule } from './admin/admin.module';
 import { DisputeModule } from './disputes/dispute.module';
@@ -38,6 +40,8 @@ import { SupportModule } from './support/support.module';
     NotificationsModule,
     AuthModule,
     MakerModule,
+    ExhibitionsModule,
+    ReportsModule,
     CatalogModule,
     CheckoutModule,
     OrdersModule,

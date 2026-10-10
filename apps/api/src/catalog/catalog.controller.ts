@@ -130,7 +130,12 @@ export class MakerProductController {
     @Body(zodBody(productSchema)) input: ProductInput,
   ) {
     const product = await this.products.create(user.id, input);
-    return { id: product.id, slug: product.slug, status: product.status };
+    return {
+      id: product.id,
+      slug: product.slug,
+      status: product.status,
+      isForSale: product.isForSale,
+    };
   }
 
   @Get()
@@ -141,6 +146,8 @@ export class MakerProductController {
       slug: product.slug,
       name: product.name,
       status: product.status,
+      isForSale: product.isForSale,
+      availability: product.availability,
       makerPriceXof: product.makerPriceXof,
       quantityAvailable: product.quantityAvailable,
       quantityReserved: product.quantityReserved,
@@ -162,6 +169,8 @@ export class MakerProductController {
       categoryId: product.categoryId,
       description: product.description,
       material: product.material,
+      isForSale: product.isForSale,
+      availability: product.availability,
       makerPriceXof: product.makerPriceXof,
       commissionBps: product.commissionBps,
       isMadeToOrder: product.isMadeToOrder,
@@ -169,6 +178,7 @@ export class MakerProductController {
       quantityReserved: product.quantityReserved,
       leadTimeDays: product.leadTimeDays,
       observations: product.observations,
+      packagingNotes: product.packagingNotes,
       weightGrams: product.weightGrams,
       lengthMm: product.lengthMm,
       widthMm: product.widthMm,

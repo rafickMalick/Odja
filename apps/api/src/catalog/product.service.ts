@@ -15,12 +15,15 @@ import type { City, Category, MakerProfile, Product, ProductImage } from '@oja/d
 import {
   assertProductTransition,
   commissionFor,
+  displayAvailability,
+  isPurchasable,
   whyNotSubmittable,
 } from '@oja/domain';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { NotificationService } from '../notifications/notification.service';
+import { VisibilityService } from '../makers/visibility.service';
 
 /* Pas de `as const` : Prisma dérive le type de retour de l'objet `include`,
    et un littéral figé en lecture seule lui fait perdre les relations. */
@@ -45,6 +48,7 @@ export class ProductService {
     private readonly prisma: PrismaService,
     private readonly storage: StorageService,
     private readonly notifications: NotificationService,
+    private readonly visibility: VisibilityService,
     config: ConfigService,
   ) {
     this.defaultCommissionBps = config.get<number>('PLATFORM_COMMISSION_BPS', 500);
@@ -60,6 +64,12 @@ export class ProductService {
     });
     if (!category) throw new BadRequestException('Catégorie inconnue.');
 
+    /* Le quota de la formule se vérifie à la création : refuser plus tard, à
+       la mise en ligne, ferait perdre la saisie et les photos. */
+    await this.visibility.assertCanAddProduct(maker.id);
+
+    /* Une réalisation de portfolio n'a ni prix ni colis : les colonnes,
+       obligatoires en base, valent alors 0. */
     return this.prisma.product.create({
       data: {
         makerId: maker.id,
@@ -67,15 +77,17 @@ export class ProductService {
         name: input.name,
         categoryId: input.categoryId,
         description: input.description,
-        makerPriceXof: input.makerPriceXof,
-        isMadeToOrder: input.isMadeToOrder,
-        quantityAvailable: input.quantityAvailable,
-        weightGrams: input.weightGrams,
-        lengthMm: input.lengthMm,
-        widthMm: input.widthMm,
-        heightMm: input.heightMm,
+        isForSale: input.isForSale,
+        availability: input.availability,
+        makerPriceXof: input.makerPriceXof ?? 0,
+        isMadeToOrder: input.isForSale && input.isMadeToOrder,
+        quantityAvailable: input.isForSale ? input.quantityAvailable : 0,
+        weightGrams: input.weightGrams ?? 0,
+        lengthMm: input.lengthMm ?? 0,
+        widthMm: input.widthMm ?? 0,
+        heightMm: input.heightMm ?? 0,
         status: 'DRAFT',
-        ...defined(input, ['material', 'leadTimeDays', 'observations']),
+        ...defined(input, ['material', 'leadTimeDays', 'observations', 'packagingNotes']),
       },
       include: WITH_RELATIONS,
     });
@@ -114,6 +126,7 @@ export class ProductService {
     if (!product) throw new NotFoundException();
 
     const blockers = whyNotSubmittable({
+      isForSale: product.isForSale,
       imageCount: product.images.length,
       makerKycApproved: maker.kycStatus === 'APPROVED',
       isMadeToOrder: product.isMadeToOrder,
@@ -139,7 +152,27 @@ export class ProductService {
     /* Une fiche en ligne que le créateur modifie repasse en validation.
        Sans cette règle, on publierait un fauteuil à 150 000 F et on le
        remplacerait ensuite par autre chose, hors du regard de l'administration. */
-    const backToReview = product.status === 'PUBLISHED';
+    /* Changer seulement la disponibilité — « vendu », « indisponible » — ne
+       touche pas au contenu vérifié : la fiche reste en ligne. */
+    const contentKeys = Object.keys(input).filter(
+      (key) => key !== 'availability' && input[key as keyof ProductUpdateInput] !== undefined,
+    );
+    const backToReview = product.status === 'PUBLISHED' && contentKeys.length > 0;
+
+    /* Passer une pièce en vente exige ce qu'exige la création : un prix et un
+       colis. On contrôle sur l'état final, fiche existante comprise. */
+    const forSale = input.isForSale ?? product.isForSale;
+    if (forSale && !product.isForSale) {
+      const missing = (['makerPriceXof', 'weightGrams', 'lengthMm', 'widthMm', 'heightMm'] as const)
+        .filter((field) => !(input[field] ?? product[field]));
+      if (missing.length > 0) {
+        throw new BadRequestException({
+          error: 'Fiche incomplète',
+          message: 'Indiquez le prix, le poids et les dimensions pour mettre cette pièce en vente.',
+          errors: missing.map((field) => ({ field, message: 'Requis pour une pièce à vendre' })),
+        });
+      }
+    }
 
     const updated = await this.prisma.product.update({
       where: { id: productId },
@@ -149,16 +182,20 @@ export class ProductService {
           'categoryId',
           'description',
           'material',
+          'isForSale',
+          'availability',
           'makerPriceXof',
           'isMadeToOrder',
           'quantityAvailable',
           'leadTimeDays',
           'observations',
+          'packagingNotes',
           'weightGrams',
           'lengthMm',
           'widthMm',
           'heightMm',
         ]),
+        ...(forSale ? {} : { isMadeToOrder: false }),
         ...(backToReview ? { status: 'PENDING_REVIEW' as const, reviewedAt: null } : {}),
       },
       include: WITH_RELATIONS,
@@ -175,6 +212,7 @@ export class ProductService {
     const imageCount = await this.prisma.productImage.count({ where: { productId } });
 
     const problems = whyNotSubmittable({
+      isForSale: product.isForSale,
       imageCount,
       makerKycApproved: maker.kycStatus === 'APPROVED',
       isMadeToOrder: product.isMadeToOrder,
@@ -347,7 +385,13 @@ export class ProductService {
 
   async publicBySlug(slug: string): Promise<PublicProduct> {
     const product = await this.prisma.product.findFirst({
-      where: { slug, status: 'PUBLISHED', hiddenAt: null, deletedAt: null },
+      where: {
+        slug,
+        status: 'PUBLISHED',
+        hiddenAt: null,
+        deletedAt: null,
+        maker: { suspendedAt: null },
+      },
       include: WITH_RELATIONS,
     });
     if (!product) throw new NotFoundException();
@@ -399,6 +443,9 @@ export class ProductService {
       inStock:
         product.isMadeToOrder ||
         product.quantityAvailable - product.quantityReserved > 0,
+      isForSale: product.isForSale,
+      availability: displayAvailability(product),
+      purchasable: isPurchasable(product),
 
       dimensions: {
         lengthMm: product.lengthMm,

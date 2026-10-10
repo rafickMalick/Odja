@@ -45,6 +45,13 @@ export function money(amountXof: number): string {
    Volontairement plates : ce sont les champs strictement nécessaires au rendu
    in-app, pas le modèle Prisma. Le service les extrait avant d'appeler. */
 
+/** Avis composé par l'appelant : un titre, une phrase, un lien. */
+export interface Notice {
+  title: string;
+  body: string;
+  href: string;
+}
+
 export interface SubOrderRef {
   orderReference: string;
   shopName: string;
@@ -218,6 +225,36 @@ export const NOTIFICATION_TEMPLATES = {
       href: d.href,
     }),
   } satisfies NotificationTemplate<{ reference: string; statusLabel: string; href: string }>,
+
+  /* Avis des évolutions créatives (cahier des évolutions, § 12). Leur texte
+     est composé par l'appelant : chaque événement — dépôt d'un justificatif,
+     décision sur une exposition, billet confirmé — dit en une phrase ce qui
+     s'est passé et où agir. Le nom du gabarit range l'avis par destinataire,
+     pour les filtres et les statistiques. */
+
+  creator_notice: {
+    version: 1,
+    channels: ['email', 'inapp'],
+    inapp: (d: Notice) => ({ title: d.title, body: d.body, href: d.href }),
+  } satisfies NotificationTemplate<Notice>,
+
+  organizer_notice: {
+    version: 1,
+    channels: ['email', 'inapp'],
+    inapp: (d: Notice) => ({ title: d.title, body: d.body, href: d.href }),
+  } satisfies NotificationTemplate<Notice>,
+
+  visitor_notice: {
+    version: 1,
+    channels: ['email', 'inapp'],
+    inapp: (d: Notice) => ({ title: d.title, body: d.body, href: d.href }),
+  } satisfies NotificationTemplate<Notice>,
+
+  admin_notice: {
+    version: 1,
+    channels: ['inapp'],
+    inapp: (d: Notice) => ({ title: d.title, body: d.body, href: d.href }),
+  } satisfies NotificationTemplate<Notice>,
 
   support_ticket_opened: {
     version: 1,

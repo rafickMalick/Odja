@@ -122,10 +122,18 @@ export class CartService {
 
   async addItem(cartId: string, productId: string, quantity: number): Promise<void> {
     const product = await this.prisma.product.findFirst({
-      where: { id: productId, status: 'PUBLISHED', hiddenAt: null, deletedAt: null },
+      where: {
+        id: productId,
+        status: 'PUBLISHED',
+        hiddenAt: null,
+        deletedAt: null,
+        isForSale: true,
+        availability: 'AVAILABLE',
+        maker: { suspendedAt: null },
+      },
     });
-    // Une pièce non publiée ne se met pas au panier — et on ne dit pas si elle
-    // existe ailleurs dans le catalogue.
+    // Une pièce non publiée — ou publiée sans être à vendre — ne se met pas au
+    // panier, et on ne dit pas si elle existe ailleurs dans le catalogue.
     if (!product) throw new NotFoundException();
 
     const existing = await this.prisma.cartItem.findUnique({
@@ -322,7 +330,9 @@ function describeIssue(
     hiddenAt: Date | null;
     deletedAt: Date | null;
     isMadeToOrder: boolean;
-    maker: { kycStatus: string };
+    isForSale: boolean;
+    availability: string;
+    maker: { kycStatus: string; suspendedAt: Date | null };
   },
   wanted: number,
   available: number,
@@ -330,7 +340,12 @@ function describeIssue(
   if (product.deletedAt || product.status !== 'PUBLISHED' || product.hiddenAt) {
     return "Cette pièce n'est plus disponible à la vente.";
   }
-  if (product.maker.kycStatus !== 'APPROVED') {
+  /* L'atelier a pu la marquer vendue, indisponible, ou la retirer de la vente
+     pour la garder en portfolio, après qu'elle est entrée dans le panier. */
+  if (!product.isForSale || product.availability !== 'AVAILABLE') {
+    return "Cette pièce n'est plus disponible à la vente.";
+  }
+  if (product.maker.kycStatus !== 'APPROVED' || product.maker.suspendedAt) {
     return "L'atelier n'est plus actif sur Ojà.";
   }
   if (product.isMadeToOrder) return null;

@@ -8,7 +8,10 @@ import { Button } from "@/components/Button";
 import { Field, FieldRow, fieldStyles } from "@/components/Field";
 import { useToast } from "@/components/Toast";
 import { PageHead, Panel, workspaceStyles as styles } from "@/components/dashboard/Workspace";
+import type { CreatorKind } from "@oja/contracts";
+
 import { ApiError, apiFetch } from "@/lib/api";
+import { CREATOR_KIND_LABELS, CREATOR_KINDS, isApprenticeKind } from "@/lib/creators";
 import { UploadError, uploadFile } from "@/lib/upload";
 
 import { useMakerStatus } from "../maker-context";
@@ -24,6 +27,19 @@ import shop from "./shop.module.css";
  */
 
 interface Profile {
+  slug: string;
+  logoUrl: string | null;
+  coverUrl: string | null;
+  creatorKind: CreatorKind;
+  activityField: string | null;
+  specialties: string[];
+  techniques: string[];
+  services: string | null;
+  region: string | null;
+  publicArea: string | null;
+  trainingInstitution: string | null;
+  trainingSpecialty: string | null;
+  trainingLevel: string | null;
   shopName: string;
   description: string | null;
   cityId: string;
@@ -39,6 +55,8 @@ interface Profile {
   kycStatus: "NOT_SUBMITTED" | "PENDING" | "APPROVED" | "REJECTED";
   kycRejectReason: string | null;
   commissionBps: number;
+  suspendedAt: string | null;
+  suspendReason: string | null;
 }
 
 interface City {
@@ -60,7 +78,17 @@ const DOCUMENT_TYPES: { value: string; label: string }[] = [
   { value: "cni_verso", label: "Pièce d’identité (verso)" },
   { value: "rccm", label: "Registre de commerce (RCCM)" },
   { value: "ifu", label: "Identifiant fiscal (IFU)" },
+  { value: "justificatif_formation", label: "Justificatif de formation" },
   { value: "autre", label: "Autre pièce" },
+];
+
+/* Un apprenti commence par son justificatif : c'est la pièce que l'équipe
+   examine en premier, et la seule qui lui soit propre. */
+const APPRENTICE_DOCUMENT_TYPES = [
+  DOCUMENT_TYPES.find((item) => item.value === "justificatif_formation")!,
+  ...DOCUMENT_TYPES.filter(
+    (item) => item.value !== "justificatif_formation" && item.value !== "rccm" && item.value !== "ifu",
+  ),
 ];
 
 const KYC_STATE: Record<
@@ -132,9 +160,24 @@ export default function ShopPage() {
       postalAddress: values["postalAddress"],
       pickupLine1: values["pickupLine1"],
     };
-    for (const key of ["description", "ifuNumber", "rccmNumber", "pickupLandmark"]) {
+    for (const key of [
+      "description",
+      "ifuNumber",
+      "rccmNumber",
+      "pickupLandmark",
+      "activityField",
+      "services",
+      "region",
+      "publicArea",
+      "trainingInstitution",
+      "trainingSpecialty",
+      "trainingLevel",
+    ]) {
       if (values[key]?.trim()) payload[key] = values[key]!.trim();
     }
+    payload["creatorKind"] = values["creatorKind"] ?? "ARTISAN";
+    payload["specialties"] = splitTags(values["specialties"]);
+    payload["techniques"] = splitTags(values["techniques"]);
 
     try {
       const wasNew = !exists;
@@ -193,6 +236,7 @@ export default function ShopPage() {
   };
 
   const locked = profile?.kycStatus === "PENDING";
+  const apprentice = isApprenticeKind(values["creatorKind"]);
 
   return (
     <>
@@ -218,6 +262,13 @@ export default function ShopPage() {
         </p>
       ) : null}
 
+      {profile?.suspendedAt ? (
+        <p className={styles.error}>
+          Votre profil est suspendu : {profile.suspendReason}. Il n’est plus visible des acheteurs.
+          Écrivez au support créateur pour en parler.
+        </p>
+      ) : null}
+
       {message ? <p className={styles.muted}>{message}</p> : null}
 
       <form onSubmit={save} className={shop.form} noValidate>
@@ -228,11 +279,34 @@ export default function ShopPage() {
           </p>
 
           <Field
-            label="Nom de l’atelier"
+            label="Nom de l’atelier ou de l’entreprise"
             value={values["shopName"] ?? ""}
             onChange={(event) => set("shopName", event.target.value)}
             error={errors["shopName"]}
           />
+
+          <FieldRow>
+            <Field label="Statut" error={errors["creatorKind"]}>
+              <select
+                className={fieldStyles.control}
+                value={values["creatorKind"] ?? "ARTISAN"}
+                onChange={(event) => set("creatorKind", event.target.value)}
+              >
+                {CREATOR_KINDS.map((kind) => (
+                  <option key={kind} value={kind}>
+                    {CREATOR_KIND_LABELS[kind]}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field
+              label="Domaine d’activité"
+              value={values["activityField"] ?? ""}
+              onChange={(event) => set("activityField", event.target.value)}
+              placeholder="Mobilier, céramique, textile…"
+              error={errors["activityField"]}
+            />
+          </FieldRow>
 
           <Field label="Présentation" error={errors["description"]}>
             <textarea
@@ -240,9 +314,40 @@ export default function ShopPage() {
               rows={5}
               value={values["description"] ?? ""}
               onChange={(event) => set("description", event.target.value)}
-              placeholder="Votre savoir-faire, vos matériaux, votre histoire…"
+              placeholder="Votre parcours, votre démarche, votre histoire…"
             />
           </Field>
+
+          <Field
+            label="Spécialités"
+            value={values["specialties"] ?? ""}
+            onChange={(event) => set("specialties", event.target.value)}
+            placeholder="Assises, tables basses, luminaires"
+            error={errors["specialties"]}
+          />
+          <Field
+            label="Matériaux et techniques"
+            value={values["techniques"] ?? ""}
+            onChange={(event) => set("techniques", event.target.value)}
+            placeholder="Iroko, tressage, teinture à l’indigo"
+            error={errors["techniques"]}
+          />
+          <p className={styles.muted}>Séparez-les par des virgules. Douze au maximum.</p>
+
+          <Field label="Services proposés (facultatif)" error={errors["services"]}>
+            <textarea
+              className={fieldStyles.control}
+              rows={3}
+              value={values["services"] ?? ""}
+              onChange={(event) => set("services", event.target.value)}
+              placeholder="Pièces sur mesure, restauration, ateliers de formation…"
+            />
+          </Field>
+
+          <p className={styles.muted}>
+            Pas de numéro de téléphone, d’e-mail ni de lien WhatsApp dans ces textes : ils
+            seraient refusés. Les acheteurs vous contactent par Ojà.
+          </p>
 
           <Field label="Ville" error={errors["cityId"]}>
             <select
@@ -258,7 +363,60 @@ export default function ShopPage() {
               ))}
             </select>
           </Field>
+
+          <FieldRow>
+            <Field
+              label="Région (facultatif)"
+              value={values["region"] ?? ""}
+              onChange={(event) => set("region", event.target.value)}
+              placeholder="Littoral"
+              error={errors["region"]}
+            />
+            <Field
+              label="Quartier affiché (facultatif)"
+              value={values["publicArea"] ?? ""}
+              onChange={(event) => set("publicArea", event.target.value)}
+              placeholder="Haie Vive"
+              error={errors["publicArea"]}
+            />
+          </FieldRow>
+          <p className={styles.muted}>
+            Le quartier aide les acheteurs à vous situer. Votre adresse exacte n’est jamais publiée.
+          </p>
         </Panel>
+
+        {apprentice ? (
+          <Panel title="Votre formation">
+            <p className={styles.muted}>
+              Votre profil affichera honnêtement « {CREATOR_KIND_LABELS[values["creatorKind"] as CreatorKind]} ».
+              Ces informations présentent votre parcours aux visiteurs ; votre justificatif, lui,
+              n’est vu que par l’équipe de validation. Le profil d’apprenti est gratuit.
+            </p>
+            <Field
+              label="Établissement ou atelier de formation"
+              value={values["trainingInstitution"] ?? ""}
+              onChange={(event) => set("trainingInstitution", event.target.value)}
+              placeholder="École, centre de formation, atelier d’un maître artisan…"
+              error={errors["trainingInstitution"]}
+            />
+            <FieldRow>
+              <Field
+                label="Spécialité"
+                value={values["trainingSpecialty"] ?? ""}
+                onChange={(event) => set("trainingSpecialty", event.target.value)}
+                placeholder="Design produit, ébénisterie, vannerie…"
+                error={errors["trainingSpecialty"]}
+              />
+              <Field
+                label="Niveau (facultatif)"
+                value={values["trainingLevel"] ?? ""}
+                onChange={(event) => set("trainingLevel", event.target.value)}
+                placeholder="Deuxième année, apprentissage depuis 2024…"
+                error={errors["trainingLevel"]}
+              />
+            </FieldRow>
+          </Panel>
+        ) : null}
 
         <Panel title="Informations réservées à Ojà">
           <Field
@@ -306,7 +464,11 @@ export default function ShopPage() {
               error={errors["rccmNumber"]}
             />
           </FieldRow>
-          <p className={styles.muted}>L’un des deux suffit pour déposer votre dossier.</p>
+          <p className={styles.muted}>
+            {apprentice
+              ? "Facultatifs pour un apprenti : votre justificatif de formation en tient lieu. Ces numéros ne sont jamais publiés."
+              : "L’un des deux suffit pour déposer votre dossier. Ils ne sont jamais publiés."}
+          </p>
         </Panel>
 
         <Panel title="Adresse d’enlèvement">
@@ -336,9 +498,26 @@ export default function ShopPage() {
         </div>
       </form>
 
+      {exists && profile ? (
+        <ShopImages logoUrl={profile.logoUrl} coverUrl={profile.coverUrl} onChange={setProfile} />
+      ) : null}
+
+      {profile?.kycStatus === "APPROVED" ? (
+        <p className={styles.muted}>
+          <a href={`/atelier/${profile.slug}`} target="_blank" rel="noreferrer">
+            Voir mon profil public
+          </a>
+        </p>
+      ) : null}
+
       {exists ? (
         <>
-          <KycDocuments documents={documents} onChange={setDocuments} disabled={locked} />
+          <KycDocuments
+            documents={documents}
+            onChange={setDocuments}
+            disabled={locked}
+            types={apprentice ? APPRENTICE_DOCUMENT_TYPES : DOCUMENT_TYPES}
+          />
 
           <Panel title="Dépôt du dossier">
             {profile?.kycStatus === "APPROVED" ? (
@@ -352,9 +531,10 @@ export default function ShopPage() {
             ) : (
               <>
                 <p className={styles.muted}>
-                  Il faut le nom du responsable, un téléphone, l’adresse du siège, celle de
-                  l’atelier, et un numéro IFU ou RCCM. Vos pièces justificatives ne sont
-                  visibles que de l’équipe de validation.
+                  {apprentice
+                    ? "Il faut votre nom, un téléphone, l’adresse où retirer vos pièces, votre établissement, votre spécialité et votre justificatif de formation."
+                    : "Il faut le nom du responsable, un téléphone, l’adresse du siège, celle de l’atelier, et un numéro IFU ou RCCM."}{" "}
+                  Vos pièces justificatives ne sont visibles que de l’équipe de validation.
                 </p>
                 <div className={shop.actions}>
                   <Button type="button" onClick={submitKyc} disabled={busy}>
@@ -370,17 +550,138 @@ export default function ShopPage() {
   );
 }
 
+/**
+ * Logo et bannière.
+ *
+ * Deux emplacements, deux gestes : envoyer remplace l'image en place, retirer
+ * la supprime. Le fichier part directement au stockage ; l'API ne fait que
+ * rattacher la clé.
+ */
+function ShopImages({
+  logoUrl,
+  coverUrl,
+  onChange,
+}: {
+  logoUrl: string | null;
+  coverUrl: string | null;
+  onChange: (profile: Profile) => void;
+}) {
+  const { notify } = useToast();
+  const [busy, setBusy] = useState<"logo" | "cover" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const send = async (slot: "logo" | "cover", file: File) => {
+    setBusy(slot);
+    setError(null);
+    try {
+      const { fileKey } = await uploadFile(file, "shop-image");
+      onChange(
+        await apiFetch<Profile>("/maker/profile/images", {
+          method: "POST",
+          body: { slot, fileKey },
+        }),
+      );
+      notify(slot === "logo" ? "Logo mis à jour." : "Bannière mise à jour.", { tone: "success" });
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof UploadError || uploadError instanceof ApiError
+          ? uploadError.message
+          : "L’envoi a échoué. Réessayez.",
+      );
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const remove = async (slot: "logo" | "cover") => {
+    setBusy(slot);
+    setError(null);
+    try {
+      onChange(await apiFetch<Profile>(`/maker/profile/images/${slot}`, { method: "DELETE" }));
+    } catch {
+      setError("Suppression impossible. Réessayez.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const slots: { slot: "logo" | "cover"; label: string; hint: string; url: string | null }[] = [
+    {
+      slot: "logo",
+      label: "Logo ou photo",
+      hint: "Carré, au moins 400 × 400 px. Un logo pour une entreprise, une photo pour un créateur indépendant.",
+      url: logoUrl,
+    },
+    {
+      slot: "cover",
+      label: "Bannière",
+      hint: "Paysage, au moins 1600 × 500 px : votre atelier, une pièce emblématique, votre univers.",
+      url: coverUrl,
+    },
+  ];
+
+  return (
+    <Panel title="Logo et bannière">
+      <div className={shop.images}>
+        {slots.map((item) => (
+          <div key={item.slot} className={shop.imageSlot}>
+            <div className={item.slot === "logo" ? shop.logoPreview : shop.coverPreview}>
+              {item.url ? <img src={item.url} alt="" /> : <span>Aucune image</span>}
+            </div>
+            <div className={shop.imageText}>
+              <p className={shop.imageLabel}>{item.label}</p>
+              <p className={styles.muted}>{item.hint}</p>
+              <div className={shop.actions}>
+                <label className={shop.uploadButton}>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    disabled={busy !== null}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) void send(item.slot, file);
+                      event.target.value = "";
+                    }}
+                  />
+                  {busy === item.slot ? "Envoi…" : item.url ? "Remplacer" : "Choisir une image"}
+                </label>
+                {item.url ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={busy !== null}
+                    onClick={() => void remove(item.slot)}
+                  >
+                    Retirer
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {error ? <p className={styles.error}>{error}</p> : null}
+    </Panel>
+  );
+}
+
 /** Envoi et suivi des pièces justificatives. */
 function KycDocuments({
   documents,
   onChange,
   disabled,
+  types,
 }: {
   documents: KycDocument[];
   onChange: (documents: KycDocument[]) => void;
   disabled: boolean;
+  types: { value: string; label: string }[];
 }) {
-  const [type, setType] = useState(DOCUMENT_TYPES[0]!.value);
+  const [type, setType] = useState(types[0]!.value);
+  /* Le statut peut changer pendant la saisie : le type choisi suit la liste. */
+  useEffect(() => {
+    setType(types[0]!.value);
+  }, [types]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -453,7 +754,7 @@ function KycDocuments({
             onChange={(event) => setType(event.target.value)}
             aria-label="Type de pièce"
           >
-            {DOCUMENT_TYPES.map((item) => (
+            {types.map((item) => (
               <option key={item.value} value={item.value}>
                 {item.label}
               </option>
@@ -482,6 +783,16 @@ function KycDocuments({
 }
 
 const EMPTY: Record<string, string> = {
+  creatorKind: "ARTISAN",
+  activityField: "",
+  specialties: "",
+  techniques: "",
+  services: "",
+  region: "",
+  publicArea: "",
+  trainingInstitution: "",
+  trainingSpecialty: "",
+  trainingLevel: "",
   shopName: "",
   description: "",
   cityId: "",
@@ -495,8 +806,26 @@ const EMPTY: Record<string, string> = {
   pickupLandmark: "",
 };
 
+/** « Iroko, tressage , » → ["Iroko", "tressage"] */
+function splitTags(raw: string | undefined): string[] {
+  return (raw ?? "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
 function toValues(profile: Profile): Record<string, string> {
   return {
+    creatorKind: profile.creatorKind,
+    activityField: profile.activityField ?? "",
+    specialties: profile.specialties.join(", "),
+    techniques: profile.techniques.join(", "),
+    services: profile.services ?? "",
+    region: profile.region ?? "",
+    publicArea: profile.publicArea ?? "",
+    trainingInstitution: profile.trainingInstitution ?? "",
+    trainingSpecialty: profile.trainingSpecialty ?? "",
+    trainingLevel: profile.trainingLevel ?? "",
     shopName: profile.shopName,
     description: profile.description ?? "",
     cityId: profile.cityId,

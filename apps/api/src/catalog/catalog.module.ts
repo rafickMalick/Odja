@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { MakerModule } from '../makers/maker.module';
 import {
   CatalogAdminController,
   CatalogPublicController,
@@ -12,6 +13,7 @@ import { ProductService } from './product.service';
 import { SearchService } from './search.service';
 
 @Module({
+  imports: [MakerModule],
   controllers: [
     CatalogPublicController,
     GeoController,

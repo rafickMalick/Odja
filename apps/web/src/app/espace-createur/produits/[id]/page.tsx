@@ -9,7 +9,7 @@ import { PageHead, Panel, workspaceStyles as styles } from "@/components/dashboa
 import { ApiError, apiFetch } from "@/lib/api";
 
 import { PhotoGallery } from "../PhotoGallery";
-import { ProductForm, type ProductFormValues } from "../ProductForm";
+import { ProductForm, type ProductFormValues, type SaleState } from "../ProductForm";
 import form from "../form.module.css";
 
 interface ProductDetail {
@@ -19,12 +19,15 @@ interface ProductDetail {
   categoryId: string;
   description: string;
   material: string | null;
+  isForSale: boolean;
+  availability: SaleState;
   makerPriceXof: number;
   commissionBps: number;
   isMadeToOrder: boolean;
   quantityAvailable: number;
   leadTimeDays: number | null;
   observations: string | null;
+  packagingNotes: string | null;
   weightGrams: number;
   lengthMm: number;
   widthMm: number;
@@ -160,14 +163,23 @@ function toFormValues(product: ProductDetail): ProductFormValues {
     categoryId: product.categoryId,
     description: product.description,
     material: product.material ?? "",
-    makerPriceXof: String(product.makerPriceXof),
+    isForSale: product.isForSale,
+    availability: product.availability,
+    makerPriceXof: positive(product.makerPriceXof),
     isMadeToOrder: product.isMadeToOrder,
     quantityAvailable: String(product.quantityAvailable),
     leadTimeDays: product.leadTimeDays ? String(product.leadTimeDays) : "",
     observations: product.observations ?? "",
-    weightGrams: String(product.weightGrams),
-    lengthMm: String(product.lengthMm),
-    widthMm: String(product.widthMm),
-    heightMm: String(product.heightMm),
+    packagingNotes: product.packagingNotes ?? "",
+    weightGrams: positive(product.weightGrams),
+    lengthMm: positive(product.lengthMm),
+    widthMm: positive(product.widthMm),
+    heightMm: positive(product.heightMm),
   };
+}
+
+/* Une réalisation de portfolio porte 0 en prix et en mesures : un champ vide
+   invite à saisir, un « 0 » ressemble à une valeur. */
+function positive(value: number): string {
+  return value > 0 ? String(value) : "";
 }

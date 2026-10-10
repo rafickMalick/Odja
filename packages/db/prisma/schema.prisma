@@ -55,6 +55,7 @@ model City {
 
   addresses     Address[]
   makerProfiles MakerProfile[]
+  exhibitions   Exhibition[]
 
   @@unique([countryId, name])
   @@map("cities")
@@ -96,9 +97,9 @@ model User {
   /// prochaine connexion. `null` pour un compte jamais passé par Google.
   googleId        String?   @unique
 
-  firstName String
-  lastName  String
-  locale    String  @default("fr")
+  firstName    String
+  lastName     String
+  locale       String    @default("fr")
   /// Double authentification (TOTP, cahier L0-22) : obligatoire pour ADMIN,
   /// facultative pour les autres. Le secret est chiffré (AES-256-GCM) : une
   /// fuite de la base ne donne pas les codes. Renseigné sans `mfaEnabledAt`,
@@ -127,6 +128,9 @@ model User {
   reviews          Review[]
   idempotencyKeys  IdempotencyKey[]
   recoveryCodes    MfaRecoveryCode[]
+  exhibitions      Exhibition[]
+  exhibitionPasses ExhibitionPass[]
+  contentReports   ContentReport[]
 
   @@index([role, status])
   @@map("users")
@@ -135,16 +139,16 @@ model User {
 model Session {
   id String @id @default(cuid())
 
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// Le jeton de rafraîchissement n'est jamais stocké en clair : une fuite de
   /// la base donnerait sinon des sessions valides.
-  refreshHash String
-  userAgent   String?
-  ip          String?
-  expiresAt   DateTime
-  revokedAt   DateTime?
-  createdAt   DateTime  @default(now())
+  refreshHash   String
+  userAgent     String?
+  ip            String?
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  createdAt     DateTime  @default(now())
   /// Ouverte avec un second facteur. Suit la session à chaque
   /// rafraîchissement ; exigée pour l'espace admin.
   mfaVerifiedAt DateTime?
@@ -248,6 +252,17 @@ enum KycStatus {
 /// Le cahier client sépare explicitement informations publiques et privées.
 /// Cette frontière n'est pas qu'un choix d'affichage : aucune route ne doit
 /// jamais exposer un champ marqué « privé » à un client.
+/// Statut professionnel affiché sur le profil. Il dit ce qu'est le créateur,
+/// pas ce qu'il paie : la visibilité commerciale vit à part, dans
+/// `MakerSubscription` (cahier des évolutions, § 3.1).
+enum CreatorKind {
+  STUDIO
+  ARTISAN
+  DESIGNER
+  APPRENTICE_DESIGNER
+  APPRENTICE_ARTISAN
+}
+
 model MakerProfile {
   id     String @id @default(cuid())
   userId String @unique
@@ -262,6 +277,26 @@ model MakerProfile {
   cityId      String
   city        City    @relation(fields: [cityId], references: [id])
 
+  // ── Profil créatif (public) ──
+  creatorKind   CreatorKind @default(ARTISAN)
+  /// Domaine d'activité, en clair : « Mobilier », « Céramique »…
+  activityField String?
+  specialties   String[]    @default([])
+  /// Matériaux et techniques maîtrisés.
+  techniques    String[]    @default([])
+  /// Services proposés : sur-mesure, restauration, formation…
+  services      String?
+  region        String?
+  /// Quartier ou zone de l'atelier, quand le créateur accepte de l'afficher.
+  /// L'adresse exacte, elle, ne sort jamais (§ 2.2 D).
+  publicArea    String?
+
+  // ── Formation (apprentis, § 4.3) — publique : elle présente honnêtement
+  //    le niveau du créateur. Le justificatif, lui, reste une pièce privée. ──
+  trainingInstitution String?
+  trainingSpecialty   String?
+  trainingLevel       String?
+
   // ── Informations privées : administration uniquement ──
   managerName   String?
   contactPhone  String?
@@ -271,6 +306,11 @@ model MakerProfile {
   ifuNumber     String?
   /// Registre du commerce et du crédit mobilier.
   rccmNumber    String?
+
+  /// Suspension par l'administration pour un motif légitime (§ 11.1) :
+  /// le profil et ses fiches disparaissent du public, sans rien supprimer.
+  suspendedAt   DateTime?
+  suspendReason String?
 
   kycStatus       KycStatus @default(NOT_SUBMITTED)
   kycSubmittedAt  DateTime?
@@ -302,12 +342,72 @@ model MakerProfile {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  products  Product[]
-  subOrders SubOrder[]
-  documents KycDocument[]
+  products      Product[]
+  subOrders     SubOrder[]
+  documents     KycDocument[]
+  subscriptions MakerSubscription[]
+  exhibitions   Exhibition[]
 
   @@index([kycStatus])
   @@map("maker_profiles")
+}
+
+/// Formule de visibilité commerciale (Standard, Premium…). Tout ce qui la
+/// distingue est un réglage de l'administration, pas du code : le cahier
+/// demande de pouvoir en changer les avantages sans toucher à l'architecture.
+model VisibilityPlan {
+  id               String   @id @default(cuid())
+  code             String   @unique
+  name             String
+  description      String?
+  /// Fiches actives autorisées (brouillons compris, archives exclues).
+  /// Nul : illimité.
+  maxPublications  Int?
+  /// Durée d'une souscription. Nul : sans échéance (la formule par défaut).
+  durationDays     Int?
+  priceXof         Int      @default(0)
+  /// Avantages tels qu'ils sont présentés au créateur.
+  perks            String[] @default([])
+  showBadge        Boolean  @default(false)
+  /// Placé en tête de l'annuaire des créateurs.
+  boostInDirectory Boolean  @default(false)
+  /// Formule appliquée à qui n'a aucune souscription en cours. Une seule.
+  isDefault        Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  position         Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  subscriptions MakerSubscription[]
+
+  @@map("visibility_plans")
+}
+
+/// Une période de formule payante. On garde l'historique : renouvellements,
+/// changements et résiliations restent lisibles (§ 11.2).
+model MakerSubscription {
+  id      String         @id @default(cuid())
+  makerId String
+  maker   MakerProfile   @relation(fields: [makerId], references: [id], onDelete: Cascade)
+  planId  String
+  plan    VisibilityPlan @relation(fields: [planId], references: [id])
+
+  startsAt         DateTime
+  endsAt           DateTime?
+  amountXof        Int       @default(0)
+  /// Référence du paiement reçu hors plateforme, tant que le Premium
+  /// s'active à la main.
+  paymentReference String?
+  note             String?
+  activatedById    String?
+  cancelledAt      DateTime?
+  /// Rappels envoyés au créateur (§ 12) : on ne prévient qu'une fois.
+  reminderSentAt   DateTime?
+  expiredNoticeAt  DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([makerId, startsAt])
+  @@map("maker_subscriptions")
 }
 
 model KycDocument {
@@ -411,6 +511,15 @@ model Category {
   @@map("categories")
 }
 
+/// Disponibilité commerciale, indépendante de la modération : une pièce
+/// vendue reste publiée dans la galerie de l'atelier, elle n'est plus
+/// achetable.
+enum ProductAvailability {
+  AVAILABLE
+  SOLD
+  UNAVAILABLE
+}
+
 enum ProductStatus {
   DRAFT
   PENDING_REVIEW
@@ -445,12 +554,20 @@ model Product {
   quantityAvailable Int @default(0)
   quantityReserved  Int @default(0)
 
+  /// Faux pour une réalisation de portfolio : elle figure dans la galerie de
+  /// l'atelier, jamais au catalogue ni au panier. Son prix, son poids et ses
+  /// dimensions valent alors 0.
+  isForSale    Boolean             @default(true)
+  availability ProductAvailability @default(AVAILABLE)
+
   /// Mode de mise en vente, tel que nommé par le cahier client.
-  isMadeToOrder Boolean @default(false)
+  isMadeToOrder  Boolean @default(false)
   /// Délai de fabrication en jours. Obligatoire si `isMadeToOrder`.
   /// C'est lui qui arme le compte à rebours du statut « En fabrication ».
-  leadTimeDays  Int?
-  observations  String?
+  leadTimeDays   Int?
+  observations   String?
+  /// Emballage, fragilité, possibilités de livraison (§ 5.2).
+  packagingNotes String?
 
   /// Poids et encombrement. Absents du formulaire du cahier client, mais le
   /// choix automatique du véhicule en dépend entièrement : ils sont rendus
@@ -477,10 +594,11 @@ model Product {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  images     ProductImage[]
-  orderLines OrderLine[]
-  cartItems  CartItem[]
-  reviews    Review[]
+  images          ProductImage[]
+  orderLines      OrderLine[]
+  exhibitionWorks ExhibitionWork[]
+  cartItems       CartItem[]
+  reviews         Review[]
 
   @@index([status, categoryId])
   @@index([makerId, status])
@@ -1234,11 +1352,11 @@ model SupportTicket {
   /// SUP-2026-000123 : la référence que le client cite au téléphone.
   reference String @unique
 
-  channel TicketChannel @default(ACCOUNT)
+  channel    TicketChannel @default(ACCOUNT)
   /// Auteur inscrit. Nul pour un visiteur dont l'e-mail ne correspond à
   /// aucun compte.
-  userId  String?
-  user    User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId     String?
+  user       User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Rôle de l'auteur à l'ouverture (CUSTOMER, MAKER…). Nul pour un visiteur.
   authorRole UserRole?
   /// Coordonnées saisies sur le formulaire public.
@@ -1271,9 +1389,9 @@ model SupportTicket {
 }
 
 model SupportMessage {
-  id       String        @id @default(cuid())
-  ticketId String
-  ticket   SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   /// Nul pour un visiteur non inscrit.
   authorId  String?
   /// Écrit par le service client.
@@ -1486,17 +1604,17 @@ model NewsletterSubscriber {
 /// pas déployé, et la ligne `IN_PROGRESS` doit survivre à un redémarrage
 /// pour qu'une requête interrompue ne soit pas rejouée en double.
 model IdempotencyKey {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// Valeur de l'en-tête, choisie par le client. Unique par utilisateur.
-  key    String
+  key          String
   /// Empreinte de la méthode, du chemin et du corps : la même clé ne peut
   /// pas servir à une autre requête.
-  requestHash String
+  requestHash  String
   /// IN_PROGRESS tant que la requête tourne, COMPLETED une fois la réponse
   /// mémorisée. Une requête en échec efface sa ligne : on peut réessayer.
-  status String @default("IN_PROGRESS")
+  status       String   @default("IN_PROGRESS")
   responseBody Json?
   createdAt    DateTime @default(now())
   expiresAt    DateTime
@@ -1504,4 +1622,270 @@ model IdempotencyKey {
   @@unique([userId, key])
   @@index([expiresAt])
   @@map("idempotency_keys")
+}
+
+// ═══════════════════════════════════════════ Expositions (cahier des évolutions, § 6 à 9)
+
+enum ExhibitionFormat {
+  PHYSICAL
+  ONLINE
+  HYBRID
+}
+
+/// Cycle d'une exposition, de la demande à la mise en ligne (§ 6.4).
+enum ExhibitionStatus {
+  DRAFT
+  SUBMITTED
+  CHANGES_REQUESTED
+  REJECTED
+  /// Projet accepté : contrat et paiement restent à faire.
+  ACCEPTED
+  /// Contrat signé, paiement reçu, date de mise en ligne fixée.
+  SCHEDULED
+  PUBLISHED
+  SUSPENDED
+}
+
+enum ExhibitionAccess {
+  FREE
+  PAID
+  /// Réservée aux personnes qui ont reçu le code de l'organisateur.
+  RESTRICTED
+}
+
+enum ExhibitionWorkReview {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Formule d'exposition (Standard, Premium, VIP — § 6.6). Tout ce qui les
+/// distingue se règle dans l'administration.
+model ExhibitionPlan {
+  id                   String   @id @default(cuid())
+  code                 String   @unique
+  name                 String
+  description          String?
+  /// Nul : illimité.
+  maxWorks             Int?
+  /// Nul : illimitée.
+  maxDurationDays      Int?
+  priceXof             Int      @default(0)
+  perks                String[] @default([])
+  /// Mise en avant dans la rubrique Expositions et sur l'accueil.
+  featuredPlacement    Boolean  @default(false)
+  /// Communication complémentaire assurée par Ojà (§ 10).
+  communicationSupport Boolean  @default(false)
+  isActive             Boolean  @default(true)
+  position             Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  exhibitions Exhibition[]
+
+  @@map("exhibition_plans")
+}
+
+model Exhibition {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  organizerId String
+  organizer   User            @relation(fields: [organizerId], references: [id])
+  /// Boutique de l'organisateur, s'il en a une : seules ses pièces peuvent
+  /// être vendues pendant l'exposition.
+  makerId     String?
+  maker       MakerProfile?   @relation(fields: [makerId], references: [id], onDelete: SetNull)
+  planId      String?
+  plan        ExhibitionPlan? @relation(fields: [planId], references: [id])
+
+  // ── Informations générales ──
+  title         String
+  organizerName String
+  summary       String
+  objective     String?
+  discipline    String?
+  cityId        String
+  city          City    @relation(fields: [cityId], references: [id])
+
+  // ── Calendrier ──
+  startsAt     DateTime
+  endsAt       DateTime
+  openingHours String?
+
+  // ── Format et lieu ──
+  format           ExhibitionFormat
+  venueName        String?
+  venueAddress     String?
+  venueDescription String?
+  venueImageKeys   String[]         @default([])
+
+  coverKey         String?
+  /// Dossier de présentation — espace privé, administration seule.
+  dossierKey       String?
+  plannedWorkCount Int?
+
+  // ── Instruction du dossier ──
+  status      ExhibitionStatus @default(DRAFT)
+  reviewNote  String?
+  submittedAt DateTime?
+  reviewedAt  DateTime?
+  reviewerId  String?
+
+  contractReference String?
+  contractSentAt    DateTime?
+  contractSignedAt  DateTime?
+  paymentAmountXof  Int?
+  paymentReference  String?
+  paymentReceivedAt DateTime?
+
+  publishAt     DateTime?
+  publishedAt   DateTime?
+  suspendedAt   DateTime?
+  suspendReason String?
+
+  // ── Accès (§ 8) ──
+  accessMode           ExhibitionAccess @default(FREE)
+  ticketPriceXof       Int              @default(0)
+  requiresRegistration Boolean          @default(false)
+  /// Empreinte du code d'accès, jamais le code lui-même.
+  accessCodeHash       String?
+  onsiteInfo           String?
+  remoteInfo           String?
+
+  isFeatured Boolean @default(false)
+  viewCount  Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  works  ExhibitionWork[]
+  passes ExhibitionPass[]
+
+  @@index([status, startsAt])
+  @@index([organizerId])
+  @@map("exhibitions")
+}
+
+model ExhibitionWork {
+  id           String     @id @default(cuid())
+  exhibitionId String
+  exhibition   Exhibition @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
+  position     Int        @default(0)
+
+  /// Fiche du catalogue, pour une œuvre en vente : c'est elle qui porte le
+  /// prix, le stock et le parcours de commande.
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  title       String
+  artistName  String
+  description String
+  materials   String?
+  dimensions  String?
+  imageKeys   String[] @default([])
+  /// Justificatif de propriété ou d'autorisation — espace privé (§ 6.5).
+  proofKey    String?
+
+  reviewStatus ExhibitionWorkReview @default(PENDING)
+  reviewNote   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([exhibitionId, position])
+  @@map("exhibition_works")
+}
+
+/// Droit d'accès d'un visiteur à une exposition (§ 8) : inscription gratuite,
+/// billet payé, ou invitation par code.
+enum ExhibitionPassKind {
+  REGISTRATION
+  TICKET
+  INVITATION
+}
+
+enum ExhibitionPassStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  CANCELLED
+}
+
+/// Sur place ou à distance : une exposition hybride distingue les deux
+/// publics, et peut proposer deux billets différents (§ 8.3).
+enum ExhibitionPassFormat {
+  ONSITE
+  ONLINE
+}
+
+model ExhibitionPass {
+  id           String               @id @default(cuid())
+  reference    String               @unique
+  exhibitionId String
+  exhibition   Exhibition           @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind         ExhibitionPassKind
+  format       ExhibitionPassFormat
+  status       ExhibitionPassStatus
+  amountXof    Int                  @default(0)
+
+  provider    String?
+  providerRef String?   @unique
+  paidAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([exhibitionId, userId, format])
+  @@index([exhibitionId, status])
+  @@map("exhibition_passes")
+}
+
+// ═══════════════════════════════════════════ Signalements (§ 13, protection des créations)
+
+enum ReportTarget {
+  PRODUCT
+  MAKER
+  EXHIBITION
+  EXHIBITION_WORK
+}
+
+enum ReportReason {
+  /// Photo ou œuvre publiée sans l'autorisation de son auteur.
+  UNAUTHORIZED_USE
+  COUNTERFEIT
+  INAPPROPRIATE
+  MISLEADING
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+model ContentReport {
+  id          String       @id @default(cuid())
+  reference   String       @unique
+  targetType  ReportTarget
+  targetId    String
+  /// Libellé de la cible au moment du signalement, pour la file d'examen.
+  targetLabel String
+  reason      ReportReason
+  details     String
+
+  reporterId    String?
+  reporter      User?   @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+  reporterEmail String?
+
+  status        ReportStatus @default(OPEN)
+  resolution    String?
+  contentHidden Boolean      @default(false)
+  handledById   String?
+  handledAt     DateTime?
+  createdAt     DateTime     @default(now())
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@map("content_reports")
 }

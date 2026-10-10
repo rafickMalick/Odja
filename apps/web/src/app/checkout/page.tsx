@@ -11,7 +11,7 @@ import { ProgressStepper } from "@/components/ProgressStepper";
 import { ApiError, apiFetch, newIdempotencyKey } from "@/lib/api";
 import { useCart } from "@/lib/cart";
 import { formatFcfa, formatNumber } from "@/lib/format";
-import { isCheckoutClosedByUser, openKadevPayCheckout } from "@/lib/kadevpay";
+import { isCheckoutClosedByUser, openKkiapayCheckout } from "@/lib/kkiapay";
 
 import styles from "./page.module.css";
 
@@ -241,6 +241,7 @@ export default function CheckoutPage() {
           publicKey?: string;
           amountXof: number;
           reference: string;
+          sandbox?: boolean;
         };
       }>("/checkout", {
         method: "POST",
@@ -251,10 +252,11 @@ export default function CheckoutPage() {
 
       if (order.checkout?.mode === "widget" && order.checkout.publicKey) {
         try {
-          const providerRef = await openKadevPayCheckout({
+          const providerRef = await openKkiapayCheckout({
             publicKey: order.checkout.publicKey,
             amountXof: order.checkout.amountXof,
             reference: order.checkout.reference,
+            sandbox: order.checkout.sandbox ?? true,
             customer: {
               fullName: order.shipFullName,
               email: customerEmail,
@@ -265,7 +267,7 @@ export default function CheckoutPage() {
 
           /* Confirme tout de suite, avec la référence que le widget vient
              d'apprendre  sans attendre un webhook qui exige une URL
-             publique. Voir openKadevPayCheckout() et
+             publique. Voir openKkiapayCheckout() et
              PaymentService.verifyPending(). */
           await apiFetch(`/orders/${order.reference}/verify-payment`, {
             method: "POST",
@@ -279,7 +281,7 @@ export default function CheckoutPage() {
                envoie quand même vers la confirmation, qui dira la vérité
                plutôt que de bloquer le client sur cette page. */
             // eslint-disable-next-line no-console
-            console.error("Kadev Pay :", widgetError);
+            console.error("KKiaPay :", widgetError);
           }
         }
       }

@@ -62,6 +62,8 @@ export function AccountShell({ children }: { children: ReactNode }) {
 
   const links: WorkspaceLink[] = [
     { href: "/compte", label: "Mes commandes", badge: toValidate || undefined },
+    { href: "/compte/billets", label: "Mes billets" },
+    { href: "/expositions/mes-expositions", label: "Mes expositions" },
     { href: "/compte/reclamations", label: "Mes réclamations" },
     { href: "/compte/support", label: "Service client" },
     { href: "/compte/notifications", label: "Notifications" },

@@ -163,3 +163,101 @@
   font-size: 12px;
   color: var(--color-gray-700);
 }
+
+/* Type de publication : deux cartes cliquables plutôt qu’une case à cocher,
+   le choix change tout le formulaire en dessous. */
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-12);
+}
+
+.choice,
+.choiceActive {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-input);
+  cursor: pointer;
+}
+
+.choiceActive {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.choice > span,
+.choiceActive > span {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  font-family: var(--font-body);
+  font-size: 15px;
+}
+
+.choice input,
+.choiceActive input {
+  margin-top: 4px;
+  accent-color: var(--color-primary);
+}
+
+/* Étapes de la publication guidée. */
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  list-style: none;
+}
+
+.step,
+.stepActive,
+.stepDone {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: 6px 12px 6px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray-100);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-gray-700);
+}
+
+.stepActive {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.stepDone {
+  color: var(--color-success);
+}
+
+.stepNumber {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-white);
+  font-size: 12px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-16);
+  font-family: var(--font-body);
+}
+
+.summary dt {
+  font-size: 13px;
+  color: var(--color-gray-700);
+}
+
+.summary dd {
+  font-weight: 600;
+  font-size: 15px;
+}

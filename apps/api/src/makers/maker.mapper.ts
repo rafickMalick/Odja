@@ -1,4 +1,10 @@
-import type { AdminMaker, OwnMakerProfile, PublicMaker } from '@oja/contracts';
+import type {
+  AdminMaker,
+  MakerCard,
+  MakerPlanSummary,
+  OwnMakerProfile,
+  PublicMaker,
+} from '@oja/contracts';
 import type { City, Country, MakerProfile } from '@oja/db';
 
 /**
@@ -18,26 +24,77 @@ type MakerWithPlace = MakerProfile & {
   city: City & { country: Pick<Country, 'name'> };
 };
 
-export function toPublicMaker(maker: MakerWithPlace, productCount = 0): PublicMaker {
+/**
+ * Ce que le mapper ne peut pas lire sur la ligne elle-même : la formule en
+ * cours (une autre table) et la façon de transformer une clé de stockage en
+ * URL affichable (un réglage du serveur).
+ */
+export interface MakerContext {
+  productCount?: number;
+  plan: MakerPlanSummary & { showBadge: boolean };
+  imageUrl: (fileKey: string) => string;
+}
+
+export function toPublicMaker(maker: MakerWithPlace, context: MakerContext): PublicMaker {
   return {
     id: maker.id,
     slug: maker.slug,
     shopName: maker.shopName,
     description: maker.description,
-    logoUrl: maker.logoUrl,
-    coverUrl: maker.coverUrl,
+    logoUrl: maker.logoUrl ? context.imageUrl(maker.logoUrl) : null,
+    coverUrl: maker.coverUrl ? context.imageUrl(maker.coverUrl) : null,
     city: maker.city.name,
     country: maker.city.country.name,
     ratingAvg: maker.ratingAvg,
     ratingCount: maker.ratingCount,
-    productCount,
+    productCount: context.productCount ?? 0,
+    creatorKind: maker.creatorKind,
+    activityField: maker.activityField,
+    specialties: maker.specialties,
+    techniques: maker.techniques,
+    services: maker.services,
+    region: maker.region,
+    publicArea: maker.publicArea,
+    /* Le parcours se montre quand il existe : c'est la présentation honnête
+       qu'attend le cahier pour un apprenti (§ 4.5). Le justificatif, lui,
+       n'est jamais public. */
+    training:
+      maker.trainingInstitution || maker.trainingSpecialty || maker.trainingLevel
+        ? {
+            institution: maker.trainingInstitution,
+            specialty: maker.trainingSpecialty,
+            level: maker.trainingLevel,
+          }
+        : null,
+    badge: context.plan.showBadge ? { code: context.plan.code, name: context.plan.name } : null,
+  };
+}
+
+/** Carte d'annuaire : un sous-ensemble de la vue publique. */
+export function toMakerCard(maker: MakerWithPlace, context: MakerContext): MakerCard {
+  const full = toPublicMaker(maker, context);
+  return {
+    id: full.id,
+    slug: full.slug,
+    shopName: full.shopName,
+    logoUrl: full.logoUrl,
+    coverUrl: full.coverUrl,
+    city: full.city,
+    country: full.country,
+    region: full.region,
+    creatorKind: full.creatorKind,
+    activityField: full.activityField,
+    specialties: full.specialties,
+    badge: full.badge,
+    productCount: full.productCount,
   };
 }
 
 /** Vue administrateur : tout, y compris ce qui ne sort jamais côté client. */
-export function toAdminMaker(maker: MakerWithPlace, productCount = 0): AdminMaker {
+export function toAdminMaker(maker: MakerWithPlace, context: MakerContext): AdminMaker {
+  const { showBadge: _showBadge, ...plan } = context.plan;
   return {
-    ...toPublicMaker(maker, productCount),
+    ...toPublicMaker(maker, context),
     userId: maker.userId,
     managerName: maker.managerName,
     contactPhone: maker.contactPhone,
@@ -50,6 +107,9 @@ export function toAdminMaker(maker: MakerWithPlace, productCount = 0): AdminMake
     kycReviewedAt: maker.kycReviewedAt?.toISOString() ?? null,
     kycRejectReason: maker.kycRejectReason,
     commissionBps: maker.commissionBps,
+    plan,
+    suspendedAt: maker.suspendedAt?.toISOString() ?? null,
+    suspendReason: maker.suspendReason,
   };
 }
 
@@ -60,9 +120,9 @@ export function toAdminMaker(maker: MakerWithPlace, productCount = 0): AdminMake
  * besoin. Ces champs restent hors de `toPublicMaker` : c'est bien le
  * propriétaire qui les lit, jamais un visiteur.
  */
-export function toOwnMakerProfile(maker: MakerWithPlace, productCount = 0): OwnMakerProfile {
+export function toOwnMakerProfile(maker: MakerWithPlace, context: MakerContext): OwnMakerProfile {
   return {
-    ...toAdminMaker(maker, productCount),
+    ...toAdminMaker(maker, context),
     cityId: maker.cityId,
     pickupLine1: maker.pickupLine1,
     pickupLandmark: maker.pickupLandmark,
