@@ -304,6 +304,27 @@ export type NewsletterSubscriber = $Result.DefaultSelection<Prisma.$NewsletterSu
  * pour qu'une requête interrompue ne soit pas rejouée en double.
  */
 export type IdempotencyKey = $Result.DefaultSelection<Prisma.$IdempotencyKeyPayload>
+/**
+ * Model ExhibitionPlan
+ * Formule d'exposition (Standard, Premium, VIP — § 6.6). Tout ce qui les
+ * distingue se règle dans l'administration.
+ */
+export type ExhibitionPlan = $Result.DefaultSelection<Prisma.$ExhibitionPlanPayload>
+/**
+ * Model Exhibition
+ * 
+ */
+export type Exhibition = $Result.DefaultSelection<Prisma.$ExhibitionPayload>
+/**
+ * Model ExhibitionWork
+ * 
+ */
+export type ExhibitionWork = $Result.DefaultSelection<Prisma.$ExhibitionWorkPayload>
+/**
+ * Model ExhibitionPass
+ * 
+ */
+export type ExhibitionPass = $Result.DefaultSelection<Prisma.$ExhibitionPassPayload>
 
 /**
  * Enums
@@ -554,6 +575,73 @@ export const PromoKind: {
 
 export type PromoKind = (typeof PromoKind)[keyof typeof PromoKind]
 
+
+export const ExhibitionFormat: {
+  PHYSICAL: 'PHYSICAL',
+  ONLINE: 'ONLINE',
+  HYBRID: 'HYBRID'
+};
+
+export type ExhibitionFormat = (typeof ExhibitionFormat)[keyof typeof ExhibitionFormat]
+
+
+export const ExhibitionStatus: {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  CHANGES_REQUESTED: 'CHANGES_REQUESTED',
+  REJECTED: 'REJECTED',
+  ACCEPTED: 'ACCEPTED',
+  SCHEDULED: 'SCHEDULED',
+  PUBLISHED: 'PUBLISHED',
+  SUSPENDED: 'SUSPENDED'
+};
+
+export type ExhibitionStatus = (typeof ExhibitionStatus)[keyof typeof ExhibitionStatus]
+
+
+export const ExhibitionAccess: {
+  FREE: 'FREE',
+  PAID: 'PAID',
+  RESTRICTED: 'RESTRICTED'
+};
+
+export type ExhibitionAccess = (typeof ExhibitionAccess)[keyof typeof ExhibitionAccess]
+
+
+export const ExhibitionWorkReview: {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
+export type ExhibitionWorkReview = (typeof ExhibitionWorkReview)[keyof typeof ExhibitionWorkReview]
+
+
+export const ExhibitionPassKind: {
+  REGISTRATION: 'REGISTRATION',
+  TICKET: 'TICKET',
+  INVITATION: 'INVITATION'
+};
+
+export type ExhibitionPassKind = (typeof ExhibitionPassKind)[keyof typeof ExhibitionPassKind]
+
+
+export const ExhibitionPassStatus: {
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED'
+};
+
+export type ExhibitionPassStatus = (typeof ExhibitionPassStatus)[keyof typeof ExhibitionPassStatus]
+
+
+export const ExhibitionPassFormat: {
+  ONSITE: 'ONSITE',
+  ONLINE: 'ONLINE'
+};
+
+export type ExhibitionPassFormat = (typeof ExhibitionPassFormat)[keyof typeof ExhibitionPassFormat]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -647,6 +735,34 @@ export const TicketChannel: typeof $Enums.TicketChannel
 export type PromoKind = $Enums.PromoKind
 
 export const PromoKind: typeof $Enums.PromoKind
+
+export type ExhibitionFormat = $Enums.ExhibitionFormat
+
+export const ExhibitionFormat: typeof $Enums.ExhibitionFormat
+
+export type ExhibitionStatus = $Enums.ExhibitionStatus
+
+export const ExhibitionStatus: typeof $Enums.ExhibitionStatus
+
+export type ExhibitionAccess = $Enums.ExhibitionAccess
+
+export const ExhibitionAccess: typeof $Enums.ExhibitionAccess
+
+export type ExhibitionWorkReview = $Enums.ExhibitionWorkReview
+
+export const ExhibitionWorkReview: typeof $Enums.ExhibitionWorkReview
+
+export type ExhibitionPassKind = $Enums.ExhibitionPassKind
+
+export const ExhibitionPassKind: typeof $Enums.ExhibitionPassKind
+
+export type ExhibitionPassStatus = $Enums.ExhibitionPassStatus
+
+export const ExhibitionPassStatus: typeof $Enums.ExhibitionPassStatus
+
+export type ExhibitionPassFormat = $Enums.ExhibitionPassFormat
+
+export const ExhibitionPassFormat: typeof $Enums.ExhibitionPassFormat
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1255,6 +1371,46 @@ export class PrismaClient<
     * ```
     */
   get idempotencyKey(): Prisma.IdempotencyKeyDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.exhibitionPlan`: Exposes CRUD operations for the **ExhibitionPlan** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExhibitionPlans
+    * const exhibitionPlans = await prisma.exhibitionPlan.findMany()
+    * ```
+    */
+  get exhibitionPlan(): Prisma.ExhibitionPlanDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.exhibition`: Exposes CRUD operations for the **Exhibition** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Exhibitions
+    * const exhibitions = await prisma.exhibition.findMany()
+    * ```
+    */
+  get exhibition(): Prisma.ExhibitionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.exhibitionWork`: Exposes CRUD operations for the **ExhibitionWork** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExhibitionWorks
+    * const exhibitionWorks = await prisma.exhibitionWork.findMany()
+    * ```
+    */
+  get exhibitionWork(): Prisma.ExhibitionWorkDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.exhibitionPass`: Exposes CRUD operations for the **ExhibitionPass** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExhibitionPasses
+    * const exhibitionPasses = await prisma.exhibitionPass.findMany()
+    * ```
+    */
+  get exhibitionPass(): Prisma.ExhibitionPassDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1744,7 +1900,11 @@ export namespace Prisma {
     PromoRedemption: 'PromoRedemption',
     Invoice: 'Invoice',
     NewsletterSubscriber: 'NewsletterSubscriber',
-    IdempotencyKey: 'IdempotencyKey'
+    IdempotencyKey: 'IdempotencyKey',
+    ExhibitionPlan: 'ExhibitionPlan',
+    Exhibition: 'Exhibition',
+    ExhibitionWork: 'ExhibitionWork',
+    ExhibitionPass: 'ExhibitionPass'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1763,7 +1923,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "country" | "city" | "user" | "session" | "mfaRecoveryCode" | "verificationToken" | "termsAcceptance" | "address" | "makerProfile" | "visibilityPlan" | "makerSubscription" | "kycDocument" | "courierProfile" | "vehicleRate" | "category" | "product" | "productImage" | "cart" | "cartItem" | "order" | "subOrder" | "orderLine" | "paymentMethodConfig" | "payment" | "paymentEvent" | "refund" | "ledgerAccount" | "ledgerTransaction" | "ledgerEntry" | "payoutBatch" | "payoutItem" | "deliveryRun" | "shipment" | "shipmentEvent" | "dispute" | "disputeMessage" | "messageThread" | "message" | "supportTicket" | "supportMessage" | "review" | "notification" | "auditLog" | "referenceCounter" | "promoCode" | "promoRedemption" | "invoice" | "newsletterSubscriber" | "idempotencyKey"
+      modelProps: "country" | "city" | "user" | "session" | "mfaRecoveryCode" | "verificationToken" | "termsAcceptance" | "address" | "makerProfile" | "visibilityPlan" | "makerSubscription" | "kycDocument" | "courierProfile" | "vehicleRate" | "category" | "product" | "productImage" | "cart" | "cartItem" | "order" | "subOrder" | "orderLine" | "paymentMethodConfig" | "payment" | "paymentEvent" | "refund" | "ledgerAccount" | "ledgerTransaction" | "ledgerEntry" | "payoutBatch" | "payoutItem" | "deliveryRun" | "shipment" | "shipmentEvent" | "dispute" | "disputeMessage" | "messageThread" | "message" | "supportTicket" | "supportMessage" | "review" | "notification" | "auditLog" | "referenceCounter" | "promoCode" | "promoRedemption" | "invoice" | "newsletterSubscriber" | "idempotencyKey" | "exhibitionPlan" | "exhibition" | "exhibitionWork" | "exhibitionPass"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5393,6 +5553,302 @@ export namespace Prisma {
           }
         }
       }
+      ExhibitionPlan: {
+        payload: Prisma.$ExhibitionPlanPayload<ExtArgs>
+        fields: Prisma.ExhibitionPlanFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExhibitionPlanFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExhibitionPlanFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload>
+          }
+          findFirst: {
+            args: Prisma.ExhibitionPlanFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExhibitionPlanFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload>
+          }
+          findMany: {
+            args: Prisma.ExhibitionPlanFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload>[]
+          }
+          create: {
+            args: Prisma.ExhibitionPlanCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload>
+          }
+          createMany: {
+            args: Prisma.ExhibitionPlanCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExhibitionPlanCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload>[]
+          }
+          delete: {
+            args: Prisma.ExhibitionPlanDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload>
+          }
+          update: {
+            args: Prisma.ExhibitionPlanUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExhibitionPlanDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExhibitionPlanUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExhibitionPlanUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExhibitionPlanUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPlanPayload>
+          }
+          aggregate: {
+            args: Prisma.ExhibitionPlanAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExhibitionPlan>
+          }
+          groupBy: {
+            args: Prisma.ExhibitionPlanGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExhibitionPlanGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExhibitionPlanCountArgs<ExtArgs>
+            result: $Utils.Optional<ExhibitionPlanCountAggregateOutputType> | number
+          }
+        }
+      }
+      Exhibition: {
+        payload: Prisma.$ExhibitionPayload<ExtArgs>
+        fields: Prisma.ExhibitionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExhibitionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExhibitionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload>
+          }
+          findFirst: {
+            args: Prisma.ExhibitionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExhibitionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload>
+          }
+          findMany: {
+            args: Prisma.ExhibitionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload>[]
+          }
+          create: {
+            args: Prisma.ExhibitionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload>
+          }
+          createMany: {
+            args: Prisma.ExhibitionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExhibitionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload>[]
+          }
+          delete: {
+            args: Prisma.ExhibitionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload>
+          }
+          update: {
+            args: Prisma.ExhibitionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExhibitionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExhibitionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExhibitionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExhibitionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPayload>
+          }
+          aggregate: {
+            args: Prisma.ExhibitionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExhibition>
+          }
+          groupBy: {
+            args: Prisma.ExhibitionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExhibitionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExhibitionCountArgs<ExtArgs>
+            result: $Utils.Optional<ExhibitionCountAggregateOutputType> | number
+          }
+        }
+      }
+      ExhibitionWork: {
+        payload: Prisma.$ExhibitionWorkPayload<ExtArgs>
+        fields: Prisma.ExhibitionWorkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExhibitionWorkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExhibitionWorkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload>
+          }
+          findFirst: {
+            args: Prisma.ExhibitionWorkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExhibitionWorkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload>
+          }
+          findMany: {
+            args: Prisma.ExhibitionWorkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload>[]
+          }
+          create: {
+            args: Prisma.ExhibitionWorkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload>
+          }
+          createMany: {
+            args: Prisma.ExhibitionWorkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExhibitionWorkCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload>[]
+          }
+          delete: {
+            args: Prisma.ExhibitionWorkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload>
+          }
+          update: {
+            args: Prisma.ExhibitionWorkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExhibitionWorkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExhibitionWorkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExhibitionWorkUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExhibitionWorkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionWorkPayload>
+          }
+          aggregate: {
+            args: Prisma.ExhibitionWorkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExhibitionWork>
+          }
+          groupBy: {
+            args: Prisma.ExhibitionWorkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExhibitionWorkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExhibitionWorkCountArgs<ExtArgs>
+            result: $Utils.Optional<ExhibitionWorkCountAggregateOutputType> | number
+          }
+        }
+      }
+      ExhibitionPass: {
+        payload: Prisma.$ExhibitionPassPayload<ExtArgs>
+        fields: Prisma.ExhibitionPassFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExhibitionPassFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExhibitionPassFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload>
+          }
+          findFirst: {
+            args: Prisma.ExhibitionPassFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExhibitionPassFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload>
+          }
+          findMany: {
+            args: Prisma.ExhibitionPassFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload>[]
+          }
+          create: {
+            args: Prisma.ExhibitionPassCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload>
+          }
+          createMany: {
+            args: Prisma.ExhibitionPassCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExhibitionPassCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload>[]
+          }
+          delete: {
+            args: Prisma.ExhibitionPassDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload>
+          }
+          update: {
+            args: Prisma.ExhibitionPassUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExhibitionPassDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExhibitionPassUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExhibitionPassUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExhibitionPassUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExhibitionPassPayload>
+          }
+          aggregate: {
+            args: Prisma.ExhibitionPassAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExhibitionPass>
+          }
+          groupBy: {
+            args: Prisma.ExhibitionPassGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExhibitionPassGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExhibitionPassCountArgs<ExtArgs>
+            result: $Utils.Optional<ExhibitionPassCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -5538,6 +5994,10 @@ export namespace Prisma {
     invoice?: InvoiceOmit
     newsletterSubscriber?: NewsletterSubscriberOmit
     idempotencyKey?: IdempotencyKeyOmit
+    exhibitionPlan?: ExhibitionPlanOmit
+    exhibition?: ExhibitionOmit
+    exhibitionWork?: ExhibitionWorkOmit
+    exhibitionPass?: ExhibitionPassOmit
   }
 
   /* Types for Logging */
@@ -5669,11 +6129,13 @@ export namespace Prisma {
   export type CityCountOutputType = {
     addresses: number
     makerProfiles: number
+    exhibitions: number
   }
 
   export type CityCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     addresses?: boolean | CityCountOutputTypeCountAddressesArgs
     makerProfiles?: boolean | CityCountOutputTypeCountMakerProfilesArgs
+    exhibitions?: boolean | CityCountOutputTypeCountExhibitionsArgs
   }
 
   // Custom InputTypes
@@ -5701,6 +6163,13 @@ export namespace Prisma {
     where?: MakerProfileWhereInput
   }
 
+  /**
+   * CityCountOutputType without action
+   */
+  export type CityCountOutputTypeCountExhibitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionWhereInput
+  }
+
 
   /**
    * Count Type UserCountOutputType
@@ -5719,6 +6188,8 @@ export namespace Prisma {
     reviews: number
     idempotencyKeys: number
     recoveryCodes: number
+    exhibitions: number
+    exhibitionPasses: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5734,6 +6205,8 @@ export namespace Prisma {
     reviews?: boolean | UserCountOutputTypeCountReviewsArgs
     idempotencyKeys?: boolean | UserCountOutputTypeCountIdempotencyKeysArgs
     recoveryCodes?: boolean | UserCountOutputTypeCountRecoveryCodesArgs
+    exhibitions?: boolean | UserCountOutputTypeCountExhibitionsArgs
+    exhibitionPasses?: boolean | UserCountOutputTypeCountExhibitionPassesArgs
   }
 
   // Custom InputTypes
@@ -5831,6 +6304,20 @@ export namespace Prisma {
     where?: MfaRecoveryCodeWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountExhibitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountExhibitionPassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionPassWhereInput
+  }
+
 
   /**
    * Count Type MakerProfileCountOutputType
@@ -5841,6 +6328,7 @@ export namespace Prisma {
     subOrders: number
     documents: number
     subscriptions: number
+    exhibitions: number
   }
 
   export type MakerProfileCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5848,6 +6336,7 @@ export namespace Prisma {
     subOrders?: boolean | MakerProfileCountOutputTypeCountSubOrdersArgs
     documents?: boolean | MakerProfileCountOutputTypeCountDocumentsArgs
     subscriptions?: boolean | MakerProfileCountOutputTypeCountSubscriptionsArgs
+    exhibitions?: boolean | MakerProfileCountOutputTypeCountExhibitionsArgs
   }
 
   // Custom InputTypes
@@ -5887,6 +6376,13 @@ export namespace Prisma {
    */
   export type MakerProfileCountOutputTypeCountSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MakerSubscriptionWhereInput
+  }
+
+  /**
+   * MakerProfileCountOutputType without action
+   */
+  export type MakerProfileCountOutputTypeCountExhibitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionWhereInput
   }
 
 
@@ -6017,6 +6513,7 @@ export namespace Prisma {
   export type ProductCountOutputType = {
     images: number
     orderLines: number
+    exhibitionWorks: number
     cartItems: number
     reviews: number
   }
@@ -6024,6 +6521,7 @@ export namespace Prisma {
   export type ProductCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     images?: boolean | ProductCountOutputTypeCountImagesArgs
     orderLines?: boolean | ProductCountOutputTypeCountOrderLinesArgs
+    exhibitionWorks?: boolean | ProductCountOutputTypeCountExhibitionWorksArgs
     cartItems?: boolean | ProductCountOutputTypeCountCartItemsArgs
     reviews?: boolean | ProductCountOutputTypeCountReviewsArgs
   }
@@ -6051,6 +6549,13 @@ export namespace Prisma {
    */
   export type ProductCountOutputTypeCountOrderLinesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderLineWhereInput
+  }
+
+  /**
+   * ProductCountOutputType without action
+   */
+  export type ProductCountOutputTypeCountExhibitionWorksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionWorkWhereInput
   }
 
   /**
@@ -6540,6 +7045,77 @@ export namespace Prisma {
    */
   export type PromoCodeCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
+  }
+
+
+  /**
+   * Count Type ExhibitionPlanCountOutputType
+   */
+
+  export type ExhibitionPlanCountOutputType = {
+    exhibitions: number
+  }
+
+  export type ExhibitionPlanCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    exhibitions?: boolean | ExhibitionPlanCountOutputTypeCountExhibitionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ExhibitionPlanCountOutputType without action
+   */
+  export type ExhibitionPlanCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlanCountOutputType
+     */
+    select?: ExhibitionPlanCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ExhibitionPlanCountOutputType without action
+   */
+  export type ExhibitionPlanCountOutputTypeCountExhibitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionWhereInput
+  }
+
+
+  /**
+   * Count Type ExhibitionCountOutputType
+   */
+
+  export type ExhibitionCountOutputType = {
+    works: number
+    passes: number
+  }
+
+  export type ExhibitionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    works?: boolean | ExhibitionCountOutputTypeCountWorksArgs
+    passes?: boolean | ExhibitionCountOutputTypeCountPassesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ExhibitionCountOutputType without action
+   */
+  export type ExhibitionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionCountOutputType
+     */
+    select?: ExhibitionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ExhibitionCountOutputType without action
+   */
+  export type ExhibitionCountOutputTypeCountWorksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionWorkWhereInput
+  }
+
+  /**
+   * ExhibitionCountOutputType without action
+   */
+  export type ExhibitionCountOutputTypeCountPassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionPassWhereInput
   }
 
 
@@ -7942,6 +8518,7 @@ export namespace Prisma {
     country?: boolean | CountryDefaultArgs<ExtArgs>
     addresses?: boolean | City$addressesArgs<ExtArgs>
     makerProfiles?: boolean | City$makerProfilesArgs<ExtArgs>
+    exhibitions?: boolean | City$exhibitionsArgs<ExtArgs>
     _count?: boolean | CityCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["city"]>
 
@@ -7976,6 +8553,7 @@ export namespace Prisma {
     country?: boolean | CountryDefaultArgs<ExtArgs>
     addresses?: boolean | City$addressesArgs<ExtArgs>
     makerProfiles?: boolean | City$makerProfilesArgs<ExtArgs>
+    exhibitions?: boolean | City$exhibitionsArgs<ExtArgs>
     _count?: boolean | CityCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CityIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7991,6 +8569,7 @@ export namespace Prisma {
       country: Prisma.$CountryPayload<ExtArgs>
       addresses: Prisma.$AddressPayload<ExtArgs>[]
       makerProfiles: Prisma.$MakerProfilePayload<ExtArgs>[]
+      exhibitions: Prisma.$ExhibitionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8398,6 +8977,7 @@ export namespace Prisma {
     country<T extends CountryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CountryDefaultArgs<ExtArgs>>): Prisma__CountryClient<$Result.GetResult<Prisma.$CountryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     addresses<T extends City$addressesArgs<ExtArgs> = {}>(args?: Subset<T, City$addressesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     makerProfiles<T extends City$makerProfilesArgs<ExtArgs> = {}>(args?: Subset<T, City$makerProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MakerProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    exhibitions<T extends City$exhibitionsArgs<ExtArgs> = {}>(args?: Subset<T, City$exhibitionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8876,6 +9456,30 @@ export namespace Prisma {
   }
 
   /**
+   * City.exhibitions
+   */
+  export type City$exhibitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    where?: ExhibitionWhereInput
+    orderBy?: ExhibitionOrderByWithRelationInput | ExhibitionOrderByWithRelationInput[]
+    cursor?: ExhibitionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExhibitionScalarFieldEnum | ExhibitionScalarFieldEnum[]
+  }
+
+  /**
    * City without action
    */
   export type CityDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9218,6 +9822,8 @@ export namespace Prisma {
     reviews?: boolean | User$reviewsArgs<ExtArgs>
     idempotencyKeys?: boolean | User$idempotencyKeysArgs<ExtArgs>
     recoveryCodes?: boolean | User$recoveryCodesArgs<ExtArgs>
+    exhibitions?: boolean | User$exhibitionsArgs<ExtArgs>
+    exhibitionPasses?: boolean | User$exhibitionPassesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -9303,6 +9909,8 @@ export namespace Prisma {
     reviews?: boolean | User$reviewsArgs<ExtArgs>
     idempotencyKeys?: boolean | User$idempotencyKeysArgs<ExtArgs>
     recoveryCodes?: boolean | User$recoveryCodesArgs<ExtArgs>
+    exhibitions?: boolean | User$exhibitionsArgs<ExtArgs>
+    exhibitionPasses?: boolean | User$exhibitionPassesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -9325,6 +9933,8 @@ export namespace Prisma {
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
       idempotencyKeys: Prisma.$IdempotencyKeyPayload<ExtArgs>[]
       recoveryCodes: Prisma.$MfaRecoveryCodePayload<ExtArgs>[]
+      exhibitions: Prisma.$ExhibitionPayload<ExtArgs>[]
+      exhibitionPasses: Prisma.$ExhibitionPassPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9777,6 +10387,8 @@ export namespace Prisma {
     reviews<T extends User$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     idempotencyKeys<T extends User$idempotencyKeysArgs<ExtArgs> = {}>(args?: Subset<T, User$idempotencyKeysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     recoveryCodes<T extends User$recoveryCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$recoveryCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    exhibitions<T extends User$exhibitionsArgs<ExtArgs> = {}>(args?: Subset<T, User$exhibitionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    exhibitionPasses<T extends User$exhibitionPassesArgs<ExtArgs> = {}>(args?: Subset<T, User$exhibitionPassesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10536,6 +11148,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MfaRecoveryCodeScalarFieldEnum | MfaRecoveryCodeScalarFieldEnum[]
+  }
+
+  /**
+   * User.exhibitions
+   */
+  export type User$exhibitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    where?: ExhibitionWhereInput
+    orderBy?: ExhibitionOrderByWithRelationInput | ExhibitionOrderByWithRelationInput[]
+    cursor?: ExhibitionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExhibitionScalarFieldEnum | ExhibitionScalarFieldEnum[]
+  }
+
+  /**
+   * User.exhibitionPasses
+   */
+  export type User$exhibitionPassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    where?: ExhibitionPassWhereInput
+    orderBy?: ExhibitionPassOrderByWithRelationInput | ExhibitionPassOrderByWithRelationInput[]
+    cursor?: ExhibitionPassWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExhibitionPassScalarFieldEnum | ExhibitionPassScalarFieldEnum[]
   }
 
   /**
@@ -16676,6 +17336,7 @@ export namespace Prisma {
     subOrders?: boolean | MakerProfile$subOrdersArgs<ExtArgs>
     documents?: boolean | MakerProfile$documentsArgs<ExtArgs>
     subscriptions?: boolean | MakerProfile$subscriptionsArgs<ExtArgs>
+    exhibitions?: boolean | MakerProfile$exhibitionsArgs<ExtArgs>
     _count?: boolean | MakerProfileCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["makerProfile"]>
 
@@ -16832,6 +17493,7 @@ export namespace Prisma {
     subOrders?: boolean | MakerProfile$subOrdersArgs<ExtArgs>
     documents?: boolean | MakerProfile$documentsArgs<ExtArgs>
     subscriptions?: boolean | MakerProfile$subscriptionsArgs<ExtArgs>
+    exhibitions?: boolean | MakerProfile$exhibitionsArgs<ExtArgs>
     _count?: boolean | MakerProfileCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type MakerProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16852,6 +17514,7 @@ export namespace Prisma {
       subOrders: Prisma.$SubOrderPayload<ExtArgs>[]
       documents: Prisma.$KycDocumentPayload<ExtArgs>[]
       subscriptions: Prisma.$MakerSubscriptionPayload<ExtArgs>[]
+      exhibitions: Prisma.$ExhibitionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -17325,6 +17988,7 @@ export namespace Prisma {
     subOrders<T extends MakerProfile$subOrdersArgs<ExtArgs> = {}>(args?: Subset<T, MakerProfile$subOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     documents<T extends MakerProfile$documentsArgs<ExtArgs> = {}>(args?: Subset<T, MakerProfile$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KycDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     subscriptions<T extends MakerProfile$subscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, MakerProfile$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MakerSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    exhibitions<T extends MakerProfile$exhibitionsArgs<ExtArgs> = {}>(args?: Subset<T, MakerProfile$exhibitionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17887,6 +18551,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MakerSubscriptionScalarFieldEnum | MakerSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * MakerProfile.exhibitions
+   */
+  export type MakerProfile$exhibitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    where?: ExhibitionWhereInput
+    orderBy?: ExhibitionOrderByWithRelationInput | ExhibitionOrderByWithRelationInput[]
+    cursor?: ExhibitionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExhibitionScalarFieldEnum | ExhibitionScalarFieldEnum[]
   }
 
   /**
@@ -25586,6 +26274,7 @@ export namespace Prisma {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     images?: boolean | Product$imagesArgs<ExtArgs>
     orderLines?: boolean | Product$orderLinesArgs<ExtArgs>
+    exhibitionWorks?: boolean | Product$exhibitionWorksArgs<ExtArgs>
     cartItems?: boolean | Product$cartItemsArgs<ExtArgs>
     reviews?: boolean | Product$reviewsArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
@@ -25703,6 +26392,7 @@ export namespace Prisma {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     images?: boolean | Product$imagesArgs<ExtArgs>
     orderLines?: boolean | Product$orderLinesArgs<ExtArgs>
+    exhibitionWorks?: boolean | Product$exhibitionWorksArgs<ExtArgs>
     cartItems?: boolean | Product$cartItemsArgs<ExtArgs>
     reviews?: boolean | Product$reviewsArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
@@ -25723,6 +26413,7 @@ export namespace Prisma {
       category: Prisma.$CategoryPayload<ExtArgs>
       images: Prisma.$ProductImagePayload<ExtArgs>[]
       orderLines: Prisma.$OrderLinePayload<ExtArgs>[]
+      exhibitionWorks: Prisma.$ExhibitionWorkPayload<ExtArgs>[]
       cartItems: Prisma.$CartItemPayload<ExtArgs>[]
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
     }
@@ -26188,6 +26879,7 @@ export namespace Prisma {
     category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     images<T extends Product$imagesArgs<ExtArgs> = {}>(args?: Subset<T, Product$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orderLines<T extends Product$orderLinesArgs<ExtArgs> = {}>(args?: Subset<T, Product$orderLinesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    exhibitionWorks<T extends Product$exhibitionWorksArgs<ExtArgs> = {}>(args?: Subset<T, Product$exhibitionWorksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     cartItems<T extends Product$cartItemsArgs<ExtArgs> = {}>(args?: Subset<T, Product$cartItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reviews<T extends Product$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, Product$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -26691,6 +27383,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderLineScalarFieldEnum | OrderLineScalarFieldEnum[]
+  }
+
+  /**
+   * Product.exhibitionWorks
+   */
+  export type Product$exhibitionWorksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    where?: ExhibitionWorkWhereInput
+    orderBy?: ExhibitionWorkOrderByWithRelationInput | ExhibitionWorkOrderByWithRelationInput[]
+    cursor?: ExhibitionWorkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExhibitionWorkScalarFieldEnum | ExhibitionWorkScalarFieldEnum[]
   }
 
   /**
@@ -66027,6 +66743,5479 @@ export namespace Prisma {
 
 
   /**
+   * Model ExhibitionPlan
+   */
+
+  export type AggregateExhibitionPlan = {
+    _count: ExhibitionPlanCountAggregateOutputType | null
+    _avg: ExhibitionPlanAvgAggregateOutputType | null
+    _sum: ExhibitionPlanSumAggregateOutputType | null
+    _min: ExhibitionPlanMinAggregateOutputType | null
+    _max: ExhibitionPlanMaxAggregateOutputType | null
+  }
+
+  export type ExhibitionPlanAvgAggregateOutputType = {
+    maxWorks: number | null
+    maxDurationDays: number | null
+    priceXof: number | null
+    position: number | null
+  }
+
+  export type ExhibitionPlanSumAggregateOutputType = {
+    maxWorks: number | null
+    maxDurationDays: number | null
+    priceXof: number | null
+    position: number | null
+  }
+
+  export type ExhibitionPlanMinAggregateOutputType = {
+    id: string | null
+    code: string | null
+    name: string | null
+    description: string | null
+    maxWorks: number | null
+    maxDurationDays: number | null
+    priceXof: number | null
+    featuredPlacement: boolean | null
+    communicationSupport: boolean | null
+    isActive: boolean | null
+    position: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExhibitionPlanMaxAggregateOutputType = {
+    id: string | null
+    code: string | null
+    name: string | null
+    description: string | null
+    maxWorks: number | null
+    maxDurationDays: number | null
+    priceXof: number | null
+    featuredPlacement: boolean | null
+    communicationSupport: boolean | null
+    isActive: boolean | null
+    position: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExhibitionPlanCountAggregateOutputType = {
+    id: number
+    code: number
+    name: number
+    description: number
+    maxWorks: number
+    maxDurationDays: number
+    priceXof: number
+    perks: number
+    featuredPlacement: number
+    communicationSupport: number
+    isActive: number
+    position: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExhibitionPlanAvgAggregateInputType = {
+    maxWorks?: true
+    maxDurationDays?: true
+    priceXof?: true
+    position?: true
+  }
+
+  export type ExhibitionPlanSumAggregateInputType = {
+    maxWorks?: true
+    maxDurationDays?: true
+    priceXof?: true
+    position?: true
+  }
+
+  export type ExhibitionPlanMinAggregateInputType = {
+    id?: true
+    code?: true
+    name?: true
+    description?: true
+    maxWorks?: true
+    maxDurationDays?: true
+    priceXof?: true
+    featuredPlacement?: true
+    communicationSupport?: true
+    isActive?: true
+    position?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExhibitionPlanMaxAggregateInputType = {
+    id?: true
+    code?: true
+    name?: true
+    description?: true
+    maxWorks?: true
+    maxDurationDays?: true
+    priceXof?: true
+    featuredPlacement?: true
+    communicationSupport?: true
+    isActive?: true
+    position?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExhibitionPlanCountAggregateInputType = {
+    id?: true
+    code?: true
+    name?: true
+    description?: true
+    maxWorks?: true
+    maxDurationDays?: true
+    priceXof?: true
+    perks?: true
+    featuredPlacement?: true
+    communicationSupport?: true
+    isActive?: true
+    position?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExhibitionPlanAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExhibitionPlan to aggregate.
+     */
+    where?: ExhibitionPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionPlans to fetch.
+     */
+    orderBy?: ExhibitionPlanOrderByWithRelationInput | ExhibitionPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExhibitionPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionPlans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExhibitionPlans
+    **/
+    _count?: true | ExhibitionPlanCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExhibitionPlanAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExhibitionPlanSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExhibitionPlanMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExhibitionPlanMaxAggregateInputType
+  }
+
+  export type GetExhibitionPlanAggregateType<T extends ExhibitionPlanAggregateArgs> = {
+        [P in keyof T & keyof AggregateExhibitionPlan]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExhibitionPlan[P]>
+      : GetScalarType<T[P], AggregateExhibitionPlan[P]>
+  }
+
+
+
+
+  export type ExhibitionPlanGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionPlanWhereInput
+    orderBy?: ExhibitionPlanOrderByWithAggregationInput | ExhibitionPlanOrderByWithAggregationInput[]
+    by: ExhibitionPlanScalarFieldEnum[] | ExhibitionPlanScalarFieldEnum
+    having?: ExhibitionPlanScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExhibitionPlanCountAggregateInputType | true
+    _avg?: ExhibitionPlanAvgAggregateInputType
+    _sum?: ExhibitionPlanSumAggregateInputType
+    _min?: ExhibitionPlanMinAggregateInputType
+    _max?: ExhibitionPlanMaxAggregateInputType
+  }
+
+  export type ExhibitionPlanGroupByOutputType = {
+    id: string
+    code: string
+    name: string
+    description: string | null
+    maxWorks: number | null
+    maxDurationDays: number | null
+    priceXof: number
+    perks: string[]
+    featuredPlacement: boolean
+    communicationSupport: boolean
+    isActive: boolean
+    position: number
+    createdAt: Date
+    updatedAt: Date
+    _count: ExhibitionPlanCountAggregateOutputType | null
+    _avg: ExhibitionPlanAvgAggregateOutputType | null
+    _sum: ExhibitionPlanSumAggregateOutputType | null
+    _min: ExhibitionPlanMinAggregateOutputType | null
+    _max: ExhibitionPlanMaxAggregateOutputType | null
+  }
+
+  type GetExhibitionPlanGroupByPayload<T extends ExhibitionPlanGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExhibitionPlanGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExhibitionPlanGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExhibitionPlanGroupByOutputType[P]>
+            : GetScalarType<T[P], ExhibitionPlanGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExhibitionPlanSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    maxWorks?: boolean
+    maxDurationDays?: boolean
+    priceXof?: boolean
+    perks?: boolean
+    featuredPlacement?: boolean
+    communicationSupport?: boolean
+    isActive?: boolean
+    position?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    exhibitions?: boolean | ExhibitionPlan$exhibitionsArgs<ExtArgs>
+    _count?: boolean | ExhibitionPlanCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibitionPlan"]>
+
+  export type ExhibitionPlanSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    maxWorks?: boolean
+    maxDurationDays?: boolean
+    priceXof?: boolean
+    perks?: boolean
+    featuredPlacement?: boolean
+    communicationSupport?: boolean
+    isActive?: boolean
+    position?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["exhibitionPlan"]>
+
+  export type ExhibitionPlanSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    maxWorks?: boolean
+    maxDurationDays?: boolean
+    priceXof?: boolean
+    perks?: boolean
+    featuredPlacement?: boolean
+    communicationSupport?: boolean
+    isActive?: boolean
+    position?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["exhibitionPlan"]>
+
+  export type ExhibitionPlanSelectScalar = {
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    maxWorks?: boolean
+    maxDurationDays?: boolean
+    priceXof?: boolean
+    perks?: boolean
+    featuredPlacement?: boolean
+    communicationSupport?: boolean
+    isActive?: boolean
+    position?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ExhibitionPlanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "description" | "maxWorks" | "maxDurationDays" | "priceXof" | "perks" | "featuredPlacement" | "communicationSupport" | "isActive" | "position" | "createdAt" | "updatedAt", ExtArgs["result"]["exhibitionPlan"]>
+  export type ExhibitionPlanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    exhibitions?: boolean | ExhibitionPlan$exhibitionsArgs<ExtArgs>
+    _count?: boolean | ExhibitionPlanCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ExhibitionPlanIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ExhibitionPlanIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $ExhibitionPlanPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExhibitionPlan"
+    objects: {
+      exhibitions: Prisma.$ExhibitionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      code: string
+      name: string
+      description: string | null
+      /**
+       * Nul : illimité.
+       */
+      maxWorks: number | null
+      /**
+       * Nul : illimitée.
+       */
+      maxDurationDays: number | null
+      priceXof: number
+      perks: string[]
+      /**
+       * Mise en avant dans la rubrique Expositions et sur l'accueil.
+       */
+      featuredPlacement: boolean
+      /**
+       * Communication complémentaire assurée par Ojà (§ 10).
+       */
+      communicationSupport: boolean
+      isActive: boolean
+      position: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["exhibitionPlan"]>
+    composites: {}
+  }
+
+  type ExhibitionPlanGetPayload<S extends boolean | null | undefined | ExhibitionPlanDefaultArgs> = $Result.GetResult<Prisma.$ExhibitionPlanPayload, S>
+
+  type ExhibitionPlanCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExhibitionPlanFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExhibitionPlanCountAggregateInputType | true
+    }
+
+  export interface ExhibitionPlanDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExhibitionPlan'], meta: { name: 'ExhibitionPlan' } }
+    /**
+     * Find zero or one ExhibitionPlan that matches the filter.
+     * @param {ExhibitionPlanFindUniqueArgs} args - Arguments to find a ExhibitionPlan
+     * @example
+     * // Get one ExhibitionPlan
+     * const exhibitionPlan = await prisma.exhibitionPlan.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExhibitionPlanFindUniqueArgs>(args: SelectSubset<T, ExhibitionPlanFindUniqueArgs<ExtArgs>>): Prisma__ExhibitionPlanClient<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ExhibitionPlan that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExhibitionPlanFindUniqueOrThrowArgs} args - Arguments to find a ExhibitionPlan
+     * @example
+     * // Get one ExhibitionPlan
+     * const exhibitionPlan = await prisma.exhibitionPlan.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExhibitionPlanFindUniqueOrThrowArgs>(args: SelectSubset<T, ExhibitionPlanFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExhibitionPlanClient<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExhibitionPlan that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPlanFindFirstArgs} args - Arguments to find a ExhibitionPlan
+     * @example
+     * // Get one ExhibitionPlan
+     * const exhibitionPlan = await prisma.exhibitionPlan.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExhibitionPlanFindFirstArgs>(args?: SelectSubset<T, ExhibitionPlanFindFirstArgs<ExtArgs>>): Prisma__ExhibitionPlanClient<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExhibitionPlan that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPlanFindFirstOrThrowArgs} args - Arguments to find a ExhibitionPlan
+     * @example
+     * // Get one ExhibitionPlan
+     * const exhibitionPlan = await prisma.exhibitionPlan.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExhibitionPlanFindFirstOrThrowArgs>(args?: SelectSubset<T, ExhibitionPlanFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExhibitionPlanClient<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ExhibitionPlans that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPlanFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExhibitionPlans
+     * const exhibitionPlans = await prisma.exhibitionPlan.findMany()
+     * 
+     * // Get first 10 ExhibitionPlans
+     * const exhibitionPlans = await prisma.exhibitionPlan.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const exhibitionPlanWithIdOnly = await prisma.exhibitionPlan.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExhibitionPlanFindManyArgs>(args?: SelectSubset<T, ExhibitionPlanFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ExhibitionPlan.
+     * @param {ExhibitionPlanCreateArgs} args - Arguments to create a ExhibitionPlan.
+     * @example
+     * // Create one ExhibitionPlan
+     * const ExhibitionPlan = await prisma.exhibitionPlan.create({
+     *   data: {
+     *     // ... data to create a ExhibitionPlan
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExhibitionPlanCreateArgs>(args: SelectSubset<T, ExhibitionPlanCreateArgs<ExtArgs>>): Prisma__ExhibitionPlanClient<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ExhibitionPlans.
+     * @param {ExhibitionPlanCreateManyArgs} args - Arguments to create many ExhibitionPlans.
+     * @example
+     * // Create many ExhibitionPlans
+     * const exhibitionPlan = await prisma.exhibitionPlan.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExhibitionPlanCreateManyArgs>(args?: SelectSubset<T, ExhibitionPlanCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExhibitionPlans and returns the data saved in the database.
+     * @param {ExhibitionPlanCreateManyAndReturnArgs} args - Arguments to create many ExhibitionPlans.
+     * @example
+     * // Create many ExhibitionPlans
+     * const exhibitionPlan = await prisma.exhibitionPlan.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExhibitionPlans and only return the `id`
+     * const exhibitionPlanWithIdOnly = await prisma.exhibitionPlan.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExhibitionPlanCreateManyAndReturnArgs>(args?: SelectSubset<T, ExhibitionPlanCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ExhibitionPlan.
+     * @param {ExhibitionPlanDeleteArgs} args - Arguments to delete one ExhibitionPlan.
+     * @example
+     * // Delete one ExhibitionPlan
+     * const ExhibitionPlan = await prisma.exhibitionPlan.delete({
+     *   where: {
+     *     // ... filter to delete one ExhibitionPlan
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExhibitionPlanDeleteArgs>(args: SelectSubset<T, ExhibitionPlanDeleteArgs<ExtArgs>>): Prisma__ExhibitionPlanClient<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ExhibitionPlan.
+     * @param {ExhibitionPlanUpdateArgs} args - Arguments to update one ExhibitionPlan.
+     * @example
+     * // Update one ExhibitionPlan
+     * const exhibitionPlan = await prisma.exhibitionPlan.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExhibitionPlanUpdateArgs>(args: SelectSubset<T, ExhibitionPlanUpdateArgs<ExtArgs>>): Prisma__ExhibitionPlanClient<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ExhibitionPlans.
+     * @param {ExhibitionPlanDeleteManyArgs} args - Arguments to filter ExhibitionPlans to delete.
+     * @example
+     * // Delete a few ExhibitionPlans
+     * const { count } = await prisma.exhibitionPlan.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExhibitionPlanDeleteManyArgs>(args?: SelectSubset<T, ExhibitionPlanDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExhibitionPlans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPlanUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExhibitionPlans
+     * const exhibitionPlan = await prisma.exhibitionPlan.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExhibitionPlanUpdateManyArgs>(args: SelectSubset<T, ExhibitionPlanUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExhibitionPlans and returns the data updated in the database.
+     * @param {ExhibitionPlanUpdateManyAndReturnArgs} args - Arguments to update many ExhibitionPlans.
+     * @example
+     * // Update many ExhibitionPlans
+     * const exhibitionPlan = await prisma.exhibitionPlan.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ExhibitionPlans and only return the `id`
+     * const exhibitionPlanWithIdOnly = await prisma.exhibitionPlan.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExhibitionPlanUpdateManyAndReturnArgs>(args: SelectSubset<T, ExhibitionPlanUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ExhibitionPlan.
+     * @param {ExhibitionPlanUpsertArgs} args - Arguments to update or create a ExhibitionPlan.
+     * @example
+     * // Update or create a ExhibitionPlan
+     * const exhibitionPlan = await prisma.exhibitionPlan.upsert({
+     *   create: {
+     *     // ... data to create a ExhibitionPlan
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExhibitionPlan we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExhibitionPlanUpsertArgs>(args: SelectSubset<T, ExhibitionPlanUpsertArgs<ExtArgs>>): Prisma__ExhibitionPlanClient<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ExhibitionPlans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPlanCountArgs} args - Arguments to filter ExhibitionPlans to count.
+     * @example
+     * // Count the number of ExhibitionPlans
+     * const count = await prisma.exhibitionPlan.count({
+     *   where: {
+     *     // ... the filter for the ExhibitionPlans we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExhibitionPlanCountArgs>(
+      args?: Subset<T, ExhibitionPlanCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExhibitionPlanCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExhibitionPlan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPlanAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExhibitionPlanAggregateArgs>(args: Subset<T, ExhibitionPlanAggregateArgs>): Prisma.PrismaPromise<GetExhibitionPlanAggregateType<T>>
+
+    /**
+     * Group by ExhibitionPlan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPlanGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExhibitionPlanGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExhibitionPlanGroupByArgs['orderBy'] }
+        : { orderBy?: ExhibitionPlanGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExhibitionPlanGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExhibitionPlanGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExhibitionPlan model
+   */
+  readonly fields: ExhibitionPlanFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExhibitionPlan.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExhibitionPlanClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    exhibitions<T extends ExhibitionPlan$exhibitionsArgs<ExtArgs> = {}>(args?: Subset<T, ExhibitionPlan$exhibitionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExhibitionPlan model
+   */
+  interface ExhibitionPlanFieldRefs {
+    readonly id: FieldRef<"ExhibitionPlan", 'String'>
+    readonly code: FieldRef<"ExhibitionPlan", 'String'>
+    readonly name: FieldRef<"ExhibitionPlan", 'String'>
+    readonly description: FieldRef<"ExhibitionPlan", 'String'>
+    readonly maxWorks: FieldRef<"ExhibitionPlan", 'Int'>
+    readonly maxDurationDays: FieldRef<"ExhibitionPlan", 'Int'>
+    readonly priceXof: FieldRef<"ExhibitionPlan", 'Int'>
+    readonly perks: FieldRef<"ExhibitionPlan", 'String[]'>
+    readonly featuredPlacement: FieldRef<"ExhibitionPlan", 'Boolean'>
+    readonly communicationSupport: FieldRef<"ExhibitionPlan", 'Boolean'>
+    readonly isActive: FieldRef<"ExhibitionPlan", 'Boolean'>
+    readonly position: FieldRef<"ExhibitionPlan", 'Int'>
+    readonly createdAt: FieldRef<"ExhibitionPlan", 'DateTime'>
+    readonly updatedAt: FieldRef<"ExhibitionPlan", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExhibitionPlan findUnique
+   */
+  export type ExhibitionPlanFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPlan to fetch.
+     */
+    where: ExhibitionPlanWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionPlan findUniqueOrThrow
+   */
+  export type ExhibitionPlanFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPlan to fetch.
+     */
+    where: ExhibitionPlanWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionPlan findFirst
+   */
+  export type ExhibitionPlanFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPlan to fetch.
+     */
+    where?: ExhibitionPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionPlans to fetch.
+     */
+    orderBy?: ExhibitionPlanOrderByWithRelationInput | ExhibitionPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExhibitionPlans.
+     */
+    cursor?: ExhibitionPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionPlans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExhibitionPlans.
+     */
+    distinct?: ExhibitionPlanScalarFieldEnum | ExhibitionPlanScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionPlan findFirstOrThrow
+   */
+  export type ExhibitionPlanFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPlan to fetch.
+     */
+    where?: ExhibitionPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionPlans to fetch.
+     */
+    orderBy?: ExhibitionPlanOrderByWithRelationInput | ExhibitionPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExhibitionPlans.
+     */
+    cursor?: ExhibitionPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionPlans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExhibitionPlans.
+     */
+    distinct?: ExhibitionPlanScalarFieldEnum | ExhibitionPlanScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionPlan findMany
+   */
+  export type ExhibitionPlanFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPlans to fetch.
+     */
+    where?: ExhibitionPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionPlans to fetch.
+     */
+    orderBy?: ExhibitionPlanOrderByWithRelationInput | ExhibitionPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExhibitionPlans.
+     */
+    cursor?: ExhibitionPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionPlans.
+     */
+    skip?: number
+    distinct?: ExhibitionPlanScalarFieldEnum | ExhibitionPlanScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionPlan create
+   */
+  export type ExhibitionPlanCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ExhibitionPlan.
+     */
+    data: XOR<ExhibitionPlanCreateInput, ExhibitionPlanUncheckedCreateInput>
+  }
+
+  /**
+   * ExhibitionPlan createMany
+   */
+  export type ExhibitionPlanCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExhibitionPlans.
+     */
+    data: ExhibitionPlanCreateManyInput | ExhibitionPlanCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExhibitionPlan createManyAndReturn
+   */
+  export type ExhibitionPlanCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * The data used to create many ExhibitionPlans.
+     */
+    data: ExhibitionPlanCreateManyInput | ExhibitionPlanCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExhibitionPlan update
+   */
+  export type ExhibitionPlanUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ExhibitionPlan.
+     */
+    data: XOR<ExhibitionPlanUpdateInput, ExhibitionPlanUncheckedUpdateInput>
+    /**
+     * Choose, which ExhibitionPlan to update.
+     */
+    where: ExhibitionPlanWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionPlan updateMany
+   */
+  export type ExhibitionPlanUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExhibitionPlans.
+     */
+    data: XOR<ExhibitionPlanUpdateManyMutationInput, ExhibitionPlanUncheckedUpdateManyInput>
+    /**
+     * Filter which ExhibitionPlans to update
+     */
+    where?: ExhibitionPlanWhereInput
+    /**
+     * Limit how many ExhibitionPlans to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExhibitionPlan updateManyAndReturn
+   */
+  export type ExhibitionPlanUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * The data used to update ExhibitionPlans.
+     */
+    data: XOR<ExhibitionPlanUpdateManyMutationInput, ExhibitionPlanUncheckedUpdateManyInput>
+    /**
+     * Filter which ExhibitionPlans to update
+     */
+    where?: ExhibitionPlanWhereInput
+    /**
+     * Limit how many ExhibitionPlans to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExhibitionPlan upsert
+   */
+  export type ExhibitionPlanUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ExhibitionPlan to update in case it exists.
+     */
+    where: ExhibitionPlanWhereUniqueInput
+    /**
+     * In case the ExhibitionPlan found by the `where` argument doesn't exist, create a new ExhibitionPlan with this data.
+     */
+    create: XOR<ExhibitionPlanCreateInput, ExhibitionPlanUncheckedCreateInput>
+    /**
+     * In case the ExhibitionPlan was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExhibitionPlanUpdateInput, ExhibitionPlanUncheckedUpdateInput>
+  }
+
+  /**
+   * ExhibitionPlan delete
+   */
+  export type ExhibitionPlanDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    /**
+     * Filter which ExhibitionPlan to delete.
+     */
+    where: ExhibitionPlanWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionPlan deleteMany
+   */
+  export type ExhibitionPlanDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExhibitionPlans to delete
+     */
+    where?: ExhibitionPlanWhereInput
+    /**
+     * Limit how many ExhibitionPlans to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExhibitionPlan.exhibitions
+   */
+  export type ExhibitionPlan$exhibitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    where?: ExhibitionWhereInput
+    orderBy?: ExhibitionOrderByWithRelationInput | ExhibitionOrderByWithRelationInput[]
+    cursor?: ExhibitionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExhibitionScalarFieldEnum | ExhibitionScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionPlan without action
+   */
+  export type ExhibitionPlanDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Exhibition
+   */
+
+  export type AggregateExhibition = {
+    _count: ExhibitionCountAggregateOutputType | null
+    _avg: ExhibitionAvgAggregateOutputType | null
+    _sum: ExhibitionSumAggregateOutputType | null
+    _min: ExhibitionMinAggregateOutputType | null
+    _max: ExhibitionMaxAggregateOutputType | null
+  }
+
+  export type ExhibitionAvgAggregateOutputType = {
+    plannedWorkCount: number | null
+    paymentAmountXof: number | null
+    ticketPriceXof: number | null
+    viewCount: number | null
+  }
+
+  export type ExhibitionSumAggregateOutputType = {
+    plannedWorkCount: number | null
+    paymentAmountXof: number | null
+    ticketPriceXof: number | null
+    viewCount: number | null
+  }
+
+  export type ExhibitionMinAggregateOutputType = {
+    id: string | null
+    slug: string | null
+    organizerId: string | null
+    makerId: string | null
+    planId: string | null
+    title: string | null
+    organizerName: string | null
+    summary: string | null
+    objective: string | null
+    discipline: string | null
+    cityId: string | null
+    startsAt: Date | null
+    endsAt: Date | null
+    openingHours: string | null
+    format: $Enums.ExhibitionFormat | null
+    venueName: string | null
+    venueAddress: string | null
+    venueDescription: string | null
+    coverKey: string | null
+    dossierKey: string | null
+    plannedWorkCount: number | null
+    status: $Enums.ExhibitionStatus | null
+    reviewNote: string | null
+    submittedAt: Date | null
+    reviewedAt: Date | null
+    reviewerId: string | null
+    contractReference: string | null
+    contractSentAt: Date | null
+    contractSignedAt: Date | null
+    paymentAmountXof: number | null
+    paymentReference: string | null
+    paymentReceivedAt: Date | null
+    publishAt: Date | null
+    publishedAt: Date | null
+    suspendedAt: Date | null
+    suspendReason: string | null
+    accessMode: $Enums.ExhibitionAccess | null
+    ticketPriceXof: number | null
+    requiresRegistration: boolean | null
+    accessCodeHash: string | null
+    onsiteInfo: string | null
+    remoteInfo: string | null
+    isFeatured: boolean | null
+    viewCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExhibitionMaxAggregateOutputType = {
+    id: string | null
+    slug: string | null
+    organizerId: string | null
+    makerId: string | null
+    planId: string | null
+    title: string | null
+    organizerName: string | null
+    summary: string | null
+    objective: string | null
+    discipline: string | null
+    cityId: string | null
+    startsAt: Date | null
+    endsAt: Date | null
+    openingHours: string | null
+    format: $Enums.ExhibitionFormat | null
+    venueName: string | null
+    venueAddress: string | null
+    venueDescription: string | null
+    coverKey: string | null
+    dossierKey: string | null
+    plannedWorkCount: number | null
+    status: $Enums.ExhibitionStatus | null
+    reviewNote: string | null
+    submittedAt: Date | null
+    reviewedAt: Date | null
+    reviewerId: string | null
+    contractReference: string | null
+    contractSentAt: Date | null
+    contractSignedAt: Date | null
+    paymentAmountXof: number | null
+    paymentReference: string | null
+    paymentReceivedAt: Date | null
+    publishAt: Date | null
+    publishedAt: Date | null
+    suspendedAt: Date | null
+    suspendReason: string | null
+    accessMode: $Enums.ExhibitionAccess | null
+    ticketPriceXof: number | null
+    requiresRegistration: boolean | null
+    accessCodeHash: string | null
+    onsiteInfo: string | null
+    remoteInfo: string | null
+    isFeatured: boolean | null
+    viewCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExhibitionCountAggregateOutputType = {
+    id: number
+    slug: number
+    organizerId: number
+    makerId: number
+    planId: number
+    title: number
+    organizerName: number
+    summary: number
+    objective: number
+    discipline: number
+    cityId: number
+    startsAt: number
+    endsAt: number
+    openingHours: number
+    format: number
+    venueName: number
+    venueAddress: number
+    venueDescription: number
+    venueImageKeys: number
+    coverKey: number
+    dossierKey: number
+    plannedWorkCount: number
+    status: number
+    reviewNote: number
+    submittedAt: number
+    reviewedAt: number
+    reviewerId: number
+    contractReference: number
+    contractSentAt: number
+    contractSignedAt: number
+    paymentAmountXof: number
+    paymentReference: number
+    paymentReceivedAt: number
+    publishAt: number
+    publishedAt: number
+    suspendedAt: number
+    suspendReason: number
+    accessMode: number
+    ticketPriceXof: number
+    requiresRegistration: number
+    accessCodeHash: number
+    onsiteInfo: number
+    remoteInfo: number
+    isFeatured: number
+    viewCount: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExhibitionAvgAggregateInputType = {
+    plannedWorkCount?: true
+    paymentAmountXof?: true
+    ticketPriceXof?: true
+    viewCount?: true
+  }
+
+  export type ExhibitionSumAggregateInputType = {
+    plannedWorkCount?: true
+    paymentAmountXof?: true
+    ticketPriceXof?: true
+    viewCount?: true
+  }
+
+  export type ExhibitionMinAggregateInputType = {
+    id?: true
+    slug?: true
+    organizerId?: true
+    makerId?: true
+    planId?: true
+    title?: true
+    organizerName?: true
+    summary?: true
+    objective?: true
+    discipline?: true
+    cityId?: true
+    startsAt?: true
+    endsAt?: true
+    openingHours?: true
+    format?: true
+    venueName?: true
+    venueAddress?: true
+    venueDescription?: true
+    coverKey?: true
+    dossierKey?: true
+    plannedWorkCount?: true
+    status?: true
+    reviewNote?: true
+    submittedAt?: true
+    reviewedAt?: true
+    reviewerId?: true
+    contractReference?: true
+    contractSentAt?: true
+    contractSignedAt?: true
+    paymentAmountXof?: true
+    paymentReference?: true
+    paymentReceivedAt?: true
+    publishAt?: true
+    publishedAt?: true
+    suspendedAt?: true
+    suspendReason?: true
+    accessMode?: true
+    ticketPriceXof?: true
+    requiresRegistration?: true
+    accessCodeHash?: true
+    onsiteInfo?: true
+    remoteInfo?: true
+    isFeatured?: true
+    viewCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExhibitionMaxAggregateInputType = {
+    id?: true
+    slug?: true
+    organizerId?: true
+    makerId?: true
+    planId?: true
+    title?: true
+    organizerName?: true
+    summary?: true
+    objective?: true
+    discipline?: true
+    cityId?: true
+    startsAt?: true
+    endsAt?: true
+    openingHours?: true
+    format?: true
+    venueName?: true
+    venueAddress?: true
+    venueDescription?: true
+    coverKey?: true
+    dossierKey?: true
+    plannedWorkCount?: true
+    status?: true
+    reviewNote?: true
+    submittedAt?: true
+    reviewedAt?: true
+    reviewerId?: true
+    contractReference?: true
+    contractSentAt?: true
+    contractSignedAt?: true
+    paymentAmountXof?: true
+    paymentReference?: true
+    paymentReceivedAt?: true
+    publishAt?: true
+    publishedAt?: true
+    suspendedAt?: true
+    suspendReason?: true
+    accessMode?: true
+    ticketPriceXof?: true
+    requiresRegistration?: true
+    accessCodeHash?: true
+    onsiteInfo?: true
+    remoteInfo?: true
+    isFeatured?: true
+    viewCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExhibitionCountAggregateInputType = {
+    id?: true
+    slug?: true
+    organizerId?: true
+    makerId?: true
+    planId?: true
+    title?: true
+    organizerName?: true
+    summary?: true
+    objective?: true
+    discipline?: true
+    cityId?: true
+    startsAt?: true
+    endsAt?: true
+    openingHours?: true
+    format?: true
+    venueName?: true
+    venueAddress?: true
+    venueDescription?: true
+    venueImageKeys?: true
+    coverKey?: true
+    dossierKey?: true
+    plannedWorkCount?: true
+    status?: true
+    reviewNote?: true
+    submittedAt?: true
+    reviewedAt?: true
+    reviewerId?: true
+    contractReference?: true
+    contractSentAt?: true
+    contractSignedAt?: true
+    paymentAmountXof?: true
+    paymentReference?: true
+    paymentReceivedAt?: true
+    publishAt?: true
+    publishedAt?: true
+    suspendedAt?: true
+    suspendReason?: true
+    accessMode?: true
+    ticketPriceXof?: true
+    requiresRegistration?: true
+    accessCodeHash?: true
+    onsiteInfo?: true
+    remoteInfo?: true
+    isFeatured?: true
+    viewCount?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExhibitionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Exhibition to aggregate.
+     */
+    where?: ExhibitionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Exhibitions to fetch.
+     */
+    orderBy?: ExhibitionOrderByWithRelationInput | ExhibitionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExhibitionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Exhibitions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Exhibitions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Exhibitions
+    **/
+    _count?: true | ExhibitionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExhibitionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExhibitionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExhibitionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExhibitionMaxAggregateInputType
+  }
+
+  export type GetExhibitionAggregateType<T extends ExhibitionAggregateArgs> = {
+        [P in keyof T & keyof AggregateExhibition]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExhibition[P]>
+      : GetScalarType<T[P], AggregateExhibition[P]>
+  }
+
+
+
+
+  export type ExhibitionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionWhereInput
+    orderBy?: ExhibitionOrderByWithAggregationInput | ExhibitionOrderByWithAggregationInput[]
+    by: ExhibitionScalarFieldEnum[] | ExhibitionScalarFieldEnum
+    having?: ExhibitionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExhibitionCountAggregateInputType | true
+    _avg?: ExhibitionAvgAggregateInputType
+    _sum?: ExhibitionSumAggregateInputType
+    _min?: ExhibitionMinAggregateInputType
+    _max?: ExhibitionMaxAggregateInputType
+  }
+
+  export type ExhibitionGroupByOutputType = {
+    id: string
+    slug: string
+    organizerId: string
+    makerId: string | null
+    planId: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective: string | null
+    discipline: string | null
+    cityId: string
+    startsAt: Date
+    endsAt: Date
+    openingHours: string | null
+    format: $Enums.ExhibitionFormat
+    venueName: string | null
+    venueAddress: string | null
+    venueDescription: string | null
+    venueImageKeys: string[]
+    coverKey: string | null
+    dossierKey: string | null
+    plannedWorkCount: number | null
+    status: $Enums.ExhibitionStatus
+    reviewNote: string | null
+    submittedAt: Date | null
+    reviewedAt: Date | null
+    reviewerId: string | null
+    contractReference: string | null
+    contractSentAt: Date | null
+    contractSignedAt: Date | null
+    paymentAmountXof: number | null
+    paymentReference: string | null
+    paymentReceivedAt: Date | null
+    publishAt: Date | null
+    publishedAt: Date | null
+    suspendedAt: Date | null
+    suspendReason: string | null
+    accessMode: $Enums.ExhibitionAccess
+    ticketPriceXof: number
+    requiresRegistration: boolean
+    accessCodeHash: string | null
+    onsiteInfo: string | null
+    remoteInfo: string | null
+    isFeatured: boolean
+    viewCount: number
+    createdAt: Date
+    updatedAt: Date
+    _count: ExhibitionCountAggregateOutputType | null
+    _avg: ExhibitionAvgAggregateOutputType | null
+    _sum: ExhibitionSumAggregateOutputType | null
+    _min: ExhibitionMinAggregateOutputType | null
+    _max: ExhibitionMaxAggregateOutputType | null
+  }
+
+  type GetExhibitionGroupByPayload<T extends ExhibitionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExhibitionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExhibitionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExhibitionGroupByOutputType[P]>
+            : GetScalarType<T[P], ExhibitionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExhibitionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    organizerId?: boolean
+    makerId?: boolean
+    planId?: boolean
+    title?: boolean
+    organizerName?: boolean
+    summary?: boolean
+    objective?: boolean
+    discipline?: boolean
+    cityId?: boolean
+    startsAt?: boolean
+    endsAt?: boolean
+    openingHours?: boolean
+    format?: boolean
+    venueName?: boolean
+    venueAddress?: boolean
+    venueDescription?: boolean
+    venueImageKeys?: boolean
+    coverKey?: boolean
+    dossierKey?: boolean
+    plannedWorkCount?: boolean
+    status?: boolean
+    reviewNote?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    reviewerId?: boolean
+    contractReference?: boolean
+    contractSentAt?: boolean
+    contractSignedAt?: boolean
+    paymentAmountXof?: boolean
+    paymentReference?: boolean
+    paymentReceivedAt?: boolean
+    publishAt?: boolean
+    publishedAt?: boolean
+    suspendedAt?: boolean
+    suspendReason?: boolean
+    accessMode?: boolean
+    ticketPriceXof?: boolean
+    requiresRegistration?: boolean
+    accessCodeHash?: boolean
+    onsiteInfo?: boolean
+    remoteInfo?: boolean
+    isFeatured?: boolean
+    viewCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organizer?: boolean | UserDefaultArgs<ExtArgs>
+    maker?: boolean | Exhibition$makerArgs<ExtArgs>
+    plan?: boolean | Exhibition$planArgs<ExtArgs>
+    city?: boolean | CityDefaultArgs<ExtArgs>
+    works?: boolean | Exhibition$worksArgs<ExtArgs>
+    passes?: boolean | Exhibition$passesArgs<ExtArgs>
+    _count?: boolean | ExhibitionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibition"]>
+
+  export type ExhibitionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    organizerId?: boolean
+    makerId?: boolean
+    planId?: boolean
+    title?: boolean
+    organizerName?: boolean
+    summary?: boolean
+    objective?: boolean
+    discipline?: boolean
+    cityId?: boolean
+    startsAt?: boolean
+    endsAt?: boolean
+    openingHours?: boolean
+    format?: boolean
+    venueName?: boolean
+    venueAddress?: boolean
+    venueDescription?: boolean
+    venueImageKeys?: boolean
+    coverKey?: boolean
+    dossierKey?: boolean
+    plannedWorkCount?: boolean
+    status?: boolean
+    reviewNote?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    reviewerId?: boolean
+    contractReference?: boolean
+    contractSentAt?: boolean
+    contractSignedAt?: boolean
+    paymentAmountXof?: boolean
+    paymentReference?: boolean
+    paymentReceivedAt?: boolean
+    publishAt?: boolean
+    publishedAt?: boolean
+    suspendedAt?: boolean
+    suspendReason?: boolean
+    accessMode?: boolean
+    ticketPriceXof?: boolean
+    requiresRegistration?: boolean
+    accessCodeHash?: boolean
+    onsiteInfo?: boolean
+    remoteInfo?: boolean
+    isFeatured?: boolean
+    viewCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organizer?: boolean | UserDefaultArgs<ExtArgs>
+    maker?: boolean | Exhibition$makerArgs<ExtArgs>
+    plan?: boolean | Exhibition$planArgs<ExtArgs>
+    city?: boolean | CityDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibition"]>
+
+  export type ExhibitionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    organizerId?: boolean
+    makerId?: boolean
+    planId?: boolean
+    title?: boolean
+    organizerName?: boolean
+    summary?: boolean
+    objective?: boolean
+    discipline?: boolean
+    cityId?: boolean
+    startsAt?: boolean
+    endsAt?: boolean
+    openingHours?: boolean
+    format?: boolean
+    venueName?: boolean
+    venueAddress?: boolean
+    venueDescription?: boolean
+    venueImageKeys?: boolean
+    coverKey?: boolean
+    dossierKey?: boolean
+    plannedWorkCount?: boolean
+    status?: boolean
+    reviewNote?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    reviewerId?: boolean
+    contractReference?: boolean
+    contractSentAt?: boolean
+    contractSignedAt?: boolean
+    paymentAmountXof?: boolean
+    paymentReference?: boolean
+    paymentReceivedAt?: boolean
+    publishAt?: boolean
+    publishedAt?: boolean
+    suspendedAt?: boolean
+    suspendReason?: boolean
+    accessMode?: boolean
+    ticketPriceXof?: boolean
+    requiresRegistration?: boolean
+    accessCodeHash?: boolean
+    onsiteInfo?: boolean
+    remoteInfo?: boolean
+    isFeatured?: boolean
+    viewCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organizer?: boolean | UserDefaultArgs<ExtArgs>
+    maker?: boolean | Exhibition$makerArgs<ExtArgs>
+    plan?: boolean | Exhibition$planArgs<ExtArgs>
+    city?: boolean | CityDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibition"]>
+
+  export type ExhibitionSelectScalar = {
+    id?: boolean
+    slug?: boolean
+    organizerId?: boolean
+    makerId?: boolean
+    planId?: boolean
+    title?: boolean
+    organizerName?: boolean
+    summary?: boolean
+    objective?: boolean
+    discipline?: boolean
+    cityId?: boolean
+    startsAt?: boolean
+    endsAt?: boolean
+    openingHours?: boolean
+    format?: boolean
+    venueName?: boolean
+    venueAddress?: boolean
+    venueDescription?: boolean
+    venueImageKeys?: boolean
+    coverKey?: boolean
+    dossierKey?: boolean
+    plannedWorkCount?: boolean
+    status?: boolean
+    reviewNote?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    reviewerId?: boolean
+    contractReference?: boolean
+    contractSentAt?: boolean
+    contractSignedAt?: boolean
+    paymentAmountXof?: boolean
+    paymentReference?: boolean
+    paymentReceivedAt?: boolean
+    publishAt?: boolean
+    publishedAt?: boolean
+    suspendedAt?: boolean
+    suspendReason?: boolean
+    accessMode?: boolean
+    ticketPriceXof?: boolean
+    requiresRegistration?: boolean
+    accessCodeHash?: boolean
+    onsiteInfo?: boolean
+    remoteInfo?: boolean
+    isFeatured?: boolean
+    viewCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ExhibitionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "organizerId" | "makerId" | "planId" | "title" | "organizerName" | "summary" | "objective" | "discipline" | "cityId" | "startsAt" | "endsAt" | "openingHours" | "format" | "venueName" | "venueAddress" | "venueDescription" | "venueImageKeys" | "coverKey" | "dossierKey" | "plannedWorkCount" | "status" | "reviewNote" | "submittedAt" | "reviewedAt" | "reviewerId" | "contractReference" | "contractSentAt" | "contractSignedAt" | "paymentAmountXof" | "paymentReference" | "paymentReceivedAt" | "publishAt" | "publishedAt" | "suspendedAt" | "suspendReason" | "accessMode" | "ticketPriceXof" | "requiresRegistration" | "accessCodeHash" | "onsiteInfo" | "remoteInfo" | "isFeatured" | "viewCount" | "createdAt" | "updatedAt", ExtArgs["result"]["exhibition"]>
+  export type ExhibitionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizer?: boolean | UserDefaultArgs<ExtArgs>
+    maker?: boolean | Exhibition$makerArgs<ExtArgs>
+    plan?: boolean | Exhibition$planArgs<ExtArgs>
+    city?: boolean | CityDefaultArgs<ExtArgs>
+    works?: boolean | Exhibition$worksArgs<ExtArgs>
+    passes?: boolean | Exhibition$passesArgs<ExtArgs>
+    _count?: boolean | ExhibitionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ExhibitionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizer?: boolean | UserDefaultArgs<ExtArgs>
+    maker?: boolean | Exhibition$makerArgs<ExtArgs>
+    plan?: boolean | Exhibition$planArgs<ExtArgs>
+    city?: boolean | CityDefaultArgs<ExtArgs>
+  }
+  export type ExhibitionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizer?: boolean | UserDefaultArgs<ExtArgs>
+    maker?: boolean | Exhibition$makerArgs<ExtArgs>
+    plan?: boolean | Exhibition$planArgs<ExtArgs>
+    city?: boolean | CityDefaultArgs<ExtArgs>
+  }
+
+  export type $ExhibitionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Exhibition"
+    objects: {
+      organizer: Prisma.$UserPayload<ExtArgs>
+      maker: Prisma.$MakerProfilePayload<ExtArgs> | null
+      plan: Prisma.$ExhibitionPlanPayload<ExtArgs> | null
+      city: Prisma.$CityPayload<ExtArgs>
+      works: Prisma.$ExhibitionWorkPayload<ExtArgs>[]
+      passes: Prisma.$ExhibitionPassPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      slug: string
+      organizerId: string
+      /**
+       * Boutique de l'organisateur, s'il en a une : seules ses pièces peuvent
+       * être vendues pendant l'exposition.
+       */
+      makerId: string | null
+      planId: string | null
+      title: string
+      organizerName: string
+      summary: string
+      objective: string | null
+      discipline: string | null
+      cityId: string
+      startsAt: Date
+      endsAt: Date
+      openingHours: string | null
+      format: $Enums.ExhibitionFormat
+      venueName: string | null
+      venueAddress: string | null
+      venueDescription: string | null
+      venueImageKeys: string[]
+      coverKey: string | null
+      /**
+       * Dossier de présentation — espace privé, administration seule.
+       */
+      dossierKey: string | null
+      plannedWorkCount: number | null
+      status: $Enums.ExhibitionStatus
+      reviewNote: string | null
+      submittedAt: Date | null
+      reviewedAt: Date | null
+      reviewerId: string | null
+      contractReference: string | null
+      contractSentAt: Date | null
+      contractSignedAt: Date | null
+      paymentAmountXof: number | null
+      paymentReference: string | null
+      paymentReceivedAt: Date | null
+      publishAt: Date | null
+      publishedAt: Date | null
+      suspendedAt: Date | null
+      suspendReason: string | null
+      accessMode: $Enums.ExhibitionAccess
+      ticketPriceXof: number
+      requiresRegistration: boolean
+      /**
+       * Empreinte du code d'accès, jamais le code lui-même.
+       */
+      accessCodeHash: string | null
+      onsiteInfo: string | null
+      remoteInfo: string | null
+      isFeatured: boolean
+      viewCount: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["exhibition"]>
+    composites: {}
+  }
+
+  type ExhibitionGetPayload<S extends boolean | null | undefined | ExhibitionDefaultArgs> = $Result.GetResult<Prisma.$ExhibitionPayload, S>
+
+  type ExhibitionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExhibitionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExhibitionCountAggregateInputType | true
+    }
+
+  export interface ExhibitionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Exhibition'], meta: { name: 'Exhibition' } }
+    /**
+     * Find zero or one Exhibition that matches the filter.
+     * @param {ExhibitionFindUniqueArgs} args - Arguments to find a Exhibition
+     * @example
+     * // Get one Exhibition
+     * const exhibition = await prisma.exhibition.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExhibitionFindUniqueArgs>(args: SelectSubset<T, ExhibitionFindUniqueArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Exhibition that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExhibitionFindUniqueOrThrowArgs} args - Arguments to find a Exhibition
+     * @example
+     * // Get one Exhibition
+     * const exhibition = await prisma.exhibition.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExhibitionFindUniqueOrThrowArgs>(args: SelectSubset<T, ExhibitionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Exhibition that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionFindFirstArgs} args - Arguments to find a Exhibition
+     * @example
+     * // Get one Exhibition
+     * const exhibition = await prisma.exhibition.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExhibitionFindFirstArgs>(args?: SelectSubset<T, ExhibitionFindFirstArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Exhibition that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionFindFirstOrThrowArgs} args - Arguments to find a Exhibition
+     * @example
+     * // Get one Exhibition
+     * const exhibition = await prisma.exhibition.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExhibitionFindFirstOrThrowArgs>(args?: SelectSubset<T, ExhibitionFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Exhibitions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Exhibitions
+     * const exhibitions = await prisma.exhibition.findMany()
+     * 
+     * // Get first 10 Exhibitions
+     * const exhibitions = await prisma.exhibition.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const exhibitionWithIdOnly = await prisma.exhibition.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExhibitionFindManyArgs>(args?: SelectSubset<T, ExhibitionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Exhibition.
+     * @param {ExhibitionCreateArgs} args - Arguments to create a Exhibition.
+     * @example
+     * // Create one Exhibition
+     * const Exhibition = await prisma.exhibition.create({
+     *   data: {
+     *     // ... data to create a Exhibition
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExhibitionCreateArgs>(args: SelectSubset<T, ExhibitionCreateArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Exhibitions.
+     * @param {ExhibitionCreateManyArgs} args - Arguments to create many Exhibitions.
+     * @example
+     * // Create many Exhibitions
+     * const exhibition = await prisma.exhibition.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExhibitionCreateManyArgs>(args?: SelectSubset<T, ExhibitionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Exhibitions and returns the data saved in the database.
+     * @param {ExhibitionCreateManyAndReturnArgs} args - Arguments to create many Exhibitions.
+     * @example
+     * // Create many Exhibitions
+     * const exhibition = await prisma.exhibition.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Exhibitions and only return the `id`
+     * const exhibitionWithIdOnly = await prisma.exhibition.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExhibitionCreateManyAndReturnArgs>(args?: SelectSubset<T, ExhibitionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Exhibition.
+     * @param {ExhibitionDeleteArgs} args - Arguments to delete one Exhibition.
+     * @example
+     * // Delete one Exhibition
+     * const Exhibition = await prisma.exhibition.delete({
+     *   where: {
+     *     // ... filter to delete one Exhibition
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExhibitionDeleteArgs>(args: SelectSubset<T, ExhibitionDeleteArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Exhibition.
+     * @param {ExhibitionUpdateArgs} args - Arguments to update one Exhibition.
+     * @example
+     * // Update one Exhibition
+     * const exhibition = await prisma.exhibition.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExhibitionUpdateArgs>(args: SelectSubset<T, ExhibitionUpdateArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Exhibitions.
+     * @param {ExhibitionDeleteManyArgs} args - Arguments to filter Exhibitions to delete.
+     * @example
+     * // Delete a few Exhibitions
+     * const { count } = await prisma.exhibition.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExhibitionDeleteManyArgs>(args?: SelectSubset<T, ExhibitionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Exhibitions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Exhibitions
+     * const exhibition = await prisma.exhibition.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExhibitionUpdateManyArgs>(args: SelectSubset<T, ExhibitionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Exhibitions and returns the data updated in the database.
+     * @param {ExhibitionUpdateManyAndReturnArgs} args - Arguments to update many Exhibitions.
+     * @example
+     * // Update many Exhibitions
+     * const exhibition = await prisma.exhibition.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Exhibitions and only return the `id`
+     * const exhibitionWithIdOnly = await prisma.exhibition.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExhibitionUpdateManyAndReturnArgs>(args: SelectSubset<T, ExhibitionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Exhibition.
+     * @param {ExhibitionUpsertArgs} args - Arguments to update or create a Exhibition.
+     * @example
+     * // Update or create a Exhibition
+     * const exhibition = await prisma.exhibition.upsert({
+     *   create: {
+     *     // ... data to create a Exhibition
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Exhibition we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExhibitionUpsertArgs>(args: SelectSubset<T, ExhibitionUpsertArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Exhibitions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionCountArgs} args - Arguments to filter Exhibitions to count.
+     * @example
+     * // Count the number of Exhibitions
+     * const count = await prisma.exhibition.count({
+     *   where: {
+     *     // ... the filter for the Exhibitions we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExhibitionCountArgs>(
+      args?: Subset<T, ExhibitionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExhibitionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Exhibition.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExhibitionAggregateArgs>(args: Subset<T, ExhibitionAggregateArgs>): Prisma.PrismaPromise<GetExhibitionAggregateType<T>>
+
+    /**
+     * Group by Exhibition.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExhibitionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExhibitionGroupByArgs['orderBy'] }
+        : { orderBy?: ExhibitionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExhibitionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExhibitionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Exhibition model
+   */
+  readonly fields: ExhibitionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Exhibition.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExhibitionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organizer<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    maker<T extends Exhibition$makerArgs<ExtArgs> = {}>(args?: Subset<T, Exhibition$makerArgs<ExtArgs>>): Prisma__MakerProfileClient<$Result.GetResult<Prisma.$MakerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    plan<T extends Exhibition$planArgs<ExtArgs> = {}>(args?: Subset<T, Exhibition$planArgs<ExtArgs>>): Prisma__ExhibitionPlanClient<$Result.GetResult<Prisma.$ExhibitionPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    city<T extends CityDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CityDefaultArgs<ExtArgs>>): Prisma__CityClient<$Result.GetResult<Prisma.$CityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    works<T extends Exhibition$worksArgs<ExtArgs> = {}>(args?: Subset<T, Exhibition$worksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    passes<T extends Exhibition$passesArgs<ExtArgs> = {}>(args?: Subset<T, Exhibition$passesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Exhibition model
+   */
+  interface ExhibitionFieldRefs {
+    readonly id: FieldRef<"Exhibition", 'String'>
+    readonly slug: FieldRef<"Exhibition", 'String'>
+    readonly organizerId: FieldRef<"Exhibition", 'String'>
+    readonly makerId: FieldRef<"Exhibition", 'String'>
+    readonly planId: FieldRef<"Exhibition", 'String'>
+    readonly title: FieldRef<"Exhibition", 'String'>
+    readonly organizerName: FieldRef<"Exhibition", 'String'>
+    readonly summary: FieldRef<"Exhibition", 'String'>
+    readonly objective: FieldRef<"Exhibition", 'String'>
+    readonly discipline: FieldRef<"Exhibition", 'String'>
+    readonly cityId: FieldRef<"Exhibition", 'String'>
+    readonly startsAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly endsAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly openingHours: FieldRef<"Exhibition", 'String'>
+    readonly format: FieldRef<"Exhibition", 'ExhibitionFormat'>
+    readonly venueName: FieldRef<"Exhibition", 'String'>
+    readonly venueAddress: FieldRef<"Exhibition", 'String'>
+    readonly venueDescription: FieldRef<"Exhibition", 'String'>
+    readonly venueImageKeys: FieldRef<"Exhibition", 'String[]'>
+    readonly coverKey: FieldRef<"Exhibition", 'String'>
+    readonly dossierKey: FieldRef<"Exhibition", 'String'>
+    readonly plannedWorkCount: FieldRef<"Exhibition", 'Int'>
+    readonly status: FieldRef<"Exhibition", 'ExhibitionStatus'>
+    readonly reviewNote: FieldRef<"Exhibition", 'String'>
+    readonly submittedAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly reviewedAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly reviewerId: FieldRef<"Exhibition", 'String'>
+    readonly contractReference: FieldRef<"Exhibition", 'String'>
+    readonly contractSentAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly contractSignedAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly paymentAmountXof: FieldRef<"Exhibition", 'Int'>
+    readonly paymentReference: FieldRef<"Exhibition", 'String'>
+    readonly paymentReceivedAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly publishAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly publishedAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly suspendedAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly suspendReason: FieldRef<"Exhibition", 'String'>
+    readonly accessMode: FieldRef<"Exhibition", 'ExhibitionAccess'>
+    readonly ticketPriceXof: FieldRef<"Exhibition", 'Int'>
+    readonly requiresRegistration: FieldRef<"Exhibition", 'Boolean'>
+    readonly accessCodeHash: FieldRef<"Exhibition", 'String'>
+    readonly onsiteInfo: FieldRef<"Exhibition", 'String'>
+    readonly remoteInfo: FieldRef<"Exhibition", 'String'>
+    readonly isFeatured: FieldRef<"Exhibition", 'Boolean'>
+    readonly viewCount: FieldRef<"Exhibition", 'Int'>
+    readonly createdAt: FieldRef<"Exhibition", 'DateTime'>
+    readonly updatedAt: FieldRef<"Exhibition", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Exhibition findUnique
+   */
+  export type ExhibitionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Exhibition to fetch.
+     */
+    where: ExhibitionWhereUniqueInput
+  }
+
+  /**
+   * Exhibition findUniqueOrThrow
+   */
+  export type ExhibitionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Exhibition to fetch.
+     */
+    where: ExhibitionWhereUniqueInput
+  }
+
+  /**
+   * Exhibition findFirst
+   */
+  export type ExhibitionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Exhibition to fetch.
+     */
+    where?: ExhibitionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Exhibitions to fetch.
+     */
+    orderBy?: ExhibitionOrderByWithRelationInput | ExhibitionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Exhibitions.
+     */
+    cursor?: ExhibitionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Exhibitions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Exhibitions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Exhibitions.
+     */
+    distinct?: ExhibitionScalarFieldEnum | ExhibitionScalarFieldEnum[]
+  }
+
+  /**
+   * Exhibition findFirstOrThrow
+   */
+  export type ExhibitionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Exhibition to fetch.
+     */
+    where?: ExhibitionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Exhibitions to fetch.
+     */
+    orderBy?: ExhibitionOrderByWithRelationInput | ExhibitionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Exhibitions.
+     */
+    cursor?: ExhibitionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Exhibitions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Exhibitions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Exhibitions.
+     */
+    distinct?: ExhibitionScalarFieldEnum | ExhibitionScalarFieldEnum[]
+  }
+
+  /**
+   * Exhibition findMany
+   */
+  export type ExhibitionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Exhibitions to fetch.
+     */
+    where?: ExhibitionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Exhibitions to fetch.
+     */
+    orderBy?: ExhibitionOrderByWithRelationInput | ExhibitionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Exhibitions.
+     */
+    cursor?: ExhibitionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Exhibitions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Exhibitions.
+     */
+    skip?: number
+    distinct?: ExhibitionScalarFieldEnum | ExhibitionScalarFieldEnum[]
+  }
+
+  /**
+   * Exhibition create
+   */
+  export type ExhibitionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Exhibition.
+     */
+    data: XOR<ExhibitionCreateInput, ExhibitionUncheckedCreateInput>
+  }
+
+  /**
+   * Exhibition createMany
+   */
+  export type ExhibitionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Exhibitions.
+     */
+    data: ExhibitionCreateManyInput | ExhibitionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Exhibition createManyAndReturn
+   */
+  export type ExhibitionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * The data used to create many Exhibitions.
+     */
+    data: ExhibitionCreateManyInput | ExhibitionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Exhibition update
+   */
+  export type ExhibitionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Exhibition.
+     */
+    data: XOR<ExhibitionUpdateInput, ExhibitionUncheckedUpdateInput>
+    /**
+     * Choose, which Exhibition to update.
+     */
+    where: ExhibitionWhereUniqueInput
+  }
+
+  /**
+   * Exhibition updateMany
+   */
+  export type ExhibitionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Exhibitions.
+     */
+    data: XOR<ExhibitionUpdateManyMutationInput, ExhibitionUncheckedUpdateManyInput>
+    /**
+     * Filter which Exhibitions to update
+     */
+    where?: ExhibitionWhereInput
+    /**
+     * Limit how many Exhibitions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Exhibition updateManyAndReturn
+   */
+  export type ExhibitionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * The data used to update Exhibitions.
+     */
+    data: XOR<ExhibitionUpdateManyMutationInput, ExhibitionUncheckedUpdateManyInput>
+    /**
+     * Filter which Exhibitions to update
+     */
+    where?: ExhibitionWhereInput
+    /**
+     * Limit how many Exhibitions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Exhibition upsert
+   */
+  export type ExhibitionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Exhibition to update in case it exists.
+     */
+    where: ExhibitionWhereUniqueInput
+    /**
+     * In case the Exhibition found by the `where` argument doesn't exist, create a new Exhibition with this data.
+     */
+    create: XOR<ExhibitionCreateInput, ExhibitionUncheckedCreateInput>
+    /**
+     * In case the Exhibition was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExhibitionUpdateInput, ExhibitionUncheckedUpdateInput>
+  }
+
+  /**
+   * Exhibition delete
+   */
+  export type ExhibitionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+    /**
+     * Filter which Exhibition to delete.
+     */
+    where: ExhibitionWhereUniqueInput
+  }
+
+  /**
+   * Exhibition deleteMany
+   */
+  export type ExhibitionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Exhibitions to delete
+     */
+    where?: ExhibitionWhereInput
+    /**
+     * Limit how many Exhibitions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Exhibition.maker
+   */
+  export type Exhibition$makerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MakerProfile
+     */
+    select?: MakerProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MakerProfile
+     */
+    omit?: MakerProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MakerProfileInclude<ExtArgs> | null
+    where?: MakerProfileWhereInput
+  }
+
+  /**
+   * Exhibition.plan
+   */
+  export type Exhibition$planArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPlan
+     */
+    select?: ExhibitionPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPlan
+     */
+    omit?: ExhibitionPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPlanInclude<ExtArgs> | null
+    where?: ExhibitionPlanWhereInput
+  }
+
+  /**
+   * Exhibition.works
+   */
+  export type Exhibition$worksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    where?: ExhibitionWorkWhereInput
+    orderBy?: ExhibitionWorkOrderByWithRelationInput | ExhibitionWorkOrderByWithRelationInput[]
+    cursor?: ExhibitionWorkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExhibitionWorkScalarFieldEnum | ExhibitionWorkScalarFieldEnum[]
+  }
+
+  /**
+   * Exhibition.passes
+   */
+  export type Exhibition$passesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    where?: ExhibitionPassWhereInput
+    orderBy?: ExhibitionPassOrderByWithRelationInput | ExhibitionPassOrderByWithRelationInput[]
+    cursor?: ExhibitionPassWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExhibitionPassScalarFieldEnum | ExhibitionPassScalarFieldEnum[]
+  }
+
+  /**
+   * Exhibition without action
+   */
+  export type ExhibitionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Exhibition
+     */
+    select?: ExhibitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Exhibition
+     */
+    omit?: ExhibitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ExhibitionWork
+   */
+
+  export type AggregateExhibitionWork = {
+    _count: ExhibitionWorkCountAggregateOutputType | null
+    _avg: ExhibitionWorkAvgAggregateOutputType | null
+    _sum: ExhibitionWorkSumAggregateOutputType | null
+    _min: ExhibitionWorkMinAggregateOutputType | null
+    _max: ExhibitionWorkMaxAggregateOutputType | null
+  }
+
+  export type ExhibitionWorkAvgAggregateOutputType = {
+    position: number | null
+  }
+
+  export type ExhibitionWorkSumAggregateOutputType = {
+    position: number | null
+  }
+
+  export type ExhibitionWorkMinAggregateOutputType = {
+    id: string | null
+    exhibitionId: string | null
+    position: number | null
+    productId: string | null
+    title: string | null
+    artistName: string | null
+    description: string | null
+    materials: string | null
+    dimensions: string | null
+    proofKey: string | null
+    reviewStatus: $Enums.ExhibitionWorkReview | null
+    reviewNote: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExhibitionWorkMaxAggregateOutputType = {
+    id: string | null
+    exhibitionId: string | null
+    position: number | null
+    productId: string | null
+    title: string | null
+    artistName: string | null
+    description: string | null
+    materials: string | null
+    dimensions: string | null
+    proofKey: string | null
+    reviewStatus: $Enums.ExhibitionWorkReview | null
+    reviewNote: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExhibitionWorkCountAggregateOutputType = {
+    id: number
+    exhibitionId: number
+    position: number
+    productId: number
+    title: number
+    artistName: number
+    description: number
+    materials: number
+    dimensions: number
+    imageKeys: number
+    proofKey: number
+    reviewStatus: number
+    reviewNote: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExhibitionWorkAvgAggregateInputType = {
+    position?: true
+  }
+
+  export type ExhibitionWorkSumAggregateInputType = {
+    position?: true
+  }
+
+  export type ExhibitionWorkMinAggregateInputType = {
+    id?: true
+    exhibitionId?: true
+    position?: true
+    productId?: true
+    title?: true
+    artistName?: true
+    description?: true
+    materials?: true
+    dimensions?: true
+    proofKey?: true
+    reviewStatus?: true
+    reviewNote?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExhibitionWorkMaxAggregateInputType = {
+    id?: true
+    exhibitionId?: true
+    position?: true
+    productId?: true
+    title?: true
+    artistName?: true
+    description?: true
+    materials?: true
+    dimensions?: true
+    proofKey?: true
+    reviewStatus?: true
+    reviewNote?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExhibitionWorkCountAggregateInputType = {
+    id?: true
+    exhibitionId?: true
+    position?: true
+    productId?: true
+    title?: true
+    artistName?: true
+    description?: true
+    materials?: true
+    dimensions?: true
+    imageKeys?: true
+    proofKey?: true
+    reviewStatus?: true
+    reviewNote?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExhibitionWorkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExhibitionWork to aggregate.
+     */
+    where?: ExhibitionWorkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionWorks to fetch.
+     */
+    orderBy?: ExhibitionWorkOrderByWithRelationInput | ExhibitionWorkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExhibitionWorkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionWorks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionWorks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExhibitionWorks
+    **/
+    _count?: true | ExhibitionWorkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExhibitionWorkAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExhibitionWorkSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExhibitionWorkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExhibitionWorkMaxAggregateInputType
+  }
+
+  export type GetExhibitionWorkAggregateType<T extends ExhibitionWorkAggregateArgs> = {
+        [P in keyof T & keyof AggregateExhibitionWork]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExhibitionWork[P]>
+      : GetScalarType<T[P], AggregateExhibitionWork[P]>
+  }
+
+
+
+
+  export type ExhibitionWorkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionWorkWhereInput
+    orderBy?: ExhibitionWorkOrderByWithAggregationInput | ExhibitionWorkOrderByWithAggregationInput[]
+    by: ExhibitionWorkScalarFieldEnum[] | ExhibitionWorkScalarFieldEnum
+    having?: ExhibitionWorkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExhibitionWorkCountAggregateInputType | true
+    _avg?: ExhibitionWorkAvgAggregateInputType
+    _sum?: ExhibitionWorkSumAggregateInputType
+    _min?: ExhibitionWorkMinAggregateInputType
+    _max?: ExhibitionWorkMaxAggregateInputType
+  }
+
+  export type ExhibitionWorkGroupByOutputType = {
+    id: string
+    exhibitionId: string
+    position: number
+    productId: string | null
+    title: string
+    artistName: string
+    description: string
+    materials: string | null
+    dimensions: string | null
+    imageKeys: string[]
+    proofKey: string | null
+    reviewStatus: $Enums.ExhibitionWorkReview
+    reviewNote: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ExhibitionWorkCountAggregateOutputType | null
+    _avg: ExhibitionWorkAvgAggregateOutputType | null
+    _sum: ExhibitionWorkSumAggregateOutputType | null
+    _min: ExhibitionWorkMinAggregateOutputType | null
+    _max: ExhibitionWorkMaxAggregateOutputType | null
+  }
+
+  type GetExhibitionWorkGroupByPayload<T extends ExhibitionWorkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExhibitionWorkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExhibitionWorkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExhibitionWorkGroupByOutputType[P]>
+            : GetScalarType<T[P], ExhibitionWorkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExhibitionWorkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    exhibitionId?: boolean
+    position?: boolean
+    productId?: boolean
+    title?: boolean
+    artistName?: boolean
+    description?: boolean
+    materials?: boolean
+    dimensions?: boolean
+    imageKeys?: boolean
+    proofKey?: boolean
+    reviewStatus?: boolean
+    reviewNote?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    product?: boolean | ExhibitionWork$productArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibitionWork"]>
+
+  export type ExhibitionWorkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    exhibitionId?: boolean
+    position?: boolean
+    productId?: boolean
+    title?: boolean
+    artistName?: boolean
+    description?: boolean
+    materials?: boolean
+    dimensions?: boolean
+    imageKeys?: boolean
+    proofKey?: boolean
+    reviewStatus?: boolean
+    reviewNote?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    product?: boolean | ExhibitionWork$productArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibitionWork"]>
+
+  export type ExhibitionWorkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    exhibitionId?: boolean
+    position?: boolean
+    productId?: boolean
+    title?: boolean
+    artistName?: boolean
+    description?: boolean
+    materials?: boolean
+    dimensions?: boolean
+    imageKeys?: boolean
+    proofKey?: boolean
+    reviewStatus?: boolean
+    reviewNote?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    product?: boolean | ExhibitionWork$productArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibitionWork"]>
+
+  export type ExhibitionWorkSelectScalar = {
+    id?: boolean
+    exhibitionId?: boolean
+    position?: boolean
+    productId?: boolean
+    title?: boolean
+    artistName?: boolean
+    description?: boolean
+    materials?: boolean
+    dimensions?: boolean
+    imageKeys?: boolean
+    proofKey?: boolean
+    reviewStatus?: boolean
+    reviewNote?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ExhibitionWorkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "exhibitionId" | "position" | "productId" | "title" | "artistName" | "description" | "materials" | "dimensions" | "imageKeys" | "proofKey" | "reviewStatus" | "reviewNote" | "createdAt" | "updatedAt", ExtArgs["result"]["exhibitionWork"]>
+  export type ExhibitionWorkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    product?: boolean | ExhibitionWork$productArgs<ExtArgs>
+  }
+  export type ExhibitionWorkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    product?: boolean | ExhibitionWork$productArgs<ExtArgs>
+  }
+  export type ExhibitionWorkIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    product?: boolean | ExhibitionWork$productArgs<ExtArgs>
+  }
+
+  export type $ExhibitionWorkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExhibitionWork"
+    objects: {
+      exhibition: Prisma.$ExhibitionPayload<ExtArgs>
+      product: Prisma.$ProductPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      exhibitionId: string
+      position: number
+      /**
+       * Fiche du catalogue, pour une œuvre en vente : c'est elle qui porte le
+       * prix, le stock et le parcours de commande.
+       */
+      productId: string | null
+      title: string
+      artistName: string
+      description: string
+      materials: string | null
+      dimensions: string | null
+      imageKeys: string[]
+      /**
+       * Justificatif de propriété ou d'autorisation — espace privé (§ 6.5).
+       */
+      proofKey: string | null
+      reviewStatus: $Enums.ExhibitionWorkReview
+      reviewNote: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["exhibitionWork"]>
+    composites: {}
+  }
+
+  type ExhibitionWorkGetPayload<S extends boolean | null | undefined | ExhibitionWorkDefaultArgs> = $Result.GetResult<Prisma.$ExhibitionWorkPayload, S>
+
+  type ExhibitionWorkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExhibitionWorkFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExhibitionWorkCountAggregateInputType | true
+    }
+
+  export interface ExhibitionWorkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExhibitionWork'], meta: { name: 'ExhibitionWork' } }
+    /**
+     * Find zero or one ExhibitionWork that matches the filter.
+     * @param {ExhibitionWorkFindUniqueArgs} args - Arguments to find a ExhibitionWork
+     * @example
+     * // Get one ExhibitionWork
+     * const exhibitionWork = await prisma.exhibitionWork.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExhibitionWorkFindUniqueArgs>(args: SelectSubset<T, ExhibitionWorkFindUniqueArgs<ExtArgs>>): Prisma__ExhibitionWorkClient<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ExhibitionWork that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExhibitionWorkFindUniqueOrThrowArgs} args - Arguments to find a ExhibitionWork
+     * @example
+     * // Get one ExhibitionWork
+     * const exhibitionWork = await prisma.exhibitionWork.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExhibitionWorkFindUniqueOrThrowArgs>(args: SelectSubset<T, ExhibitionWorkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExhibitionWorkClient<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExhibitionWork that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionWorkFindFirstArgs} args - Arguments to find a ExhibitionWork
+     * @example
+     * // Get one ExhibitionWork
+     * const exhibitionWork = await prisma.exhibitionWork.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExhibitionWorkFindFirstArgs>(args?: SelectSubset<T, ExhibitionWorkFindFirstArgs<ExtArgs>>): Prisma__ExhibitionWorkClient<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExhibitionWork that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionWorkFindFirstOrThrowArgs} args - Arguments to find a ExhibitionWork
+     * @example
+     * // Get one ExhibitionWork
+     * const exhibitionWork = await prisma.exhibitionWork.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExhibitionWorkFindFirstOrThrowArgs>(args?: SelectSubset<T, ExhibitionWorkFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExhibitionWorkClient<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ExhibitionWorks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionWorkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExhibitionWorks
+     * const exhibitionWorks = await prisma.exhibitionWork.findMany()
+     * 
+     * // Get first 10 ExhibitionWorks
+     * const exhibitionWorks = await prisma.exhibitionWork.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const exhibitionWorkWithIdOnly = await prisma.exhibitionWork.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExhibitionWorkFindManyArgs>(args?: SelectSubset<T, ExhibitionWorkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ExhibitionWork.
+     * @param {ExhibitionWorkCreateArgs} args - Arguments to create a ExhibitionWork.
+     * @example
+     * // Create one ExhibitionWork
+     * const ExhibitionWork = await prisma.exhibitionWork.create({
+     *   data: {
+     *     // ... data to create a ExhibitionWork
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExhibitionWorkCreateArgs>(args: SelectSubset<T, ExhibitionWorkCreateArgs<ExtArgs>>): Prisma__ExhibitionWorkClient<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ExhibitionWorks.
+     * @param {ExhibitionWorkCreateManyArgs} args - Arguments to create many ExhibitionWorks.
+     * @example
+     * // Create many ExhibitionWorks
+     * const exhibitionWork = await prisma.exhibitionWork.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExhibitionWorkCreateManyArgs>(args?: SelectSubset<T, ExhibitionWorkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExhibitionWorks and returns the data saved in the database.
+     * @param {ExhibitionWorkCreateManyAndReturnArgs} args - Arguments to create many ExhibitionWorks.
+     * @example
+     * // Create many ExhibitionWorks
+     * const exhibitionWork = await prisma.exhibitionWork.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExhibitionWorks and only return the `id`
+     * const exhibitionWorkWithIdOnly = await prisma.exhibitionWork.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExhibitionWorkCreateManyAndReturnArgs>(args?: SelectSubset<T, ExhibitionWorkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ExhibitionWork.
+     * @param {ExhibitionWorkDeleteArgs} args - Arguments to delete one ExhibitionWork.
+     * @example
+     * // Delete one ExhibitionWork
+     * const ExhibitionWork = await prisma.exhibitionWork.delete({
+     *   where: {
+     *     // ... filter to delete one ExhibitionWork
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExhibitionWorkDeleteArgs>(args: SelectSubset<T, ExhibitionWorkDeleteArgs<ExtArgs>>): Prisma__ExhibitionWorkClient<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ExhibitionWork.
+     * @param {ExhibitionWorkUpdateArgs} args - Arguments to update one ExhibitionWork.
+     * @example
+     * // Update one ExhibitionWork
+     * const exhibitionWork = await prisma.exhibitionWork.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExhibitionWorkUpdateArgs>(args: SelectSubset<T, ExhibitionWorkUpdateArgs<ExtArgs>>): Prisma__ExhibitionWorkClient<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ExhibitionWorks.
+     * @param {ExhibitionWorkDeleteManyArgs} args - Arguments to filter ExhibitionWorks to delete.
+     * @example
+     * // Delete a few ExhibitionWorks
+     * const { count } = await prisma.exhibitionWork.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExhibitionWorkDeleteManyArgs>(args?: SelectSubset<T, ExhibitionWorkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExhibitionWorks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionWorkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExhibitionWorks
+     * const exhibitionWork = await prisma.exhibitionWork.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExhibitionWorkUpdateManyArgs>(args: SelectSubset<T, ExhibitionWorkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExhibitionWorks and returns the data updated in the database.
+     * @param {ExhibitionWorkUpdateManyAndReturnArgs} args - Arguments to update many ExhibitionWorks.
+     * @example
+     * // Update many ExhibitionWorks
+     * const exhibitionWork = await prisma.exhibitionWork.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ExhibitionWorks and only return the `id`
+     * const exhibitionWorkWithIdOnly = await prisma.exhibitionWork.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExhibitionWorkUpdateManyAndReturnArgs>(args: SelectSubset<T, ExhibitionWorkUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ExhibitionWork.
+     * @param {ExhibitionWorkUpsertArgs} args - Arguments to update or create a ExhibitionWork.
+     * @example
+     * // Update or create a ExhibitionWork
+     * const exhibitionWork = await prisma.exhibitionWork.upsert({
+     *   create: {
+     *     // ... data to create a ExhibitionWork
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExhibitionWork we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExhibitionWorkUpsertArgs>(args: SelectSubset<T, ExhibitionWorkUpsertArgs<ExtArgs>>): Prisma__ExhibitionWorkClient<$Result.GetResult<Prisma.$ExhibitionWorkPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ExhibitionWorks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionWorkCountArgs} args - Arguments to filter ExhibitionWorks to count.
+     * @example
+     * // Count the number of ExhibitionWorks
+     * const count = await prisma.exhibitionWork.count({
+     *   where: {
+     *     // ... the filter for the ExhibitionWorks we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExhibitionWorkCountArgs>(
+      args?: Subset<T, ExhibitionWorkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExhibitionWorkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExhibitionWork.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionWorkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExhibitionWorkAggregateArgs>(args: Subset<T, ExhibitionWorkAggregateArgs>): Prisma.PrismaPromise<GetExhibitionWorkAggregateType<T>>
+
+    /**
+     * Group by ExhibitionWork.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionWorkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExhibitionWorkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExhibitionWorkGroupByArgs['orderBy'] }
+        : { orderBy?: ExhibitionWorkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExhibitionWorkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExhibitionWorkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExhibitionWork model
+   */
+  readonly fields: ExhibitionWorkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExhibitionWork.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExhibitionWorkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    exhibition<T extends ExhibitionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ExhibitionDefaultArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    product<T extends ExhibitionWork$productArgs<ExtArgs> = {}>(args?: Subset<T, ExhibitionWork$productArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExhibitionWork model
+   */
+  interface ExhibitionWorkFieldRefs {
+    readonly id: FieldRef<"ExhibitionWork", 'String'>
+    readonly exhibitionId: FieldRef<"ExhibitionWork", 'String'>
+    readonly position: FieldRef<"ExhibitionWork", 'Int'>
+    readonly productId: FieldRef<"ExhibitionWork", 'String'>
+    readonly title: FieldRef<"ExhibitionWork", 'String'>
+    readonly artistName: FieldRef<"ExhibitionWork", 'String'>
+    readonly description: FieldRef<"ExhibitionWork", 'String'>
+    readonly materials: FieldRef<"ExhibitionWork", 'String'>
+    readonly dimensions: FieldRef<"ExhibitionWork", 'String'>
+    readonly imageKeys: FieldRef<"ExhibitionWork", 'String[]'>
+    readonly proofKey: FieldRef<"ExhibitionWork", 'String'>
+    readonly reviewStatus: FieldRef<"ExhibitionWork", 'ExhibitionWorkReview'>
+    readonly reviewNote: FieldRef<"ExhibitionWork", 'String'>
+    readonly createdAt: FieldRef<"ExhibitionWork", 'DateTime'>
+    readonly updatedAt: FieldRef<"ExhibitionWork", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExhibitionWork findUnique
+   */
+  export type ExhibitionWorkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionWork to fetch.
+     */
+    where: ExhibitionWorkWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionWork findUniqueOrThrow
+   */
+  export type ExhibitionWorkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionWork to fetch.
+     */
+    where: ExhibitionWorkWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionWork findFirst
+   */
+  export type ExhibitionWorkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionWork to fetch.
+     */
+    where?: ExhibitionWorkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionWorks to fetch.
+     */
+    orderBy?: ExhibitionWorkOrderByWithRelationInput | ExhibitionWorkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExhibitionWorks.
+     */
+    cursor?: ExhibitionWorkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionWorks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionWorks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExhibitionWorks.
+     */
+    distinct?: ExhibitionWorkScalarFieldEnum | ExhibitionWorkScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionWork findFirstOrThrow
+   */
+  export type ExhibitionWorkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionWork to fetch.
+     */
+    where?: ExhibitionWorkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionWorks to fetch.
+     */
+    orderBy?: ExhibitionWorkOrderByWithRelationInput | ExhibitionWorkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExhibitionWorks.
+     */
+    cursor?: ExhibitionWorkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionWorks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionWorks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExhibitionWorks.
+     */
+    distinct?: ExhibitionWorkScalarFieldEnum | ExhibitionWorkScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionWork findMany
+   */
+  export type ExhibitionWorkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionWorks to fetch.
+     */
+    where?: ExhibitionWorkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionWorks to fetch.
+     */
+    orderBy?: ExhibitionWorkOrderByWithRelationInput | ExhibitionWorkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExhibitionWorks.
+     */
+    cursor?: ExhibitionWorkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionWorks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionWorks.
+     */
+    skip?: number
+    distinct?: ExhibitionWorkScalarFieldEnum | ExhibitionWorkScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionWork create
+   */
+  export type ExhibitionWorkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ExhibitionWork.
+     */
+    data: XOR<ExhibitionWorkCreateInput, ExhibitionWorkUncheckedCreateInput>
+  }
+
+  /**
+   * ExhibitionWork createMany
+   */
+  export type ExhibitionWorkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExhibitionWorks.
+     */
+    data: ExhibitionWorkCreateManyInput | ExhibitionWorkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExhibitionWork createManyAndReturn
+   */
+  export type ExhibitionWorkCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * The data used to create many ExhibitionWorks.
+     */
+    data: ExhibitionWorkCreateManyInput | ExhibitionWorkCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExhibitionWork update
+   */
+  export type ExhibitionWorkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ExhibitionWork.
+     */
+    data: XOR<ExhibitionWorkUpdateInput, ExhibitionWorkUncheckedUpdateInput>
+    /**
+     * Choose, which ExhibitionWork to update.
+     */
+    where: ExhibitionWorkWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionWork updateMany
+   */
+  export type ExhibitionWorkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExhibitionWorks.
+     */
+    data: XOR<ExhibitionWorkUpdateManyMutationInput, ExhibitionWorkUncheckedUpdateManyInput>
+    /**
+     * Filter which ExhibitionWorks to update
+     */
+    where?: ExhibitionWorkWhereInput
+    /**
+     * Limit how many ExhibitionWorks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExhibitionWork updateManyAndReturn
+   */
+  export type ExhibitionWorkUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * The data used to update ExhibitionWorks.
+     */
+    data: XOR<ExhibitionWorkUpdateManyMutationInput, ExhibitionWorkUncheckedUpdateManyInput>
+    /**
+     * Filter which ExhibitionWorks to update
+     */
+    where?: ExhibitionWorkWhereInput
+    /**
+     * Limit how many ExhibitionWorks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExhibitionWork upsert
+   */
+  export type ExhibitionWorkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ExhibitionWork to update in case it exists.
+     */
+    where: ExhibitionWorkWhereUniqueInput
+    /**
+     * In case the ExhibitionWork found by the `where` argument doesn't exist, create a new ExhibitionWork with this data.
+     */
+    create: XOR<ExhibitionWorkCreateInput, ExhibitionWorkUncheckedCreateInput>
+    /**
+     * In case the ExhibitionWork was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExhibitionWorkUpdateInput, ExhibitionWorkUncheckedUpdateInput>
+  }
+
+  /**
+   * ExhibitionWork delete
+   */
+  export type ExhibitionWorkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+    /**
+     * Filter which ExhibitionWork to delete.
+     */
+    where: ExhibitionWorkWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionWork deleteMany
+   */
+  export type ExhibitionWorkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExhibitionWorks to delete
+     */
+    where?: ExhibitionWorkWhereInput
+    /**
+     * Limit how many ExhibitionWorks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExhibitionWork.product
+   */
+  export type ExhibitionWork$productArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    where?: ProductWhereInput
+  }
+
+  /**
+   * ExhibitionWork without action
+   */
+  export type ExhibitionWorkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionWork
+     */
+    select?: ExhibitionWorkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionWork
+     */
+    omit?: ExhibitionWorkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionWorkInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ExhibitionPass
+   */
+
+  export type AggregateExhibitionPass = {
+    _count: ExhibitionPassCountAggregateOutputType | null
+    _avg: ExhibitionPassAvgAggregateOutputType | null
+    _sum: ExhibitionPassSumAggregateOutputType | null
+    _min: ExhibitionPassMinAggregateOutputType | null
+    _max: ExhibitionPassMaxAggregateOutputType | null
+  }
+
+  export type ExhibitionPassAvgAggregateOutputType = {
+    amountXof: number | null
+  }
+
+  export type ExhibitionPassSumAggregateOutputType = {
+    amountXof: number | null
+  }
+
+  export type ExhibitionPassMinAggregateOutputType = {
+    id: string | null
+    reference: string | null
+    exhibitionId: string | null
+    userId: string | null
+    kind: $Enums.ExhibitionPassKind | null
+    format: $Enums.ExhibitionPassFormat | null
+    status: $Enums.ExhibitionPassStatus | null
+    amountXof: number | null
+    provider: string | null
+    providerRef: string | null
+    paidAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExhibitionPassMaxAggregateOutputType = {
+    id: string | null
+    reference: string | null
+    exhibitionId: string | null
+    userId: string | null
+    kind: $Enums.ExhibitionPassKind | null
+    format: $Enums.ExhibitionPassFormat | null
+    status: $Enums.ExhibitionPassStatus | null
+    amountXof: number | null
+    provider: string | null
+    providerRef: string | null
+    paidAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExhibitionPassCountAggregateOutputType = {
+    id: number
+    reference: number
+    exhibitionId: number
+    userId: number
+    kind: number
+    format: number
+    status: number
+    amountXof: number
+    provider: number
+    providerRef: number
+    paidAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExhibitionPassAvgAggregateInputType = {
+    amountXof?: true
+  }
+
+  export type ExhibitionPassSumAggregateInputType = {
+    amountXof?: true
+  }
+
+  export type ExhibitionPassMinAggregateInputType = {
+    id?: true
+    reference?: true
+    exhibitionId?: true
+    userId?: true
+    kind?: true
+    format?: true
+    status?: true
+    amountXof?: true
+    provider?: true
+    providerRef?: true
+    paidAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExhibitionPassMaxAggregateInputType = {
+    id?: true
+    reference?: true
+    exhibitionId?: true
+    userId?: true
+    kind?: true
+    format?: true
+    status?: true
+    amountXof?: true
+    provider?: true
+    providerRef?: true
+    paidAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExhibitionPassCountAggregateInputType = {
+    id?: true
+    reference?: true
+    exhibitionId?: true
+    userId?: true
+    kind?: true
+    format?: true
+    status?: true
+    amountXof?: true
+    provider?: true
+    providerRef?: true
+    paidAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExhibitionPassAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExhibitionPass to aggregate.
+     */
+    where?: ExhibitionPassWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionPasses to fetch.
+     */
+    orderBy?: ExhibitionPassOrderByWithRelationInput | ExhibitionPassOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExhibitionPassWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionPasses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionPasses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExhibitionPasses
+    **/
+    _count?: true | ExhibitionPassCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExhibitionPassAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExhibitionPassSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExhibitionPassMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExhibitionPassMaxAggregateInputType
+  }
+
+  export type GetExhibitionPassAggregateType<T extends ExhibitionPassAggregateArgs> = {
+        [P in keyof T & keyof AggregateExhibitionPass]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExhibitionPass[P]>
+      : GetScalarType<T[P], AggregateExhibitionPass[P]>
+  }
+
+
+
+
+  export type ExhibitionPassGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExhibitionPassWhereInput
+    orderBy?: ExhibitionPassOrderByWithAggregationInput | ExhibitionPassOrderByWithAggregationInput[]
+    by: ExhibitionPassScalarFieldEnum[] | ExhibitionPassScalarFieldEnum
+    having?: ExhibitionPassScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExhibitionPassCountAggregateInputType | true
+    _avg?: ExhibitionPassAvgAggregateInputType
+    _sum?: ExhibitionPassSumAggregateInputType
+    _min?: ExhibitionPassMinAggregateInputType
+    _max?: ExhibitionPassMaxAggregateInputType
+  }
+
+  export type ExhibitionPassGroupByOutputType = {
+    id: string
+    reference: string
+    exhibitionId: string
+    userId: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof: number
+    provider: string | null
+    providerRef: string | null
+    paidAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ExhibitionPassCountAggregateOutputType | null
+    _avg: ExhibitionPassAvgAggregateOutputType | null
+    _sum: ExhibitionPassSumAggregateOutputType | null
+    _min: ExhibitionPassMinAggregateOutputType | null
+    _max: ExhibitionPassMaxAggregateOutputType | null
+  }
+
+  type GetExhibitionPassGroupByPayload<T extends ExhibitionPassGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExhibitionPassGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExhibitionPassGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExhibitionPassGroupByOutputType[P]>
+            : GetScalarType<T[P], ExhibitionPassGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExhibitionPassSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reference?: boolean
+    exhibitionId?: boolean
+    userId?: boolean
+    kind?: boolean
+    format?: boolean
+    status?: boolean
+    amountXof?: boolean
+    provider?: boolean
+    providerRef?: boolean
+    paidAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibitionPass"]>
+
+  export type ExhibitionPassSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reference?: boolean
+    exhibitionId?: boolean
+    userId?: boolean
+    kind?: boolean
+    format?: boolean
+    status?: boolean
+    amountXof?: boolean
+    provider?: boolean
+    providerRef?: boolean
+    paidAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibitionPass"]>
+
+  export type ExhibitionPassSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reference?: boolean
+    exhibitionId?: boolean
+    userId?: boolean
+    kind?: boolean
+    format?: boolean
+    status?: boolean
+    amountXof?: boolean
+    provider?: boolean
+    providerRef?: boolean
+    paidAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["exhibitionPass"]>
+
+  export type ExhibitionPassSelectScalar = {
+    id?: boolean
+    reference?: boolean
+    exhibitionId?: boolean
+    userId?: boolean
+    kind?: boolean
+    format?: boolean
+    status?: boolean
+    amountXof?: boolean
+    provider?: boolean
+    providerRef?: boolean
+    paidAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ExhibitionPassOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reference" | "exhibitionId" | "userId" | "kind" | "format" | "status" | "amountXof" | "provider" | "providerRef" | "paidAt" | "createdAt" | "updatedAt", ExtArgs["result"]["exhibitionPass"]>
+  export type ExhibitionPassInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ExhibitionPassIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ExhibitionPassIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    exhibition?: boolean | ExhibitionDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ExhibitionPassPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExhibitionPass"
+    objects: {
+      exhibition: Prisma.$ExhibitionPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      reference: string
+      exhibitionId: string
+      userId: string
+      kind: $Enums.ExhibitionPassKind
+      format: $Enums.ExhibitionPassFormat
+      status: $Enums.ExhibitionPassStatus
+      amountXof: number
+      provider: string | null
+      providerRef: string | null
+      paidAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["exhibitionPass"]>
+    composites: {}
+  }
+
+  type ExhibitionPassGetPayload<S extends boolean | null | undefined | ExhibitionPassDefaultArgs> = $Result.GetResult<Prisma.$ExhibitionPassPayload, S>
+
+  type ExhibitionPassCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExhibitionPassFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExhibitionPassCountAggregateInputType | true
+    }
+
+  export interface ExhibitionPassDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExhibitionPass'], meta: { name: 'ExhibitionPass' } }
+    /**
+     * Find zero or one ExhibitionPass that matches the filter.
+     * @param {ExhibitionPassFindUniqueArgs} args - Arguments to find a ExhibitionPass
+     * @example
+     * // Get one ExhibitionPass
+     * const exhibitionPass = await prisma.exhibitionPass.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExhibitionPassFindUniqueArgs>(args: SelectSubset<T, ExhibitionPassFindUniqueArgs<ExtArgs>>): Prisma__ExhibitionPassClient<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ExhibitionPass that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExhibitionPassFindUniqueOrThrowArgs} args - Arguments to find a ExhibitionPass
+     * @example
+     * // Get one ExhibitionPass
+     * const exhibitionPass = await prisma.exhibitionPass.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExhibitionPassFindUniqueOrThrowArgs>(args: SelectSubset<T, ExhibitionPassFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExhibitionPassClient<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExhibitionPass that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPassFindFirstArgs} args - Arguments to find a ExhibitionPass
+     * @example
+     * // Get one ExhibitionPass
+     * const exhibitionPass = await prisma.exhibitionPass.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExhibitionPassFindFirstArgs>(args?: SelectSubset<T, ExhibitionPassFindFirstArgs<ExtArgs>>): Prisma__ExhibitionPassClient<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExhibitionPass that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPassFindFirstOrThrowArgs} args - Arguments to find a ExhibitionPass
+     * @example
+     * // Get one ExhibitionPass
+     * const exhibitionPass = await prisma.exhibitionPass.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExhibitionPassFindFirstOrThrowArgs>(args?: SelectSubset<T, ExhibitionPassFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExhibitionPassClient<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ExhibitionPasses that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPassFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExhibitionPasses
+     * const exhibitionPasses = await prisma.exhibitionPass.findMany()
+     * 
+     * // Get first 10 ExhibitionPasses
+     * const exhibitionPasses = await prisma.exhibitionPass.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const exhibitionPassWithIdOnly = await prisma.exhibitionPass.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExhibitionPassFindManyArgs>(args?: SelectSubset<T, ExhibitionPassFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ExhibitionPass.
+     * @param {ExhibitionPassCreateArgs} args - Arguments to create a ExhibitionPass.
+     * @example
+     * // Create one ExhibitionPass
+     * const ExhibitionPass = await prisma.exhibitionPass.create({
+     *   data: {
+     *     // ... data to create a ExhibitionPass
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExhibitionPassCreateArgs>(args: SelectSubset<T, ExhibitionPassCreateArgs<ExtArgs>>): Prisma__ExhibitionPassClient<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ExhibitionPasses.
+     * @param {ExhibitionPassCreateManyArgs} args - Arguments to create many ExhibitionPasses.
+     * @example
+     * // Create many ExhibitionPasses
+     * const exhibitionPass = await prisma.exhibitionPass.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExhibitionPassCreateManyArgs>(args?: SelectSubset<T, ExhibitionPassCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExhibitionPasses and returns the data saved in the database.
+     * @param {ExhibitionPassCreateManyAndReturnArgs} args - Arguments to create many ExhibitionPasses.
+     * @example
+     * // Create many ExhibitionPasses
+     * const exhibitionPass = await prisma.exhibitionPass.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExhibitionPasses and only return the `id`
+     * const exhibitionPassWithIdOnly = await prisma.exhibitionPass.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExhibitionPassCreateManyAndReturnArgs>(args?: SelectSubset<T, ExhibitionPassCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ExhibitionPass.
+     * @param {ExhibitionPassDeleteArgs} args - Arguments to delete one ExhibitionPass.
+     * @example
+     * // Delete one ExhibitionPass
+     * const ExhibitionPass = await prisma.exhibitionPass.delete({
+     *   where: {
+     *     // ... filter to delete one ExhibitionPass
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExhibitionPassDeleteArgs>(args: SelectSubset<T, ExhibitionPassDeleteArgs<ExtArgs>>): Prisma__ExhibitionPassClient<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ExhibitionPass.
+     * @param {ExhibitionPassUpdateArgs} args - Arguments to update one ExhibitionPass.
+     * @example
+     * // Update one ExhibitionPass
+     * const exhibitionPass = await prisma.exhibitionPass.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExhibitionPassUpdateArgs>(args: SelectSubset<T, ExhibitionPassUpdateArgs<ExtArgs>>): Prisma__ExhibitionPassClient<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ExhibitionPasses.
+     * @param {ExhibitionPassDeleteManyArgs} args - Arguments to filter ExhibitionPasses to delete.
+     * @example
+     * // Delete a few ExhibitionPasses
+     * const { count } = await prisma.exhibitionPass.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExhibitionPassDeleteManyArgs>(args?: SelectSubset<T, ExhibitionPassDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExhibitionPasses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPassUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExhibitionPasses
+     * const exhibitionPass = await prisma.exhibitionPass.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExhibitionPassUpdateManyArgs>(args: SelectSubset<T, ExhibitionPassUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExhibitionPasses and returns the data updated in the database.
+     * @param {ExhibitionPassUpdateManyAndReturnArgs} args - Arguments to update many ExhibitionPasses.
+     * @example
+     * // Update many ExhibitionPasses
+     * const exhibitionPass = await prisma.exhibitionPass.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ExhibitionPasses and only return the `id`
+     * const exhibitionPassWithIdOnly = await prisma.exhibitionPass.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExhibitionPassUpdateManyAndReturnArgs>(args: SelectSubset<T, ExhibitionPassUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ExhibitionPass.
+     * @param {ExhibitionPassUpsertArgs} args - Arguments to update or create a ExhibitionPass.
+     * @example
+     * // Update or create a ExhibitionPass
+     * const exhibitionPass = await prisma.exhibitionPass.upsert({
+     *   create: {
+     *     // ... data to create a ExhibitionPass
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExhibitionPass we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExhibitionPassUpsertArgs>(args: SelectSubset<T, ExhibitionPassUpsertArgs<ExtArgs>>): Prisma__ExhibitionPassClient<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ExhibitionPasses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPassCountArgs} args - Arguments to filter ExhibitionPasses to count.
+     * @example
+     * // Count the number of ExhibitionPasses
+     * const count = await prisma.exhibitionPass.count({
+     *   where: {
+     *     // ... the filter for the ExhibitionPasses we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExhibitionPassCountArgs>(
+      args?: Subset<T, ExhibitionPassCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExhibitionPassCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExhibitionPass.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPassAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExhibitionPassAggregateArgs>(args: Subset<T, ExhibitionPassAggregateArgs>): Prisma.PrismaPromise<GetExhibitionPassAggregateType<T>>
+
+    /**
+     * Group by ExhibitionPass.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExhibitionPassGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExhibitionPassGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExhibitionPassGroupByArgs['orderBy'] }
+        : { orderBy?: ExhibitionPassGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExhibitionPassGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExhibitionPassGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExhibitionPass model
+   */
+  readonly fields: ExhibitionPassFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExhibitionPass.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExhibitionPassClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    exhibition<T extends ExhibitionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ExhibitionDefaultArgs<ExtArgs>>): Prisma__ExhibitionClient<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExhibitionPass model
+   */
+  interface ExhibitionPassFieldRefs {
+    readonly id: FieldRef<"ExhibitionPass", 'String'>
+    readonly reference: FieldRef<"ExhibitionPass", 'String'>
+    readonly exhibitionId: FieldRef<"ExhibitionPass", 'String'>
+    readonly userId: FieldRef<"ExhibitionPass", 'String'>
+    readonly kind: FieldRef<"ExhibitionPass", 'ExhibitionPassKind'>
+    readonly format: FieldRef<"ExhibitionPass", 'ExhibitionPassFormat'>
+    readonly status: FieldRef<"ExhibitionPass", 'ExhibitionPassStatus'>
+    readonly amountXof: FieldRef<"ExhibitionPass", 'Int'>
+    readonly provider: FieldRef<"ExhibitionPass", 'String'>
+    readonly providerRef: FieldRef<"ExhibitionPass", 'String'>
+    readonly paidAt: FieldRef<"ExhibitionPass", 'DateTime'>
+    readonly createdAt: FieldRef<"ExhibitionPass", 'DateTime'>
+    readonly updatedAt: FieldRef<"ExhibitionPass", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExhibitionPass findUnique
+   */
+  export type ExhibitionPassFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPass to fetch.
+     */
+    where: ExhibitionPassWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionPass findUniqueOrThrow
+   */
+  export type ExhibitionPassFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPass to fetch.
+     */
+    where: ExhibitionPassWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionPass findFirst
+   */
+  export type ExhibitionPassFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPass to fetch.
+     */
+    where?: ExhibitionPassWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionPasses to fetch.
+     */
+    orderBy?: ExhibitionPassOrderByWithRelationInput | ExhibitionPassOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExhibitionPasses.
+     */
+    cursor?: ExhibitionPassWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionPasses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionPasses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExhibitionPasses.
+     */
+    distinct?: ExhibitionPassScalarFieldEnum | ExhibitionPassScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionPass findFirstOrThrow
+   */
+  export type ExhibitionPassFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPass to fetch.
+     */
+    where?: ExhibitionPassWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionPasses to fetch.
+     */
+    orderBy?: ExhibitionPassOrderByWithRelationInput | ExhibitionPassOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExhibitionPasses.
+     */
+    cursor?: ExhibitionPassWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionPasses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionPasses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExhibitionPasses.
+     */
+    distinct?: ExhibitionPassScalarFieldEnum | ExhibitionPassScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionPass findMany
+   */
+  export type ExhibitionPassFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    /**
+     * Filter, which ExhibitionPasses to fetch.
+     */
+    where?: ExhibitionPassWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExhibitionPasses to fetch.
+     */
+    orderBy?: ExhibitionPassOrderByWithRelationInput | ExhibitionPassOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExhibitionPasses.
+     */
+    cursor?: ExhibitionPassWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExhibitionPasses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExhibitionPasses.
+     */
+    skip?: number
+    distinct?: ExhibitionPassScalarFieldEnum | ExhibitionPassScalarFieldEnum[]
+  }
+
+  /**
+   * ExhibitionPass create
+   */
+  export type ExhibitionPassCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ExhibitionPass.
+     */
+    data: XOR<ExhibitionPassCreateInput, ExhibitionPassUncheckedCreateInput>
+  }
+
+  /**
+   * ExhibitionPass createMany
+   */
+  export type ExhibitionPassCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExhibitionPasses.
+     */
+    data: ExhibitionPassCreateManyInput | ExhibitionPassCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExhibitionPass createManyAndReturn
+   */
+  export type ExhibitionPassCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * The data used to create many ExhibitionPasses.
+     */
+    data: ExhibitionPassCreateManyInput | ExhibitionPassCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExhibitionPass update
+   */
+  export type ExhibitionPassUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ExhibitionPass.
+     */
+    data: XOR<ExhibitionPassUpdateInput, ExhibitionPassUncheckedUpdateInput>
+    /**
+     * Choose, which ExhibitionPass to update.
+     */
+    where: ExhibitionPassWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionPass updateMany
+   */
+  export type ExhibitionPassUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExhibitionPasses.
+     */
+    data: XOR<ExhibitionPassUpdateManyMutationInput, ExhibitionPassUncheckedUpdateManyInput>
+    /**
+     * Filter which ExhibitionPasses to update
+     */
+    where?: ExhibitionPassWhereInput
+    /**
+     * Limit how many ExhibitionPasses to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExhibitionPass updateManyAndReturn
+   */
+  export type ExhibitionPassUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * The data used to update ExhibitionPasses.
+     */
+    data: XOR<ExhibitionPassUpdateManyMutationInput, ExhibitionPassUncheckedUpdateManyInput>
+    /**
+     * Filter which ExhibitionPasses to update
+     */
+    where?: ExhibitionPassWhereInput
+    /**
+     * Limit how many ExhibitionPasses to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExhibitionPass upsert
+   */
+  export type ExhibitionPassUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ExhibitionPass to update in case it exists.
+     */
+    where: ExhibitionPassWhereUniqueInput
+    /**
+     * In case the ExhibitionPass found by the `where` argument doesn't exist, create a new ExhibitionPass with this data.
+     */
+    create: XOR<ExhibitionPassCreateInput, ExhibitionPassUncheckedCreateInput>
+    /**
+     * In case the ExhibitionPass was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExhibitionPassUpdateInput, ExhibitionPassUncheckedUpdateInput>
+  }
+
+  /**
+   * ExhibitionPass delete
+   */
+  export type ExhibitionPassDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+    /**
+     * Filter which ExhibitionPass to delete.
+     */
+    where: ExhibitionPassWhereUniqueInput
+  }
+
+  /**
+   * ExhibitionPass deleteMany
+   */
+  export type ExhibitionPassDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExhibitionPasses to delete
+     */
+    where?: ExhibitionPassWhereInput
+    /**
+     * Limit how many ExhibitionPasses to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExhibitionPass without action
+   */
+  export type ExhibitionPassDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExhibitionPass
+     */
+    select?: ExhibitionPassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExhibitionPass
+     */
+    omit?: ExhibitionPassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExhibitionPassInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -66898,6 +73087,119 @@ export namespace Prisma {
   export type IdempotencyKeyScalarFieldEnum = (typeof IdempotencyKeyScalarFieldEnum)[keyof typeof IdempotencyKeyScalarFieldEnum]
 
 
+  export const ExhibitionPlanScalarFieldEnum: {
+    id: 'id',
+    code: 'code',
+    name: 'name',
+    description: 'description',
+    maxWorks: 'maxWorks',
+    maxDurationDays: 'maxDurationDays',
+    priceXof: 'priceXof',
+    perks: 'perks',
+    featuredPlacement: 'featuredPlacement',
+    communicationSupport: 'communicationSupport',
+    isActive: 'isActive',
+    position: 'position',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExhibitionPlanScalarFieldEnum = (typeof ExhibitionPlanScalarFieldEnum)[keyof typeof ExhibitionPlanScalarFieldEnum]
+
+
+  export const ExhibitionScalarFieldEnum: {
+    id: 'id',
+    slug: 'slug',
+    organizerId: 'organizerId',
+    makerId: 'makerId',
+    planId: 'planId',
+    title: 'title',
+    organizerName: 'organizerName',
+    summary: 'summary',
+    objective: 'objective',
+    discipline: 'discipline',
+    cityId: 'cityId',
+    startsAt: 'startsAt',
+    endsAt: 'endsAt',
+    openingHours: 'openingHours',
+    format: 'format',
+    venueName: 'venueName',
+    venueAddress: 'venueAddress',
+    venueDescription: 'venueDescription',
+    venueImageKeys: 'venueImageKeys',
+    coverKey: 'coverKey',
+    dossierKey: 'dossierKey',
+    plannedWorkCount: 'plannedWorkCount',
+    status: 'status',
+    reviewNote: 'reviewNote',
+    submittedAt: 'submittedAt',
+    reviewedAt: 'reviewedAt',
+    reviewerId: 'reviewerId',
+    contractReference: 'contractReference',
+    contractSentAt: 'contractSentAt',
+    contractSignedAt: 'contractSignedAt',
+    paymentAmountXof: 'paymentAmountXof',
+    paymentReference: 'paymentReference',
+    paymentReceivedAt: 'paymentReceivedAt',
+    publishAt: 'publishAt',
+    publishedAt: 'publishedAt',
+    suspendedAt: 'suspendedAt',
+    suspendReason: 'suspendReason',
+    accessMode: 'accessMode',
+    ticketPriceXof: 'ticketPriceXof',
+    requiresRegistration: 'requiresRegistration',
+    accessCodeHash: 'accessCodeHash',
+    onsiteInfo: 'onsiteInfo',
+    remoteInfo: 'remoteInfo',
+    isFeatured: 'isFeatured',
+    viewCount: 'viewCount',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExhibitionScalarFieldEnum = (typeof ExhibitionScalarFieldEnum)[keyof typeof ExhibitionScalarFieldEnum]
+
+
+  export const ExhibitionWorkScalarFieldEnum: {
+    id: 'id',
+    exhibitionId: 'exhibitionId',
+    position: 'position',
+    productId: 'productId',
+    title: 'title',
+    artistName: 'artistName',
+    description: 'description',
+    materials: 'materials',
+    dimensions: 'dimensions',
+    imageKeys: 'imageKeys',
+    proofKey: 'proofKey',
+    reviewStatus: 'reviewStatus',
+    reviewNote: 'reviewNote',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExhibitionWorkScalarFieldEnum = (typeof ExhibitionWorkScalarFieldEnum)[keyof typeof ExhibitionWorkScalarFieldEnum]
+
+
+  export const ExhibitionPassScalarFieldEnum: {
+    id: 'id',
+    reference: 'reference',
+    exhibitionId: 'exhibitionId',
+    userId: 'userId',
+    kind: 'kind',
+    format: 'format',
+    status: 'status',
+    amountXof: 'amountXof',
+    provider: 'provider',
+    providerRef: 'providerRef',
+    paidAt: 'paidAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExhibitionPassScalarFieldEnum = (typeof ExhibitionPassScalarFieldEnum)[keyof typeof ExhibitionPassScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -67348,6 +73650,104 @@ export namespace Prisma {
    */
   export type ListEnumPromoKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromoKind[]'>
     
+
+
+  /**
+   * Reference to a field of type 'ExhibitionFormat'
+   */
+  export type EnumExhibitionFormatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionFormat'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionFormat[]'
+   */
+  export type ListEnumExhibitionFormatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionFormat[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionStatus'
+   */
+  export type EnumExhibitionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionStatus[]'
+   */
+  export type ListEnumExhibitionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionAccess'
+   */
+  export type EnumExhibitionAccessFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionAccess'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionAccess[]'
+   */
+  export type ListEnumExhibitionAccessFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionAccess[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionWorkReview'
+   */
+  export type EnumExhibitionWorkReviewFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionWorkReview'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionWorkReview[]'
+   */
+  export type ListEnumExhibitionWorkReviewFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionWorkReview[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionPassKind'
+   */
+  export type EnumExhibitionPassKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionPassKind'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionPassKind[]'
+   */
+  export type ListEnumExhibitionPassKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionPassKind[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionPassFormat'
+   */
+  export type EnumExhibitionPassFormatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionPassFormat'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionPassFormat[]'
+   */
+  export type ListEnumExhibitionPassFormatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionPassFormat[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionPassStatus'
+   */
+  export type EnumExhibitionPassStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionPassStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExhibitionPassStatus[]'
+   */
+  export type ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionPassStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -67438,6 +73838,7 @@ export namespace Prisma {
     country?: XOR<CountryScalarRelationFilter, CountryWhereInput>
     addresses?: AddressListRelationFilter
     makerProfiles?: MakerProfileListRelationFilter
+    exhibitions?: ExhibitionListRelationFilter
   }
 
   export type CityOrderByWithRelationInput = {
@@ -67449,6 +73850,7 @@ export namespace Prisma {
     country?: CountryOrderByWithRelationInput
     addresses?: AddressOrderByRelationAggregateInput
     makerProfiles?: MakerProfileOrderByRelationAggregateInput
+    exhibitions?: ExhibitionOrderByRelationAggregateInput
   }
 
   export type CityWhereUniqueInput = Prisma.AtLeast<{
@@ -67464,6 +73866,7 @@ export namespace Prisma {
     country?: XOR<CountryScalarRelationFilter, CountryWhereInput>
     addresses?: AddressListRelationFilter
     makerProfiles?: MakerProfileListRelationFilter
+    exhibitions?: ExhibitionListRelationFilter
   }, "id" | "countryId_name">
 
   export type CityOrderByWithAggregationInput = {
@@ -67527,6 +73930,8 @@ export namespace Prisma {
     reviews?: ReviewListRelationFilter
     idempotencyKeys?: IdempotencyKeyListRelationFilter
     recoveryCodes?: MfaRecoveryCodeListRelationFilter
+    exhibitions?: ExhibitionListRelationFilter
+    exhibitionPasses?: ExhibitionPassListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -67563,6 +73968,8 @@ export namespace Prisma {
     reviews?: ReviewOrderByRelationAggregateInput
     idempotencyKeys?: IdempotencyKeyOrderByRelationAggregateInput
     recoveryCodes?: MfaRecoveryCodeOrderByRelationAggregateInput
+    exhibitions?: ExhibitionOrderByRelationAggregateInput
+    exhibitionPasses?: ExhibitionPassOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -67602,6 +74009,8 @@ export namespace Prisma {
     reviews?: ReviewListRelationFilter
     idempotencyKeys?: IdempotencyKeyListRelationFilter
     recoveryCodes?: MfaRecoveryCodeListRelationFilter
+    exhibitions?: ExhibitionListRelationFilter
+    exhibitionPasses?: ExhibitionPassListRelationFilter
   }, "id" | "email" | "phone" | "googleId">
 
   export type UserOrderByWithAggregationInput = {
@@ -68073,6 +74482,7 @@ export namespace Prisma {
     subOrders?: SubOrderListRelationFilter
     documents?: KycDocumentListRelationFilter
     subscriptions?: MakerSubscriptionListRelationFilter
+    exhibitions?: ExhibitionListRelationFilter
   }
 
   export type MakerProfileOrderByWithRelationInput = {
@@ -68126,6 +74536,7 @@ export namespace Prisma {
     subOrders?: SubOrderOrderByRelationAggregateInput
     documents?: KycDocumentOrderByRelationAggregateInput
     subscriptions?: MakerSubscriptionOrderByRelationAggregateInput
+    exhibitions?: ExhibitionOrderByRelationAggregateInput
   }
 
   export type MakerProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -68182,6 +74593,7 @@ export namespace Prisma {
     subOrders?: SubOrderListRelationFilter
     documents?: KycDocumentListRelationFilter
     subscriptions?: MakerSubscriptionListRelationFilter
+    exhibitions?: ExhibitionListRelationFilter
   }, "id" | "userId" | "slug">
 
   export type MakerProfileOrderByWithAggregationInput = {
@@ -68852,6 +75264,7 @@ export namespace Prisma {
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
     images?: ProductImageListRelationFilter
     orderLines?: OrderLineListRelationFilter
+    exhibitionWorks?: ExhibitionWorkListRelationFilter
     cartItems?: CartItemListRelationFilter
     reviews?: ReviewListRelationFilter
   }
@@ -68892,6 +75305,7 @@ export namespace Prisma {
     category?: CategoryOrderByWithRelationInput
     images?: ProductImageOrderByRelationAggregateInput
     orderLines?: OrderLineOrderByRelationAggregateInput
+    exhibitionWorks?: ExhibitionWorkOrderByRelationAggregateInput
     cartItems?: CartItemOrderByRelationAggregateInput
     reviews?: ReviewOrderByRelationAggregateInput
   }
@@ -68935,6 +75349,7 @@ export namespace Prisma {
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
     images?: ProductImageListRelationFilter
     orderLines?: OrderLineListRelationFilter
+    exhibitionWorks?: ExhibitionWorkListRelationFilter
     cartItems?: CartItemListRelationFilter
     reviews?: ReviewListRelationFilter
   }, "id" | "slug">
@@ -71930,6 +78345,601 @@ export namespace Prisma {
     expiresAt?: DateTimeWithAggregatesFilter<"IdempotencyKey"> | Date | string
   }
 
+  export type ExhibitionPlanWhereInput = {
+    AND?: ExhibitionPlanWhereInput | ExhibitionPlanWhereInput[]
+    OR?: ExhibitionPlanWhereInput[]
+    NOT?: ExhibitionPlanWhereInput | ExhibitionPlanWhereInput[]
+    id?: StringFilter<"ExhibitionPlan"> | string
+    code?: StringFilter<"ExhibitionPlan"> | string
+    name?: StringFilter<"ExhibitionPlan"> | string
+    description?: StringNullableFilter<"ExhibitionPlan"> | string | null
+    maxWorks?: IntNullableFilter<"ExhibitionPlan"> | number | null
+    maxDurationDays?: IntNullableFilter<"ExhibitionPlan"> | number | null
+    priceXof?: IntFilter<"ExhibitionPlan"> | number
+    perks?: StringNullableListFilter<"ExhibitionPlan">
+    featuredPlacement?: BoolFilter<"ExhibitionPlan"> | boolean
+    communicationSupport?: BoolFilter<"ExhibitionPlan"> | boolean
+    isActive?: BoolFilter<"ExhibitionPlan"> | boolean
+    position?: IntFilter<"ExhibitionPlan"> | number
+    createdAt?: DateTimeFilter<"ExhibitionPlan"> | Date | string
+    updatedAt?: DateTimeFilter<"ExhibitionPlan"> | Date | string
+    exhibitions?: ExhibitionListRelationFilter
+  }
+
+  export type ExhibitionPlanOrderByWithRelationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    maxWorks?: SortOrderInput | SortOrder
+    maxDurationDays?: SortOrderInput | SortOrder
+    priceXof?: SortOrder
+    perks?: SortOrder
+    featuredPlacement?: SortOrder
+    communicationSupport?: SortOrder
+    isActive?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    exhibitions?: ExhibitionOrderByRelationAggregateInput
+  }
+
+  export type ExhibitionPlanWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    code?: string
+    AND?: ExhibitionPlanWhereInput | ExhibitionPlanWhereInput[]
+    OR?: ExhibitionPlanWhereInput[]
+    NOT?: ExhibitionPlanWhereInput | ExhibitionPlanWhereInput[]
+    name?: StringFilter<"ExhibitionPlan"> | string
+    description?: StringNullableFilter<"ExhibitionPlan"> | string | null
+    maxWorks?: IntNullableFilter<"ExhibitionPlan"> | number | null
+    maxDurationDays?: IntNullableFilter<"ExhibitionPlan"> | number | null
+    priceXof?: IntFilter<"ExhibitionPlan"> | number
+    perks?: StringNullableListFilter<"ExhibitionPlan">
+    featuredPlacement?: BoolFilter<"ExhibitionPlan"> | boolean
+    communicationSupport?: BoolFilter<"ExhibitionPlan"> | boolean
+    isActive?: BoolFilter<"ExhibitionPlan"> | boolean
+    position?: IntFilter<"ExhibitionPlan"> | number
+    createdAt?: DateTimeFilter<"ExhibitionPlan"> | Date | string
+    updatedAt?: DateTimeFilter<"ExhibitionPlan"> | Date | string
+    exhibitions?: ExhibitionListRelationFilter
+  }, "id" | "code">
+
+  export type ExhibitionPlanOrderByWithAggregationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    maxWorks?: SortOrderInput | SortOrder
+    maxDurationDays?: SortOrderInput | SortOrder
+    priceXof?: SortOrder
+    perks?: SortOrder
+    featuredPlacement?: SortOrder
+    communicationSupport?: SortOrder
+    isActive?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExhibitionPlanCountOrderByAggregateInput
+    _avg?: ExhibitionPlanAvgOrderByAggregateInput
+    _max?: ExhibitionPlanMaxOrderByAggregateInput
+    _min?: ExhibitionPlanMinOrderByAggregateInput
+    _sum?: ExhibitionPlanSumOrderByAggregateInput
+  }
+
+  export type ExhibitionPlanScalarWhereWithAggregatesInput = {
+    AND?: ExhibitionPlanScalarWhereWithAggregatesInput | ExhibitionPlanScalarWhereWithAggregatesInput[]
+    OR?: ExhibitionPlanScalarWhereWithAggregatesInput[]
+    NOT?: ExhibitionPlanScalarWhereWithAggregatesInput | ExhibitionPlanScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExhibitionPlan"> | string
+    code?: StringWithAggregatesFilter<"ExhibitionPlan"> | string
+    name?: StringWithAggregatesFilter<"ExhibitionPlan"> | string
+    description?: StringNullableWithAggregatesFilter<"ExhibitionPlan"> | string | null
+    maxWorks?: IntNullableWithAggregatesFilter<"ExhibitionPlan"> | number | null
+    maxDurationDays?: IntNullableWithAggregatesFilter<"ExhibitionPlan"> | number | null
+    priceXof?: IntWithAggregatesFilter<"ExhibitionPlan"> | number
+    perks?: StringNullableListFilter<"ExhibitionPlan">
+    featuredPlacement?: BoolWithAggregatesFilter<"ExhibitionPlan"> | boolean
+    communicationSupport?: BoolWithAggregatesFilter<"ExhibitionPlan"> | boolean
+    isActive?: BoolWithAggregatesFilter<"ExhibitionPlan"> | boolean
+    position?: IntWithAggregatesFilter<"ExhibitionPlan"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"ExhibitionPlan"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ExhibitionPlan"> | Date | string
+  }
+
+  export type ExhibitionWhereInput = {
+    AND?: ExhibitionWhereInput | ExhibitionWhereInput[]
+    OR?: ExhibitionWhereInput[]
+    NOT?: ExhibitionWhereInput | ExhibitionWhereInput[]
+    id?: StringFilter<"Exhibition"> | string
+    slug?: StringFilter<"Exhibition"> | string
+    organizerId?: StringFilter<"Exhibition"> | string
+    makerId?: StringNullableFilter<"Exhibition"> | string | null
+    planId?: StringNullableFilter<"Exhibition"> | string | null
+    title?: StringFilter<"Exhibition"> | string
+    organizerName?: StringFilter<"Exhibition"> | string
+    summary?: StringFilter<"Exhibition"> | string
+    objective?: StringNullableFilter<"Exhibition"> | string | null
+    discipline?: StringNullableFilter<"Exhibition"> | string | null
+    cityId?: StringFilter<"Exhibition"> | string
+    startsAt?: DateTimeFilter<"Exhibition"> | Date | string
+    endsAt?: DateTimeFilter<"Exhibition"> | Date | string
+    openingHours?: StringNullableFilter<"Exhibition"> | string | null
+    format?: EnumExhibitionFormatFilter<"Exhibition"> | $Enums.ExhibitionFormat
+    venueName?: StringNullableFilter<"Exhibition"> | string | null
+    venueAddress?: StringNullableFilter<"Exhibition"> | string | null
+    venueDescription?: StringNullableFilter<"Exhibition"> | string | null
+    venueImageKeys?: StringNullableListFilter<"Exhibition">
+    coverKey?: StringNullableFilter<"Exhibition"> | string | null
+    dossierKey?: StringNullableFilter<"Exhibition"> | string | null
+    plannedWorkCount?: IntNullableFilter<"Exhibition"> | number | null
+    status?: EnumExhibitionStatusFilter<"Exhibition"> | $Enums.ExhibitionStatus
+    reviewNote?: StringNullableFilter<"Exhibition"> | string | null
+    submittedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    reviewedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    reviewerId?: StringNullableFilter<"Exhibition"> | string | null
+    contractReference?: StringNullableFilter<"Exhibition"> | string | null
+    contractSentAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    contractSignedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    paymentAmountXof?: IntNullableFilter<"Exhibition"> | number | null
+    paymentReference?: StringNullableFilter<"Exhibition"> | string | null
+    paymentReceivedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    publishAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    publishedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    suspendedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    suspendReason?: StringNullableFilter<"Exhibition"> | string | null
+    accessMode?: EnumExhibitionAccessFilter<"Exhibition"> | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFilter<"Exhibition"> | number
+    requiresRegistration?: BoolFilter<"Exhibition"> | boolean
+    accessCodeHash?: StringNullableFilter<"Exhibition"> | string | null
+    onsiteInfo?: StringNullableFilter<"Exhibition"> | string | null
+    remoteInfo?: StringNullableFilter<"Exhibition"> | string | null
+    isFeatured?: BoolFilter<"Exhibition"> | boolean
+    viewCount?: IntFilter<"Exhibition"> | number
+    createdAt?: DateTimeFilter<"Exhibition"> | Date | string
+    updatedAt?: DateTimeFilter<"Exhibition"> | Date | string
+    organizer?: XOR<UserScalarRelationFilter, UserWhereInput>
+    maker?: XOR<MakerProfileNullableScalarRelationFilter, MakerProfileWhereInput> | null
+    plan?: XOR<ExhibitionPlanNullableScalarRelationFilter, ExhibitionPlanWhereInput> | null
+    city?: XOR<CityScalarRelationFilter, CityWhereInput>
+    works?: ExhibitionWorkListRelationFilter
+    passes?: ExhibitionPassListRelationFilter
+  }
+
+  export type ExhibitionOrderByWithRelationInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    organizerId?: SortOrder
+    makerId?: SortOrderInput | SortOrder
+    planId?: SortOrderInput | SortOrder
+    title?: SortOrder
+    organizerName?: SortOrder
+    summary?: SortOrder
+    objective?: SortOrderInput | SortOrder
+    discipline?: SortOrderInput | SortOrder
+    cityId?: SortOrder
+    startsAt?: SortOrder
+    endsAt?: SortOrder
+    openingHours?: SortOrderInput | SortOrder
+    format?: SortOrder
+    venueName?: SortOrderInput | SortOrder
+    venueAddress?: SortOrderInput | SortOrder
+    venueDescription?: SortOrderInput | SortOrder
+    venueImageKeys?: SortOrder
+    coverKey?: SortOrderInput | SortOrder
+    dossierKey?: SortOrderInput | SortOrder
+    plannedWorkCount?: SortOrderInput | SortOrder
+    status?: SortOrder
+    reviewNote?: SortOrderInput | SortOrder
+    submittedAt?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    reviewerId?: SortOrderInput | SortOrder
+    contractReference?: SortOrderInput | SortOrder
+    contractSentAt?: SortOrderInput | SortOrder
+    contractSignedAt?: SortOrderInput | SortOrder
+    paymentAmountXof?: SortOrderInput | SortOrder
+    paymentReference?: SortOrderInput | SortOrder
+    paymentReceivedAt?: SortOrderInput | SortOrder
+    publishAt?: SortOrderInput | SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    suspendedAt?: SortOrderInput | SortOrder
+    suspendReason?: SortOrderInput | SortOrder
+    accessMode?: SortOrder
+    ticketPriceXof?: SortOrder
+    requiresRegistration?: SortOrder
+    accessCodeHash?: SortOrderInput | SortOrder
+    onsiteInfo?: SortOrderInput | SortOrder
+    remoteInfo?: SortOrderInput | SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organizer?: UserOrderByWithRelationInput
+    maker?: MakerProfileOrderByWithRelationInput
+    plan?: ExhibitionPlanOrderByWithRelationInput
+    city?: CityOrderByWithRelationInput
+    works?: ExhibitionWorkOrderByRelationAggregateInput
+    passes?: ExhibitionPassOrderByRelationAggregateInput
+  }
+
+  export type ExhibitionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    slug?: string
+    AND?: ExhibitionWhereInput | ExhibitionWhereInput[]
+    OR?: ExhibitionWhereInput[]
+    NOT?: ExhibitionWhereInput | ExhibitionWhereInput[]
+    organizerId?: StringFilter<"Exhibition"> | string
+    makerId?: StringNullableFilter<"Exhibition"> | string | null
+    planId?: StringNullableFilter<"Exhibition"> | string | null
+    title?: StringFilter<"Exhibition"> | string
+    organizerName?: StringFilter<"Exhibition"> | string
+    summary?: StringFilter<"Exhibition"> | string
+    objective?: StringNullableFilter<"Exhibition"> | string | null
+    discipline?: StringNullableFilter<"Exhibition"> | string | null
+    cityId?: StringFilter<"Exhibition"> | string
+    startsAt?: DateTimeFilter<"Exhibition"> | Date | string
+    endsAt?: DateTimeFilter<"Exhibition"> | Date | string
+    openingHours?: StringNullableFilter<"Exhibition"> | string | null
+    format?: EnumExhibitionFormatFilter<"Exhibition"> | $Enums.ExhibitionFormat
+    venueName?: StringNullableFilter<"Exhibition"> | string | null
+    venueAddress?: StringNullableFilter<"Exhibition"> | string | null
+    venueDescription?: StringNullableFilter<"Exhibition"> | string | null
+    venueImageKeys?: StringNullableListFilter<"Exhibition">
+    coverKey?: StringNullableFilter<"Exhibition"> | string | null
+    dossierKey?: StringNullableFilter<"Exhibition"> | string | null
+    plannedWorkCount?: IntNullableFilter<"Exhibition"> | number | null
+    status?: EnumExhibitionStatusFilter<"Exhibition"> | $Enums.ExhibitionStatus
+    reviewNote?: StringNullableFilter<"Exhibition"> | string | null
+    submittedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    reviewedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    reviewerId?: StringNullableFilter<"Exhibition"> | string | null
+    contractReference?: StringNullableFilter<"Exhibition"> | string | null
+    contractSentAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    contractSignedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    paymentAmountXof?: IntNullableFilter<"Exhibition"> | number | null
+    paymentReference?: StringNullableFilter<"Exhibition"> | string | null
+    paymentReceivedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    publishAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    publishedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    suspendedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    suspendReason?: StringNullableFilter<"Exhibition"> | string | null
+    accessMode?: EnumExhibitionAccessFilter<"Exhibition"> | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFilter<"Exhibition"> | number
+    requiresRegistration?: BoolFilter<"Exhibition"> | boolean
+    accessCodeHash?: StringNullableFilter<"Exhibition"> | string | null
+    onsiteInfo?: StringNullableFilter<"Exhibition"> | string | null
+    remoteInfo?: StringNullableFilter<"Exhibition"> | string | null
+    isFeatured?: BoolFilter<"Exhibition"> | boolean
+    viewCount?: IntFilter<"Exhibition"> | number
+    createdAt?: DateTimeFilter<"Exhibition"> | Date | string
+    updatedAt?: DateTimeFilter<"Exhibition"> | Date | string
+    organizer?: XOR<UserScalarRelationFilter, UserWhereInput>
+    maker?: XOR<MakerProfileNullableScalarRelationFilter, MakerProfileWhereInput> | null
+    plan?: XOR<ExhibitionPlanNullableScalarRelationFilter, ExhibitionPlanWhereInput> | null
+    city?: XOR<CityScalarRelationFilter, CityWhereInput>
+    works?: ExhibitionWorkListRelationFilter
+    passes?: ExhibitionPassListRelationFilter
+  }, "id" | "slug">
+
+  export type ExhibitionOrderByWithAggregationInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    organizerId?: SortOrder
+    makerId?: SortOrderInput | SortOrder
+    planId?: SortOrderInput | SortOrder
+    title?: SortOrder
+    organizerName?: SortOrder
+    summary?: SortOrder
+    objective?: SortOrderInput | SortOrder
+    discipline?: SortOrderInput | SortOrder
+    cityId?: SortOrder
+    startsAt?: SortOrder
+    endsAt?: SortOrder
+    openingHours?: SortOrderInput | SortOrder
+    format?: SortOrder
+    venueName?: SortOrderInput | SortOrder
+    venueAddress?: SortOrderInput | SortOrder
+    venueDescription?: SortOrderInput | SortOrder
+    venueImageKeys?: SortOrder
+    coverKey?: SortOrderInput | SortOrder
+    dossierKey?: SortOrderInput | SortOrder
+    plannedWorkCount?: SortOrderInput | SortOrder
+    status?: SortOrder
+    reviewNote?: SortOrderInput | SortOrder
+    submittedAt?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    reviewerId?: SortOrderInput | SortOrder
+    contractReference?: SortOrderInput | SortOrder
+    contractSentAt?: SortOrderInput | SortOrder
+    contractSignedAt?: SortOrderInput | SortOrder
+    paymentAmountXof?: SortOrderInput | SortOrder
+    paymentReference?: SortOrderInput | SortOrder
+    paymentReceivedAt?: SortOrderInput | SortOrder
+    publishAt?: SortOrderInput | SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    suspendedAt?: SortOrderInput | SortOrder
+    suspendReason?: SortOrderInput | SortOrder
+    accessMode?: SortOrder
+    ticketPriceXof?: SortOrder
+    requiresRegistration?: SortOrder
+    accessCodeHash?: SortOrderInput | SortOrder
+    onsiteInfo?: SortOrderInput | SortOrder
+    remoteInfo?: SortOrderInput | SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExhibitionCountOrderByAggregateInput
+    _avg?: ExhibitionAvgOrderByAggregateInput
+    _max?: ExhibitionMaxOrderByAggregateInput
+    _min?: ExhibitionMinOrderByAggregateInput
+    _sum?: ExhibitionSumOrderByAggregateInput
+  }
+
+  export type ExhibitionScalarWhereWithAggregatesInput = {
+    AND?: ExhibitionScalarWhereWithAggregatesInput | ExhibitionScalarWhereWithAggregatesInput[]
+    OR?: ExhibitionScalarWhereWithAggregatesInput[]
+    NOT?: ExhibitionScalarWhereWithAggregatesInput | ExhibitionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Exhibition"> | string
+    slug?: StringWithAggregatesFilter<"Exhibition"> | string
+    organizerId?: StringWithAggregatesFilter<"Exhibition"> | string
+    makerId?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    planId?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    title?: StringWithAggregatesFilter<"Exhibition"> | string
+    organizerName?: StringWithAggregatesFilter<"Exhibition"> | string
+    summary?: StringWithAggregatesFilter<"Exhibition"> | string
+    objective?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    discipline?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    cityId?: StringWithAggregatesFilter<"Exhibition"> | string
+    startsAt?: DateTimeWithAggregatesFilter<"Exhibition"> | Date | string
+    endsAt?: DateTimeWithAggregatesFilter<"Exhibition"> | Date | string
+    openingHours?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    format?: EnumExhibitionFormatWithAggregatesFilter<"Exhibition"> | $Enums.ExhibitionFormat
+    venueName?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    venueAddress?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    venueDescription?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    venueImageKeys?: StringNullableListFilter<"Exhibition">
+    coverKey?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    dossierKey?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    plannedWorkCount?: IntNullableWithAggregatesFilter<"Exhibition"> | number | null
+    status?: EnumExhibitionStatusWithAggregatesFilter<"Exhibition"> | $Enums.ExhibitionStatus
+    reviewNote?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    submittedAt?: DateTimeNullableWithAggregatesFilter<"Exhibition"> | Date | string | null
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"Exhibition"> | Date | string | null
+    reviewerId?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    contractReference?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    contractSentAt?: DateTimeNullableWithAggregatesFilter<"Exhibition"> | Date | string | null
+    contractSignedAt?: DateTimeNullableWithAggregatesFilter<"Exhibition"> | Date | string | null
+    paymentAmountXof?: IntNullableWithAggregatesFilter<"Exhibition"> | number | null
+    paymentReference?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    paymentReceivedAt?: DateTimeNullableWithAggregatesFilter<"Exhibition"> | Date | string | null
+    publishAt?: DateTimeNullableWithAggregatesFilter<"Exhibition"> | Date | string | null
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"Exhibition"> | Date | string | null
+    suspendedAt?: DateTimeNullableWithAggregatesFilter<"Exhibition"> | Date | string | null
+    suspendReason?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    accessMode?: EnumExhibitionAccessWithAggregatesFilter<"Exhibition"> | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntWithAggregatesFilter<"Exhibition"> | number
+    requiresRegistration?: BoolWithAggregatesFilter<"Exhibition"> | boolean
+    accessCodeHash?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    onsiteInfo?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    remoteInfo?: StringNullableWithAggregatesFilter<"Exhibition"> | string | null
+    isFeatured?: BoolWithAggregatesFilter<"Exhibition"> | boolean
+    viewCount?: IntWithAggregatesFilter<"Exhibition"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"Exhibition"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Exhibition"> | Date | string
+  }
+
+  export type ExhibitionWorkWhereInput = {
+    AND?: ExhibitionWorkWhereInput | ExhibitionWorkWhereInput[]
+    OR?: ExhibitionWorkWhereInput[]
+    NOT?: ExhibitionWorkWhereInput | ExhibitionWorkWhereInput[]
+    id?: StringFilter<"ExhibitionWork"> | string
+    exhibitionId?: StringFilter<"ExhibitionWork"> | string
+    position?: IntFilter<"ExhibitionWork"> | number
+    productId?: StringNullableFilter<"ExhibitionWork"> | string | null
+    title?: StringFilter<"ExhibitionWork"> | string
+    artistName?: StringFilter<"ExhibitionWork"> | string
+    description?: StringFilter<"ExhibitionWork"> | string
+    materials?: StringNullableFilter<"ExhibitionWork"> | string | null
+    dimensions?: StringNullableFilter<"ExhibitionWork"> | string | null
+    imageKeys?: StringNullableListFilter<"ExhibitionWork">
+    proofKey?: StringNullableFilter<"ExhibitionWork"> | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFilter<"ExhibitionWork"> | $Enums.ExhibitionWorkReview
+    reviewNote?: StringNullableFilter<"ExhibitionWork"> | string | null
+    createdAt?: DateTimeFilter<"ExhibitionWork"> | Date | string
+    updatedAt?: DateTimeFilter<"ExhibitionWork"> | Date | string
+    exhibition?: XOR<ExhibitionScalarRelationFilter, ExhibitionWhereInput>
+    product?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
+  }
+
+  export type ExhibitionWorkOrderByWithRelationInput = {
+    id?: SortOrder
+    exhibitionId?: SortOrder
+    position?: SortOrder
+    productId?: SortOrderInput | SortOrder
+    title?: SortOrder
+    artistName?: SortOrder
+    description?: SortOrder
+    materials?: SortOrderInput | SortOrder
+    dimensions?: SortOrderInput | SortOrder
+    imageKeys?: SortOrder
+    proofKey?: SortOrderInput | SortOrder
+    reviewStatus?: SortOrder
+    reviewNote?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    exhibition?: ExhibitionOrderByWithRelationInput
+    product?: ProductOrderByWithRelationInput
+  }
+
+  export type ExhibitionWorkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ExhibitionWorkWhereInput | ExhibitionWorkWhereInput[]
+    OR?: ExhibitionWorkWhereInput[]
+    NOT?: ExhibitionWorkWhereInput | ExhibitionWorkWhereInput[]
+    exhibitionId?: StringFilter<"ExhibitionWork"> | string
+    position?: IntFilter<"ExhibitionWork"> | number
+    productId?: StringNullableFilter<"ExhibitionWork"> | string | null
+    title?: StringFilter<"ExhibitionWork"> | string
+    artistName?: StringFilter<"ExhibitionWork"> | string
+    description?: StringFilter<"ExhibitionWork"> | string
+    materials?: StringNullableFilter<"ExhibitionWork"> | string | null
+    dimensions?: StringNullableFilter<"ExhibitionWork"> | string | null
+    imageKeys?: StringNullableListFilter<"ExhibitionWork">
+    proofKey?: StringNullableFilter<"ExhibitionWork"> | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFilter<"ExhibitionWork"> | $Enums.ExhibitionWorkReview
+    reviewNote?: StringNullableFilter<"ExhibitionWork"> | string | null
+    createdAt?: DateTimeFilter<"ExhibitionWork"> | Date | string
+    updatedAt?: DateTimeFilter<"ExhibitionWork"> | Date | string
+    exhibition?: XOR<ExhibitionScalarRelationFilter, ExhibitionWhereInput>
+    product?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
+  }, "id">
+
+  export type ExhibitionWorkOrderByWithAggregationInput = {
+    id?: SortOrder
+    exhibitionId?: SortOrder
+    position?: SortOrder
+    productId?: SortOrderInput | SortOrder
+    title?: SortOrder
+    artistName?: SortOrder
+    description?: SortOrder
+    materials?: SortOrderInput | SortOrder
+    dimensions?: SortOrderInput | SortOrder
+    imageKeys?: SortOrder
+    proofKey?: SortOrderInput | SortOrder
+    reviewStatus?: SortOrder
+    reviewNote?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExhibitionWorkCountOrderByAggregateInput
+    _avg?: ExhibitionWorkAvgOrderByAggregateInput
+    _max?: ExhibitionWorkMaxOrderByAggregateInput
+    _min?: ExhibitionWorkMinOrderByAggregateInput
+    _sum?: ExhibitionWorkSumOrderByAggregateInput
+  }
+
+  export type ExhibitionWorkScalarWhereWithAggregatesInput = {
+    AND?: ExhibitionWorkScalarWhereWithAggregatesInput | ExhibitionWorkScalarWhereWithAggregatesInput[]
+    OR?: ExhibitionWorkScalarWhereWithAggregatesInput[]
+    NOT?: ExhibitionWorkScalarWhereWithAggregatesInput | ExhibitionWorkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExhibitionWork"> | string
+    exhibitionId?: StringWithAggregatesFilter<"ExhibitionWork"> | string
+    position?: IntWithAggregatesFilter<"ExhibitionWork"> | number
+    productId?: StringNullableWithAggregatesFilter<"ExhibitionWork"> | string | null
+    title?: StringWithAggregatesFilter<"ExhibitionWork"> | string
+    artistName?: StringWithAggregatesFilter<"ExhibitionWork"> | string
+    description?: StringWithAggregatesFilter<"ExhibitionWork"> | string
+    materials?: StringNullableWithAggregatesFilter<"ExhibitionWork"> | string | null
+    dimensions?: StringNullableWithAggregatesFilter<"ExhibitionWork"> | string | null
+    imageKeys?: StringNullableListFilter<"ExhibitionWork">
+    proofKey?: StringNullableWithAggregatesFilter<"ExhibitionWork"> | string | null
+    reviewStatus?: EnumExhibitionWorkReviewWithAggregatesFilter<"ExhibitionWork"> | $Enums.ExhibitionWorkReview
+    reviewNote?: StringNullableWithAggregatesFilter<"ExhibitionWork"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ExhibitionWork"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ExhibitionWork"> | Date | string
+  }
+
+  export type ExhibitionPassWhereInput = {
+    AND?: ExhibitionPassWhereInput | ExhibitionPassWhereInput[]
+    OR?: ExhibitionPassWhereInput[]
+    NOT?: ExhibitionPassWhereInput | ExhibitionPassWhereInput[]
+    id?: StringFilter<"ExhibitionPass"> | string
+    reference?: StringFilter<"ExhibitionPass"> | string
+    exhibitionId?: StringFilter<"ExhibitionPass"> | string
+    userId?: StringFilter<"ExhibitionPass"> | string
+    kind?: EnumExhibitionPassKindFilter<"ExhibitionPass"> | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFilter<"ExhibitionPass"> | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFilter<"ExhibitionPass"> | $Enums.ExhibitionPassStatus
+    amountXof?: IntFilter<"ExhibitionPass"> | number
+    provider?: StringNullableFilter<"ExhibitionPass"> | string | null
+    providerRef?: StringNullableFilter<"ExhibitionPass"> | string | null
+    paidAt?: DateTimeNullableFilter<"ExhibitionPass"> | Date | string | null
+    createdAt?: DateTimeFilter<"ExhibitionPass"> | Date | string
+    updatedAt?: DateTimeFilter<"ExhibitionPass"> | Date | string
+    exhibition?: XOR<ExhibitionScalarRelationFilter, ExhibitionWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type ExhibitionPassOrderByWithRelationInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    exhibitionId?: SortOrder
+    userId?: SortOrder
+    kind?: SortOrder
+    format?: SortOrder
+    status?: SortOrder
+    amountXof?: SortOrder
+    provider?: SortOrderInput | SortOrder
+    providerRef?: SortOrderInput | SortOrder
+    paidAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    exhibition?: ExhibitionOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ExhibitionPassWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    reference?: string
+    providerRef?: string
+    exhibitionId_userId_format?: ExhibitionPassExhibitionIdUserIdFormatCompoundUniqueInput
+    AND?: ExhibitionPassWhereInput | ExhibitionPassWhereInput[]
+    OR?: ExhibitionPassWhereInput[]
+    NOT?: ExhibitionPassWhereInput | ExhibitionPassWhereInput[]
+    exhibitionId?: StringFilter<"ExhibitionPass"> | string
+    userId?: StringFilter<"ExhibitionPass"> | string
+    kind?: EnumExhibitionPassKindFilter<"ExhibitionPass"> | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFilter<"ExhibitionPass"> | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFilter<"ExhibitionPass"> | $Enums.ExhibitionPassStatus
+    amountXof?: IntFilter<"ExhibitionPass"> | number
+    provider?: StringNullableFilter<"ExhibitionPass"> | string | null
+    paidAt?: DateTimeNullableFilter<"ExhibitionPass"> | Date | string | null
+    createdAt?: DateTimeFilter<"ExhibitionPass"> | Date | string
+    updatedAt?: DateTimeFilter<"ExhibitionPass"> | Date | string
+    exhibition?: XOR<ExhibitionScalarRelationFilter, ExhibitionWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "reference" | "providerRef" | "exhibitionId_userId_format">
+
+  export type ExhibitionPassOrderByWithAggregationInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    exhibitionId?: SortOrder
+    userId?: SortOrder
+    kind?: SortOrder
+    format?: SortOrder
+    status?: SortOrder
+    amountXof?: SortOrder
+    provider?: SortOrderInput | SortOrder
+    providerRef?: SortOrderInput | SortOrder
+    paidAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExhibitionPassCountOrderByAggregateInput
+    _avg?: ExhibitionPassAvgOrderByAggregateInput
+    _max?: ExhibitionPassMaxOrderByAggregateInput
+    _min?: ExhibitionPassMinOrderByAggregateInput
+    _sum?: ExhibitionPassSumOrderByAggregateInput
+  }
+
+  export type ExhibitionPassScalarWhereWithAggregatesInput = {
+    AND?: ExhibitionPassScalarWhereWithAggregatesInput | ExhibitionPassScalarWhereWithAggregatesInput[]
+    OR?: ExhibitionPassScalarWhereWithAggregatesInput[]
+    NOT?: ExhibitionPassScalarWhereWithAggregatesInput | ExhibitionPassScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExhibitionPass"> | string
+    reference?: StringWithAggregatesFilter<"ExhibitionPass"> | string
+    exhibitionId?: StringWithAggregatesFilter<"ExhibitionPass"> | string
+    userId?: StringWithAggregatesFilter<"ExhibitionPass"> | string
+    kind?: EnumExhibitionPassKindWithAggregatesFilter<"ExhibitionPass"> | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatWithAggregatesFilter<"ExhibitionPass"> | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusWithAggregatesFilter<"ExhibitionPass"> | $Enums.ExhibitionPassStatus
+    amountXof?: IntWithAggregatesFilter<"ExhibitionPass"> | number
+    provider?: StringNullableWithAggregatesFilter<"ExhibitionPass"> | string | null
+    providerRef?: StringNullableWithAggregatesFilter<"ExhibitionPass"> | string | null
+    paidAt?: DateTimeNullableWithAggregatesFilter<"ExhibitionPass"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ExhibitionPass"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ExhibitionPass"> | Date | string
+  }
+
   export type CountryCreateInput = {
     id?: string
     iso2: string
@@ -72020,6 +79030,7 @@ export namespace Prisma {
     country: CountryCreateNestedOneWithoutCitiesInput
     addresses?: AddressCreateNestedManyWithoutCityInput
     makerProfiles?: MakerProfileCreateNestedManyWithoutCityInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutCityInput
   }
 
   export type CityUncheckedCreateInput = {
@@ -72030,6 +79041,7 @@ export namespace Prisma {
     longitude?: number | null
     addresses?: AddressUncheckedCreateNestedManyWithoutCityInput
     makerProfiles?: MakerProfileUncheckedCreateNestedManyWithoutCityInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutCityInput
   }
 
   export type CityUpdateInput = {
@@ -72040,6 +79052,7 @@ export namespace Prisma {
     country?: CountryUpdateOneRequiredWithoutCitiesNestedInput
     addresses?: AddressUpdateManyWithoutCityNestedInput
     makerProfiles?: MakerProfileUpdateManyWithoutCityNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutCityNestedInput
   }
 
   export type CityUncheckedUpdateInput = {
@@ -72050,6 +79063,7 @@ export namespace Prisma {
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     addresses?: AddressUncheckedUpdateManyWithoutCityNestedInput
     makerProfiles?: MakerProfileUncheckedUpdateManyWithoutCityNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutCityNestedInput
   }
 
   export type CityCreateManyInput = {
@@ -72109,6 +79123,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -72145,6 +79161,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -72181,6 +79199,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -72217,6 +79237,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -72720,6 +79742,7 @@ export namespace Prisma {
     subOrders?: SubOrderCreateNestedManyWithoutMakerInput
     documents?: KycDocumentCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileUncheckedCreateInput = {
@@ -72771,6 +79794,7 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedCreateNestedManyWithoutMakerInput
     documents?: KycDocumentUncheckedCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionUncheckedCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileUpdateInput = {
@@ -72822,6 +79846,7 @@ export namespace Prisma {
     subOrders?: SubOrderUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutMakerNestedInput
   }
 
   export type MakerProfileUncheckedUpdateInput = {
@@ -72873,6 +79898,7 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUncheckedUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUncheckedUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutMakerNestedInput
   }
 
   export type MakerProfileCreateManyInput = {
@@ -73632,6 +80658,7 @@ export namespace Prisma {
     category: CategoryCreateNestedOneWithoutProductsInput
     images?: ProductImageCreateNestedManyWithoutProductInput
     orderLines?: OrderLineCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkCreateNestedManyWithoutProductInput
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
   }
@@ -73670,6 +80697,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     images?: ProductImageUncheckedCreateNestedManyWithoutProductInput
     orderLines?: OrderLineUncheckedCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkUncheckedCreateNestedManyWithoutProductInput
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
   }
@@ -73708,6 +80736,7 @@ export namespace Prisma {
     category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
     images?: ProductImageUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
   }
@@ -73746,6 +80775,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ProductImageUncheckedUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUncheckedUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUncheckedUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -77087,6 +84117,717 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ExhibitionPlanCreateInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    maxWorks?: number | null
+    maxDurationDays?: number | null
+    priceXof?: number
+    perks?: ExhibitionPlanCreateperksInput | string[]
+    featuredPlacement?: boolean
+    communicationSupport?: boolean
+    isActive?: boolean
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    exhibitions?: ExhibitionCreateNestedManyWithoutPlanInput
+  }
+
+  export type ExhibitionPlanUncheckedCreateInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    maxWorks?: number | null
+    maxDurationDays?: number | null
+    priceXof?: number
+    perks?: ExhibitionPlanCreateperksInput | string[]
+    featuredPlacement?: boolean
+    communicationSupport?: boolean
+    isActive?: boolean
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutPlanInput
+  }
+
+  export type ExhibitionPlanUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    maxWorks?: NullableIntFieldUpdateOperationsInput | number | null
+    maxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    priceXof?: IntFieldUpdateOperationsInput | number
+    perks?: ExhibitionPlanUpdateperksInput | string[]
+    featuredPlacement?: BoolFieldUpdateOperationsInput | boolean
+    communicationSupport?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exhibitions?: ExhibitionUpdateManyWithoutPlanNestedInput
+  }
+
+  export type ExhibitionPlanUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    maxWorks?: NullableIntFieldUpdateOperationsInput | number | null
+    maxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    priceXof?: IntFieldUpdateOperationsInput | number
+    perks?: ExhibitionPlanUpdateperksInput | string[]
+    featuredPlacement?: BoolFieldUpdateOperationsInput | boolean
+    communicationSupport?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutPlanNestedInput
+  }
+
+  export type ExhibitionPlanCreateManyInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    maxWorks?: number | null
+    maxDurationDays?: number | null
+    priceXof?: number
+    perks?: ExhibitionPlanCreateperksInput | string[]
+    featuredPlacement?: boolean
+    communicationSupport?: boolean
+    isActive?: boolean
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionPlanUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    maxWorks?: NullableIntFieldUpdateOperationsInput | number | null
+    maxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    priceXof?: IntFieldUpdateOperationsInput | number
+    perks?: ExhibitionPlanUpdateperksInput | string[]
+    featuredPlacement?: BoolFieldUpdateOperationsInput | boolean
+    communicationSupport?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionPlanUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    maxWorks?: NullableIntFieldUpdateOperationsInput | number | null
+    maxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    priceXof?: IntFieldUpdateOperationsInput | number
+    perks?: ExhibitionPlanUpdateperksInput | string[]
+    featuredPlacement?: BoolFieldUpdateOperationsInput | boolean
+    communicationSupport?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionCreateInput = {
+    id?: string
+    slug: string
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizer: UserCreateNestedOneWithoutExhibitionsInput
+    maker?: MakerProfileCreateNestedOneWithoutExhibitionsInput
+    plan?: ExhibitionPlanCreateNestedOneWithoutExhibitionsInput
+    city: CityCreateNestedOneWithoutExhibitionsInput
+    works?: ExhibitionWorkCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionUncheckedCreateInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    makerId?: string | null
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    works?: ExhibitionWorkUncheckedCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassUncheckedCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizer?: UserUpdateOneRequiredWithoutExhibitionsNestedInput
+    maker?: MakerProfileUpdateOneWithoutExhibitionsNestedInput
+    plan?: ExhibitionPlanUpdateOneWithoutExhibitionsNestedInput
+    city?: CityUpdateOneRequiredWithoutExhibitionsNestedInput
+    works?: ExhibitionWorkUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    works?: ExhibitionWorkUncheckedUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUncheckedUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionCreateManyInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    makerId?: string | null
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionWorkCreateInput = {
+    id?: string
+    position?: number
+    title: string
+    artistName: string
+    description: string
+    materials?: string | null
+    dimensions?: string | null
+    imageKeys?: ExhibitionWorkCreateimageKeysInput | string[]
+    proofKey?: string | null
+    reviewStatus?: $Enums.ExhibitionWorkReview
+    reviewNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    exhibition: ExhibitionCreateNestedOneWithoutWorksInput
+    product?: ProductCreateNestedOneWithoutExhibitionWorksInput
+  }
+
+  export type ExhibitionWorkUncheckedCreateInput = {
+    id?: string
+    exhibitionId: string
+    position?: number
+    productId?: string | null
+    title: string
+    artistName: string
+    description: string
+    materials?: string | null
+    dimensions?: string | null
+    imageKeys?: ExhibitionWorkCreateimageKeysInput | string[]
+    proofKey?: string | null
+    reviewStatus?: $Enums.ExhibitionWorkReview
+    reviewNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionWorkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exhibition?: ExhibitionUpdateOneRequiredWithoutWorksNestedInput
+    product?: ProductUpdateOneWithoutExhibitionWorksNestedInput
+  }
+
+  export type ExhibitionWorkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    exhibitionId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionWorkCreateManyInput = {
+    id?: string
+    exhibitionId: string
+    position?: number
+    productId?: string | null
+    title: string
+    artistName: string
+    description: string
+    materials?: string | null
+    dimensions?: string | null
+    imageKeys?: ExhibitionWorkCreateimageKeysInput | string[]
+    proofKey?: string | null
+    reviewStatus?: $Enums.ExhibitionWorkReview
+    reviewNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionWorkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionWorkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    exhibitionId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionPassCreateInput = {
+    id?: string
+    reference: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof?: number
+    provider?: string | null
+    providerRef?: string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    exhibition: ExhibitionCreateNestedOneWithoutPassesInput
+    user: UserCreateNestedOneWithoutExhibitionPassesInput
+  }
+
+  export type ExhibitionPassUncheckedCreateInput = {
+    id?: string
+    reference: string
+    exhibitionId: string
+    userId: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof?: number
+    provider?: string | null
+    providerRef?: string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionPassUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exhibition?: ExhibitionUpdateOneRequiredWithoutPassesNestedInput
+    user?: UserUpdateOneRequiredWithoutExhibitionPassesNestedInput
+  }
+
+  export type ExhibitionPassUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    exhibitionId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionPassCreateManyInput = {
+    id?: string
+    reference: string
+    exhibitionId: string
+    userId: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof?: number
+    provider?: string | null
+    providerRef?: string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionPassUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionPassUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    exhibitionId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -77256,6 +84997,12 @@ export namespace Prisma {
     none?: MakerProfileWhereInput
   }
 
+  export type ExhibitionListRelationFilter = {
+    every?: ExhibitionWhereInput
+    some?: ExhibitionWhereInput
+    none?: ExhibitionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -77266,6 +85013,10 @@ export namespace Prisma {
   }
 
   export type MakerProfileOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ExhibitionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -77462,6 +85213,12 @@ export namespace Prisma {
     none?: MfaRecoveryCodeWhereInput
   }
 
+  export type ExhibitionPassListRelationFilter = {
+    every?: ExhibitionPassWhereInput
+    some?: ExhibitionPassWhereInput
+    none?: ExhibitionPassWhereInput
+  }
+
   export type SessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -77503,6 +85260,10 @@ export namespace Prisma {
   }
 
   export type MfaRecoveryCodeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ExhibitionPassOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -78557,6 +86318,12 @@ export namespace Prisma {
     none?: OrderLineWhereInput
   }
 
+  export type ExhibitionWorkListRelationFilter = {
+    every?: ExhibitionWorkWhereInput
+    some?: ExhibitionWorkWhereInput
+    none?: ExhibitionWorkWhereInput
+  }
+
   export type CartItemListRelationFilter = {
     every?: CartItemWhereInput
     some?: CartItemWhereInput
@@ -78568,6 +86335,10 @@ export namespace Prisma {
   }
 
   export type OrderLineOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ExhibitionWorkOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -80923,6 +88694,487 @@ export namespace Prisma {
     expiresAt?: SortOrder
   }
 
+  export type ExhibitionPlanCountOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    maxWorks?: SortOrder
+    maxDurationDays?: SortOrder
+    priceXof?: SortOrder
+    perks?: SortOrder
+    featuredPlacement?: SortOrder
+    communicationSupport?: SortOrder
+    isActive?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionPlanAvgOrderByAggregateInput = {
+    maxWorks?: SortOrder
+    maxDurationDays?: SortOrder
+    priceXof?: SortOrder
+    position?: SortOrder
+  }
+
+  export type ExhibitionPlanMaxOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    maxWorks?: SortOrder
+    maxDurationDays?: SortOrder
+    priceXof?: SortOrder
+    featuredPlacement?: SortOrder
+    communicationSupport?: SortOrder
+    isActive?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionPlanMinOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    maxWorks?: SortOrder
+    maxDurationDays?: SortOrder
+    priceXof?: SortOrder
+    featuredPlacement?: SortOrder
+    communicationSupport?: SortOrder
+    isActive?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionPlanSumOrderByAggregateInput = {
+    maxWorks?: SortOrder
+    maxDurationDays?: SortOrder
+    priceXof?: SortOrder
+    position?: SortOrder
+  }
+
+  export type EnumExhibitionFormatFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionFormat | EnumExhibitionFormatFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionFormat[] | ListEnumExhibitionFormatFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionFormat[] | ListEnumExhibitionFormatFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionFormatFilter<$PrismaModel> | $Enums.ExhibitionFormat
+  }
+
+  export type EnumExhibitionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionStatus | EnumExhibitionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionStatus[] | ListEnumExhibitionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionStatus[] | ListEnumExhibitionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionStatusFilter<$PrismaModel> | $Enums.ExhibitionStatus
+  }
+
+  export type EnumExhibitionAccessFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionAccess | EnumExhibitionAccessFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionAccess[] | ListEnumExhibitionAccessFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionAccess[] | ListEnumExhibitionAccessFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionAccessFilter<$PrismaModel> | $Enums.ExhibitionAccess
+  }
+
+  export type ExhibitionPlanNullableScalarRelationFilter = {
+    is?: ExhibitionPlanWhereInput | null
+    isNot?: ExhibitionPlanWhereInput | null
+  }
+
+  export type ExhibitionCountOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    organizerId?: SortOrder
+    makerId?: SortOrder
+    planId?: SortOrder
+    title?: SortOrder
+    organizerName?: SortOrder
+    summary?: SortOrder
+    objective?: SortOrder
+    discipline?: SortOrder
+    cityId?: SortOrder
+    startsAt?: SortOrder
+    endsAt?: SortOrder
+    openingHours?: SortOrder
+    format?: SortOrder
+    venueName?: SortOrder
+    venueAddress?: SortOrder
+    venueDescription?: SortOrder
+    venueImageKeys?: SortOrder
+    coverKey?: SortOrder
+    dossierKey?: SortOrder
+    plannedWorkCount?: SortOrder
+    status?: SortOrder
+    reviewNote?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrder
+    reviewerId?: SortOrder
+    contractReference?: SortOrder
+    contractSentAt?: SortOrder
+    contractSignedAt?: SortOrder
+    paymentAmountXof?: SortOrder
+    paymentReference?: SortOrder
+    paymentReceivedAt?: SortOrder
+    publishAt?: SortOrder
+    publishedAt?: SortOrder
+    suspendedAt?: SortOrder
+    suspendReason?: SortOrder
+    accessMode?: SortOrder
+    ticketPriceXof?: SortOrder
+    requiresRegistration?: SortOrder
+    accessCodeHash?: SortOrder
+    onsiteInfo?: SortOrder
+    remoteInfo?: SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionAvgOrderByAggregateInput = {
+    plannedWorkCount?: SortOrder
+    paymentAmountXof?: SortOrder
+    ticketPriceXof?: SortOrder
+    viewCount?: SortOrder
+  }
+
+  export type ExhibitionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    organizerId?: SortOrder
+    makerId?: SortOrder
+    planId?: SortOrder
+    title?: SortOrder
+    organizerName?: SortOrder
+    summary?: SortOrder
+    objective?: SortOrder
+    discipline?: SortOrder
+    cityId?: SortOrder
+    startsAt?: SortOrder
+    endsAt?: SortOrder
+    openingHours?: SortOrder
+    format?: SortOrder
+    venueName?: SortOrder
+    venueAddress?: SortOrder
+    venueDescription?: SortOrder
+    coverKey?: SortOrder
+    dossierKey?: SortOrder
+    plannedWorkCount?: SortOrder
+    status?: SortOrder
+    reviewNote?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrder
+    reviewerId?: SortOrder
+    contractReference?: SortOrder
+    contractSentAt?: SortOrder
+    contractSignedAt?: SortOrder
+    paymentAmountXof?: SortOrder
+    paymentReference?: SortOrder
+    paymentReceivedAt?: SortOrder
+    publishAt?: SortOrder
+    publishedAt?: SortOrder
+    suspendedAt?: SortOrder
+    suspendReason?: SortOrder
+    accessMode?: SortOrder
+    ticketPriceXof?: SortOrder
+    requiresRegistration?: SortOrder
+    accessCodeHash?: SortOrder
+    onsiteInfo?: SortOrder
+    remoteInfo?: SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionMinOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    organizerId?: SortOrder
+    makerId?: SortOrder
+    planId?: SortOrder
+    title?: SortOrder
+    organizerName?: SortOrder
+    summary?: SortOrder
+    objective?: SortOrder
+    discipline?: SortOrder
+    cityId?: SortOrder
+    startsAt?: SortOrder
+    endsAt?: SortOrder
+    openingHours?: SortOrder
+    format?: SortOrder
+    venueName?: SortOrder
+    venueAddress?: SortOrder
+    venueDescription?: SortOrder
+    coverKey?: SortOrder
+    dossierKey?: SortOrder
+    plannedWorkCount?: SortOrder
+    status?: SortOrder
+    reviewNote?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrder
+    reviewerId?: SortOrder
+    contractReference?: SortOrder
+    contractSentAt?: SortOrder
+    contractSignedAt?: SortOrder
+    paymentAmountXof?: SortOrder
+    paymentReference?: SortOrder
+    paymentReceivedAt?: SortOrder
+    publishAt?: SortOrder
+    publishedAt?: SortOrder
+    suspendedAt?: SortOrder
+    suspendReason?: SortOrder
+    accessMode?: SortOrder
+    ticketPriceXof?: SortOrder
+    requiresRegistration?: SortOrder
+    accessCodeHash?: SortOrder
+    onsiteInfo?: SortOrder
+    remoteInfo?: SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionSumOrderByAggregateInput = {
+    plannedWorkCount?: SortOrder
+    paymentAmountXof?: SortOrder
+    ticketPriceXof?: SortOrder
+    viewCount?: SortOrder
+  }
+
+  export type EnumExhibitionFormatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionFormat | EnumExhibitionFormatFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionFormat[] | ListEnumExhibitionFormatFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionFormat[] | ListEnumExhibitionFormatFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionFormatWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionFormat
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionFormatFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionFormatFilter<$PrismaModel>
+  }
+
+  export type EnumExhibitionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionStatus | EnumExhibitionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionStatus[] | ListEnumExhibitionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionStatus[] | ListEnumExhibitionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionStatusFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionStatusFilter<$PrismaModel>
+  }
+
+  export type EnumExhibitionAccessWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionAccess | EnumExhibitionAccessFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionAccess[] | ListEnumExhibitionAccessFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionAccess[] | ListEnumExhibitionAccessFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionAccessWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionAccess
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionAccessFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionAccessFilter<$PrismaModel>
+  }
+
+  export type EnumExhibitionWorkReviewFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionWorkReview | EnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionWorkReview[] | ListEnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionWorkReview[] | ListEnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionWorkReviewFilter<$PrismaModel> | $Enums.ExhibitionWorkReview
+  }
+
+  export type ExhibitionScalarRelationFilter = {
+    is?: ExhibitionWhereInput
+    isNot?: ExhibitionWhereInput
+  }
+
+  export type ProductNullableScalarRelationFilter = {
+    is?: ProductWhereInput | null
+    isNot?: ProductWhereInput | null
+  }
+
+  export type ExhibitionWorkCountOrderByAggregateInput = {
+    id?: SortOrder
+    exhibitionId?: SortOrder
+    position?: SortOrder
+    productId?: SortOrder
+    title?: SortOrder
+    artistName?: SortOrder
+    description?: SortOrder
+    materials?: SortOrder
+    dimensions?: SortOrder
+    imageKeys?: SortOrder
+    proofKey?: SortOrder
+    reviewStatus?: SortOrder
+    reviewNote?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionWorkAvgOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type ExhibitionWorkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    exhibitionId?: SortOrder
+    position?: SortOrder
+    productId?: SortOrder
+    title?: SortOrder
+    artistName?: SortOrder
+    description?: SortOrder
+    materials?: SortOrder
+    dimensions?: SortOrder
+    proofKey?: SortOrder
+    reviewStatus?: SortOrder
+    reviewNote?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionWorkMinOrderByAggregateInput = {
+    id?: SortOrder
+    exhibitionId?: SortOrder
+    position?: SortOrder
+    productId?: SortOrder
+    title?: SortOrder
+    artistName?: SortOrder
+    description?: SortOrder
+    materials?: SortOrder
+    dimensions?: SortOrder
+    proofKey?: SortOrder
+    reviewStatus?: SortOrder
+    reviewNote?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionWorkSumOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type EnumExhibitionWorkReviewWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionWorkReview | EnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionWorkReview[] | ListEnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionWorkReview[] | ListEnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionWorkReviewWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionWorkReview
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionWorkReviewFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionWorkReviewFilter<$PrismaModel>
+  }
+
+  export type EnumExhibitionPassKindFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassKind | EnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassKind[] | ListEnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassKind[] | ListEnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassKindFilter<$PrismaModel> | $Enums.ExhibitionPassKind
+  }
+
+  export type EnumExhibitionPassFormatFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassFormat | EnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassFormat[] | ListEnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassFormat[] | ListEnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassFormatFilter<$PrismaModel> | $Enums.ExhibitionPassFormat
+  }
+
+  export type EnumExhibitionPassStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassStatus | EnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassStatus[] | ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassStatus[] | ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassStatusFilter<$PrismaModel> | $Enums.ExhibitionPassStatus
+  }
+
+  export type ExhibitionPassExhibitionIdUserIdFormatCompoundUniqueInput = {
+    exhibitionId: string
+    userId: string
+    format: $Enums.ExhibitionPassFormat
+  }
+
+  export type ExhibitionPassCountOrderByAggregateInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    exhibitionId?: SortOrder
+    userId?: SortOrder
+    kind?: SortOrder
+    format?: SortOrder
+    status?: SortOrder
+    amountXof?: SortOrder
+    provider?: SortOrder
+    providerRef?: SortOrder
+    paidAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionPassAvgOrderByAggregateInput = {
+    amountXof?: SortOrder
+  }
+
+  export type ExhibitionPassMaxOrderByAggregateInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    exhibitionId?: SortOrder
+    userId?: SortOrder
+    kind?: SortOrder
+    format?: SortOrder
+    status?: SortOrder
+    amountXof?: SortOrder
+    provider?: SortOrder
+    providerRef?: SortOrder
+    paidAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionPassMinOrderByAggregateInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    exhibitionId?: SortOrder
+    userId?: SortOrder
+    kind?: SortOrder
+    format?: SortOrder
+    status?: SortOrder
+    amountXof?: SortOrder
+    provider?: SortOrder
+    providerRef?: SortOrder
+    paidAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExhibitionPassSumOrderByAggregateInput = {
+    amountXof?: SortOrder
+  }
+
+  export type EnumExhibitionPassKindWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassKind | EnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassKind[] | ListEnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassKind[] | ListEnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassKindWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionPassKind
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionPassKindFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionPassKindFilter<$PrismaModel>
+  }
+
+  export type EnumExhibitionPassFormatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassFormat | EnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassFormat[] | ListEnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassFormat[] | ListEnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassFormatWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionPassFormat
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionPassFormatFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionPassFormatFilter<$PrismaModel>
+  }
+
+  export type EnumExhibitionPassStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassStatus | EnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassStatus[] | ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassStatus[] | ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionPassStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionPassStatusFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionPassStatusFilter<$PrismaModel>
+  }
+
   export type CityCreateNestedManyWithoutCountryInput = {
     create?: XOR<CityCreateWithoutCountryInput, CityUncheckedCreateWithoutCountryInput> | CityCreateWithoutCountryInput[] | CityUncheckedCreateWithoutCountryInput[]
     connectOrCreate?: CityCreateOrConnectWithoutCountryInput | CityCreateOrConnectWithoutCountryInput[]
@@ -81085,6 +89337,13 @@ export namespace Prisma {
     connect?: MakerProfileWhereUniqueInput | MakerProfileWhereUniqueInput[]
   }
 
+  export type ExhibitionCreateNestedManyWithoutCityInput = {
+    create?: XOR<ExhibitionCreateWithoutCityInput, ExhibitionUncheckedCreateWithoutCityInput> | ExhibitionCreateWithoutCityInput[] | ExhibitionUncheckedCreateWithoutCityInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutCityInput | ExhibitionCreateOrConnectWithoutCityInput[]
+    createMany?: ExhibitionCreateManyCityInputEnvelope
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+  }
+
   export type AddressUncheckedCreateNestedManyWithoutCityInput = {
     create?: XOR<AddressCreateWithoutCityInput, AddressUncheckedCreateWithoutCityInput> | AddressCreateWithoutCityInput[] | AddressUncheckedCreateWithoutCityInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutCityInput | AddressCreateOrConnectWithoutCityInput[]
@@ -81097,6 +89356,13 @@ export namespace Prisma {
     connectOrCreate?: MakerProfileCreateOrConnectWithoutCityInput | MakerProfileCreateOrConnectWithoutCityInput[]
     createMany?: MakerProfileCreateManyCityInputEnvelope
     connect?: MakerProfileWhereUniqueInput | MakerProfileWhereUniqueInput[]
+  }
+
+  export type ExhibitionUncheckedCreateNestedManyWithoutCityInput = {
+    create?: XOR<ExhibitionCreateWithoutCityInput, ExhibitionUncheckedCreateWithoutCityInput> | ExhibitionCreateWithoutCityInput[] | ExhibitionUncheckedCreateWithoutCityInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutCityInput | ExhibitionCreateOrConnectWithoutCityInput[]
+    createMany?: ExhibitionCreateManyCityInputEnvelope
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -81143,6 +89409,20 @@ export namespace Prisma {
     deleteMany?: MakerProfileScalarWhereInput | MakerProfileScalarWhereInput[]
   }
 
+  export type ExhibitionUpdateManyWithoutCityNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutCityInput, ExhibitionUncheckedCreateWithoutCityInput> | ExhibitionCreateWithoutCityInput[] | ExhibitionUncheckedCreateWithoutCityInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutCityInput | ExhibitionCreateOrConnectWithoutCityInput[]
+    upsert?: ExhibitionUpsertWithWhereUniqueWithoutCityInput | ExhibitionUpsertWithWhereUniqueWithoutCityInput[]
+    createMany?: ExhibitionCreateManyCityInputEnvelope
+    set?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    disconnect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    delete?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    update?: ExhibitionUpdateWithWhereUniqueWithoutCityInput | ExhibitionUpdateWithWhereUniqueWithoutCityInput[]
+    updateMany?: ExhibitionUpdateManyWithWhereWithoutCityInput | ExhibitionUpdateManyWithWhereWithoutCityInput[]
+    deleteMany?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
+  }
+
   export type AddressUncheckedUpdateManyWithoutCityNestedInput = {
     create?: XOR<AddressCreateWithoutCityInput, AddressUncheckedCreateWithoutCityInput> | AddressCreateWithoutCityInput[] | AddressUncheckedCreateWithoutCityInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutCityInput | AddressCreateOrConnectWithoutCityInput[]
@@ -81169,6 +89449,20 @@ export namespace Prisma {
     update?: MakerProfileUpdateWithWhereUniqueWithoutCityInput | MakerProfileUpdateWithWhereUniqueWithoutCityInput[]
     updateMany?: MakerProfileUpdateManyWithWhereWithoutCityInput | MakerProfileUpdateManyWithWhereWithoutCityInput[]
     deleteMany?: MakerProfileScalarWhereInput | MakerProfileScalarWhereInput[]
+  }
+
+  export type ExhibitionUncheckedUpdateManyWithoutCityNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutCityInput, ExhibitionUncheckedCreateWithoutCityInput> | ExhibitionCreateWithoutCityInput[] | ExhibitionUncheckedCreateWithoutCityInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutCityInput | ExhibitionCreateOrConnectWithoutCityInput[]
+    upsert?: ExhibitionUpsertWithWhereUniqueWithoutCityInput | ExhibitionUpsertWithWhereUniqueWithoutCityInput[]
+    createMany?: ExhibitionCreateManyCityInputEnvelope
+    set?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    disconnect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    delete?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    update?: ExhibitionUpdateWithWhereUniqueWithoutCityInput | ExhibitionUpdateWithWhereUniqueWithoutCityInput[]
+    updateMany?: ExhibitionUpdateManyWithWhereWithoutCityInput | ExhibitionUpdateManyWithWhereWithoutCityInput[]
+    deleteMany?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
   }
 
   export type MakerProfileCreateNestedOneWithoutUserInput = {
@@ -81267,6 +89561,20 @@ export namespace Prisma {
     connect?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
   }
 
+  export type ExhibitionCreateNestedManyWithoutOrganizerInput = {
+    create?: XOR<ExhibitionCreateWithoutOrganizerInput, ExhibitionUncheckedCreateWithoutOrganizerInput> | ExhibitionCreateWithoutOrganizerInput[] | ExhibitionUncheckedCreateWithoutOrganizerInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutOrganizerInput | ExhibitionCreateOrConnectWithoutOrganizerInput[]
+    createMany?: ExhibitionCreateManyOrganizerInputEnvelope
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+  }
+
+  export type ExhibitionPassCreateNestedManyWithoutUserInput = {
+    create?: XOR<ExhibitionPassCreateWithoutUserInput, ExhibitionPassUncheckedCreateWithoutUserInput> | ExhibitionPassCreateWithoutUserInput[] | ExhibitionPassUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ExhibitionPassCreateOrConnectWithoutUserInput | ExhibitionPassCreateOrConnectWithoutUserInput[]
+    createMany?: ExhibitionPassCreateManyUserInputEnvelope
+    connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+  }
+
   export type MakerProfileUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<MakerProfileCreateWithoutUserInput, MakerProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: MakerProfileCreateOrConnectWithoutUserInput
@@ -81361,6 +89669,20 @@ export namespace Prisma {
     connectOrCreate?: MfaRecoveryCodeCreateOrConnectWithoutUserInput | MfaRecoveryCodeCreateOrConnectWithoutUserInput[]
     createMany?: MfaRecoveryCodeCreateManyUserInputEnvelope
     connect?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+  }
+
+  export type ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput = {
+    create?: XOR<ExhibitionCreateWithoutOrganizerInput, ExhibitionUncheckedCreateWithoutOrganizerInput> | ExhibitionCreateWithoutOrganizerInput[] | ExhibitionUncheckedCreateWithoutOrganizerInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutOrganizerInput | ExhibitionCreateOrConnectWithoutOrganizerInput[]
+    createMany?: ExhibitionCreateManyOrganizerInputEnvelope
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+  }
+
+  export type ExhibitionPassUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ExhibitionPassCreateWithoutUserInput, ExhibitionPassUncheckedCreateWithoutUserInput> | ExhibitionPassCreateWithoutUserInput[] | ExhibitionPassUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ExhibitionPassCreateOrConnectWithoutUserInput | ExhibitionPassCreateOrConnectWithoutUserInput[]
+    createMany?: ExhibitionPassCreateManyUserInputEnvelope
+    connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
   }
 
   export type EnumUserRoleFieldUpdateOperationsInput = {
@@ -81579,6 +89901,34 @@ export namespace Prisma {
     deleteMany?: MfaRecoveryCodeScalarWhereInput | MfaRecoveryCodeScalarWhereInput[]
   }
 
+  export type ExhibitionUpdateManyWithoutOrganizerNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutOrganizerInput, ExhibitionUncheckedCreateWithoutOrganizerInput> | ExhibitionCreateWithoutOrganizerInput[] | ExhibitionUncheckedCreateWithoutOrganizerInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutOrganizerInput | ExhibitionCreateOrConnectWithoutOrganizerInput[]
+    upsert?: ExhibitionUpsertWithWhereUniqueWithoutOrganizerInput | ExhibitionUpsertWithWhereUniqueWithoutOrganizerInput[]
+    createMany?: ExhibitionCreateManyOrganizerInputEnvelope
+    set?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    disconnect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    delete?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    update?: ExhibitionUpdateWithWhereUniqueWithoutOrganizerInput | ExhibitionUpdateWithWhereUniqueWithoutOrganizerInput[]
+    updateMany?: ExhibitionUpdateManyWithWhereWithoutOrganizerInput | ExhibitionUpdateManyWithWhereWithoutOrganizerInput[]
+    deleteMany?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
+  }
+
+  export type ExhibitionPassUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ExhibitionPassCreateWithoutUserInput, ExhibitionPassUncheckedCreateWithoutUserInput> | ExhibitionPassCreateWithoutUserInput[] | ExhibitionPassUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ExhibitionPassCreateOrConnectWithoutUserInput | ExhibitionPassCreateOrConnectWithoutUserInput[]
+    upsert?: ExhibitionPassUpsertWithWhereUniqueWithoutUserInput | ExhibitionPassUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ExhibitionPassCreateManyUserInputEnvelope
+    set?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    disconnect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    delete?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    update?: ExhibitionPassUpdateWithWhereUniqueWithoutUserInput | ExhibitionPassUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ExhibitionPassUpdateManyWithWhereWithoutUserInput | ExhibitionPassUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ExhibitionPassScalarWhereInput | ExhibitionPassScalarWhereInput[]
+  }
+
   export type MakerProfileUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<MakerProfileCreateWithoutUserInput, MakerProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: MakerProfileCreateOrConnectWithoutUserInput
@@ -81767,6 +90117,34 @@ export namespace Prisma {
     deleteMany?: MfaRecoveryCodeScalarWhereInput | MfaRecoveryCodeScalarWhereInput[]
   }
 
+  export type ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutOrganizerInput, ExhibitionUncheckedCreateWithoutOrganizerInput> | ExhibitionCreateWithoutOrganizerInput[] | ExhibitionUncheckedCreateWithoutOrganizerInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutOrganizerInput | ExhibitionCreateOrConnectWithoutOrganizerInput[]
+    upsert?: ExhibitionUpsertWithWhereUniqueWithoutOrganizerInput | ExhibitionUpsertWithWhereUniqueWithoutOrganizerInput[]
+    createMany?: ExhibitionCreateManyOrganizerInputEnvelope
+    set?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    disconnect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    delete?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    update?: ExhibitionUpdateWithWhereUniqueWithoutOrganizerInput | ExhibitionUpdateWithWhereUniqueWithoutOrganizerInput[]
+    updateMany?: ExhibitionUpdateManyWithWhereWithoutOrganizerInput | ExhibitionUpdateManyWithWhereWithoutOrganizerInput[]
+    deleteMany?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
+  }
+
+  export type ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ExhibitionPassCreateWithoutUserInput, ExhibitionPassUncheckedCreateWithoutUserInput> | ExhibitionPassCreateWithoutUserInput[] | ExhibitionPassUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ExhibitionPassCreateOrConnectWithoutUserInput | ExhibitionPassCreateOrConnectWithoutUserInput[]
+    upsert?: ExhibitionPassUpsertWithWhereUniqueWithoutUserInput | ExhibitionPassUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ExhibitionPassCreateManyUserInputEnvelope
+    set?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    disconnect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    delete?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    update?: ExhibitionPassUpdateWithWhereUniqueWithoutUserInput | ExhibitionPassUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ExhibitionPassUpdateManyWithWhereWithoutUserInput | ExhibitionPassUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ExhibitionPassScalarWhereInput | ExhibitionPassScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutSessionsInput = {
     create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
@@ -81903,6 +90281,13 @@ export namespace Prisma {
     connect?: MakerSubscriptionWhereUniqueInput | MakerSubscriptionWhereUniqueInput[]
   }
 
+  export type ExhibitionCreateNestedManyWithoutMakerInput = {
+    create?: XOR<ExhibitionCreateWithoutMakerInput, ExhibitionUncheckedCreateWithoutMakerInput> | ExhibitionCreateWithoutMakerInput[] | ExhibitionUncheckedCreateWithoutMakerInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutMakerInput | ExhibitionCreateOrConnectWithoutMakerInput[]
+    createMany?: ExhibitionCreateManyMakerInputEnvelope
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+  }
+
   export type ProductUncheckedCreateNestedManyWithoutMakerInput = {
     create?: XOR<ProductCreateWithoutMakerInput, ProductUncheckedCreateWithoutMakerInput> | ProductCreateWithoutMakerInput[] | ProductUncheckedCreateWithoutMakerInput[]
     connectOrCreate?: ProductCreateOrConnectWithoutMakerInput | ProductCreateOrConnectWithoutMakerInput[]
@@ -81929,6 +90314,13 @@ export namespace Prisma {
     connectOrCreate?: MakerSubscriptionCreateOrConnectWithoutMakerInput | MakerSubscriptionCreateOrConnectWithoutMakerInput[]
     createMany?: MakerSubscriptionCreateManyMakerInputEnvelope
     connect?: MakerSubscriptionWhereUniqueInput | MakerSubscriptionWhereUniqueInput[]
+  }
+
+  export type ExhibitionUncheckedCreateNestedManyWithoutMakerInput = {
+    create?: XOR<ExhibitionCreateWithoutMakerInput, ExhibitionUncheckedCreateWithoutMakerInput> | ExhibitionCreateWithoutMakerInput[] | ExhibitionUncheckedCreateWithoutMakerInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutMakerInput | ExhibitionCreateOrConnectWithoutMakerInput[]
+    createMany?: ExhibitionCreateManyMakerInputEnvelope
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
   }
 
   export type EnumCreatorKindFieldUpdateOperationsInput = {
@@ -82033,6 +90425,20 @@ export namespace Prisma {
     deleteMany?: MakerSubscriptionScalarWhereInput | MakerSubscriptionScalarWhereInput[]
   }
 
+  export type ExhibitionUpdateManyWithoutMakerNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutMakerInput, ExhibitionUncheckedCreateWithoutMakerInput> | ExhibitionCreateWithoutMakerInput[] | ExhibitionUncheckedCreateWithoutMakerInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutMakerInput | ExhibitionCreateOrConnectWithoutMakerInput[]
+    upsert?: ExhibitionUpsertWithWhereUniqueWithoutMakerInput | ExhibitionUpsertWithWhereUniqueWithoutMakerInput[]
+    createMany?: ExhibitionCreateManyMakerInputEnvelope
+    set?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    disconnect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    delete?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    update?: ExhibitionUpdateWithWhereUniqueWithoutMakerInput | ExhibitionUpdateWithWhereUniqueWithoutMakerInput[]
+    updateMany?: ExhibitionUpdateManyWithWhereWithoutMakerInput | ExhibitionUpdateManyWithWhereWithoutMakerInput[]
+    deleteMany?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
+  }
+
   export type ProductUncheckedUpdateManyWithoutMakerNestedInput = {
     create?: XOR<ProductCreateWithoutMakerInput, ProductUncheckedCreateWithoutMakerInput> | ProductCreateWithoutMakerInput[] | ProductUncheckedCreateWithoutMakerInput[]
     connectOrCreate?: ProductCreateOrConnectWithoutMakerInput | ProductCreateOrConnectWithoutMakerInput[]
@@ -82087,6 +90493,20 @@ export namespace Prisma {
     update?: MakerSubscriptionUpdateWithWhereUniqueWithoutMakerInput | MakerSubscriptionUpdateWithWhereUniqueWithoutMakerInput[]
     updateMany?: MakerSubscriptionUpdateManyWithWhereWithoutMakerInput | MakerSubscriptionUpdateManyWithWhereWithoutMakerInput[]
     deleteMany?: MakerSubscriptionScalarWhereInput | MakerSubscriptionScalarWhereInput[]
+  }
+
+  export type ExhibitionUncheckedUpdateManyWithoutMakerNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutMakerInput, ExhibitionUncheckedCreateWithoutMakerInput> | ExhibitionCreateWithoutMakerInput[] | ExhibitionUncheckedCreateWithoutMakerInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutMakerInput | ExhibitionCreateOrConnectWithoutMakerInput[]
+    upsert?: ExhibitionUpsertWithWhereUniqueWithoutMakerInput | ExhibitionUpsertWithWhereUniqueWithoutMakerInput[]
+    createMany?: ExhibitionCreateManyMakerInputEnvelope
+    set?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    disconnect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    delete?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    update?: ExhibitionUpdateWithWhereUniqueWithoutMakerInput | ExhibitionUpdateWithWhereUniqueWithoutMakerInput[]
+    updateMany?: ExhibitionUpdateManyWithWhereWithoutMakerInput | ExhibitionUpdateManyWithWhereWithoutMakerInput[]
+    deleteMany?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
   }
 
   export type VisibilityPlanCreateperksInput = {
@@ -82484,6 +90904,13 @@ export namespace Prisma {
     connect?: OrderLineWhereUniqueInput | OrderLineWhereUniqueInput[]
   }
 
+  export type ExhibitionWorkCreateNestedManyWithoutProductInput = {
+    create?: XOR<ExhibitionWorkCreateWithoutProductInput, ExhibitionWorkUncheckedCreateWithoutProductInput> | ExhibitionWorkCreateWithoutProductInput[] | ExhibitionWorkUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ExhibitionWorkCreateOrConnectWithoutProductInput | ExhibitionWorkCreateOrConnectWithoutProductInput[]
+    createMany?: ExhibitionWorkCreateManyProductInputEnvelope
+    connect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+  }
+
   export type CartItemCreateNestedManyWithoutProductInput = {
     create?: XOR<CartItemCreateWithoutProductInput, CartItemUncheckedCreateWithoutProductInput> | CartItemCreateWithoutProductInput[] | CartItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: CartItemCreateOrConnectWithoutProductInput | CartItemCreateOrConnectWithoutProductInput[]
@@ -82510,6 +90937,13 @@ export namespace Prisma {
     connectOrCreate?: OrderLineCreateOrConnectWithoutProductInput | OrderLineCreateOrConnectWithoutProductInput[]
     createMany?: OrderLineCreateManyProductInputEnvelope
     connect?: OrderLineWhereUniqueInput | OrderLineWhereUniqueInput[]
+  }
+
+  export type ExhibitionWorkUncheckedCreateNestedManyWithoutProductInput = {
+    create?: XOR<ExhibitionWorkCreateWithoutProductInput, ExhibitionWorkUncheckedCreateWithoutProductInput> | ExhibitionWorkCreateWithoutProductInput[] | ExhibitionWorkUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ExhibitionWorkCreateOrConnectWithoutProductInput | ExhibitionWorkCreateOrConnectWithoutProductInput[]
+    createMany?: ExhibitionWorkCreateManyProductInputEnvelope
+    connect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
   }
 
   export type CartItemUncheckedCreateNestedManyWithoutProductInput = {
@@ -82578,6 +91012,20 @@ export namespace Prisma {
     deleteMany?: OrderLineScalarWhereInput | OrderLineScalarWhereInput[]
   }
 
+  export type ExhibitionWorkUpdateManyWithoutProductNestedInput = {
+    create?: XOR<ExhibitionWorkCreateWithoutProductInput, ExhibitionWorkUncheckedCreateWithoutProductInput> | ExhibitionWorkCreateWithoutProductInput[] | ExhibitionWorkUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ExhibitionWorkCreateOrConnectWithoutProductInput | ExhibitionWorkCreateOrConnectWithoutProductInput[]
+    upsert?: ExhibitionWorkUpsertWithWhereUniqueWithoutProductInput | ExhibitionWorkUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: ExhibitionWorkCreateManyProductInputEnvelope
+    set?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    disconnect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    delete?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    connect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    update?: ExhibitionWorkUpdateWithWhereUniqueWithoutProductInput | ExhibitionWorkUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: ExhibitionWorkUpdateManyWithWhereWithoutProductInput | ExhibitionWorkUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: ExhibitionWorkScalarWhereInput | ExhibitionWorkScalarWhereInput[]
+  }
+
   export type CartItemUpdateManyWithoutProductNestedInput = {
     create?: XOR<CartItemCreateWithoutProductInput, CartItemUncheckedCreateWithoutProductInput> | CartItemCreateWithoutProductInput[] | CartItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: CartItemCreateOrConnectWithoutProductInput | CartItemCreateOrConnectWithoutProductInput[]
@@ -82632,6 +91080,20 @@ export namespace Prisma {
     update?: OrderLineUpdateWithWhereUniqueWithoutProductInput | OrderLineUpdateWithWhereUniqueWithoutProductInput[]
     updateMany?: OrderLineUpdateManyWithWhereWithoutProductInput | OrderLineUpdateManyWithWhereWithoutProductInput[]
     deleteMany?: OrderLineScalarWhereInput | OrderLineScalarWhereInput[]
+  }
+
+  export type ExhibitionWorkUncheckedUpdateManyWithoutProductNestedInput = {
+    create?: XOR<ExhibitionWorkCreateWithoutProductInput, ExhibitionWorkUncheckedCreateWithoutProductInput> | ExhibitionWorkCreateWithoutProductInput[] | ExhibitionWorkUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ExhibitionWorkCreateOrConnectWithoutProductInput | ExhibitionWorkCreateOrConnectWithoutProductInput[]
+    upsert?: ExhibitionWorkUpsertWithWhereUniqueWithoutProductInput | ExhibitionWorkUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: ExhibitionWorkCreateManyProductInputEnvelope
+    set?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    disconnect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    delete?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    connect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    update?: ExhibitionWorkUpdateWithWhereUniqueWithoutProductInput | ExhibitionWorkUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: ExhibitionWorkUpdateManyWithWhereWithoutProductInput | ExhibitionWorkUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: ExhibitionWorkScalarWhereInput | ExhibitionWorkScalarWhereInput[]
   }
 
   export type CartItemUncheckedUpdateManyWithoutProductNestedInput = {
@@ -84437,6 +92899,305 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutIdempotencyKeysInput, UserUpdateWithoutIdempotencyKeysInput>, UserUncheckedUpdateWithoutIdempotencyKeysInput>
   }
 
+  export type ExhibitionPlanCreateperksInput = {
+    set: string[]
+  }
+
+  export type ExhibitionCreateNestedManyWithoutPlanInput = {
+    create?: XOR<ExhibitionCreateWithoutPlanInput, ExhibitionUncheckedCreateWithoutPlanInput> | ExhibitionCreateWithoutPlanInput[] | ExhibitionUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutPlanInput | ExhibitionCreateOrConnectWithoutPlanInput[]
+    createMany?: ExhibitionCreateManyPlanInputEnvelope
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+  }
+
+  export type ExhibitionUncheckedCreateNestedManyWithoutPlanInput = {
+    create?: XOR<ExhibitionCreateWithoutPlanInput, ExhibitionUncheckedCreateWithoutPlanInput> | ExhibitionCreateWithoutPlanInput[] | ExhibitionUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutPlanInput | ExhibitionCreateOrConnectWithoutPlanInput[]
+    createMany?: ExhibitionCreateManyPlanInputEnvelope
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+  }
+
+  export type ExhibitionPlanUpdateperksInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type ExhibitionUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutPlanInput, ExhibitionUncheckedCreateWithoutPlanInput> | ExhibitionCreateWithoutPlanInput[] | ExhibitionUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutPlanInput | ExhibitionCreateOrConnectWithoutPlanInput[]
+    upsert?: ExhibitionUpsertWithWhereUniqueWithoutPlanInput | ExhibitionUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: ExhibitionCreateManyPlanInputEnvelope
+    set?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    disconnect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    delete?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    update?: ExhibitionUpdateWithWhereUniqueWithoutPlanInput | ExhibitionUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: ExhibitionUpdateManyWithWhereWithoutPlanInput | ExhibitionUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
+  }
+
+  export type ExhibitionUncheckedUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutPlanInput, ExhibitionUncheckedCreateWithoutPlanInput> | ExhibitionCreateWithoutPlanInput[] | ExhibitionUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutPlanInput | ExhibitionCreateOrConnectWithoutPlanInput[]
+    upsert?: ExhibitionUpsertWithWhereUniqueWithoutPlanInput | ExhibitionUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: ExhibitionCreateManyPlanInputEnvelope
+    set?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    disconnect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    delete?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    connect?: ExhibitionWhereUniqueInput | ExhibitionWhereUniqueInput[]
+    update?: ExhibitionUpdateWithWhereUniqueWithoutPlanInput | ExhibitionUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: ExhibitionUpdateManyWithWhereWithoutPlanInput | ExhibitionUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
+  }
+
+  export type ExhibitionCreatevenueImageKeysInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutExhibitionsInput = {
+    create?: XOR<UserCreateWithoutExhibitionsInput, UserUncheckedCreateWithoutExhibitionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExhibitionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type MakerProfileCreateNestedOneWithoutExhibitionsInput = {
+    create?: XOR<MakerProfileCreateWithoutExhibitionsInput, MakerProfileUncheckedCreateWithoutExhibitionsInput>
+    connectOrCreate?: MakerProfileCreateOrConnectWithoutExhibitionsInput
+    connect?: MakerProfileWhereUniqueInput
+  }
+
+  export type ExhibitionPlanCreateNestedOneWithoutExhibitionsInput = {
+    create?: XOR<ExhibitionPlanCreateWithoutExhibitionsInput, ExhibitionPlanUncheckedCreateWithoutExhibitionsInput>
+    connectOrCreate?: ExhibitionPlanCreateOrConnectWithoutExhibitionsInput
+    connect?: ExhibitionPlanWhereUniqueInput
+  }
+
+  export type CityCreateNestedOneWithoutExhibitionsInput = {
+    create?: XOR<CityCreateWithoutExhibitionsInput, CityUncheckedCreateWithoutExhibitionsInput>
+    connectOrCreate?: CityCreateOrConnectWithoutExhibitionsInput
+    connect?: CityWhereUniqueInput
+  }
+
+  export type ExhibitionWorkCreateNestedManyWithoutExhibitionInput = {
+    create?: XOR<ExhibitionWorkCreateWithoutExhibitionInput, ExhibitionWorkUncheckedCreateWithoutExhibitionInput> | ExhibitionWorkCreateWithoutExhibitionInput[] | ExhibitionWorkUncheckedCreateWithoutExhibitionInput[]
+    connectOrCreate?: ExhibitionWorkCreateOrConnectWithoutExhibitionInput | ExhibitionWorkCreateOrConnectWithoutExhibitionInput[]
+    createMany?: ExhibitionWorkCreateManyExhibitionInputEnvelope
+    connect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+  }
+
+  export type ExhibitionPassCreateNestedManyWithoutExhibitionInput = {
+    create?: XOR<ExhibitionPassCreateWithoutExhibitionInput, ExhibitionPassUncheckedCreateWithoutExhibitionInput> | ExhibitionPassCreateWithoutExhibitionInput[] | ExhibitionPassUncheckedCreateWithoutExhibitionInput[]
+    connectOrCreate?: ExhibitionPassCreateOrConnectWithoutExhibitionInput | ExhibitionPassCreateOrConnectWithoutExhibitionInput[]
+    createMany?: ExhibitionPassCreateManyExhibitionInputEnvelope
+    connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+  }
+
+  export type ExhibitionWorkUncheckedCreateNestedManyWithoutExhibitionInput = {
+    create?: XOR<ExhibitionWorkCreateWithoutExhibitionInput, ExhibitionWorkUncheckedCreateWithoutExhibitionInput> | ExhibitionWorkCreateWithoutExhibitionInput[] | ExhibitionWorkUncheckedCreateWithoutExhibitionInput[]
+    connectOrCreate?: ExhibitionWorkCreateOrConnectWithoutExhibitionInput | ExhibitionWorkCreateOrConnectWithoutExhibitionInput[]
+    createMany?: ExhibitionWorkCreateManyExhibitionInputEnvelope
+    connect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+  }
+
+  export type ExhibitionPassUncheckedCreateNestedManyWithoutExhibitionInput = {
+    create?: XOR<ExhibitionPassCreateWithoutExhibitionInput, ExhibitionPassUncheckedCreateWithoutExhibitionInput> | ExhibitionPassCreateWithoutExhibitionInput[] | ExhibitionPassUncheckedCreateWithoutExhibitionInput[]
+    connectOrCreate?: ExhibitionPassCreateOrConnectWithoutExhibitionInput | ExhibitionPassCreateOrConnectWithoutExhibitionInput[]
+    createMany?: ExhibitionPassCreateManyExhibitionInputEnvelope
+    connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+  }
+
+  export type EnumExhibitionFormatFieldUpdateOperationsInput = {
+    set?: $Enums.ExhibitionFormat
+  }
+
+  export type ExhibitionUpdatevenueImageKeysInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type EnumExhibitionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ExhibitionStatus
+  }
+
+  export type EnumExhibitionAccessFieldUpdateOperationsInput = {
+    set?: $Enums.ExhibitionAccess
+  }
+
+  export type UserUpdateOneRequiredWithoutExhibitionsNestedInput = {
+    create?: XOR<UserCreateWithoutExhibitionsInput, UserUncheckedCreateWithoutExhibitionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExhibitionsInput
+    upsert?: UserUpsertWithoutExhibitionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExhibitionsInput, UserUpdateWithoutExhibitionsInput>, UserUncheckedUpdateWithoutExhibitionsInput>
+  }
+
+  export type MakerProfileUpdateOneWithoutExhibitionsNestedInput = {
+    create?: XOR<MakerProfileCreateWithoutExhibitionsInput, MakerProfileUncheckedCreateWithoutExhibitionsInput>
+    connectOrCreate?: MakerProfileCreateOrConnectWithoutExhibitionsInput
+    upsert?: MakerProfileUpsertWithoutExhibitionsInput
+    disconnect?: MakerProfileWhereInput | boolean
+    delete?: MakerProfileWhereInput | boolean
+    connect?: MakerProfileWhereUniqueInput
+    update?: XOR<XOR<MakerProfileUpdateToOneWithWhereWithoutExhibitionsInput, MakerProfileUpdateWithoutExhibitionsInput>, MakerProfileUncheckedUpdateWithoutExhibitionsInput>
+  }
+
+  export type ExhibitionPlanUpdateOneWithoutExhibitionsNestedInput = {
+    create?: XOR<ExhibitionPlanCreateWithoutExhibitionsInput, ExhibitionPlanUncheckedCreateWithoutExhibitionsInput>
+    connectOrCreate?: ExhibitionPlanCreateOrConnectWithoutExhibitionsInput
+    upsert?: ExhibitionPlanUpsertWithoutExhibitionsInput
+    disconnect?: ExhibitionPlanWhereInput | boolean
+    delete?: ExhibitionPlanWhereInput | boolean
+    connect?: ExhibitionPlanWhereUniqueInput
+    update?: XOR<XOR<ExhibitionPlanUpdateToOneWithWhereWithoutExhibitionsInput, ExhibitionPlanUpdateWithoutExhibitionsInput>, ExhibitionPlanUncheckedUpdateWithoutExhibitionsInput>
+  }
+
+  export type CityUpdateOneRequiredWithoutExhibitionsNestedInput = {
+    create?: XOR<CityCreateWithoutExhibitionsInput, CityUncheckedCreateWithoutExhibitionsInput>
+    connectOrCreate?: CityCreateOrConnectWithoutExhibitionsInput
+    upsert?: CityUpsertWithoutExhibitionsInput
+    connect?: CityWhereUniqueInput
+    update?: XOR<XOR<CityUpdateToOneWithWhereWithoutExhibitionsInput, CityUpdateWithoutExhibitionsInput>, CityUncheckedUpdateWithoutExhibitionsInput>
+  }
+
+  export type ExhibitionWorkUpdateManyWithoutExhibitionNestedInput = {
+    create?: XOR<ExhibitionWorkCreateWithoutExhibitionInput, ExhibitionWorkUncheckedCreateWithoutExhibitionInput> | ExhibitionWorkCreateWithoutExhibitionInput[] | ExhibitionWorkUncheckedCreateWithoutExhibitionInput[]
+    connectOrCreate?: ExhibitionWorkCreateOrConnectWithoutExhibitionInput | ExhibitionWorkCreateOrConnectWithoutExhibitionInput[]
+    upsert?: ExhibitionWorkUpsertWithWhereUniqueWithoutExhibitionInput | ExhibitionWorkUpsertWithWhereUniqueWithoutExhibitionInput[]
+    createMany?: ExhibitionWorkCreateManyExhibitionInputEnvelope
+    set?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    disconnect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    delete?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    connect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    update?: ExhibitionWorkUpdateWithWhereUniqueWithoutExhibitionInput | ExhibitionWorkUpdateWithWhereUniqueWithoutExhibitionInput[]
+    updateMany?: ExhibitionWorkUpdateManyWithWhereWithoutExhibitionInput | ExhibitionWorkUpdateManyWithWhereWithoutExhibitionInput[]
+    deleteMany?: ExhibitionWorkScalarWhereInput | ExhibitionWorkScalarWhereInput[]
+  }
+
+  export type ExhibitionPassUpdateManyWithoutExhibitionNestedInput = {
+    create?: XOR<ExhibitionPassCreateWithoutExhibitionInput, ExhibitionPassUncheckedCreateWithoutExhibitionInput> | ExhibitionPassCreateWithoutExhibitionInput[] | ExhibitionPassUncheckedCreateWithoutExhibitionInput[]
+    connectOrCreate?: ExhibitionPassCreateOrConnectWithoutExhibitionInput | ExhibitionPassCreateOrConnectWithoutExhibitionInput[]
+    upsert?: ExhibitionPassUpsertWithWhereUniqueWithoutExhibitionInput | ExhibitionPassUpsertWithWhereUniqueWithoutExhibitionInput[]
+    createMany?: ExhibitionPassCreateManyExhibitionInputEnvelope
+    set?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    disconnect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    delete?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    update?: ExhibitionPassUpdateWithWhereUniqueWithoutExhibitionInput | ExhibitionPassUpdateWithWhereUniqueWithoutExhibitionInput[]
+    updateMany?: ExhibitionPassUpdateManyWithWhereWithoutExhibitionInput | ExhibitionPassUpdateManyWithWhereWithoutExhibitionInput[]
+    deleteMany?: ExhibitionPassScalarWhereInput | ExhibitionPassScalarWhereInput[]
+  }
+
+  export type ExhibitionWorkUncheckedUpdateManyWithoutExhibitionNestedInput = {
+    create?: XOR<ExhibitionWorkCreateWithoutExhibitionInput, ExhibitionWorkUncheckedCreateWithoutExhibitionInput> | ExhibitionWorkCreateWithoutExhibitionInput[] | ExhibitionWorkUncheckedCreateWithoutExhibitionInput[]
+    connectOrCreate?: ExhibitionWorkCreateOrConnectWithoutExhibitionInput | ExhibitionWorkCreateOrConnectWithoutExhibitionInput[]
+    upsert?: ExhibitionWorkUpsertWithWhereUniqueWithoutExhibitionInput | ExhibitionWorkUpsertWithWhereUniqueWithoutExhibitionInput[]
+    createMany?: ExhibitionWorkCreateManyExhibitionInputEnvelope
+    set?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    disconnect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    delete?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    connect?: ExhibitionWorkWhereUniqueInput | ExhibitionWorkWhereUniqueInput[]
+    update?: ExhibitionWorkUpdateWithWhereUniqueWithoutExhibitionInput | ExhibitionWorkUpdateWithWhereUniqueWithoutExhibitionInput[]
+    updateMany?: ExhibitionWorkUpdateManyWithWhereWithoutExhibitionInput | ExhibitionWorkUpdateManyWithWhereWithoutExhibitionInput[]
+    deleteMany?: ExhibitionWorkScalarWhereInput | ExhibitionWorkScalarWhereInput[]
+  }
+
+  export type ExhibitionPassUncheckedUpdateManyWithoutExhibitionNestedInput = {
+    create?: XOR<ExhibitionPassCreateWithoutExhibitionInput, ExhibitionPassUncheckedCreateWithoutExhibitionInput> | ExhibitionPassCreateWithoutExhibitionInput[] | ExhibitionPassUncheckedCreateWithoutExhibitionInput[]
+    connectOrCreate?: ExhibitionPassCreateOrConnectWithoutExhibitionInput | ExhibitionPassCreateOrConnectWithoutExhibitionInput[]
+    upsert?: ExhibitionPassUpsertWithWhereUniqueWithoutExhibitionInput | ExhibitionPassUpsertWithWhereUniqueWithoutExhibitionInput[]
+    createMany?: ExhibitionPassCreateManyExhibitionInputEnvelope
+    set?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    disconnect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    delete?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+    update?: ExhibitionPassUpdateWithWhereUniqueWithoutExhibitionInput | ExhibitionPassUpdateWithWhereUniqueWithoutExhibitionInput[]
+    updateMany?: ExhibitionPassUpdateManyWithWhereWithoutExhibitionInput | ExhibitionPassUpdateManyWithWhereWithoutExhibitionInput[]
+    deleteMany?: ExhibitionPassScalarWhereInput | ExhibitionPassScalarWhereInput[]
+  }
+
+  export type ExhibitionWorkCreateimageKeysInput = {
+    set: string[]
+  }
+
+  export type ExhibitionCreateNestedOneWithoutWorksInput = {
+    create?: XOR<ExhibitionCreateWithoutWorksInput, ExhibitionUncheckedCreateWithoutWorksInput>
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutWorksInput
+    connect?: ExhibitionWhereUniqueInput
+  }
+
+  export type ProductCreateNestedOneWithoutExhibitionWorksInput = {
+    create?: XOR<ProductCreateWithoutExhibitionWorksInput, ProductUncheckedCreateWithoutExhibitionWorksInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutExhibitionWorksInput
+    connect?: ProductWhereUniqueInput
+  }
+
+  export type ExhibitionWorkUpdateimageKeysInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type EnumExhibitionWorkReviewFieldUpdateOperationsInput = {
+    set?: $Enums.ExhibitionWorkReview
+  }
+
+  export type ExhibitionUpdateOneRequiredWithoutWorksNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutWorksInput, ExhibitionUncheckedCreateWithoutWorksInput>
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutWorksInput
+    upsert?: ExhibitionUpsertWithoutWorksInput
+    connect?: ExhibitionWhereUniqueInput
+    update?: XOR<XOR<ExhibitionUpdateToOneWithWhereWithoutWorksInput, ExhibitionUpdateWithoutWorksInput>, ExhibitionUncheckedUpdateWithoutWorksInput>
+  }
+
+  export type ProductUpdateOneWithoutExhibitionWorksNestedInput = {
+    create?: XOR<ProductCreateWithoutExhibitionWorksInput, ProductUncheckedCreateWithoutExhibitionWorksInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutExhibitionWorksInput
+    upsert?: ProductUpsertWithoutExhibitionWorksInput
+    disconnect?: ProductWhereInput | boolean
+    delete?: ProductWhereInput | boolean
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutExhibitionWorksInput, ProductUpdateWithoutExhibitionWorksInput>, ProductUncheckedUpdateWithoutExhibitionWorksInput>
+  }
+
+  export type ExhibitionCreateNestedOneWithoutPassesInput = {
+    create?: XOR<ExhibitionCreateWithoutPassesInput, ExhibitionUncheckedCreateWithoutPassesInput>
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutPassesInput
+    connect?: ExhibitionWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutExhibitionPassesInput = {
+    create?: XOR<UserCreateWithoutExhibitionPassesInput, UserUncheckedCreateWithoutExhibitionPassesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExhibitionPassesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumExhibitionPassKindFieldUpdateOperationsInput = {
+    set?: $Enums.ExhibitionPassKind
+  }
+
+  export type EnumExhibitionPassFormatFieldUpdateOperationsInput = {
+    set?: $Enums.ExhibitionPassFormat
+  }
+
+  export type EnumExhibitionPassStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ExhibitionPassStatus
+  }
+
+  export type ExhibitionUpdateOneRequiredWithoutPassesNestedInput = {
+    create?: XOR<ExhibitionCreateWithoutPassesInput, ExhibitionUncheckedCreateWithoutPassesInput>
+    connectOrCreate?: ExhibitionCreateOrConnectWithoutPassesInput
+    upsert?: ExhibitionUpsertWithoutPassesInput
+    connect?: ExhibitionWhereUniqueInput
+    update?: XOR<XOR<ExhibitionUpdateToOneWithWhereWithoutPassesInput, ExhibitionUpdateWithoutPassesInput>, ExhibitionUncheckedUpdateWithoutPassesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutExhibitionPassesNestedInput = {
+    create?: XOR<UserCreateWithoutExhibitionPassesInput, UserUncheckedCreateWithoutExhibitionPassesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExhibitionPassesInput
+    upsert?: UserUpsertWithoutExhibitionPassesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExhibitionPassesInput, UserUpdateWithoutExhibitionPassesInput>, UserUncheckedUpdateWithoutExhibitionPassesInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -85124,6 +93885,125 @@ export namespace Prisma {
     _max?: NestedEnumPromoKindFilter<$PrismaModel>
   }
 
+  export type NestedEnumExhibitionFormatFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionFormat | EnumExhibitionFormatFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionFormat[] | ListEnumExhibitionFormatFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionFormat[] | ListEnumExhibitionFormatFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionFormatFilter<$PrismaModel> | $Enums.ExhibitionFormat
+  }
+
+  export type NestedEnumExhibitionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionStatus | EnumExhibitionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionStatus[] | ListEnumExhibitionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionStatus[] | ListEnumExhibitionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionStatusFilter<$PrismaModel> | $Enums.ExhibitionStatus
+  }
+
+  export type NestedEnumExhibitionAccessFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionAccess | EnumExhibitionAccessFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionAccess[] | ListEnumExhibitionAccessFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionAccess[] | ListEnumExhibitionAccessFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionAccessFilter<$PrismaModel> | $Enums.ExhibitionAccess
+  }
+
+  export type NestedEnumExhibitionFormatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionFormat | EnumExhibitionFormatFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionFormat[] | ListEnumExhibitionFormatFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionFormat[] | ListEnumExhibitionFormatFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionFormatWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionFormat
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionFormatFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionFormatFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExhibitionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionStatus | EnumExhibitionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionStatus[] | ListEnumExhibitionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionStatus[] | ListEnumExhibitionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionStatusFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExhibitionAccessWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionAccess | EnumExhibitionAccessFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionAccess[] | ListEnumExhibitionAccessFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionAccess[] | ListEnumExhibitionAccessFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionAccessWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionAccess
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionAccessFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionAccessFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExhibitionWorkReviewFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionWorkReview | EnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionWorkReview[] | ListEnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionWorkReview[] | ListEnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionWorkReviewFilter<$PrismaModel> | $Enums.ExhibitionWorkReview
+  }
+
+  export type NestedEnumExhibitionWorkReviewWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionWorkReview | EnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionWorkReview[] | ListEnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionWorkReview[] | ListEnumExhibitionWorkReviewFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionWorkReviewWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionWorkReview
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionWorkReviewFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionWorkReviewFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExhibitionPassKindFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassKind | EnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassKind[] | ListEnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassKind[] | ListEnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassKindFilter<$PrismaModel> | $Enums.ExhibitionPassKind
+  }
+
+  export type NestedEnumExhibitionPassFormatFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassFormat | EnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassFormat[] | ListEnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassFormat[] | ListEnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassFormatFilter<$PrismaModel> | $Enums.ExhibitionPassFormat
+  }
+
+  export type NestedEnumExhibitionPassStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassStatus | EnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassStatus[] | ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassStatus[] | ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassStatusFilter<$PrismaModel> | $Enums.ExhibitionPassStatus
+  }
+
+  export type NestedEnumExhibitionPassKindWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassKind | EnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassKind[] | ListEnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassKind[] | ListEnumExhibitionPassKindFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassKindWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionPassKind
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionPassKindFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionPassKindFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExhibitionPassFormatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassFormat | EnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassFormat[] | ListEnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassFormat[] | ListEnumExhibitionPassFormatFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassFormatWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionPassFormat
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionPassFormatFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionPassFormatFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExhibitionPassStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExhibitionPassStatus | EnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExhibitionPassStatus[] | ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExhibitionPassStatus[] | ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExhibitionPassStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExhibitionPassStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExhibitionPassStatusFilter<$PrismaModel>
+    _max?: NestedEnumExhibitionPassStatusFilter<$PrismaModel>
+  }
+
   export type CityCreateWithoutCountryInput = {
     id?: string
     name: string
@@ -85131,6 +94011,7 @@ export namespace Prisma {
     longitude?: number | null
     addresses?: AddressCreateNestedManyWithoutCityInput
     makerProfiles?: MakerProfileCreateNestedManyWithoutCityInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutCityInput
   }
 
   export type CityUncheckedCreateWithoutCountryInput = {
@@ -85140,6 +94021,7 @@ export namespace Prisma {
     longitude?: number | null
     addresses?: AddressUncheckedCreateNestedManyWithoutCityInput
     makerProfiles?: MakerProfileUncheckedCreateNestedManyWithoutCityInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutCityInput
   }
 
   export type CityCreateOrConnectWithoutCountryInput = {
@@ -85425,6 +94307,7 @@ export namespace Prisma {
     subOrders?: SubOrderCreateNestedManyWithoutMakerInput
     documents?: KycDocumentCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileUncheckedCreateWithoutCityInput = {
@@ -85475,6 +94358,7 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedCreateNestedManyWithoutMakerInput
     documents?: KycDocumentUncheckedCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionUncheckedCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileCreateOrConnectWithoutCityInput = {
@@ -85484,6 +94368,118 @@ export namespace Prisma {
 
   export type MakerProfileCreateManyCityInputEnvelope = {
     data: MakerProfileCreateManyCityInput | MakerProfileCreateManyCityInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExhibitionCreateWithoutCityInput = {
+    id?: string
+    slug: string
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizer: UserCreateNestedOneWithoutExhibitionsInput
+    maker?: MakerProfileCreateNestedOneWithoutExhibitionsInput
+    plan?: ExhibitionPlanCreateNestedOneWithoutExhibitionsInput
+    works?: ExhibitionWorkCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionUncheckedCreateWithoutCityInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    makerId?: string | null
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    works?: ExhibitionWorkUncheckedCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassUncheckedCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionCreateOrConnectWithoutCityInput = {
+    where: ExhibitionWhereUniqueInput
+    create: XOR<ExhibitionCreateWithoutCityInput, ExhibitionUncheckedCreateWithoutCityInput>
+  }
+
+  export type ExhibitionCreateManyCityInputEnvelope = {
+    data: ExhibitionCreateManyCityInput | ExhibitionCreateManyCityInput[]
     skipDuplicates?: boolean
   }
 
@@ -85623,6 +94619,75 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"MakerProfile"> | Date | string
   }
 
+  export type ExhibitionUpsertWithWhereUniqueWithoutCityInput = {
+    where: ExhibitionWhereUniqueInput
+    update: XOR<ExhibitionUpdateWithoutCityInput, ExhibitionUncheckedUpdateWithoutCityInput>
+    create: XOR<ExhibitionCreateWithoutCityInput, ExhibitionUncheckedCreateWithoutCityInput>
+  }
+
+  export type ExhibitionUpdateWithWhereUniqueWithoutCityInput = {
+    where: ExhibitionWhereUniqueInput
+    data: XOR<ExhibitionUpdateWithoutCityInput, ExhibitionUncheckedUpdateWithoutCityInput>
+  }
+
+  export type ExhibitionUpdateManyWithWhereWithoutCityInput = {
+    where: ExhibitionScalarWhereInput
+    data: XOR<ExhibitionUpdateManyMutationInput, ExhibitionUncheckedUpdateManyWithoutCityInput>
+  }
+
+  export type ExhibitionScalarWhereInput = {
+    AND?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
+    OR?: ExhibitionScalarWhereInput[]
+    NOT?: ExhibitionScalarWhereInput | ExhibitionScalarWhereInput[]
+    id?: StringFilter<"Exhibition"> | string
+    slug?: StringFilter<"Exhibition"> | string
+    organizerId?: StringFilter<"Exhibition"> | string
+    makerId?: StringNullableFilter<"Exhibition"> | string | null
+    planId?: StringNullableFilter<"Exhibition"> | string | null
+    title?: StringFilter<"Exhibition"> | string
+    organizerName?: StringFilter<"Exhibition"> | string
+    summary?: StringFilter<"Exhibition"> | string
+    objective?: StringNullableFilter<"Exhibition"> | string | null
+    discipline?: StringNullableFilter<"Exhibition"> | string | null
+    cityId?: StringFilter<"Exhibition"> | string
+    startsAt?: DateTimeFilter<"Exhibition"> | Date | string
+    endsAt?: DateTimeFilter<"Exhibition"> | Date | string
+    openingHours?: StringNullableFilter<"Exhibition"> | string | null
+    format?: EnumExhibitionFormatFilter<"Exhibition"> | $Enums.ExhibitionFormat
+    venueName?: StringNullableFilter<"Exhibition"> | string | null
+    venueAddress?: StringNullableFilter<"Exhibition"> | string | null
+    venueDescription?: StringNullableFilter<"Exhibition"> | string | null
+    venueImageKeys?: StringNullableListFilter<"Exhibition">
+    coverKey?: StringNullableFilter<"Exhibition"> | string | null
+    dossierKey?: StringNullableFilter<"Exhibition"> | string | null
+    plannedWorkCount?: IntNullableFilter<"Exhibition"> | number | null
+    status?: EnumExhibitionStatusFilter<"Exhibition"> | $Enums.ExhibitionStatus
+    reviewNote?: StringNullableFilter<"Exhibition"> | string | null
+    submittedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    reviewedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    reviewerId?: StringNullableFilter<"Exhibition"> | string | null
+    contractReference?: StringNullableFilter<"Exhibition"> | string | null
+    contractSentAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    contractSignedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    paymentAmountXof?: IntNullableFilter<"Exhibition"> | number | null
+    paymentReference?: StringNullableFilter<"Exhibition"> | string | null
+    paymentReceivedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    publishAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    publishedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    suspendedAt?: DateTimeNullableFilter<"Exhibition"> | Date | string | null
+    suspendReason?: StringNullableFilter<"Exhibition"> | string | null
+    accessMode?: EnumExhibitionAccessFilter<"Exhibition"> | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFilter<"Exhibition"> | number
+    requiresRegistration?: BoolFilter<"Exhibition"> | boolean
+    accessCodeHash?: StringNullableFilter<"Exhibition"> | string | null
+    onsiteInfo?: StringNullableFilter<"Exhibition"> | string | null
+    remoteInfo?: StringNullableFilter<"Exhibition"> | string | null
+    isFeatured?: BoolFilter<"Exhibition"> | boolean
+    viewCount?: IntFilter<"Exhibition"> | number
+    createdAt?: DateTimeFilter<"Exhibition"> | Date | string
+    updatedAt?: DateTimeFilter<"Exhibition"> | Date | string
+  }
+
   export type MakerProfileCreateWithoutUserInput = {
     id?: string
     shopName: string
@@ -85671,6 +94736,7 @@ export namespace Prisma {
     subOrders?: SubOrderCreateNestedManyWithoutMakerInput
     documents?: KycDocumentCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileUncheckedCreateWithoutUserInput = {
@@ -85721,6 +94787,7 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedCreateNestedManyWithoutMakerInput
     documents?: KycDocumentUncheckedCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionUncheckedCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileCreateOrConnectWithoutUserInput = {
@@ -86219,6 +95286,158 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ExhibitionCreateWithoutOrganizerInput = {
+    id?: string
+    slug: string
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileCreateNestedOneWithoutExhibitionsInput
+    plan?: ExhibitionPlanCreateNestedOneWithoutExhibitionsInput
+    city: CityCreateNestedOneWithoutExhibitionsInput
+    works?: ExhibitionWorkCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionUncheckedCreateWithoutOrganizerInput = {
+    id?: string
+    slug: string
+    makerId?: string | null
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    works?: ExhibitionWorkUncheckedCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassUncheckedCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionCreateOrConnectWithoutOrganizerInput = {
+    where: ExhibitionWhereUniqueInput
+    create: XOR<ExhibitionCreateWithoutOrganizerInput, ExhibitionUncheckedCreateWithoutOrganizerInput>
+  }
+
+  export type ExhibitionCreateManyOrganizerInputEnvelope = {
+    data: ExhibitionCreateManyOrganizerInput | ExhibitionCreateManyOrganizerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExhibitionPassCreateWithoutUserInput = {
+    id?: string
+    reference: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof?: number
+    provider?: string | null
+    providerRef?: string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    exhibition: ExhibitionCreateNestedOneWithoutPassesInput
+  }
+
+  export type ExhibitionPassUncheckedCreateWithoutUserInput = {
+    id?: string
+    reference: string
+    exhibitionId: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof?: number
+    provider?: string | null
+    providerRef?: string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionPassCreateOrConnectWithoutUserInput = {
+    where: ExhibitionPassWhereUniqueInput
+    create: XOR<ExhibitionPassCreateWithoutUserInput, ExhibitionPassUncheckedCreateWithoutUserInput>
+  }
+
+  export type ExhibitionPassCreateManyUserInputEnvelope = {
+    data: ExhibitionPassCreateManyUserInput | ExhibitionPassCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type MakerProfileUpsertWithoutUserInput = {
     update: XOR<MakerProfileUpdateWithoutUserInput, MakerProfileUncheckedUpdateWithoutUserInput>
     create: XOR<MakerProfileCreateWithoutUserInput, MakerProfileUncheckedCreateWithoutUserInput>
@@ -86278,6 +95497,7 @@ export namespace Prisma {
     subOrders?: SubOrderUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutMakerNestedInput
   }
 
   export type MakerProfileUncheckedUpdateWithoutUserInput = {
@@ -86328,6 +95548,7 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUncheckedUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUncheckedUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutMakerNestedInput
   }
 
   export type CourierProfileUpsertWithoutUserInput = {
@@ -86754,6 +95975,57 @@ export namespace Prisma {
     usedAt?: DateTimeNullableFilter<"MfaRecoveryCode"> | Date | string | null
   }
 
+  export type ExhibitionUpsertWithWhereUniqueWithoutOrganizerInput = {
+    where: ExhibitionWhereUniqueInput
+    update: XOR<ExhibitionUpdateWithoutOrganizerInput, ExhibitionUncheckedUpdateWithoutOrganizerInput>
+    create: XOR<ExhibitionCreateWithoutOrganizerInput, ExhibitionUncheckedCreateWithoutOrganizerInput>
+  }
+
+  export type ExhibitionUpdateWithWhereUniqueWithoutOrganizerInput = {
+    where: ExhibitionWhereUniqueInput
+    data: XOR<ExhibitionUpdateWithoutOrganizerInput, ExhibitionUncheckedUpdateWithoutOrganizerInput>
+  }
+
+  export type ExhibitionUpdateManyWithWhereWithoutOrganizerInput = {
+    where: ExhibitionScalarWhereInput
+    data: XOR<ExhibitionUpdateManyMutationInput, ExhibitionUncheckedUpdateManyWithoutOrganizerInput>
+  }
+
+  export type ExhibitionPassUpsertWithWhereUniqueWithoutUserInput = {
+    where: ExhibitionPassWhereUniqueInput
+    update: XOR<ExhibitionPassUpdateWithoutUserInput, ExhibitionPassUncheckedUpdateWithoutUserInput>
+    create: XOR<ExhibitionPassCreateWithoutUserInput, ExhibitionPassUncheckedCreateWithoutUserInput>
+  }
+
+  export type ExhibitionPassUpdateWithWhereUniqueWithoutUserInput = {
+    where: ExhibitionPassWhereUniqueInput
+    data: XOR<ExhibitionPassUpdateWithoutUserInput, ExhibitionPassUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ExhibitionPassUpdateManyWithWhereWithoutUserInput = {
+    where: ExhibitionPassScalarWhereInput
+    data: XOR<ExhibitionPassUpdateManyMutationInput, ExhibitionPassUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ExhibitionPassScalarWhereInput = {
+    AND?: ExhibitionPassScalarWhereInput | ExhibitionPassScalarWhereInput[]
+    OR?: ExhibitionPassScalarWhereInput[]
+    NOT?: ExhibitionPassScalarWhereInput | ExhibitionPassScalarWhereInput[]
+    id?: StringFilter<"ExhibitionPass"> | string
+    reference?: StringFilter<"ExhibitionPass"> | string
+    exhibitionId?: StringFilter<"ExhibitionPass"> | string
+    userId?: StringFilter<"ExhibitionPass"> | string
+    kind?: EnumExhibitionPassKindFilter<"ExhibitionPass"> | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFilter<"ExhibitionPass"> | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFilter<"ExhibitionPass"> | $Enums.ExhibitionPassStatus
+    amountXof?: IntFilter<"ExhibitionPass"> | number
+    provider?: StringNullableFilter<"ExhibitionPass"> | string | null
+    providerRef?: StringNullableFilter<"ExhibitionPass"> | string | null
+    paidAt?: DateTimeNullableFilter<"ExhibitionPass"> | Date | string | null
+    createdAt?: DateTimeFilter<"ExhibitionPass"> | Date | string
+    updatedAt?: DateTimeFilter<"ExhibitionPass"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     role: $Enums.UserRole
@@ -86787,6 +96059,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -86822,6 +96096,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -86873,6 +96149,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -86908,6 +96186,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutRecoveryCodesInput = {
@@ -86943,6 +96223,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRecoveryCodesInput = {
@@ -86978,6 +96260,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRecoveryCodesInput = {
@@ -87029,6 +96313,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRecoveryCodesInput = {
@@ -87064,6 +96350,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutVerificationsInput = {
@@ -87099,6 +96387,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVerificationsInput = {
@@ -87134,6 +96424,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVerificationsInput = {
@@ -87185,6 +96477,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerificationsInput = {
@@ -87220,6 +96514,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutTermsAcceptanceInput = {
@@ -87255,6 +96551,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTermsAcceptanceInput = {
@@ -87290,6 +96588,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTermsAcceptanceInput = {
@@ -87341,6 +96641,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTermsAcceptanceInput = {
@@ -87376,6 +96678,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAddressesInput = {
@@ -87411,6 +96715,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAddressesInput = {
@@ -87446,6 +96752,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAddressesInput = {
@@ -87460,6 +96768,7 @@ export namespace Prisma {
     longitude?: number | null
     country: CountryCreateNestedOneWithoutCitiesInput
     makerProfiles?: MakerProfileCreateNestedManyWithoutCityInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutCityInput
   }
 
   export type CityUncheckedCreateWithoutAddressesInput = {
@@ -87469,6 +96778,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     makerProfiles?: MakerProfileUncheckedCreateNestedManyWithoutCityInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutCityInput
   }
 
   export type CityCreateOrConnectWithoutAddressesInput = {
@@ -87520,6 +96830,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAddressesInput = {
@@ -87555,6 +96867,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CityUpsertWithoutAddressesInput = {
@@ -87575,6 +96889,7 @@ export namespace Prisma {
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     country?: CountryUpdateOneRequiredWithoutCitiesNestedInput
     makerProfiles?: MakerProfileUpdateManyWithoutCityNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutCityNestedInput
   }
 
   export type CityUncheckedUpdateWithoutAddressesInput = {
@@ -87584,6 +96899,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     makerProfiles?: MakerProfileUncheckedUpdateManyWithoutCityNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutCityNestedInput
   }
 
   export type UserCreateWithoutMakerInput = {
@@ -87619,6 +96935,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMakerInput = {
@@ -87654,6 +96972,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMakerInput = {
@@ -87668,6 +96988,7 @@ export namespace Prisma {
     longitude?: number | null
     country: CountryCreateNestedOneWithoutCitiesInput
     addresses?: AddressCreateNestedManyWithoutCityInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutCityInput
   }
 
   export type CityUncheckedCreateWithoutMakerProfilesInput = {
@@ -87677,6 +96998,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     addresses?: AddressUncheckedCreateNestedManyWithoutCityInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutCityInput
   }
 
   export type CityCreateOrConnectWithoutMakerProfilesInput = {
@@ -87717,6 +97039,7 @@ export namespace Prisma {
     category: CategoryCreateNestedOneWithoutProductsInput
     images?: ProductImageCreateNestedManyWithoutProductInput
     orderLines?: OrderLineCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkCreateNestedManyWithoutProductInput
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
   }
@@ -87754,6 +97077,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     images?: ProductImageUncheckedCreateNestedManyWithoutProductInput
     orderLines?: OrderLineUncheckedCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkUncheckedCreateNestedManyWithoutProductInput
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
   }
@@ -87900,6 +97224,118 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ExhibitionCreateWithoutMakerInput = {
+    id?: string
+    slug: string
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizer: UserCreateNestedOneWithoutExhibitionsInput
+    plan?: ExhibitionPlanCreateNestedOneWithoutExhibitionsInput
+    city: CityCreateNestedOneWithoutExhibitionsInput
+    works?: ExhibitionWorkCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionUncheckedCreateWithoutMakerInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    works?: ExhibitionWorkUncheckedCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassUncheckedCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionCreateOrConnectWithoutMakerInput = {
+    where: ExhibitionWhereUniqueInput
+    create: XOR<ExhibitionCreateWithoutMakerInput, ExhibitionUncheckedCreateWithoutMakerInput>
+  }
+
+  export type ExhibitionCreateManyMakerInputEnvelope = {
+    data: ExhibitionCreateManyMakerInput | ExhibitionCreateManyMakerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutMakerInput = {
     update: XOR<UserUpdateWithoutMakerInput, UserUncheckedUpdateWithoutMakerInput>
     create: XOR<UserCreateWithoutMakerInput, UserUncheckedCreateWithoutMakerInput>
@@ -87944,6 +97380,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMakerInput = {
@@ -87979,6 +97417,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CityUpsertWithoutMakerProfilesInput = {
@@ -87999,6 +97439,7 @@ export namespace Prisma {
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     country?: CountryUpdateOneRequiredWithoutCitiesNestedInput
     addresses?: AddressUpdateManyWithoutCityNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutCityNestedInput
   }
 
   export type CityUncheckedUpdateWithoutMakerProfilesInput = {
@@ -88008,6 +97449,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     addresses?: AddressUncheckedUpdateManyWithoutCityNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutCityNestedInput
   }
 
   export type ProductUpsertWithWhereUniqueWithoutMakerInput = {
@@ -88170,6 +97612,22 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"MakerSubscription"> | Date | string
   }
 
+  export type ExhibitionUpsertWithWhereUniqueWithoutMakerInput = {
+    where: ExhibitionWhereUniqueInput
+    update: XOR<ExhibitionUpdateWithoutMakerInput, ExhibitionUncheckedUpdateWithoutMakerInput>
+    create: XOR<ExhibitionCreateWithoutMakerInput, ExhibitionUncheckedCreateWithoutMakerInput>
+  }
+
+  export type ExhibitionUpdateWithWhereUniqueWithoutMakerInput = {
+    where: ExhibitionWhereUniqueInput
+    data: XOR<ExhibitionUpdateWithoutMakerInput, ExhibitionUncheckedUpdateWithoutMakerInput>
+  }
+
+  export type ExhibitionUpdateManyWithWhereWithoutMakerInput = {
+    where: ExhibitionScalarWhereInput
+    data: XOR<ExhibitionUpdateManyMutationInput, ExhibitionUncheckedUpdateManyWithoutMakerInput>
+  }
+
   export type MakerSubscriptionCreateWithoutPlanInput = {
     id?: string
     startsAt: Date | string
@@ -88270,6 +97728,7 @@ export namespace Prisma {
     products?: ProductCreateNestedManyWithoutMakerInput
     subOrders?: SubOrderCreateNestedManyWithoutMakerInput
     documents?: KycDocumentCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileUncheckedCreateWithoutSubscriptionsInput = {
@@ -88320,6 +97779,7 @@ export namespace Prisma {
     products?: ProductUncheckedCreateNestedManyWithoutMakerInput
     subOrders?: SubOrderUncheckedCreateNestedManyWithoutMakerInput
     documents?: KycDocumentUncheckedCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileCreateOrConnectWithoutSubscriptionsInput = {
@@ -88427,6 +97887,7 @@ export namespace Prisma {
     products?: ProductUpdateManyWithoutMakerNestedInput
     subOrders?: SubOrderUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutMakerNestedInput
   }
 
   export type MakerProfileUncheckedUpdateWithoutSubscriptionsInput = {
@@ -88477,6 +97938,7 @@ export namespace Prisma {
     products?: ProductUncheckedUpdateManyWithoutMakerNestedInput
     subOrders?: SubOrderUncheckedUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUncheckedUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutMakerNestedInput
   }
 
   export type VisibilityPlanUpsertWithoutSubscriptionsInput = {
@@ -88574,6 +98036,7 @@ export namespace Prisma {
     products?: ProductCreateNestedManyWithoutMakerInput
     subOrders?: SubOrderCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileUncheckedCreateWithoutDocumentsInput = {
@@ -88624,6 +98087,7 @@ export namespace Prisma {
     products?: ProductUncheckedCreateNestedManyWithoutMakerInput
     subOrders?: SubOrderUncheckedCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionUncheckedCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileCreateOrConnectWithoutDocumentsInput = {
@@ -88733,6 +98197,7 @@ export namespace Prisma {
     products?: ProductUpdateManyWithoutMakerNestedInput
     subOrders?: SubOrderUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutMakerNestedInput
   }
 
   export type MakerProfileUncheckedUpdateWithoutDocumentsInput = {
@@ -88783,6 +98248,7 @@ export namespace Prisma {
     products?: ProductUncheckedUpdateManyWithoutMakerNestedInput
     subOrders?: SubOrderUncheckedUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUncheckedUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutMakerNestedInput
   }
 
   export type CourierProfileUpsertWithoutDocumentsInput = {
@@ -88867,6 +98333,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCourierInput = {
@@ -88902,6 +98370,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCourierInput = {
@@ -89091,6 +98561,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCourierInput = {
@@ -89126,6 +98598,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type KycDocumentUpsertWithWhereUniqueWithoutCourierInput = {
@@ -89373,6 +98847,7 @@ export namespace Prisma {
     maker: MakerProfileCreateNestedOneWithoutProductsInput
     images?: ProductImageCreateNestedManyWithoutProductInput
     orderLines?: OrderLineCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkCreateNestedManyWithoutProductInput
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
   }
@@ -89410,6 +98885,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     images?: ProductImageUncheckedCreateNestedManyWithoutProductInput
     orderLines?: OrderLineUncheckedCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkUncheckedCreateNestedManyWithoutProductInput
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
   }
@@ -89544,6 +99020,7 @@ export namespace Prisma {
     subOrders?: SubOrderCreateNestedManyWithoutMakerInput
     documents?: KycDocumentCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileUncheckedCreateWithoutProductsInput = {
@@ -89594,6 +99071,7 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedCreateNestedManyWithoutMakerInput
     documents?: KycDocumentUncheckedCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionUncheckedCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileCreateOrConnectWithoutProductsInput = {
@@ -89681,6 +99159,50 @@ export namespace Prisma {
 
   export type OrderLineCreateManyProductInputEnvelope = {
     data: OrderLineCreateManyProductInput | OrderLineCreateManyProductInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExhibitionWorkCreateWithoutProductInput = {
+    id?: string
+    position?: number
+    title: string
+    artistName: string
+    description: string
+    materials?: string | null
+    dimensions?: string | null
+    imageKeys?: ExhibitionWorkCreateimageKeysInput | string[]
+    proofKey?: string | null
+    reviewStatus?: $Enums.ExhibitionWorkReview
+    reviewNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    exhibition: ExhibitionCreateNestedOneWithoutWorksInput
+  }
+
+  export type ExhibitionWorkUncheckedCreateWithoutProductInput = {
+    id?: string
+    exhibitionId: string
+    position?: number
+    title: string
+    artistName: string
+    description: string
+    materials?: string | null
+    dimensions?: string | null
+    imageKeys?: ExhibitionWorkCreateimageKeysInput | string[]
+    proofKey?: string | null
+    reviewStatus?: $Enums.ExhibitionWorkReview
+    reviewNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionWorkCreateOrConnectWithoutProductInput = {
+    where: ExhibitionWorkWhereUniqueInput
+    create: XOR<ExhibitionWorkCreateWithoutProductInput, ExhibitionWorkUncheckedCreateWithoutProductInput>
+  }
+
+  export type ExhibitionWorkCreateManyProductInputEnvelope = {
+    data: ExhibitionWorkCreateManyProductInput | ExhibitionWorkCreateManyProductInput[]
     skipDuplicates?: boolean
   }
 
@@ -89801,6 +99323,7 @@ export namespace Prisma {
     subOrders?: SubOrderUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutMakerNestedInput
   }
 
   export type MakerProfileUncheckedUpdateWithoutProductsInput = {
@@ -89851,6 +99374,7 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUncheckedUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUncheckedUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutMakerNestedInput
   }
 
   export type CategoryUpsertWithoutProductsInput = {
@@ -89941,6 +99465,43 @@ export namespace Prisma {
     lineTotalXof?: IntFilter<"OrderLine"> | number
   }
 
+  export type ExhibitionWorkUpsertWithWhereUniqueWithoutProductInput = {
+    where: ExhibitionWorkWhereUniqueInput
+    update: XOR<ExhibitionWorkUpdateWithoutProductInput, ExhibitionWorkUncheckedUpdateWithoutProductInput>
+    create: XOR<ExhibitionWorkCreateWithoutProductInput, ExhibitionWorkUncheckedCreateWithoutProductInput>
+  }
+
+  export type ExhibitionWorkUpdateWithWhereUniqueWithoutProductInput = {
+    where: ExhibitionWorkWhereUniqueInput
+    data: XOR<ExhibitionWorkUpdateWithoutProductInput, ExhibitionWorkUncheckedUpdateWithoutProductInput>
+  }
+
+  export type ExhibitionWorkUpdateManyWithWhereWithoutProductInput = {
+    where: ExhibitionWorkScalarWhereInput
+    data: XOR<ExhibitionWorkUpdateManyMutationInput, ExhibitionWorkUncheckedUpdateManyWithoutProductInput>
+  }
+
+  export type ExhibitionWorkScalarWhereInput = {
+    AND?: ExhibitionWorkScalarWhereInput | ExhibitionWorkScalarWhereInput[]
+    OR?: ExhibitionWorkScalarWhereInput[]
+    NOT?: ExhibitionWorkScalarWhereInput | ExhibitionWorkScalarWhereInput[]
+    id?: StringFilter<"ExhibitionWork"> | string
+    exhibitionId?: StringFilter<"ExhibitionWork"> | string
+    position?: IntFilter<"ExhibitionWork"> | number
+    productId?: StringNullableFilter<"ExhibitionWork"> | string | null
+    title?: StringFilter<"ExhibitionWork"> | string
+    artistName?: StringFilter<"ExhibitionWork"> | string
+    description?: StringFilter<"ExhibitionWork"> | string
+    materials?: StringNullableFilter<"ExhibitionWork"> | string | null
+    dimensions?: StringNullableFilter<"ExhibitionWork"> | string | null
+    imageKeys?: StringNullableListFilter<"ExhibitionWork">
+    proofKey?: StringNullableFilter<"ExhibitionWork"> | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFilter<"ExhibitionWork"> | $Enums.ExhibitionWorkReview
+    reviewNote?: StringNullableFilter<"ExhibitionWork"> | string | null
+    createdAt?: DateTimeFilter<"ExhibitionWork"> | Date | string
+    updatedAt?: DateTimeFilter<"ExhibitionWork"> | Date | string
+  }
+
   export type CartItemUpsertWithWhereUniqueWithoutProductInput = {
     where: CartItemWhereUniqueInput
     update: XOR<CartItemUpdateWithoutProductInput, CartItemUncheckedUpdateWithoutProductInput>
@@ -90016,6 +99577,7 @@ export namespace Prisma {
     maker: MakerProfileCreateNestedOneWithoutProductsInput
     category: CategoryCreateNestedOneWithoutProductsInput
     orderLines?: OrderLineCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkCreateNestedManyWithoutProductInput
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
   }
@@ -90053,6 +99615,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orderLines?: OrderLineUncheckedCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkUncheckedCreateNestedManyWithoutProductInput
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
   }
@@ -90106,6 +99669,7 @@ export namespace Prisma {
     maker?: MakerProfileUpdateOneRequiredWithoutProductsNestedInput
     category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
     orderLines?: OrderLineUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
   }
@@ -90143,6 +99707,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderLines?: OrderLineUncheckedUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUncheckedUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -90180,6 +99745,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCartsInput = {
@@ -90215,6 +99782,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCartsInput = {
@@ -90288,6 +99857,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCartsInput = {
@@ -90323,6 +99894,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CartItemUpsertWithWhereUniqueWithoutCartInput = {
@@ -90398,6 +99971,7 @@ export namespace Prisma {
     category: CategoryCreateNestedOneWithoutProductsInput
     images?: ProductImageCreateNestedManyWithoutProductInput
     orderLines?: OrderLineCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
   }
 
@@ -90435,6 +100009,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     images?: ProductImageUncheckedCreateNestedManyWithoutProductInput
     orderLines?: OrderLineUncheckedCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -90517,6 +100092,7 @@ export namespace Prisma {
     category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
     images?: ProductImageUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
   }
 
@@ -90554,6 +100130,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ProductImageUncheckedUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUncheckedUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
   }
 
@@ -90590,6 +100167,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -90625,6 +100204,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -91091,6 +100672,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -91126,6 +100709,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PromoCodeUpsertWithoutOrdersInput = {
@@ -91528,6 +101113,7 @@ export namespace Prisma {
     products?: ProductCreateNestedManyWithoutMakerInput
     documents?: KycDocumentCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileUncheckedCreateWithoutSubOrdersInput = {
@@ -91578,6 +101164,7 @@ export namespace Prisma {
     products?: ProductUncheckedCreateNestedManyWithoutMakerInput
     documents?: KycDocumentUncheckedCreateNestedManyWithoutMakerInput
     subscriptions?: MakerSubscriptionUncheckedCreateNestedManyWithoutMakerInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutMakerInput
   }
 
   export type MakerProfileCreateOrConnectWithoutSubOrdersInput = {
@@ -91929,6 +101516,7 @@ export namespace Prisma {
     products?: ProductUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutMakerNestedInput
   }
 
   export type MakerProfileUncheckedUpdateWithoutSubOrdersInput = {
@@ -91979,6 +101567,7 @@ export namespace Prisma {
     products?: ProductUncheckedUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUncheckedUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUncheckedUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutMakerNestedInput
   }
 
   export type OrderLineUpsertWithWhereUniqueWithoutSubOrderInput = {
@@ -92233,6 +101822,7 @@ export namespace Prisma {
     maker: MakerProfileCreateNestedOneWithoutProductsInput
     category: CategoryCreateNestedOneWithoutProductsInput
     images?: ProductImageCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkCreateNestedManyWithoutProductInput
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
   }
@@ -92270,6 +101860,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     images?: ProductImageUncheckedCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkUncheckedCreateNestedManyWithoutProductInput
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
   }
@@ -92421,6 +102012,7 @@ export namespace Prisma {
     maker?: MakerProfileUpdateOneRequiredWithoutProductsNestedInput
     category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
     images?: ProductImageUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
   }
@@ -92458,6 +102050,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ProductImageUncheckedUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUncheckedUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -95414,6 +105007,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupportTicketsInput = {
@@ -95449,6 +105044,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupportTicketsInput = {
@@ -95617,6 +105214,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupportTicketsInput = {
@@ -95652,6 +105251,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrderUpsertWithoutSupportTicketsInput = {
@@ -95907,6 +105508,7 @@ export namespace Prisma {
     category: CategoryCreateNestedOneWithoutProductsInput
     images?: ProductImageCreateNestedManyWithoutProductInput
     orderLines?: OrderLineCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkCreateNestedManyWithoutProductInput
     cartItems?: CartItemCreateNestedManyWithoutProductInput
   }
 
@@ -95944,6 +105546,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     images?: ProductImageUncheckedCreateNestedManyWithoutProductInput
     orderLines?: OrderLineUncheckedCreateNestedManyWithoutProductInput
+    exhibitionWorks?: ExhibitionWorkUncheckedCreateNestedManyWithoutProductInput
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -95985,6 +105588,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReviewsInput = {
@@ -96020,6 +105625,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReviewsInput = {
@@ -96103,6 +105710,7 @@ export namespace Prisma {
     category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
     images?: ProductImageUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
   }
 
@@ -96140,6 +105748,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ProductImageUncheckedUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUncheckedUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUncheckedUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
   }
 
@@ -96187,6 +105796,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewsInput = {
@@ -96222,6 +105833,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrderLineUpsertWithoutReviewInput = {
@@ -96294,6 +105907,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -96329,6 +105944,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -96380,6 +105997,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -96415,6 +106034,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PromoRedemptionCreateWithoutPromoCodeInput = {
@@ -96643,6 +106264,8 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPromoRedemptionsInput = {
@@ -96678,6 +106301,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPromoRedemptionsInput = {
@@ -96865,6 +106490,8 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPromoRedemptionsInput = {
@@ -96900,6 +106527,8 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrderUpsertWithoutPromoRedemptionInput = {
@@ -97208,6 +106837,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutAuthorInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutIdempotencyKeysInput = {
@@ -97243,6 +106874,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutIdempotencyKeysInput = {
@@ -97294,6 +106927,8 @@ export namespace Prisma {
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutAuthorNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutIdempotencyKeysInput = {
@@ -97329,6 +106964,1548 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ExhibitionCreateWithoutPlanInput = {
+    id?: string
+    slug: string
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizer: UserCreateNestedOneWithoutExhibitionsInput
+    maker?: MakerProfileCreateNestedOneWithoutExhibitionsInput
+    city: CityCreateNestedOneWithoutExhibitionsInput
+    works?: ExhibitionWorkCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionUncheckedCreateWithoutPlanInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    makerId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    works?: ExhibitionWorkUncheckedCreateNestedManyWithoutExhibitionInput
+    passes?: ExhibitionPassUncheckedCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionCreateOrConnectWithoutPlanInput = {
+    where: ExhibitionWhereUniqueInput
+    create: XOR<ExhibitionCreateWithoutPlanInput, ExhibitionUncheckedCreateWithoutPlanInput>
+  }
+
+  export type ExhibitionCreateManyPlanInputEnvelope = {
+    data: ExhibitionCreateManyPlanInput | ExhibitionCreateManyPlanInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExhibitionUpsertWithWhereUniqueWithoutPlanInput = {
+    where: ExhibitionWhereUniqueInput
+    update: XOR<ExhibitionUpdateWithoutPlanInput, ExhibitionUncheckedUpdateWithoutPlanInput>
+    create: XOR<ExhibitionCreateWithoutPlanInput, ExhibitionUncheckedCreateWithoutPlanInput>
+  }
+
+  export type ExhibitionUpdateWithWhereUniqueWithoutPlanInput = {
+    where: ExhibitionWhereUniqueInput
+    data: XOR<ExhibitionUpdateWithoutPlanInput, ExhibitionUncheckedUpdateWithoutPlanInput>
+  }
+
+  export type ExhibitionUpdateManyWithWhereWithoutPlanInput = {
+    where: ExhibitionScalarWhereInput
+    data: XOR<ExhibitionUpdateManyMutationInput, ExhibitionUncheckedUpdateManyWithoutPlanInput>
+  }
+
+  export type UserCreateWithoutExhibitionsInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileCreateNestedOneWithoutUserInput
+    courier?: CourierProfileCreateNestedOneWithoutUserInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    carts?: CartCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutExhibitionsInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileUncheckedCreateNestedOneWithoutUserInput
+    courier?: CourierProfileUncheckedCreateNestedOneWithoutUserInput
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    carts?: CartUncheckedCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutExhibitionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutExhibitionsInput, UserUncheckedCreateWithoutExhibitionsInput>
+  }
+
+  export type MakerProfileCreateWithoutExhibitionsInput = {
+    id?: string
+    shopName: string
+    slug: string
+    description?: string | null
+    logoUrl?: string | null
+    coverUrl?: string | null
+    creatorKind?: $Enums.CreatorKind
+    activityField?: string | null
+    specialties?: MakerProfileCreatespecialtiesInput | string[]
+    techniques?: MakerProfileCreatetechniquesInput | string[]
+    services?: string | null
+    region?: string | null
+    publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
+    managerName?: string | null
+    contactPhone?: string | null
+    contactEmail?: string | null
+    postalAddress?: string | null
+    ifuNumber?: string | null
+    rccmNumber?: string | null
+    kycStatus?: $Enums.KycStatus
+    kycSubmittedAt?: Date | string | null
+    kycReviewedAt?: Date | string | null
+    kycReviewerId?: string | null
+    kycRejectReason?: string | null
+    pickupLine1?: string | null
+    pickupLandmark?: string | null
+    pickupLatitude?: number | null
+    pickupLongitude?: number | null
+    payoutMethod?: $Enums.PayoutMethod
+    payoutMsisdn?: string | null
+    payoutOperator?: string | null
+    payoutBankIban?: string | null
+    commissionBps?: number
+    isFeatured?: boolean
+    ratingAvg?: number
+    ratingCount?: number
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutMakerInput
+    city: CityCreateNestedOneWithoutMakerProfilesInput
+    products?: ProductCreateNestedManyWithoutMakerInput
+    subOrders?: SubOrderCreateNestedManyWithoutMakerInput
+    documents?: KycDocumentCreateNestedManyWithoutMakerInput
+    subscriptions?: MakerSubscriptionCreateNestedManyWithoutMakerInput
+  }
+
+  export type MakerProfileUncheckedCreateWithoutExhibitionsInput = {
+    id?: string
+    userId: string
+    shopName: string
+    slug: string
+    description?: string | null
+    logoUrl?: string | null
+    coverUrl?: string | null
+    cityId: string
+    creatorKind?: $Enums.CreatorKind
+    activityField?: string | null
+    specialties?: MakerProfileCreatespecialtiesInput | string[]
+    techniques?: MakerProfileCreatetechniquesInput | string[]
+    services?: string | null
+    region?: string | null
+    publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
+    managerName?: string | null
+    contactPhone?: string | null
+    contactEmail?: string | null
+    postalAddress?: string | null
+    ifuNumber?: string | null
+    rccmNumber?: string | null
+    kycStatus?: $Enums.KycStatus
+    kycSubmittedAt?: Date | string | null
+    kycReviewedAt?: Date | string | null
+    kycReviewerId?: string | null
+    kycRejectReason?: string | null
+    pickupLine1?: string | null
+    pickupLandmark?: string | null
+    pickupLatitude?: number | null
+    pickupLongitude?: number | null
+    payoutMethod?: $Enums.PayoutMethod
+    payoutMsisdn?: string | null
+    payoutOperator?: string | null
+    payoutBankIban?: string | null
+    commissionBps?: number
+    isFeatured?: boolean
+    ratingAvg?: number
+    ratingCount?: number
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    products?: ProductUncheckedCreateNestedManyWithoutMakerInput
+    subOrders?: SubOrderUncheckedCreateNestedManyWithoutMakerInput
+    documents?: KycDocumentUncheckedCreateNestedManyWithoutMakerInput
+    subscriptions?: MakerSubscriptionUncheckedCreateNestedManyWithoutMakerInput
+  }
+
+  export type MakerProfileCreateOrConnectWithoutExhibitionsInput = {
+    where: MakerProfileWhereUniqueInput
+    create: XOR<MakerProfileCreateWithoutExhibitionsInput, MakerProfileUncheckedCreateWithoutExhibitionsInput>
+  }
+
+  export type ExhibitionPlanCreateWithoutExhibitionsInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    maxWorks?: number | null
+    maxDurationDays?: number | null
+    priceXof?: number
+    perks?: ExhibitionPlanCreateperksInput | string[]
+    featuredPlacement?: boolean
+    communicationSupport?: boolean
+    isActive?: boolean
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionPlanUncheckedCreateWithoutExhibitionsInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    maxWorks?: number | null
+    maxDurationDays?: number | null
+    priceXof?: number
+    perks?: ExhibitionPlanCreateperksInput | string[]
+    featuredPlacement?: boolean
+    communicationSupport?: boolean
+    isActive?: boolean
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionPlanCreateOrConnectWithoutExhibitionsInput = {
+    where: ExhibitionPlanWhereUniqueInput
+    create: XOR<ExhibitionPlanCreateWithoutExhibitionsInput, ExhibitionPlanUncheckedCreateWithoutExhibitionsInput>
+  }
+
+  export type CityCreateWithoutExhibitionsInput = {
+    id?: string
+    name: string
+    latitude?: number | null
+    longitude?: number | null
+    country: CountryCreateNestedOneWithoutCitiesInput
+    addresses?: AddressCreateNestedManyWithoutCityInput
+    makerProfiles?: MakerProfileCreateNestedManyWithoutCityInput
+  }
+
+  export type CityUncheckedCreateWithoutExhibitionsInput = {
+    id?: string
+    countryId: string
+    name: string
+    latitude?: number | null
+    longitude?: number | null
+    addresses?: AddressUncheckedCreateNestedManyWithoutCityInput
+    makerProfiles?: MakerProfileUncheckedCreateNestedManyWithoutCityInput
+  }
+
+  export type CityCreateOrConnectWithoutExhibitionsInput = {
+    where: CityWhereUniqueInput
+    create: XOR<CityCreateWithoutExhibitionsInput, CityUncheckedCreateWithoutExhibitionsInput>
+  }
+
+  export type ExhibitionWorkCreateWithoutExhibitionInput = {
+    id?: string
+    position?: number
+    title: string
+    artistName: string
+    description: string
+    materials?: string | null
+    dimensions?: string | null
+    imageKeys?: ExhibitionWorkCreateimageKeysInput | string[]
+    proofKey?: string | null
+    reviewStatus?: $Enums.ExhibitionWorkReview
+    reviewNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    product?: ProductCreateNestedOneWithoutExhibitionWorksInput
+  }
+
+  export type ExhibitionWorkUncheckedCreateWithoutExhibitionInput = {
+    id?: string
+    position?: number
+    productId?: string | null
+    title: string
+    artistName: string
+    description: string
+    materials?: string | null
+    dimensions?: string | null
+    imageKeys?: ExhibitionWorkCreateimageKeysInput | string[]
+    proofKey?: string | null
+    reviewStatus?: $Enums.ExhibitionWorkReview
+    reviewNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionWorkCreateOrConnectWithoutExhibitionInput = {
+    where: ExhibitionWorkWhereUniqueInput
+    create: XOR<ExhibitionWorkCreateWithoutExhibitionInput, ExhibitionWorkUncheckedCreateWithoutExhibitionInput>
+  }
+
+  export type ExhibitionWorkCreateManyExhibitionInputEnvelope = {
+    data: ExhibitionWorkCreateManyExhibitionInput | ExhibitionWorkCreateManyExhibitionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExhibitionPassCreateWithoutExhibitionInput = {
+    id?: string
+    reference: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof?: number
+    provider?: string | null
+    providerRef?: string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutExhibitionPassesInput
+  }
+
+  export type ExhibitionPassUncheckedCreateWithoutExhibitionInput = {
+    id?: string
+    reference: string
+    userId: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof?: number
+    provider?: string | null
+    providerRef?: string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionPassCreateOrConnectWithoutExhibitionInput = {
+    where: ExhibitionPassWhereUniqueInput
+    create: XOR<ExhibitionPassCreateWithoutExhibitionInput, ExhibitionPassUncheckedCreateWithoutExhibitionInput>
+  }
+
+  export type ExhibitionPassCreateManyExhibitionInputEnvelope = {
+    data: ExhibitionPassCreateManyExhibitionInput | ExhibitionPassCreateManyExhibitionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutExhibitionsInput = {
+    update: XOR<UserUpdateWithoutExhibitionsInput, UserUncheckedUpdateWithoutExhibitionsInput>
+    create: XOR<UserCreateWithoutExhibitionsInput, UserUncheckedCreateWithoutExhibitionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutExhibitionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutExhibitionsInput, UserUncheckedUpdateWithoutExhibitionsInput>
+  }
+
+  export type UserUpdateWithoutExhibitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUpdateOneWithoutUserNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    carts?: CartUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutExhibitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUncheckedUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUncheckedUpdateOneWithoutUserNestedInput
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    carts?: CartUncheckedUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type MakerProfileUpsertWithoutExhibitionsInput = {
+    update: XOR<MakerProfileUpdateWithoutExhibitionsInput, MakerProfileUncheckedUpdateWithoutExhibitionsInput>
+    create: XOR<MakerProfileCreateWithoutExhibitionsInput, MakerProfileUncheckedCreateWithoutExhibitionsInput>
+    where?: MakerProfileWhereInput
+  }
+
+  export type MakerProfileUpdateToOneWithWhereWithoutExhibitionsInput = {
+    where?: MakerProfileWhereInput
+    data: XOR<MakerProfileUpdateWithoutExhibitionsInput, MakerProfileUncheckedUpdateWithoutExhibitionsInput>
+  }
+
+  export type MakerProfileUpdateWithoutExhibitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shopName?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorKind?: EnumCreatorKindFieldUpdateOperationsInput | $Enums.CreatorKind
+    activityField?: NullableStringFieldUpdateOperationsInput | string | null
+    specialties?: MakerProfileUpdatespecialtiesInput | string[]
+    techniques?: MakerProfileUpdatetechniquesInput | string[]
+    services?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    managerName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
+    kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    kycReviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    kycRejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLine1?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLandmark?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    pickupLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    payoutMethod?: EnumPayoutMethodFieldUpdateOperationsInput | $Enums.PayoutMethod
+    payoutMsisdn?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutOperator?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutBankIban?: NullableStringFieldUpdateOperationsInput | string | null
+    commissionBps?: IntFieldUpdateOperationsInput | number
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    ratingAvg?: FloatFieldUpdateOperationsInput | number
+    ratingCount?: IntFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutMakerNestedInput
+    city?: CityUpdateOneRequiredWithoutMakerProfilesNestedInput
+    products?: ProductUpdateManyWithoutMakerNestedInput
+    subOrders?: SubOrderUpdateManyWithoutMakerNestedInput
+    documents?: KycDocumentUpdateManyWithoutMakerNestedInput
+    subscriptions?: MakerSubscriptionUpdateManyWithoutMakerNestedInput
+  }
+
+  export type MakerProfileUncheckedUpdateWithoutExhibitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    shopName?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    creatorKind?: EnumCreatorKindFieldUpdateOperationsInput | $Enums.CreatorKind
+    activityField?: NullableStringFieldUpdateOperationsInput | string | null
+    specialties?: MakerProfileUpdatespecialtiesInput | string[]
+    techniques?: MakerProfileUpdatetechniquesInput | string[]
+    services?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    managerName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
+    kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    kycReviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    kycRejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLine1?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLandmark?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    pickupLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    payoutMethod?: EnumPayoutMethodFieldUpdateOperationsInput | $Enums.PayoutMethod
+    payoutMsisdn?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutOperator?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutBankIban?: NullableStringFieldUpdateOperationsInput | string | null
+    commissionBps?: IntFieldUpdateOperationsInput | number
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    ratingAvg?: FloatFieldUpdateOperationsInput | number
+    ratingCount?: IntFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    products?: ProductUncheckedUpdateManyWithoutMakerNestedInput
+    subOrders?: SubOrderUncheckedUpdateManyWithoutMakerNestedInput
+    documents?: KycDocumentUncheckedUpdateManyWithoutMakerNestedInput
+    subscriptions?: MakerSubscriptionUncheckedUpdateManyWithoutMakerNestedInput
+  }
+
+  export type ExhibitionPlanUpsertWithoutExhibitionsInput = {
+    update: XOR<ExhibitionPlanUpdateWithoutExhibitionsInput, ExhibitionPlanUncheckedUpdateWithoutExhibitionsInput>
+    create: XOR<ExhibitionPlanCreateWithoutExhibitionsInput, ExhibitionPlanUncheckedCreateWithoutExhibitionsInput>
+    where?: ExhibitionPlanWhereInput
+  }
+
+  export type ExhibitionPlanUpdateToOneWithWhereWithoutExhibitionsInput = {
+    where?: ExhibitionPlanWhereInput
+    data: XOR<ExhibitionPlanUpdateWithoutExhibitionsInput, ExhibitionPlanUncheckedUpdateWithoutExhibitionsInput>
+  }
+
+  export type ExhibitionPlanUpdateWithoutExhibitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    maxWorks?: NullableIntFieldUpdateOperationsInput | number | null
+    maxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    priceXof?: IntFieldUpdateOperationsInput | number
+    perks?: ExhibitionPlanUpdateperksInput | string[]
+    featuredPlacement?: BoolFieldUpdateOperationsInput | boolean
+    communicationSupport?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionPlanUncheckedUpdateWithoutExhibitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    maxWorks?: NullableIntFieldUpdateOperationsInput | number | null
+    maxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    priceXof?: IntFieldUpdateOperationsInput | number
+    perks?: ExhibitionPlanUpdateperksInput | string[]
+    featuredPlacement?: BoolFieldUpdateOperationsInput | boolean
+    communicationSupport?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CityUpsertWithoutExhibitionsInput = {
+    update: XOR<CityUpdateWithoutExhibitionsInput, CityUncheckedUpdateWithoutExhibitionsInput>
+    create: XOR<CityCreateWithoutExhibitionsInput, CityUncheckedCreateWithoutExhibitionsInput>
+    where?: CityWhereInput
+  }
+
+  export type CityUpdateToOneWithWhereWithoutExhibitionsInput = {
+    where?: CityWhereInput
+    data: XOR<CityUpdateWithoutExhibitionsInput, CityUncheckedUpdateWithoutExhibitionsInput>
+  }
+
+  export type CityUpdateWithoutExhibitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    country?: CountryUpdateOneRequiredWithoutCitiesNestedInput
+    addresses?: AddressUpdateManyWithoutCityNestedInput
+    makerProfiles?: MakerProfileUpdateManyWithoutCityNestedInput
+  }
+
+  export type CityUncheckedUpdateWithoutExhibitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    countryId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    addresses?: AddressUncheckedUpdateManyWithoutCityNestedInput
+    makerProfiles?: MakerProfileUncheckedUpdateManyWithoutCityNestedInput
+  }
+
+  export type ExhibitionWorkUpsertWithWhereUniqueWithoutExhibitionInput = {
+    where: ExhibitionWorkWhereUniqueInput
+    update: XOR<ExhibitionWorkUpdateWithoutExhibitionInput, ExhibitionWorkUncheckedUpdateWithoutExhibitionInput>
+    create: XOR<ExhibitionWorkCreateWithoutExhibitionInput, ExhibitionWorkUncheckedCreateWithoutExhibitionInput>
+  }
+
+  export type ExhibitionWorkUpdateWithWhereUniqueWithoutExhibitionInput = {
+    where: ExhibitionWorkWhereUniqueInput
+    data: XOR<ExhibitionWorkUpdateWithoutExhibitionInput, ExhibitionWorkUncheckedUpdateWithoutExhibitionInput>
+  }
+
+  export type ExhibitionWorkUpdateManyWithWhereWithoutExhibitionInput = {
+    where: ExhibitionWorkScalarWhereInput
+    data: XOR<ExhibitionWorkUpdateManyMutationInput, ExhibitionWorkUncheckedUpdateManyWithoutExhibitionInput>
+  }
+
+  export type ExhibitionPassUpsertWithWhereUniqueWithoutExhibitionInput = {
+    where: ExhibitionPassWhereUniqueInput
+    update: XOR<ExhibitionPassUpdateWithoutExhibitionInput, ExhibitionPassUncheckedUpdateWithoutExhibitionInput>
+    create: XOR<ExhibitionPassCreateWithoutExhibitionInput, ExhibitionPassUncheckedCreateWithoutExhibitionInput>
+  }
+
+  export type ExhibitionPassUpdateWithWhereUniqueWithoutExhibitionInput = {
+    where: ExhibitionPassWhereUniqueInput
+    data: XOR<ExhibitionPassUpdateWithoutExhibitionInput, ExhibitionPassUncheckedUpdateWithoutExhibitionInput>
+  }
+
+  export type ExhibitionPassUpdateManyWithWhereWithoutExhibitionInput = {
+    where: ExhibitionPassScalarWhereInput
+    data: XOR<ExhibitionPassUpdateManyMutationInput, ExhibitionPassUncheckedUpdateManyWithoutExhibitionInput>
+  }
+
+  export type ExhibitionCreateWithoutWorksInput = {
+    id?: string
+    slug: string
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizer: UserCreateNestedOneWithoutExhibitionsInput
+    maker?: MakerProfileCreateNestedOneWithoutExhibitionsInput
+    plan?: ExhibitionPlanCreateNestedOneWithoutExhibitionsInput
+    city: CityCreateNestedOneWithoutExhibitionsInput
+    passes?: ExhibitionPassCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionUncheckedCreateWithoutWorksInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    makerId?: string | null
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    passes?: ExhibitionPassUncheckedCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionCreateOrConnectWithoutWorksInput = {
+    where: ExhibitionWhereUniqueInput
+    create: XOR<ExhibitionCreateWithoutWorksInput, ExhibitionUncheckedCreateWithoutWorksInput>
+  }
+
+  export type ProductCreateWithoutExhibitionWorksInput = {
+    id?: string
+    slug: string
+    name: string
+    description: string
+    material?: string | null
+    makerPriceXof: number
+    quantityAvailable?: number
+    quantityReserved?: number
+    isForSale?: boolean
+    availability?: $Enums.ProductAvailability
+    isMadeToOrder?: boolean
+    leadTimeDays?: number | null
+    observations?: string | null
+    packagingNotes?: string | null
+    weightGrams: number
+    lengthMm: number
+    widthMm: number
+    heightMm: number
+    status?: $Enums.ProductStatus
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    rejectReason?: string | null
+    hiddenAt?: Date | string | null
+    ratingAvg?: number
+    ratingCount?: number
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker: MakerProfileCreateNestedOneWithoutProductsInput
+    category: CategoryCreateNestedOneWithoutProductsInput
+    images?: ProductImageCreateNestedManyWithoutProductInput
+    orderLines?: OrderLineCreateNestedManyWithoutProductInput
+    cartItems?: CartItemCreateNestedManyWithoutProductInput
+    reviews?: ReviewCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductUncheckedCreateWithoutExhibitionWorksInput = {
+    id?: string
+    slug: string
+    makerId: string
+    categoryId: string
+    name: string
+    description: string
+    material?: string | null
+    makerPriceXof: number
+    quantityAvailable?: number
+    quantityReserved?: number
+    isForSale?: boolean
+    availability?: $Enums.ProductAvailability
+    isMadeToOrder?: boolean
+    leadTimeDays?: number | null
+    observations?: string | null
+    packagingNotes?: string | null
+    weightGrams: number
+    lengthMm: number
+    widthMm: number
+    heightMm: number
+    status?: $Enums.ProductStatus
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    rejectReason?: string | null
+    hiddenAt?: Date | string | null
+    ratingAvg?: number
+    ratingCount?: number
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    images?: ProductImageUncheckedCreateNestedManyWithoutProductInput
+    orderLines?: OrderLineUncheckedCreateNestedManyWithoutProductInput
+    cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductCreateOrConnectWithoutExhibitionWorksInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutExhibitionWorksInput, ProductUncheckedCreateWithoutExhibitionWorksInput>
+  }
+
+  export type ExhibitionUpsertWithoutWorksInput = {
+    update: XOR<ExhibitionUpdateWithoutWorksInput, ExhibitionUncheckedUpdateWithoutWorksInput>
+    create: XOR<ExhibitionCreateWithoutWorksInput, ExhibitionUncheckedCreateWithoutWorksInput>
+    where?: ExhibitionWhereInput
+  }
+
+  export type ExhibitionUpdateToOneWithWhereWithoutWorksInput = {
+    where?: ExhibitionWhereInput
+    data: XOR<ExhibitionUpdateWithoutWorksInput, ExhibitionUncheckedUpdateWithoutWorksInput>
+  }
+
+  export type ExhibitionUpdateWithoutWorksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizer?: UserUpdateOneRequiredWithoutExhibitionsNestedInput
+    maker?: MakerProfileUpdateOneWithoutExhibitionsNestedInput
+    plan?: ExhibitionPlanUpdateOneWithoutExhibitionsNestedInput
+    city?: CityUpdateOneRequiredWithoutExhibitionsNestedInput
+    passes?: ExhibitionPassUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateWithoutWorksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    passes?: ExhibitionPassUncheckedUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ProductUpsertWithoutExhibitionWorksInput = {
+    update: XOR<ProductUpdateWithoutExhibitionWorksInput, ProductUncheckedUpdateWithoutExhibitionWorksInput>
+    create: XOR<ProductCreateWithoutExhibitionWorksInput, ProductUncheckedCreateWithoutExhibitionWorksInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutExhibitionWorksInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutExhibitionWorksInput, ProductUncheckedUpdateWithoutExhibitionWorksInput>
+  }
+
+  export type ProductUpdateWithoutExhibitionWorksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    material?: NullableStringFieldUpdateOperationsInput | string | null
+    makerPriceXof?: IntFieldUpdateOperationsInput | number
+    quantityAvailable?: IntFieldUpdateOperationsInput | number
+    quantityReserved?: IntFieldUpdateOperationsInput | number
+    isForSale?: BoolFieldUpdateOperationsInput | boolean
+    availability?: EnumProductAvailabilityFieldUpdateOperationsInput | $Enums.ProductAvailability
+    isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
+    leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
+    observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthMm?: IntFieldUpdateOperationsInput | number
+    widthMm?: IntFieldUpdateOperationsInput | number
+    heightMm?: IntFieldUpdateOperationsInput | number
+    status?: EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    hiddenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ratingAvg?: FloatFieldUpdateOperationsInput | number
+    ratingCount?: IntFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUpdateOneRequiredWithoutProductsNestedInput
+    category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
+    images?: ProductImageUpdateManyWithoutProductNestedInput
+    orderLines?: OrderLineUpdateManyWithoutProductNestedInput
+    cartItems?: CartItemUpdateManyWithoutProductNestedInput
+    reviews?: ReviewUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutExhibitionWorksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    makerId?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    material?: NullableStringFieldUpdateOperationsInput | string | null
+    makerPriceXof?: IntFieldUpdateOperationsInput | number
+    quantityAvailable?: IntFieldUpdateOperationsInput | number
+    quantityReserved?: IntFieldUpdateOperationsInput | number
+    isForSale?: BoolFieldUpdateOperationsInput | boolean
+    availability?: EnumProductAvailabilityFieldUpdateOperationsInput | $Enums.ProductAvailability
+    isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
+    leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
+    observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthMm?: IntFieldUpdateOperationsInput | number
+    widthMm?: IntFieldUpdateOperationsInput | number
+    heightMm?: IntFieldUpdateOperationsInput | number
+    status?: EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    hiddenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ratingAvg?: FloatFieldUpdateOperationsInput | number
+    ratingCount?: IntFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    images?: ProductImageUncheckedUpdateManyWithoutProductNestedInput
+    orderLines?: OrderLineUncheckedUpdateManyWithoutProductNestedInput
+    cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
+  }
+
+  export type ExhibitionCreateWithoutPassesInput = {
+    id?: string
+    slug: string
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizer: UserCreateNestedOneWithoutExhibitionsInput
+    maker?: MakerProfileCreateNestedOneWithoutExhibitionsInput
+    plan?: ExhibitionPlanCreateNestedOneWithoutExhibitionsInput
+    city: CityCreateNestedOneWithoutExhibitionsInput
+    works?: ExhibitionWorkCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionUncheckedCreateWithoutPassesInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    makerId?: string | null
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    works?: ExhibitionWorkUncheckedCreateNestedManyWithoutExhibitionInput
+  }
+
+  export type ExhibitionCreateOrConnectWithoutPassesInput = {
+    where: ExhibitionWhereUniqueInput
+    create: XOR<ExhibitionCreateWithoutPassesInput, ExhibitionUncheckedCreateWithoutPassesInput>
+  }
+
+  export type UserCreateWithoutExhibitionPassesInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileCreateNestedOneWithoutUserInput
+    courier?: CourierProfileCreateNestedOneWithoutUserInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    carts?: CartCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+  }
+
+  export type UserUncheckedCreateWithoutExhibitionPassesInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileUncheckedCreateNestedOneWithoutUserInput
+    courier?: CourierProfileUncheckedCreateNestedOneWithoutUserInput
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    carts?: CartUncheckedCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+  }
+
+  export type UserCreateOrConnectWithoutExhibitionPassesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutExhibitionPassesInput, UserUncheckedCreateWithoutExhibitionPassesInput>
+  }
+
+  export type ExhibitionUpsertWithoutPassesInput = {
+    update: XOR<ExhibitionUpdateWithoutPassesInput, ExhibitionUncheckedUpdateWithoutPassesInput>
+    create: XOR<ExhibitionCreateWithoutPassesInput, ExhibitionUncheckedCreateWithoutPassesInput>
+    where?: ExhibitionWhereInput
+  }
+
+  export type ExhibitionUpdateToOneWithWhereWithoutPassesInput = {
+    where?: ExhibitionWhereInput
+    data: XOR<ExhibitionUpdateWithoutPassesInput, ExhibitionUncheckedUpdateWithoutPassesInput>
+  }
+
+  export type ExhibitionUpdateWithoutPassesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizer?: UserUpdateOneRequiredWithoutExhibitionsNestedInput
+    maker?: MakerProfileUpdateOneWithoutExhibitionsNestedInput
+    plan?: ExhibitionPlanUpdateOneWithoutExhibitionsNestedInput
+    city?: CityUpdateOneRequiredWithoutExhibitionsNestedInput
+    works?: ExhibitionWorkUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateWithoutPassesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    works?: ExhibitionWorkUncheckedUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type UserUpsertWithoutExhibitionPassesInput = {
+    update: XOR<UserUpdateWithoutExhibitionPassesInput, UserUncheckedUpdateWithoutExhibitionPassesInput>
+    create: XOR<UserCreateWithoutExhibitionPassesInput, UserUncheckedCreateWithoutExhibitionPassesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutExhibitionPassesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutExhibitionPassesInput, UserUncheckedUpdateWithoutExhibitionPassesInput>
+  }
+
+  export type UserUpdateWithoutExhibitionPassesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUpdateOneWithoutUserNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    carts?: CartUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutExhibitionPassesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUncheckedUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUncheckedUpdateOneWithoutUserNestedInput
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    carts?: CartUncheckedUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
   }
 
   export type CityCreateManyCountryInput = {
@@ -97368,6 +108545,7 @@ export namespace Prisma {
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     addresses?: AddressUpdateManyWithoutCityNestedInput
     makerProfiles?: MakerProfileUpdateManyWithoutCityNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutCityNestedInput
   }
 
   export type CityUncheckedUpdateWithoutCountryInput = {
@@ -97377,6 +108555,7 @@ export namespace Prisma {
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     addresses?: AddressUncheckedUpdateManyWithoutCityNestedInput
     makerProfiles?: MakerProfileUncheckedUpdateManyWithoutCityNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutCityNestedInput
   }
 
   export type CityUncheckedUpdateManyWithoutCountryInput = {
@@ -97516,6 +108695,55 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ExhibitionCreateManyCityInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    makerId?: string | null
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type AddressUpdateWithoutCityInput = {
     id?: StringFieldUpdateOperationsInput | string
     label?: NullableStringFieldUpdateOperationsInput | string | null
@@ -97609,6 +108837,7 @@ export namespace Prisma {
     subOrders?: SubOrderUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutMakerNestedInput
   }
 
   export type MakerProfileUncheckedUpdateWithoutCityInput = {
@@ -97659,6 +108888,7 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedUpdateManyWithoutMakerNestedInput
     documents?: KycDocumentUncheckedUpdateManyWithoutMakerNestedInput
     subscriptions?: MakerSubscriptionUncheckedUpdateManyWithoutMakerNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutMakerNestedInput
   }
 
   export type MakerProfileUncheckedUpdateManyWithoutCityInput = {
@@ -97703,6 +108933,157 @@ export namespace Prisma {
     ratingAvg?: FloatFieldUpdateOperationsInput | number
     ratingCount?: IntFieldUpdateOperationsInput | number
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionUpdateWithoutCityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizer?: UserUpdateOneRequiredWithoutExhibitionsNestedInput
+    maker?: MakerProfileUpdateOneWithoutExhibitionsNestedInput
+    plan?: ExhibitionPlanUpdateOneWithoutExhibitionsNestedInput
+    works?: ExhibitionWorkUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateWithoutCityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    works?: ExhibitionWorkUncheckedUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUncheckedUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateManyWithoutCityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -97859,6 +109240,70 @@ export namespace Prisma {
     id?: string
     codeHash: string
     usedAt?: Date | string | null
+  }
+
+  export type ExhibitionCreateManyOrganizerInput = {
+    id?: string
+    slug: string
+    makerId?: string | null
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionPassCreateManyUserInput = {
+    id?: string
+    reference: string
+    exhibitionId: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof?: number
+    provider?: string | null
+    providerRef?: string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AddressUpdateWithoutUserInput = {
@@ -98343,6 +109788,202 @@ export namespace Prisma {
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type ExhibitionUpdateWithoutOrganizerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUpdateOneWithoutExhibitionsNestedInput
+    plan?: ExhibitionPlanUpdateOneWithoutExhibitionsNestedInput
+    city?: CityUpdateOneRequiredWithoutExhibitionsNestedInput
+    works?: ExhibitionWorkUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateWithoutOrganizerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    works?: ExhibitionWorkUncheckedUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUncheckedUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateManyWithoutOrganizerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionPassUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exhibition?: ExhibitionUpdateOneRequiredWithoutPassesNestedInput
+  }
+
+  export type ExhibitionPassUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    exhibitionId?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionPassUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    exhibitionId?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ProductCreateManyMakerInput = {
     id?: string
     slug: string
@@ -98423,6 +110064,55 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type ExhibitionCreateManyMakerInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    planId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ProductUpdateWithoutMakerInput = {
     id?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
@@ -98456,6 +110146,7 @@ export namespace Prisma {
     category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
     images?: ProductImageUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
   }
@@ -98493,6 +110184,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ProductImageUncheckedUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUncheckedUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUncheckedUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -98677,6 +110369,157 @@ export namespace Prisma {
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionUpdateWithoutMakerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizer?: UserUpdateOneRequiredWithoutExhibitionsNestedInput
+    plan?: ExhibitionPlanUpdateOneWithoutExhibitionsNestedInput
+    city?: CityUpdateOneRequiredWithoutExhibitionsNestedInput
+    works?: ExhibitionWorkUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateWithoutMakerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    works?: ExhibitionWorkUncheckedUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUncheckedUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateManyWithoutMakerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MakerSubscriptionCreateManyPlanInput = {
@@ -99039,6 +110882,7 @@ export namespace Prisma {
     maker?: MakerProfileUpdateOneRequiredWithoutProductsNestedInput
     images?: ProductImageUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
   }
@@ -99076,6 +110920,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ProductImageUncheckedUpdateManyWithoutProductNestedInput
     orderLines?: OrderLineUncheckedUpdateManyWithoutProductNestedInput
+    exhibitionWorks?: ExhibitionWorkUncheckedUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -99130,6 +110975,23 @@ export namespace Prisma {
     commissionXof: number
     finalPriceXof: number
     lineTotalXof: number
+  }
+
+  export type ExhibitionWorkCreateManyProductInput = {
+    id?: string
+    exhibitionId: string
+    position?: number
+    title: string
+    artistName: string
+    description: string
+    materials?: string | null
+    dimensions?: string | null
+    imageKeys?: ExhibitionWorkCreateimageKeysInput | string[]
+    proofKey?: string | null
+    reviewStatus?: $Enums.ExhibitionWorkReview
+    reviewNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type CartItemCreateManyProductInput = {
@@ -99208,6 +111070,57 @@ export namespace Prisma {
     commissionXof?: IntFieldUpdateOperationsInput | number
     finalPriceXof?: IntFieldUpdateOperationsInput | number
     lineTotalXof?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ExhibitionWorkUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    exhibition?: ExhibitionUpdateOneRequiredWithoutWorksNestedInput
+  }
+
+  export type ExhibitionWorkUncheckedUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    exhibitionId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionWorkUncheckedUpdateManyWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    exhibitionId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CartItemUpdateWithoutProductInput = {
@@ -100603,6 +112516,334 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionCreateManyPlanInput = {
+    id?: string
+    slug: string
+    organizerId: string
+    makerId?: string | null
+    title: string
+    organizerName: string
+    summary: string
+    objective?: string | null
+    discipline?: string | null
+    cityId: string
+    startsAt: Date | string
+    endsAt: Date | string
+    openingHours?: string | null
+    format: $Enums.ExhibitionFormat
+    venueName?: string | null
+    venueAddress?: string | null
+    venueDescription?: string | null
+    venueImageKeys?: ExhibitionCreatevenueImageKeysInput | string[]
+    coverKey?: string | null
+    dossierKey?: string | null
+    plannedWorkCount?: number | null
+    status?: $Enums.ExhibitionStatus
+    reviewNote?: string | null
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    reviewerId?: string | null
+    contractReference?: string | null
+    contractSentAt?: Date | string | null
+    contractSignedAt?: Date | string | null
+    paymentAmountXof?: number | null
+    paymentReference?: string | null
+    paymentReceivedAt?: Date | string | null
+    publishAt?: Date | string | null
+    publishedAt?: Date | string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
+    accessMode?: $Enums.ExhibitionAccess
+    ticketPriceXof?: number
+    requiresRegistration?: boolean
+    accessCodeHash?: string | null
+    onsiteInfo?: string | null
+    remoteInfo?: string | null
+    isFeatured?: boolean
+    viewCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionUpdateWithoutPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizer?: UserUpdateOneRequiredWithoutExhibitionsNestedInput
+    maker?: MakerProfileUpdateOneWithoutExhibitionsNestedInput
+    city?: CityUpdateOneRequiredWithoutExhibitionsNestedInput
+    works?: ExhibitionWorkUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateWithoutPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    works?: ExhibitionWorkUncheckedUpdateManyWithoutExhibitionNestedInput
+    passes?: ExhibitionPassUncheckedUpdateManyWithoutExhibitionNestedInput
+  }
+
+  export type ExhibitionUncheckedUpdateManyWithoutPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    organizerId?: StringFieldUpdateOperationsInput | string
+    makerId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    organizerName?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    discipline?: NullableStringFieldUpdateOperationsInput | string | null
+    cityId?: StringFieldUpdateOperationsInput | string
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: EnumExhibitionFormatFieldUpdateOperationsInput | $Enums.ExhibitionFormat
+    venueName?: NullableStringFieldUpdateOperationsInput | string | null
+    venueAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    venueDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    venueImageKeys?: ExhibitionUpdatevenueImageKeysInput | string[]
+    coverKey?: NullableStringFieldUpdateOperationsInput | string | null
+    dossierKey?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedWorkCount?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumExhibitionStatusFieldUpdateOperationsInput | $Enums.ExhibitionStatus
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractReference?: NullableStringFieldUpdateOperationsInput | string | null
+    contractSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentAmountXof?: NullableIntFieldUpdateOperationsInput | number | null
+    paymentReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentReceivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
+    accessMode?: EnumExhibitionAccessFieldUpdateOperationsInput | $Enums.ExhibitionAccess
+    ticketPriceXof?: IntFieldUpdateOperationsInput | number
+    requiresRegistration?: BoolFieldUpdateOperationsInput | boolean
+    accessCodeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    onsiteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    remoteInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionWorkCreateManyExhibitionInput = {
+    id?: string
+    position?: number
+    productId?: string | null
+    title: string
+    artistName: string
+    description: string
+    materials?: string | null
+    dimensions?: string | null
+    imageKeys?: ExhibitionWorkCreateimageKeysInput | string[]
+    proofKey?: string | null
+    reviewStatus?: $Enums.ExhibitionWorkReview
+    reviewNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionPassCreateManyExhibitionInput = {
+    id?: string
+    reference: string
+    userId: string
+    kind: $Enums.ExhibitionPassKind
+    format: $Enums.ExhibitionPassFormat
+    status: $Enums.ExhibitionPassStatus
+    amountXof?: number
+    provider?: string | null
+    providerRef?: string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExhibitionWorkUpdateWithoutExhibitionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    product?: ProductUpdateOneWithoutExhibitionWorksNestedInput
+  }
+
+  export type ExhibitionWorkUncheckedUpdateWithoutExhibitionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionWorkUncheckedUpdateManyWithoutExhibitionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    artistName?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    materials?: NullableStringFieldUpdateOperationsInput | string | null
+    dimensions?: NullableStringFieldUpdateOperationsInput | string | null
+    imageKeys?: ExhibitionWorkUpdateimageKeysInput | string[]
+    proofKey?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewStatus?: EnumExhibitionWorkReviewFieldUpdateOperationsInput | $Enums.ExhibitionWorkReview
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionPassUpdateWithoutExhibitionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutExhibitionPassesNestedInput
+  }
+
+  export type ExhibitionPassUncheckedUpdateWithoutExhibitionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExhibitionPassUncheckedUpdateManyWithoutExhibitionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    kind?: EnumExhibitionPassKindFieldUpdateOperationsInput | $Enums.ExhibitionPassKind
+    format?: EnumExhibitionPassFormatFieldUpdateOperationsInput | $Enums.ExhibitionPassFormat
+    status?: EnumExhibitionPassStatusFieldUpdateOperationsInput | $Enums.ExhibitionPassStatus
+    amountXof?: IntFieldUpdateOperationsInput | number
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

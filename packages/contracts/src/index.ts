@@ -10,3 +10,4 @@ export * from './promo';
 export * from './reviews';
 export * from './support';
 export * from './uploads';
+export * from './exhibitions';

@@ -55,6 +55,7 @@ model City {
 
   addresses     Address[]
   makerProfiles MakerProfile[]
+  exhibitions   Exhibition[]
 
   @@unique([countryId, name])
   @@map("cities")
@@ -127,6 +128,8 @@ model User {
   reviews          Review[]
   idempotencyKeys  IdempotencyKey[]
   recoveryCodes    MfaRecoveryCode[]
+  exhibitions      Exhibition[]
+  exhibitionPasses ExhibitionPass[]
 
   @@index([role, status])
   @@map("users")
@@ -337,6 +340,7 @@ model MakerProfile {
   subOrders     SubOrder[]
   documents     KycDocument[]
   subscriptions MakerSubscription[]
+  exhibitions   Exhibition[]
 
   @@index([kycStatus])
   @@map("maker_profiles")
@@ -581,10 +585,11 @@ model Product {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  images     ProductImage[]
-  orderLines OrderLine[]
-  cartItems  CartItem[]
-  reviews    Review[]
+  images          ProductImage[]
+  orderLines      OrderLine[]
+  exhibitionWorks ExhibitionWork[]
+  cartItems       CartItem[]
+  reviews         Review[]
 
   @@index([status, categoryId])
   @@index([makerId, status])
@@ -1608,4 +1613,220 @@ model IdempotencyKey {
   @@unique([userId, key])
   @@index([expiresAt])
   @@map("idempotency_keys")
+}
+
+// ═══════════════════════════════════════════ Expositions (cahier des évolutions, § 6 à 9)
+
+enum ExhibitionFormat {
+  PHYSICAL
+  ONLINE
+  HYBRID
+}
+
+/// Cycle d'une exposition, de la demande à la mise en ligne (§ 6.4).
+enum ExhibitionStatus {
+  DRAFT
+  SUBMITTED
+  CHANGES_REQUESTED
+  REJECTED
+  /// Projet accepté : contrat et paiement restent à faire.
+  ACCEPTED
+  /// Contrat signé, paiement reçu, date de mise en ligne fixée.
+  SCHEDULED
+  PUBLISHED
+  SUSPENDED
+}
+
+enum ExhibitionAccess {
+  FREE
+  PAID
+  /// Réservée aux personnes qui ont reçu le code de l'organisateur.
+  RESTRICTED
+}
+
+enum ExhibitionWorkReview {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Formule d'exposition (Standard, Premium, VIP — § 6.6). Tout ce qui les
+/// distingue se règle dans l'administration.
+model ExhibitionPlan {
+  id                   String   @id @default(cuid())
+  code                 String   @unique
+  name                 String
+  description          String?
+  /// Nul : illimité.
+  maxWorks             Int?
+  /// Nul : illimitée.
+  maxDurationDays      Int?
+  priceXof             Int      @default(0)
+  perks                String[] @default([])
+  /// Mise en avant dans la rubrique Expositions et sur l'accueil.
+  featuredPlacement    Boolean  @default(false)
+  /// Communication complémentaire assurée par Ojà (§ 10).
+  communicationSupport Boolean  @default(false)
+  isActive             Boolean  @default(true)
+  position             Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  exhibitions Exhibition[]
+
+  @@map("exhibition_plans")
+}
+
+model Exhibition {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  organizerId String
+  organizer   User            @relation(fields: [organizerId], references: [id])
+  /// Boutique de l'organisateur, s'il en a une : seules ses pièces peuvent
+  /// être vendues pendant l'exposition.
+  makerId     String?
+  maker       MakerProfile?   @relation(fields: [makerId], references: [id], onDelete: SetNull)
+  planId      String?
+  plan        ExhibitionPlan? @relation(fields: [planId], references: [id])
+
+  // ── Informations générales ──
+  title         String
+  organizerName String
+  summary       String
+  objective     String?
+  discipline    String?
+  cityId        String
+  city          City    @relation(fields: [cityId], references: [id])
+
+  // ── Calendrier ──
+  startsAt     DateTime
+  endsAt       DateTime
+  openingHours String?
+
+  // ── Format et lieu ──
+  format           ExhibitionFormat
+  venueName        String?
+  venueAddress     String?
+  venueDescription String?
+  venueImageKeys   String[]         @default([])
+
+  coverKey         String?
+  /// Dossier de présentation — espace privé, administration seule.
+  dossierKey       String?
+  plannedWorkCount Int?
+
+  // ── Instruction du dossier ──
+  status      ExhibitionStatus @default(DRAFT)
+  reviewNote  String?
+  submittedAt DateTime?
+  reviewedAt  DateTime?
+  reviewerId  String?
+
+  contractReference String?
+  contractSentAt    DateTime?
+  contractSignedAt  DateTime?
+  paymentAmountXof  Int?
+  paymentReference  String?
+  paymentReceivedAt DateTime?
+
+  publishAt     DateTime?
+  publishedAt   DateTime?
+  suspendedAt   DateTime?
+  suspendReason String?
+
+  // ── Accès (§ 8) ──
+  accessMode           ExhibitionAccess @default(FREE)
+  ticketPriceXof       Int              @default(0)
+  requiresRegistration Boolean          @default(false)
+  /// Empreinte du code d'accès, jamais le code lui-même.
+  accessCodeHash       String?
+  onsiteInfo           String?
+  remoteInfo           String?
+
+  isFeatured Boolean @default(false)
+  viewCount  Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  works  ExhibitionWork[]
+  passes ExhibitionPass[]
+
+  @@index([status, startsAt])
+  @@index([organizerId])
+  @@map("exhibitions")
+}
+
+model ExhibitionWork {
+  id           String     @id @default(cuid())
+  exhibitionId String
+  exhibition   Exhibition @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
+  position     Int        @default(0)
+
+  /// Fiche du catalogue, pour une œuvre en vente : c'est elle qui porte le
+  /// prix, le stock et le parcours de commande.
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  title       String
+  artistName  String
+  description String
+  materials   String?
+  dimensions  String?
+  imageKeys   String[] @default([])
+  /// Justificatif de propriété ou d'autorisation — espace privé (§ 6.5).
+  proofKey    String?
+
+  reviewStatus ExhibitionWorkReview @default(PENDING)
+  reviewNote   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([exhibitionId, position])
+  @@map("exhibition_works")
+}
+
+/// Droit d'accès d'un visiteur à une exposition (§ 8) : inscription gratuite,
+/// billet payé, ou invitation par code.
+enum ExhibitionPassKind {
+  REGISTRATION
+  TICKET
+  INVITATION
+}
+
+enum ExhibitionPassStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  CANCELLED
+}
+
+/// Sur place ou à distance : une exposition hybride distingue les deux
+/// publics, et peut proposer deux billets différents (§ 8.3).
+enum ExhibitionPassFormat {
+  ONSITE
+  ONLINE
+}
+
+model ExhibitionPass {
+  id           String               @id @default(cuid())
+  reference    String               @unique
+  exhibitionId String
+  exhibition   Exhibition           @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind         ExhibitionPassKind
+  format       ExhibitionPassFormat
+  status       ExhibitionPassStatus
+  amountXof    Int                  @default(0)
+
+  provider    String?
+  providerRef String?   @unique
+  paidAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([exhibitionId, userId, format])
+  @@index([exhibitionId, status])
+  @@map("exhibition_passes")
 }

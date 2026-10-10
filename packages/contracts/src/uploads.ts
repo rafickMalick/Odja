@@ -24,6 +24,10 @@ export const uploadPurposeSchema = z.enum([
   'shop-image',
   /** Capture ou photo jointe à une demande au service client. */
   'support-attachment',
+  /** Affiche, photo du lieu ou d'une œuvre exposée — visible de tous. */
+  'exhibition-image',
+  /** Dossier de présentation, justificatif de propriété — administration seule. */
+  'exhibition-document',
 ]);
 export type UploadPurpose = z.infer<typeof uploadPurposeSchema>;
 
@@ -66,6 +70,18 @@ export const UPLOAD_RULES: Readonly<
      personne et le service client. */
   'support-attachment': {
     maxBytes: 8 * 1024 * 1024,
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+    public: false,
+  },
+  'exhibition-image': {
+    maxBytes: 10 * 1024 * 1024,
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    public: true,
+  },
+  /* Un dossier d'exposition se transmet souvent en PDF de plusieurs pages,
+     photos comprises : la borne est plus large que pour une pièce d'identité. */
+  'exhibition-document': {
+    maxBytes: 20 * 1024 * 1024,
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
     public: false,
   },

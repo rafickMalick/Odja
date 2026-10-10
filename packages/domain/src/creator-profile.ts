@@ -120,6 +120,7 @@ export type ProductAvailability = 'AVAILABLE' | 'SOLD' | 'UNAVAILABLE';
 export type DisplayAvailability =
   | 'AVAILABLE'
   | 'MADE_TO_ORDER'
+  | 'RESERVED'
   | 'SOLD'
   | 'UNAVAILABLE'
   | 'PORTFOLIO';
@@ -127,6 +128,7 @@ export type DisplayAvailability =
 export const DISPLAY_AVAILABILITY_LABELS: Readonly<Record<DisplayAvailability, string>> = {
   AVAILABLE: 'Disponible',
   MADE_TO_ORDER: 'Sur commande',
+  RESERVED: 'Réservé',
   SOLD: 'Vendu',
   UNAVAILABLE: 'Indisponible',
   PORTFOLIO: 'Réalisation',
@@ -143,9 +145,12 @@ export function displayAvailability(product: {
   if (product.availability === 'SOLD') return 'SOLD';
   if (product.availability === 'UNAVAILABLE') return 'UNAVAILABLE';
   if (product.isMadeToOrder) return 'MADE_TO_ORDER';
-  /* Une pièce en stock dont tout est réservé par des commandes en cours n'est
-     plus achetable, sans être vendue pour autant. */
-  return product.quantityAvailable - product.quantityReserved > 0 ? 'AVAILABLE' : 'UNAVAILABLE';
+  if (product.quantityAvailable - product.quantityReserved > 0) return 'AVAILABLE';
+  /* Le paiement d'une commande décompte le stock : une pièce unique payée
+     tombe à zéro et devient « vendue » d'elle-même, sans que l'atelier ait à
+     y penser (§ 9.2). Tant que la commande attend son paiement, la pièce est
+     seulement réservée — personne d'autre ne peut l'acheter. */
+  return product.quantityAvailable > 0 ? 'RESERVED' : 'SOLD';
 }
 
 /** Une fiche ne va au panier que si elle est à vendre et achetable maintenant. */

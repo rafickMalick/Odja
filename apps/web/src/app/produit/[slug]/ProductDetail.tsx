@@ -289,6 +289,8 @@ function availabilityText(product: PublicProduct): string {
       return "Réalisation présentée, non proposée à la vente";
     case "SOLD":
       return "Vendue";
+    case "RESERVED":
+      return "Réservée par une commande en cours";
     case "UNAVAILABLE":
       return "Momentanément indisponible";
     case "MADE_TO_ORDER":

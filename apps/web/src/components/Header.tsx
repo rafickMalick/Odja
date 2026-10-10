@@ -16,6 +16,7 @@ import styles from "./Header.module.css";
 const NAV_LINKS = [
   { label: "Marketplace", href: "/catalogue" },
   { label: "Créateurs", href: "/createurs" },
+  { label: "Expositions", href: "/expositions" },
   { label: "Vendre sur Ojà", href: "/inscription?profil=createur", signup: true },
   { label: "À propos", href: "/a-propos" },
   { label: "Contact", href: "/contact" },

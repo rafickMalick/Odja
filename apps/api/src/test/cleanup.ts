@@ -62,6 +62,10 @@ export async function resetTestData(prisma: PrismaService): Promise<void> {
     });
   }
 
+  // Une exposition survit à son organisateur en production (on désactive le
+  // compte) : en test, on la retire explicitement, œuvres et billets compris.
+  await prisma.exhibition.deleteMany({ where: { organizerId: { in: userIds } } });
+
   // Profils, adresses, paniers et sessions tombent en cascade avec l'utilisateur.
   await prisma.user.deleteMany({ where: { id: { in: userIds } } });
 
