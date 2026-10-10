@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { LedgerService } from '../ledger/ledger.service';
 import { KadevPayProvider } from './kadevpay.provider';
+import { KkiapayProvider } from './kkiapay.provider';
 import { paymentProviderFactory, PAYMENT_PROVIDER } from './payment-provider.factory';
 import { PaymentService } from './payment.service';
 import { SimulatedPaymentProvider } from './simulated.provider';
@@ -24,6 +25,7 @@ import { WebhookController } from './webhook.controller';
     LedgerService,
     SimulatedPaymentProvider,
     KadevPayProvider,
+    KkiapayProvider,
     paymentProviderFactory,
     PaymentService,
   ],

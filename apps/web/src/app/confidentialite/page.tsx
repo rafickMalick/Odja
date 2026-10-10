@@ -133,7 +133,7 @@ export default function ConfidentialitePage() {
         </li>
         <li>
           <strong>Les prestataires techniques</strong>, qui agissent sur instruction d’Ojà :
-          hébergement (Vercel, Render, Neon), envoi des e-mails (Brevo), paiement (Kadev Pay),
+          hébergement (Vercel, Render, Neon), envoi des e-mails (Brevo), paiement (KKiaPay),
           stockage des fichiers.
         </li>
       </ul>
