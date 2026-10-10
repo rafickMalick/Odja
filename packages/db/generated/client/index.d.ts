@@ -16194,6 +16194,9 @@ export namespace Prisma {
     services: string | null
     region: string | null
     publicArea: string | null
+    trainingInstitution: string | null
+    trainingSpecialty: string | null
+    trainingLevel: string | null
     managerName: string | null
     contactPhone: string | null
     contactEmail: string | null
@@ -16236,6 +16239,9 @@ export namespace Prisma {
     services: string | null
     region: string | null
     publicArea: string | null
+    trainingInstitution: string | null
+    trainingSpecialty: string | null
+    trainingLevel: string | null
     managerName: string | null
     contactPhone: string | null
     contactEmail: string | null
@@ -16280,6 +16286,9 @@ export namespace Prisma {
     services: number
     region: number
     publicArea: number
+    trainingInstitution: number
+    trainingSpecialty: number
+    trainingLevel: number
     managerName: number
     contactPhone: number
     contactEmail: number
@@ -16340,6 +16349,9 @@ export namespace Prisma {
     services?: true
     region?: true
     publicArea?: true
+    trainingInstitution?: true
+    trainingSpecialty?: true
+    trainingLevel?: true
     managerName?: true
     contactPhone?: true
     contactEmail?: true
@@ -16382,6 +16394,9 @@ export namespace Prisma {
     services?: true
     region?: true
     publicArea?: true
+    trainingInstitution?: true
+    trainingSpecialty?: true
+    trainingLevel?: true
     managerName?: true
     contactPhone?: true
     contactEmail?: true
@@ -16426,6 +16441,9 @@ export namespace Prisma {
     services?: true
     region?: true
     publicArea?: true
+    trainingInstitution?: true
+    trainingSpecialty?: true
+    trainingLevel?: true
     managerName?: true
     contactPhone?: true
     contactEmail?: true
@@ -16557,6 +16575,9 @@ export namespace Prisma {
     services: string | null
     region: string | null
     publicArea: string | null
+    trainingInstitution: string | null
+    trainingSpecialty: string | null
+    trainingLevel: string | null
     managerName: string | null
     contactPhone: string | null
     contactEmail: string | null
@@ -16620,6 +16641,9 @@ export namespace Prisma {
     services?: boolean
     region?: boolean
     publicArea?: boolean
+    trainingInstitution?: boolean
+    trainingSpecialty?: boolean
+    trainingLevel?: boolean
     managerName?: boolean
     contactPhone?: boolean
     contactEmail?: boolean
@@ -16671,6 +16695,9 @@ export namespace Prisma {
     services?: boolean
     region?: boolean
     publicArea?: boolean
+    trainingInstitution?: boolean
+    trainingSpecialty?: boolean
+    trainingLevel?: boolean
     managerName?: boolean
     contactPhone?: boolean
     contactEmail?: boolean
@@ -16717,6 +16744,9 @@ export namespace Prisma {
     services?: boolean
     region?: boolean
     publicArea?: boolean
+    trainingInstitution?: boolean
+    trainingSpecialty?: boolean
+    trainingLevel?: boolean
     managerName?: boolean
     contactPhone?: boolean
     contactEmail?: boolean
@@ -16763,6 +16793,9 @@ export namespace Prisma {
     services?: boolean
     region?: boolean
     publicArea?: boolean
+    trainingInstitution?: boolean
+    trainingSpecialty?: boolean
+    trainingLevel?: boolean
     managerName?: boolean
     contactPhone?: boolean
     contactEmail?: boolean
@@ -16791,7 +16824,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type MakerProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "shopName" | "slug" | "description" | "logoUrl" | "coverUrl" | "cityId" | "creatorKind" | "activityField" | "specialties" | "techniques" | "services" | "region" | "publicArea" | "managerName" | "contactPhone" | "contactEmail" | "postalAddress" | "ifuNumber" | "rccmNumber" | "kycStatus" | "kycSubmittedAt" | "kycReviewedAt" | "kycReviewerId" | "kycRejectReason" | "pickupLine1" | "pickupLandmark" | "pickupLatitude" | "pickupLongitude" | "payoutMethod" | "payoutMsisdn" | "payoutOperator" | "payoutBankIban" | "commissionBps" | "isFeatured" | "ratingAvg" | "ratingCount" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["makerProfile"]>
+  export type MakerProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "shopName" | "slug" | "description" | "logoUrl" | "coverUrl" | "cityId" | "creatorKind" | "activityField" | "specialties" | "techniques" | "services" | "region" | "publicArea" | "trainingInstitution" | "trainingSpecialty" | "trainingLevel" | "managerName" | "contactPhone" | "contactEmail" | "postalAddress" | "ifuNumber" | "rccmNumber" | "kycStatus" | "kycSubmittedAt" | "kycReviewedAt" | "kycReviewerId" | "kycRejectReason" | "pickupLine1" | "pickupLandmark" | "pickupLatitude" | "pickupLongitude" | "payoutMethod" | "payoutMsisdn" | "payoutOperator" | "payoutBankIban" | "commissionBps" | "isFeatured" | "ratingAvg" | "ratingCount" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["makerProfile"]>
   export type MakerProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     city?: boolean | CityDefaultArgs<ExtArgs>
@@ -16849,6 +16882,9 @@ export namespace Prisma {
        * L'adresse exacte, elle, ne sort jamais (§ 2.2 D).
        */
       publicArea: string | null
+      trainingInstitution: string | null
+      trainingSpecialty: string | null
+      trainingLevel: string | null
       managerName: string | null
       contactPhone: string | null
       contactEmail: string | null
@@ -17333,6 +17369,9 @@ export namespace Prisma {
     readonly services: FieldRef<"MakerProfile", 'String'>
     readonly region: FieldRef<"MakerProfile", 'String'>
     readonly publicArea: FieldRef<"MakerProfile", 'String'>
+    readonly trainingInstitution: FieldRef<"MakerProfile", 'String'>
+    readonly trainingSpecialty: FieldRef<"MakerProfile", 'String'>
+    readonly trainingLevel: FieldRef<"MakerProfile", 'String'>
     readonly managerName: FieldRef<"MakerProfile", 'String'>
     readonly contactPhone: FieldRef<"MakerProfile", 'String'>
     readonly contactEmail: FieldRef<"MakerProfile", 'String'>
@@ -25155,6 +25194,7 @@ export namespace Prisma {
     isMadeToOrder: boolean | null
     leadTimeDays: number | null
     observations: string | null
+    packagingNotes: string | null
     weightGrams: number | null
     lengthMm: number | null
     widthMm: number | null
@@ -25188,6 +25228,7 @@ export namespace Prisma {
     isMadeToOrder: boolean | null
     leadTimeDays: number | null
     observations: string | null
+    packagingNotes: string | null
     weightGrams: number | null
     lengthMm: number | null
     widthMm: number | null
@@ -25221,6 +25262,7 @@ export namespace Prisma {
     isMadeToOrder: number
     leadTimeDays: number
     observations: number
+    packagingNotes: number
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -25282,6 +25324,7 @@ export namespace Prisma {
     isMadeToOrder?: true
     leadTimeDays?: true
     observations?: true
+    packagingNotes?: true
     weightGrams?: true
     lengthMm?: true
     widthMm?: true
@@ -25315,6 +25358,7 @@ export namespace Prisma {
     isMadeToOrder?: true
     leadTimeDays?: true
     observations?: true
+    packagingNotes?: true
     weightGrams?: true
     lengthMm?: true
     widthMm?: true
@@ -25348,6 +25392,7 @@ export namespace Prisma {
     isMadeToOrder?: true
     leadTimeDays?: true
     observations?: true
+    packagingNotes?: true
     weightGrams?: true
     lengthMm?: true
     widthMm?: true
@@ -25468,6 +25513,7 @@ export namespace Prisma {
     isMadeToOrder: boolean
     leadTimeDays: number | null
     observations: string | null
+    packagingNotes: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -25520,6 +25566,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: boolean
     observations?: boolean
+    packagingNotes?: boolean
     weightGrams?: boolean
     lengthMm?: boolean
     widthMm?: boolean
@@ -25560,6 +25607,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: boolean
     observations?: boolean
+    packagingNotes?: boolean
     weightGrams?: boolean
     lengthMm?: boolean
     widthMm?: boolean
@@ -25595,6 +25643,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: boolean
     observations?: boolean
+    packagingNotes?: boolean
     weightGrams?: boolean
     lengthMm?: boolean
     widthMm?: boolean
@@ -25630,6 +25679,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: boolean
     observations?: boolean
+    packagingNotes?: boolean
     weightGrams?: boolean
     lengthMm?: boolean
     widthMm?: boolean
@@ -25647,7 +25697,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "makerId" | "categoryId" | "name" | "description" | "material" | "makerPriceXof" | "quantityAvailable" | "quantityReserved" | "isForSale" | "availability" | "isMadeToOrder" | "leadTimeDays" | "observations" | "weightGrams" | "lengthMm" | "widthMm" | "heightMm" | "status" | "submittedAt" | "reviewedAt" | "reviewerId" | "rejectReason" | "hiddenAt" | "ratingAvg" | "ratingCount" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "makerId" | "categoryId" | "name" | "description" | "material" | "makerPriceXof" | "quantityAvailable" | "quantityReserved" | "isForSale" | "availability" | "isMadeToOrder" | "leadTimeDays" | "observations" | "packagingNotes" | "weightGrams" | "lengthMm" | "widthMm" | "heightMm" | "status" | "submittedAt" | "reviewedAt" | "reviewerId" | "rejectReason" | "hiddenAt" | "ratingAvg" | "ratingCount" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     maker?: boolean | MakerProfileDefaultArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
@@ -25713,6 +25763,10 @@ export namespace Prisma {
        */
       leadTimeDays: number | null
       observations: string | null
+      /**
+       * Emballage, fragilité, possibilités de livraison (§ 5.2).
+       */
+      packagingNotes: string | null
       /**
        * Poids et encombrement. Absents du formulaire du cahier client, mais le
        * choix automatique du véhicule en dépend entièrement : ils sont rendus
@@ -26180,6 +26234,7 @@ export namespace Prisma {
     readonly isMadeToOrder: FieldRef<"Product", 'Boolean'>
     readonly leadTimeDays: FieldRef<"Product", 'Int'>
     readonly observations: FieldRef<"Product", 'String'>
+    readonly packagingNotes: FieldRef<"Product", 'String'>
     readonly weightGrams: FieldRef<"Product", 'Int'>
     readonly lengthMm: FieldRef<"Product", 'Int'>
     readonly widthMm: FieldRef<"Product", 'Int'>
@@ -66121,6 +66176,9 @@ export namespace Prisma {
     services: 'services',
     region: 'region',
     publicArea: 'publicArea',
+    trainingInstitution: 'trainingInstitution',
+    trainingSpecialty: 'trainingSpecialty',
+    trainingLevel: 'trainingLevel',
     managerName: 'managerName',
     contactPhone: 'contactPhone',
     contactEmail: 'contactEmail',
@@ -66267,6 +66325,7 @@ export namespace Prisma {
     isMadeToOrder: 'isMadeToOrder',
     leadTimeDays: 'leadTimeDays',
     observations: 'observations',
+    packagingNotes: 'packagingNotes',
     weightGrams: 'weightGrams',
     lengthMm: 'lengthMm',
     widthMm: 'widthMm',
@@ -67979,6 +68038,9 @@ export namespace Prisma {
     services?: StringNullableFilter<"MakerProfile"> | string | null
     region?: StringNullableFilter<"MakerProfile"> | string | null
     publicArea?: StringNullableFilter<"MakerProfile"> | string | null
+    trainingInstitution?: StringNullableFilter<"MakerProfile"> | string | null
+    trainingSpecialty?: StringNullableFilter<"MakerProfile"> | string | null
+    trainingLevel?: StringNullableFilter<"MakerProfile"> | string | null
     managerName?: StringNullableFilter<"MakerProfile"> | string | null
     contactPhone?: StringNullableFilter<"MakerProfile"> | string | null
     contactEmail?: StringNullableFilter<"MakerProfile"> | string | null
@@ -68029,6 +68091,9 @@ export namespace Prisma {
     services?: SortOrderInput | SortOrder
     region?: SortOrderInput | SortOrder
     publicArea?: SortOrderInput | SortOrder
+    trainingInstitution?: SortOrderInput | SortOrder
+    trainingSpecialty?: SortOrderInput | SortOrder
+    trainingLevel?: SortOrderInput | SortOrder
     managerName?: SortOrderInput | SortOrder
     contactPhone?: SortOrderInput | SortOrder
     contactEmail?: SortOrderInput | SortOrder
@@ -68082,6 +68147,9 @@ export namespace Prisma {
     services?: StringNullableFilter<"MakerProfile"> | string | null
     region?: StringNullableFilter<"MakerProfile"> | string | null
     publicArea?: StringNullableFilter<"MakerProfile"> | string | null
+    trainingInstitution?: StringNullableFilter<"MakerProfile"> | string | null
+    trainingSpecialty?: StringNullableFilter<"MakerProfile"> | string | null
+    trainingLevel?: StringNullableFilter<"MakerProfile"> | string | null
     managerName?: StringNullableFilter<"MakerProfile"> | string | null
     contactPhone?: StringNullableFilter<"MakerProfile"> | string | null
     contactEmail?: StringNullableFilter<"MakerProfile"> | string | null
@@ -68132,6 +68200,9 @@ export namespace Prisma {
     services?: SortOrderInput | SortOrder
     region?: SortOrderInput | SortOrder
     publicArea?: SortOrderInput | SortOrder
+    trainingInstitution?: SortOrderInput | SortOrder
+    trainingSpecialty?: SortOrderInput | SortOrder
+    trainingLevel?: SortOrderInput | SortOrder
     managerName?: SortOrderInput | SortOrder
     contactPhone?: SortOrderInput | SortOrder
     contactEmail?: SortOrderInput | SortOrder
@@ -68184,6 +68255,9 @@ export namespace Prisma {
     services?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
     region?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
     publicArea?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
+    trainingInstitution?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
+    trainingSpecialty?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
+    trainingLevel?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
     managerName?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
     contactPhone?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
     contactEmail?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
@@ -68758,6 +68832,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFilter<"Product"> | boolean
     leadTimeDays?: IntNullableFilter<"Product"> | number | null
     observations?: StringNullableFilter<"Product"> | string | null
+    packagingNotes?: StringNullableFilter<"Product"> | string | null
     weightGrams?: IntFilter<"Product"> | number
     lengthMm?: IntFilter<"Product"> | number
     widthMm?: IntFilter<"Product"> | number
@@ -68797,6 +68872,7 @@ export namespace Prisma {
     isMadeToOrder?: SortOrder
     leadTimeDays?: SortOrderInput | SortOrder
     observations?: SortOrderInput | SortOrder
+    packagingNotes?: SortOrderInput | SortOrder
     weightGrams?: SortOrder
     lengthMm?: SortOrder
     widthMm?: SortOrder
@@ -68839,6 +68915,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFilter<"Product"> | boolean
     leadTimeDays?: IntNullableFilter<"Product"> | number | null
     observations?: StringNullableFilter<"Product"> | string | null
+    packagingNotes?: StringNullableFilter<"Product"> | string | null
     weightGrams?: IntFilter<"Product"> | number
     lengthMm?: IntFilter<"Product"> | number
     widthMm?: IntFilter<"Product"> | number
@@ -68878,6 +68955,7 @@ export namespace Prisma {
     isMadeToOrder?: SortOrder
     leadTimeDays?: SortOrderInput | SortOrder
     observations?: SortOrderInput | SortOrder
+    packagingNotes?: SortOrderInput | SortOrder
     weightGrams?: SortOrder
     lengthMm?: SortOrder
     widthMm?: SortOrder
@@ -68919,6 +68997,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolWithAggregatesFilter<"Product"> | boolean
     leadTimeDays?: IntNullableWithAggregatesFilter<"Product"> | number | null
     observations?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    packagingNotes?: StringNullableWithAggregatesFilter<"Product"> | string | null
     weightGrams?: IntWithAggregatesFilter<"Product"> | number
     lengthMm?: IntWithAggregatesFilter<"Product"> | number
     widthMm?: IntWithAggregatesFilter<"Product"> | number
@@ -72606,6 +72685,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -72656,6 +72738,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -72702,6 +72787,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72752,6 +72840,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72800,6 +72891,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -72842,6 +72936,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72886,6 +72983,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73512,6 +73612,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -73551,6 +73652,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -73586,6 +73688,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -73625,6 +73728,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -73662,6 +73766,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -73693,6 +73798,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -73726,6 +73832,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -77872,6 +77979,9 @@ export namespace Prisma {
     services?: SortOrder
     region?: SortOrder
     publicArea?: SortOrder
+    trainingInstitution?: SortOrder
+    trainingSpecialty?: SortOrder
+    trainingLevel?: SortOrder
     managerName?: SortOrder
     contactPhone?: SortOrder
     contactEmail?: SortOrder
@@ -77922,6 +78032,9 @@ export namespace Prisma {
     services?: SortOrder
     region?: SortOrder
     publicArea?: SortOrder
+    trainingInstitution?: SortOrder
+    trainingSpecialty?: SortOrder
+    trainingLevel?: SortOrder
     managerName?: SortOrder
     contactPhone?: SortOrder
     contactEmail?: SortOrder
@@ -77964,6 +78077,9 @@ export namespace Prisma {
     services?: SortOrder
     region?: SortOrder
     publicArea?: SortOrder
+    trainingInstitution?: SortOrder
+    trainingSpecialty?: SortOrder
+    trainingLevel?: SortOrder
     managerName?: SortOrder
     contactPhone?: SortOrder
     contactEmail?: SortOrder
@@ -78475,6 +78591,7 @@ export namespace Prisma {
     isMadeToOrder?: SortOrder
     leadTimeDays?: SortOrder
     observations?: SortOrder
+    packagingNotes?: SortOrder
     weightGrams?: SortOrder
     lengthMm?: SortOrder
     widthMm?: SortOrder
@@ -78521,6 +78638,7 @@ export namespace Prisma {
     isMadeToOrder?: SortOrder
     leadTimeDays?: SortOrder
     observations?: SortOrder
+    packagingNotes?: SortOrder
     weightGrams?: SortOrder
     lengthMm?: SortOrder
     widthMm?: SortOrder
@@ -78554,6 +78672,7 @@ export namespace Prisma {
     isMadeToOrder?: SortOrder
     leadTimeDays?: SortOrder
     observations?: SortOrder
+    packagingNotes?: SortOrder
     weightGrams?: SortOrder
     lengthMm?: SortOrder
     widthMm?: SortOrder
@@ -85272,6 +85391,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -85320,6 +85442,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -85467,6 +85592,9 @@ export namespace Prisma {
     services?: StringNullableFilter<"MakerProfile"> | string | null
     region?: StringNullableFilter<"MakerProfile"> | string | null
     publicArea?: StringNullableFilter<"MakerProfile"> | string | null
+    trainingInstitution?: StringNullableFilter<"MakerProfile"> | string | null
+    trainingSpecialty?: StringNullableFilter<"MakerProfile"> | string | null
+    trainingLevel?: StringNullableFilter<"MakerProfile"> | string | null
     managerName?: StringNullableFilter<"MakerProfile"> | string | null
     contactPhone?: StringNullableFilter<"MakerProfile"> | string | null
     contactEmail?: StringNullableFilter<"MakerProfile"> | string | null
@@ -85509,6 +85637,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -85557,6 +85688,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -86110,6 +86244,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -86158,6 +86295,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -87558,6 +87698,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -87595,6 +87736,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -87903,6 +88045,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFilter<"Product"> | boolean
     leadTimeDays?: IntNullableFilter<"Product"> | number | null
     observations?: StringNullableFilter<"Product"> | string | null
+    packagingNotes?: StringNullableFilter<"Product"> | string | null
     weightGrams?: IntFilter<"Product"> | number
     lengthMm?: IntFilter<"Product"> | number
     widthMm?: IntFilter<"Product"> | number
@@ -88093,6 +88236,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -88142,6 +88288,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -88244,6 +88393,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -88293,6 +88445,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -88385,6 +88540,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -88434,6 +88592,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -88538,6 +88699,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -88587,6 +88751,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -89187,6 +89354,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -89224,6 +89392,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -89341,6 +89510,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -89390,6 +89562,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -89592,6 +89767,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -89641,6 +89819,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -89816,6 +89997,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -89854,6 +90036,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -89904,6 +90087,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -89942,6 +90126,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -90193,6 +90378,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -90231,6 +90417,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -90310,6 +90497,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -90348,6 +90536,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -91305,6 +91494,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -91354,6 +91546,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -91700,6 +91895,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -91749,6 +91947,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -92013,6 +92214,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -92051,6 +92253,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -92199,6 +92402,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -92237,6 +92441,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -95682,6 +95887,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -95720,6 +95926,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -95876,6 +96083,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -95914,6 +96122,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -97276,6 +97485,9 @@ export namespace Prisma {
     services?: string | null
     region?: string | null
     publicArea?: string | null
+    trainingInstitution?: string | null
+    trainingSpecialty?: string | null
+    trainingLevel?: string | null
     managerName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
@@ -97363,6 +97575,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -97411,6 +97626,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -97458,6 +97676,9 @@ export namespace Prisma {
     services?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     publicArea?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingInstitution?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingSpecialty?: NullableStringFieldUpdateOperationsInput | string | null
+    trainingLevel?: NullableStringFieldUpdateOperationsInput | string | null
     managerName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
@@ -98137,6 +98358,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -98215,6 +98437,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -98252,6 +98475,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -98288,6 +98512,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -98738,6 +98963,7 @@ export namespace Prisma {
     isMadeToOrder?: boolean
     leadTimeDays?: number | null
     observations?: string | null
+    packagingNotes?: string | null
     weightGrams: number
     lengthMm: number
     widthMm: number
@@ -98794,6 +99020,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -98831,6 +99058,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number
@@ -98867,6 +99095,7 @@ export namespace Prisma {
     isMadeToOrder?: BoolFieldUpdateOperationsInput | boolean
     leadTimeDays?: NullableIntFieldUpdateOperationsInput | number | null
     observations?: NullableStringFieldUpdateOperationsInput | string | null
+    packagingNotes?: NullableStringFieldUpdateOperationsInput | string | null
     weightGrams?: IntFieldUpdateOperationsInput | number
     lengthMm?: IntFieldUpdateOperationsInput | number
     widthMm?: IntFieldUpdateOperationsInput | number

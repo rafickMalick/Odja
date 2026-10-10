@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import {
   attachKycDocumentSchema,
+  documentRequestSchema,
+  type DocumentRequestInput,
   grantSubscriptionSchema,
   kycReviewSchema,
   makerDirectoryQuerySchema,
@@ -161,8 +163,22 @@ export class MakerAdminController {
   }
 
   @Get()
-  async list(@Query('status') status?: string): Promise<AdminMaker[]> {
-    return this.makers.listForAdmin(status);
+  async list(
+    @Query('status') status?: string,
+    @Query('profile') profile?: string,
+  ): Promise<AdminMaker[]> {
+    return this.makers.listForAdmin(status, profile);
+  }
+
+  /** Demande d'une pièce complémentaire, sans refuser le dossier. */
+  @Post(':id/request-document')
+  async requestDocument(
+    @Param('id') id: string,
+    @CurrentUser() admin: AuthenticatedUser,
+    @Body(zodBody(documentRequestSchema)) input: DocumentRequestInput,
+  ): Promise<{ status: string }> {
+    await this.makers.requestDocument(id, admin.id, input.message);
+    return { status: 'REQUESTED' };
   }
 
   @Post(':id/review')

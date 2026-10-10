@@ -149,11 +149,11 @@ describe('Profils créatifs et visibilité (bout en bout)', () => {
       expect(response.body.errors[0].field).toBe('description');
     });
 
-    it('ne laisse pas choisir seul un statut d’apprenti', async () => {
+    it('refuse un statut inconnu', async () => {
       await api()
         .post('/api/v1/maker/profile')
         .set('Cookie', makerCookies)
-        .send({ ...profilePayload, cityId, creatorKind: 'APPRENTICE_DESIGNER' })
+        .send({ ...profilePayload, cityId, creatorKind: 'MAITRE_ARTISAN' })
         .expect(400);
     });
 

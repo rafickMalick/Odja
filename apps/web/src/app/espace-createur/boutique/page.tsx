@@ -11,7 +11,7 @@ import { PageHead, Panel, workspaceStyles as styles } from "@/components/dashboa
 import type { CreatorKind } from "@oja/contracts";
 
 import { ApiError, apiFetch } from "@/lib/api";
-import { CREATOR_KIND_LABELS, SELF_SERVICE_KINDS } from "@/lib/creators";
+import { CREATOR_KIND_LABELS, CREATOR_KINDS, isApprenticeKind } from "@/lib/creators";
 import { UploadError, uploadFile } from "@/lib/upload";
 
 import { useMakerStatus } from "../maker-context";
@@ -37,6 +37,9 @@ interface Profile {
   services: string | null;
   region: string | null;
   publicArea: string | null;
+  trainingInstitution: string | null;
+  trainingSpecialty: string | null;
+  trainingLevel: string | null;
   shopName: string;
   description: string | null;
   cityId: string;
@@ -73,7 +76,17 @@ const DOCUMENT_TYPES: { value: string; label: string }[] = [
   { value: "cni_verso", label: "Pièce d’identité (verso)" },
   { value: "rccm", label: "Registre de commerce (RCCM)" },
   { value: "ifu", label: "Identifiant fiscal (IFU)" },
+  { value: "justificatif_formation", label: "Justificatif de formation" },
   { value: "autre", label: "Autre pièce" },
+];
+
+/* Un apprenti commence par son justificatif : c'est la pièce que l'équipe
+   examine en premier, et la seule qui lui soit propre. */
+const APPRENTICE_DOCUMENT_TYPES = [
+  DOCUMENT_TYPES.find((item) => item.value === "justificatif_formation")!,
+  ...DOCUMENT_TYPES.filter(
+    (item) => item.value !== "justificatif_formation" && item.value !== "rccm" && item.value !== "ifu",
+  ),
 ];
 
 const KYC_STATE: Record<
@@ -154,14 +167,13 @@ export default function ShopPage() {
       "services",
       "region",
       "publicArea",
+      "trainingInstitution",
+      "trainingSpecialty",
+      "trainingLevel",
     ]) {
       if (values[key]?.trim()) payload[key] = values[key]!.trim();
     }
-    /* Un apprenti validé garde son statut : il ne figure pas parmi les choix
-       libres, et le renvoyer serait refusé. */
-    if (SELF_SERVICE_KINDS.includes(values["creatorKind"] as CreatorKind)) {
-      payload["creatorKind"] = values["creatorKind"];
-    }
+    payload["creatorKind"] = values["creatorKind"] ?? "ARTISAN";
     payload["specialties"] = splitTags(values["specialties"]);
     payload["techniques"] = splitTags(values["techniques"]);
 
@@ -222,6 +234,7 @@ export default function ShopPage() {
   };
 
   const locked = profile?.kycStatus === "PENDING";
+  const apprentice = isApprenticeKind(values["creatorKind"]);
 
   return (
     <>
@@ -269,12 +282,8 @@ export default function ShopPage() {
                 className={fieldStyles.control}
                 value={values["creatorKind"] ?? "ARTISAN"}
                 onChange={(event) => set("creatorKind", event.target.value)}
-                disabled={!isSelfService(values["creatorKind"])}
               >
-                {(isSelfService(values["creatorKind"])
-                  ? SELF_SERVICE_KINDS
-                  : [values["creatorKind"] as CreatorKind]
-                ).map((kind) => (
+                {CREATOR_KINDS.map((kind) => (
                   <option key={kind} value={kind}>
                     {CREATOR_KIND_LABELS[kind]}
                   </option>
@@ -367,6 +376,39 @@ export default function ShopPage() {
           </p>
         </Panel>
 
+        {apprentice ? (
+          <Panel title="Votre formation">
+            <p className={styles.muted}>
+              Votre profil affichera honnêtement « {CREATOR_KIND_LABELS[values["creatorKind"] as CreatorKind]} ».
+              Ces informations présentent votre parcours aux visiteurs ; votre justificatif, lui,
+              n’est vu que par l’équipe de validation. Le profil d’apprenti est gratuit.
+            </p>
+            <Field
+              label="Établissement ou atelier de formation"
+              value={values["trainingInstitution"] ?? ""}
+              onChange={(event) => set("trainingInstitution", event.target.value)}
+              placeholder="École, centre de formation, atelier d’un maître artisan…"
+              error={errors["trainingInstitution"]}
+            />
+            <FieldRow>
+              <Field
+                label="Spécialité"
+                value={values["trainingSpecialty"] ?? ""}
+                onChange={(event) => set("trainingSpecialty", event.target.value)}
+                placeholder="Design produit, ébénisterie, vannerie…"
+                error={errors["trainingSpecialty"]}
+              />
+              <Field
+                label="Niveau (facultatif)"
+                value={values["trainingLevel"] ?? ""}
+                onChange={(event) => set("trainingLevel", event.target.value)}
+                placeholder="Deuxième année, apprentissage depuis 2024…"
+                error={errors["trainingLevel"]}
+              />
+            </FieldRow>
+          </Panel>
+        ) : null}
+
         <Panel title="Informations réservées à Ojà">
           <Field
             label="Nom du responsable"
@@ -413,7 +455,11 @@ export default function ShopPage() {
               error={errors["rccmNumber"]}
             />
           </FieldRow>
-          <p className={styles.muted}>L’un des deux suffit pour déposer votre dossier.</p>
+          <p className={styles.muted}>
+            {apprentice
+              ? "Facultatifs pour un apprenti : votre justificatif de formation en tient lieu. Ces numéros ne sont jamais publiés."
+              : "L’un des deux suffit pour déposer votre dossier. Ils ne sont jamais publiés."}
+          </p>
         </Panel>
 
         <Panel title="Adresse d’enlèvement">
@@ -457,7 +503,12 @@ export default function ShopPage() {
 
       {exists ? (
         <>
-          <KycDocuments documents={documents} onChange={setDocuments} disabled={locked} />
+          <KycDocuments
+            documents={documents}
+            onChange={setDocuments}
+            disabled={locked}
+            types={apprentice ? APPRENTICE_DOCUMENT_TYPES : DOCUMENT_TYPES}
+          />
 
           <Panel title="Dépôt du dossier">
             {profile?.kycStatus === "APPROVED" ? (
@@ -471,9 +522,10 @@ export default function ShopPage() {
             ) : (
               <>
                 <p className={styles.muted}>
-                  Il faut le nom du responsable, un téléphone, l’adresse du siège, celle de
-                  l’atelier, et un numéro IFU ou RCCM. Vos pièces justificatives ne sont
-                  visibles que de l’équipe de validation.
+                  {apprentice
+                    ? "Il faut votre nom, un téléphone, l’adresse où retirer vos pièces, votre établissement, votre spécialité et votre justificatif de formation."
+                    : "Il faut le nom du responsable, un téléphone, l’adresse du siège, celle de l’atelier, et un numéro IFU ou RCCM."}{" "}
+                  Vos pièces justificatives ne sont visibles que de l’équipe de validation.
                 </p>
                 <div className={shop.actions}>
                   <Button type="button" onClick={submitKyc} disabled={busy}>
@@ -609,12 +661,18 @@ function KycDocuments({
   documents,
   onChange,
   disabled,
+  types,
 }: {
   documents: KycDocument[];
   onChange: (documents: KycDocument[]) => void;
   disabled: boolean;
+  types: { value: string; label: string }[];
 }) {
-  const [type, setType] = useState(DOCUMENT_TYPES[0]!.value);
+  const [type, setType] = useState(types[0]!.value);
+  /* Le statut peut changer pendant la saisie : le type choisi suit la liste. */
+  useEffect(() => {
+    setType(types[0]!.value);
+  }, [types]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -687,7 +745,7 @@ function KycDocuments({
             onChange={(event) => setType(event.target.value)}
             aria-label="Type de pièce"
           >
-            {DOCUMENT_TYPES.map((item) => (
+            {types.map((item) => (
               <option key={item.value} value={item.value}>
                 {item.label}
               </option>
@@ -723,6 +781,9 @@ const EMPTY: Record<string, string> = {
   services: "",
   region: "",
   publicArea: "",
+  trainingInstitution: "",
+  trainingSpecialty: "",
+  trainingLevel: "",
   shopName: "",
   description: "",
   cityId: "",
@@ -735,10 +796,6 @@ const EMPTY: Record<string, string> = {
   pickupLine1: "",
   pickupLandmark: "",
 };
-
-function isSelfService(kind: string | undefined): boolean {
-  return SELF_SERVICE_KINDS.includes(kind as CreatorKind);
-}
 
 /** « Iroko, tressage , » → ["Iroko", "tressage"] */
 function splitTags(raw: string | undefined): string[] {
@@ -757,6 +814,9 @@ function toValues(profile: Profile): Record<string, string> {
     services: profile.services ?? "",
     region: profile.region ?? "",
     publicArea: profile.publicArea ?? "",
+    trainingInstitution: profile.trainingInstitution ?? "",
+    trainingSpecialty: profile.trainingSpecialty ?? "",
+    trainingLevel: profile.trainingLevel ?? "",
     shopName: profile.shopName,
     description: profile.description ?? "",
     cityId: profile.cityId,

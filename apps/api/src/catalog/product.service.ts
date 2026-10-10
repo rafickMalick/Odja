@@ -87,7 +87,7 @@ export class ProductService {
         widthMm: input.widthMm ?? 0,
         heightMm: input.heightMm ?? 0,
         status: 'DRAFT',
-        ...defined(input, ['material', 'leadTimeDays', 'observations']),
+        ...defined(input, ['material', 'leadTimeDays', 'observations', 'packagingNotes']),
       },
       include: WITH_RELATIONS,
     });
@@ -189,6 +189,7 @@ export class ProductService {
           'quantityAvailable',
           'leadTimeDays',
           'observations',
+          'packagingNotes',
           'weightGrams',
           'lengthMm',
           'widthMm',

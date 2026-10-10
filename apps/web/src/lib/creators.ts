@@ -33,8 +33,18 @@ export const CREATOR_KIND_SHORT: Record<CreatorKind, string> = {
   APPRENTICE_ARTISAN: "Apprenti artisan",
 };
 
-/** Ce qu'un créateur peut choisir seul ; les apprentis passent par une validation. */
-export const SELF_SERVICE_KINDS: CreatorKind[] = ["STUDIO", "ARTISAN", "DESIGNER"];
+/** Dans l'ordre du cahier (§ 4.2). Les apprentis justifient de leur formation. */
+export const CREATOR_KINDS: CreatorKind[] = [
+  "STUDIO",
+  "ARTISAN",
+  "DESIGNER",
+  "APPRENTICE_DESIGNER",
+  "APPRENTICE_ARTISAN",
+];
+
+export function isApprenticeKind(kind: string | undefined | null): boolean {
+  return kind === "APPRENTICE_DESIGNER" || kind === "APPRENTICE_ARTISAN";
+}
 
 export const AVAILABILITY_LABELS: Record<DisplayAvailability, string> = {
   AVAILABLE: "Disponible",

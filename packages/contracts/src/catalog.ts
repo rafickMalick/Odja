@@ -24,9 +24,9 @@ export const CREATOR_KINDS = [
 ] as const;
 export type CreatorKind = (typeof CREATOR_KINDS)[number];
 
-/** Ceux qu'un créateur choisit seul. Les statuts d'apprenti passent par un
- *  justificatif et une validation qui leur sont propres. */
-export const selfServiceCreatorKindSchema = z.enum(['STUDIO', 'ARTISAN', 'DESIGNER']);
+/** Le créateur choisit son statut ; celui d'apprenti exige ensuite un
+ *  justificatif de formation, examiné à la validation du dossier (§ 4.3). */
+export const creatorKindSchema = z.enum(CREATOR_KINDS);
 
 /* Spécialités et techniques : des étiquettes courtes, en nombre raisonnable.
    Une liste de quarante mots-clés ne décrit plus rien. */
@@ -59,13 +59,18 @@ export const makerProfileSchema = z.object({
   pickupLongitude: z.number().min(-180).max(180).optional(),
 
   // Profil créatif — public (§ 2.2)
-  creatorKind: selfServiceCreatorKindSchema.optional(),
+  creatorKind: creatorKindSchema.optional(),
   activityField: z.string().trim().max(80).optional(),
   specialties: tagList('Spécialités').optional(),
   techniques: tagList('Matériaux et techniques').optional(),
   services: z.string().trim().max(1_000).optional(),
   region: z.string().trim().max(80).optional(),
   publicArea: z.string().trim().max(80).optional(),
+
+  // Formation — apprentis (§ 4.3)
+  trainingInstitution: z.string().trim().max(160).optional(),
+  trainingSpecialty: z.string().trim().max(120).optional(),
+  trainingLevel: z.string().trim().max(80).optional(),
 });
 export type MakerProfileInput = z.infer<typeof makerProfileSchema>;
 
@@ -97,6 +102,8 @@ export interface PublicMaker {
   services: string | null;
   region: string | null;
   publicArea: string | null;
+  /** Parcours de formation, affiché pour les apprentis. */
+  training: { institution: string | null; specialty: string | null; level: string | null } | null;
   /** Badge de la formule en cours, s'il y en a un à montrer. Il signale une
    *  visibilité achetée, jamais une certification (§ 3.4). */
   badge: { code: string; name: string } | null;
@@ -199,6 +206,12 @@ export interface OwnMakerProfile extends AdminMaker {
   pickupLongitude: number | null;
 }
 
+/** Pièce complémentaire demandée par l'administration (§ 4.4). */
+export const documentRequestSchema = z.object({
+  message: trimmed(5, 500, 'Message'),
+});
+export type DocumentRequestInput = z.infer<typeof documentRequestSchema>;
+
 export const kycReviewSchema = z.object({
   decision: z.enum(['APPROVE', 'REJECT']),
   reason: z.string().trim().max(500).optional(),
@@ -243,6 +256,7 @@ export const productSchema = z
     quantityAvailable: z.number().int().min(0).max(MAX_QUANTITY, 'Quantité trop élevée').default(0),
     leadTimeDays: z.number().int().positive().max(365).optional(),
     observations: z.string().trim().max(1_000).optional(),
+    packagingNotes: z.string().trim().max(1_000).optional(),
 
     weightGrams: z
       .number()

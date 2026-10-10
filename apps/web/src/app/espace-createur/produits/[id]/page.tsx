@@ -27,6 +27,7 @@ interface ProductDetail {
   quantityAvailable: number;
   leadTimeDays: number | null;
   observations: string | null;
+  packagingNotes: string | null;
   weightGrams: number;
   lengthMm: number;
   widthMm: number;
@@ -169,6 +170,7 @@ function toFormValues(product: ProductDetail): ProductFormValues {
     quantityAvailable: String(product.quantityAvailable),
     leadTimeDays: product.leadTimeDays ? String(product.leadTimeDays) : "",
     observations: product.observations ?? "",
+    packagingNotes: product.packagingNotes ?? "",
     weightGrams: positive(product.weightGrams),
     lengthMm: positive(product.lengthMm),
     widthMm: positive(product.widthMm),

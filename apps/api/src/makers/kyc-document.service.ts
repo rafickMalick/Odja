@@ -1,6 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import type { AttachKycDocumentInput, KycDocumentView } from '@oja/contracts';
 
+import { TRAINING_PROOF_TYPE } from '@oja/domain';
+
+import { NotificationService } from '../notifications/notification.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 
@@ -21,6 +24,7 @@ export class KycDocumentService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storage: StorageService,
+    private readonly notifications: NotificationService,
   ) {}
 
   async attachForMaker(
@@ -49,6 +53,16 @@ export class KycDocumentService {
     await this.prisma.kycDocument.create({
       data: { makerId: maker.id, type: input.type, fileKey: input.fileKey },
     });
+
+    /* Le cahier demande d'accuser réception du justificatif d'un apprenti
+       (§ 12) : sans cela, il ne sait pas si son envoi est bien arrivé. */
+    if (input.type === TRAINING_PROOF_TYPE) {
+      await this.notifications.notice('creator_notice', userId, {
+        title: 'Justificatif de formation reçu',
+        body: 'Votre justificatif est bien arrivé. Déposez votre dossier pour qu’il soit examiné.',
+        href: '/espace-createur/boutique',
+      });
+    }
 
     return this.listForMaker(userId);
   }

@@ -287,6 +287,12 @@ model MakerProfile {
   /// L'adresse exacte, elle, ne sort jamais (§ 2.2 D).
   publicArea    String?
 
+  // ── Formation (apprentis, § 4.3) — publique : elle présente honnêtement
+  //    le niveau du créateur. Le justificatif, lui, reste une pièce privée. ──
+  trainingInstitution String?
+  trainingSpecialty   String?
+  trainingLevel       String?
+
   // ── Informations privées : administration uniquement ──
   managerName   String?
   contactPhone  String?
@@ -547,6 +553,8 @@ model Product {
   /// C'est lui qui arme le compte à rebours du statut « En fabrication ».
   leadTimeDays  Int?
   observations  String?
+  /// Emballage, fragilité, possibilités de livraison (§ 5.2).
+  packagingNotes String?
 
   /// Poids et encombrement. Absents du formulaire du cahier client, mais le
   /// choix automatique du véhicule en dépend entièrement : ils sont rendus

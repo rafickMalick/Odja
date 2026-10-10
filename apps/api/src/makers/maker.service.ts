@@ -20,7 +20,13 @@ import type {
   PublicMaker,
 } from '@oja/contracts';
 import type { MakerProfile } from '@oja/db';
-import { commissionFor, displayAvailability, findContactDetails } from '@oja/domain';
+import {
+  commissionFor,
+  displayAvailability,
+  findContactDetails,
+  isApprentice,
+  missingForReview,
+} from '@oja/domain';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
@@ -57,6 +63,9 @@ const CREATIVE_FIELDS = [
   'services',
   'region',
   'publicArea',
+  'trainingInstitution',
+  'trainingSpecialty',
+  'trainingLevel',
 ] as const;
 
 /* L'annuaire trie en mémoire (formule, mise en avant, note) : le rang dépend
@@ -162,10 +171,19 @@ export class MakerService {
        formulaire de la boutique renvoie tous ses champs à chaque
        enregistrement, et un simple changement de description ne doit pas
        renvoyer un atelier validé en attente de validation. */
+    /* Passer d'apprenti à professionnel, ou l'inverse, change ce que
+       l'administration doit vérifier : formation d'un côté, existence légale
+       de l'autre. Le dossier repasse donc en validation. */
+    const switchesTrack =
+      input.creatorKind !== undefined &&
+      isApprentice(input.creatorKind) !== isApprentice(maker.creatorKind);
+
     const touchesIdentity =
+      switchesTrack ||
       changed(input.ifuNumber, maker.ifuNumber) ||
       changed(input.rccmNumber, maker.rccmNumber) ||
-      changed(input.managerName, maker.managerName);
+      changed(input.managerName, maker.managerName) ||
+      changed(input.trainingInstitution, maker.trainingInstitution);
 
     const updated = await this.prisma.makerProfile.update({
       where: { userId },
@@ -257,13 +275,16 @@ export class MakerService {
     }
 
     // On liste tous les manques d'un coup : un créateur renvoyé cinq fois de
-    // suite pour un champ à la fois abandonne.
-    const missing: string[] = [];
-    if (!maker.managerName) missing.push('nom du responsable');
-    if (!maker.contactPhone) missing.push('téléphone');
-    if (!maker.postalAddress) missing.push('adresse physique');
-    if (!maker.pickupLine1) missing.push("adresse de l'atelier");
-    if (!maker.ifuNumber && !maker.rccmNumber) missing.push('numéro IFU ou RCCM');
+    // suite pour un champ à la fois abandonne. Un apprenti justifie de sa
+    // formation, un professionnel de son existence légale (§ 4.3).
+    const documents = await this.prisma.kycDocument.findMany({
+      where: { makerId: maker.id },
+      select: { type: true },
+    });
+    const missing = missingForReview(
+      maker,
+      documents.map((document) => document.type),
+    );
 
     if (missing.length > 0) {
       throw new BadRequestException(
@@ -276,7 +297,44 @@ export class MakerService {
       data: { kycStatus: 'PENDING', kycSubmittedAt: new Date(), kycRejectReason: null },
     });
 
+    const apprentice = isApprentice(maker.creatorKind);
+    await this.notifications.adminNotice({
+      title: apprentice ? 'Dossier d’apprenti à examiner' : 'Dossier créateur à examiner',
+      body: `${maker.shopName} a déposé son dossier${apprentice ? ' et son justificatif de formation' : ''}.`,
+      href: `/admin/ateliers${apprentice ? '?profil=apprentis' : ''}`,
+    });
+
     return { status: 'PENDING' };
+  }
+
+  /**
+   * Demande d'une pièce complémentaire (§ 4.4 et § 12).
+   *
+   * Le dossier reste en attente : l'administration ne refuse pas, elle dit ce
+   * qui manque. Le créateur est prévenu, la demande est journalisée.
+   */
+  async requestDocument(makerId: string, adminId: string, message: string): Promise<void> {
+    const maker = await this.prisma.makerProfile.findFirst({
+      where: { id: makerId, deletedAt: null },
+    });
+    if (!maker) throw new NotFoundException();
+
+    await this.prisma.auditLog.create({
+      data: {
+        actorId: adminId,
+        actorRole: 'ADMIN',
+        action: 'maker.kyc.request_document',
+        targetType: 'MakerProfile',
+        targetId: makerId,
+        after: { message },
+      },
+    });
+
+    await this.notifications.notice('creator_notice', maker.userId, {
+      title: 'Pièce complémentaire demandée',
+      body: `L’équipe Ojà a besoin d’un document de plus pour examiner votre dossier : ${message}`,
+      href: '/espace-createur/boutique',
+    });
   }
 
   // ── Vue publique ──
@@ -398,11 +456,22 @@ export class MakerService {
 
   // ── Administration ──
 
-  async listForAdmin(status?: string): Promise<AdminMaker[]> {
+  /**
+   * Dossiers à l'administration. `profile` sépare les apprentis des
+   * professionnels : les deux validations ne vérifient pas la même chose
+   * (§ 13, « authentification des profils »).
+   */
+  async listForAdmin(status?: string, profile?: string): Promise<AdminMaker[]> {
+    const apprenticeKinds = ['APPRENTICE_DESIGNER', 'APPRENTICE_ARTISAN'] as const;
     const makers = await this.prisma.makerProfile.findMany({
       where: {
         deletedAt: null,
         ...(status ? { kycStatus: status as 'PENDING' } : {}),
+        ...(profile === 'apprentis'
+          ? { creatorKind: { in: [...apprenticeKinds] } }
+          : profile === 'professionnels'
+            ? { creatorKind: { notIn: [...apprenticeKinds] } }
+            : {}),
       },
       include: { ...WITH_PLACE, subscriptions: liveSubscriptionsInclude() },
       orderBy: { kycSubmittedAt: 'asc' },

@@ -35,6 +35,7 @@ export default function NewProductPage() {
 
       <ProductForm
         initial={EMPTY_PRODUCT}
+        guided
         commissionBps={commissionBps}
         submitLabel="Enregistrer et passer aux photos"
         onSubmit={async (payload) => {
