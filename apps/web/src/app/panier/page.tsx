@@ -7,6 +7,7 @@ import { PrivacyNoteBanner } from "@/components/PrivacyNoteBanner";
 import { ProgressStepper } from "@/components/ProgressStepper";
 import { StepperQuantity } from "@/components/StepperQuantity";
 import { useCart } from "@/lib/cart";
+import { useSession } from "@/lib/session";
 import { formatFcfa } from "@/lib/format";
 
 import styles from "./page.module.css";
@@ -24,6 +25,10 @@ import styles from "./page.module.css";
  */
 export default function CartPage() {
   const { cart, itemCount, ready, error, setQuantity, remove } = useCart();
+  const { user, ready: sessionReady } = useSession();
+  // Le panier est ouvert à tous, la commande aux seuls comptes. Le dire ici,
+  // plutôt que de renvoyer le visiteur vers un écran de connexion au dernier clic.
+  const isVisitor = sessionReady && user === null;
 
   if (!ready) {
     return (
@@ -171,9 +176,23 @@ export default function CartPage() {
             ) : null}
 
             <div className={styles.summaryActions}>
-              <ButtonLink href="/checkout" fullWidth>
-                Passer commande
-              </ButtonLink>
+              {isVisitor ? (
+                <>
+                  <p className={styles.noteText}>
+                    Un compte est nécessaire pour commander. Votre panier est conservé.
+                  </p>
+                  <ButtonLink href="/connexion?suite=/checkout" fullWidth>
+                    Se connecter pour commander
+                  </ButtonLink>
+                  <ButtonLink href="/inscription?suite=/checkout" variant="outline" fullWidth>
+                    Créer un compte
+                  </ButtonLink>
+                </>
+              ) : (
+                <ButtonLink href="/checkout" fullWidth>
+                  Passer commande
+                </ButtonLink>
+              )}
               <ButtonLink href="/catalogue" variant="outline" fullWidth>
                 Continuer mes achats
               </ButtonLink>

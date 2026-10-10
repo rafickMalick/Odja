@@ -221,6 +221,34 @@ describe('Parcours d’achat (bout en bout)', () => {
     return { id: product.body.id, slug: product.body.slug };
   }
 
+  describe('0 — la commande est réservée aux comptes', () => {
+    /* Le panier reste ouvert aux visiteurs (voir plus bas) : demander un compte
+       avant d'avoir choisi quoi que ce soit les ferait fuir. Chiffrer, appliquer
+       un code et commander, eux, exigent une session. */
+    it('refuse le chiffrage à un visiteur', async () => {
+      await api().post('/api/v1/checkout/quote').send({ addressId: 'x' }).expect(401);
+    });
+
+    it('refuse un code promo à un visiteur', async () => {
+      await api().post('/api/v1/checkout/promo').send({ code: 'BIENVENUE' }).expect(401);
+    });
+
+    it('refuse la commande à un visiteur, quel que soit le mode de paiement', async () => {
+      for (const paymentMode of ['ONLINE_FULL', 'DEPOSIT_50', 'CASH_ON_DELIVERY']) {
+        await api()
+          .post('/api/v1/checkout')
+          .send({ addressId: 'x', expectedTotalXof: 1000, paymentMode })
+          .expect(401);
+      }
+    });
+
+    it('refuse à un visiteur de lire ou de vérifier une commande', async () => {
+      await api().get('/api/v1/orders').expect(401);
+      await api().get('/api/v1/orders/CMD-2026-000001').expect(401);
+      await api().post('/api/v1/orders/CMD-2026-000001/verify-payment').send({}).expect(401);
+    });
+  });
+
   describe('1 — panier', () => {
     it('accepte un panier de visiteur non connecté', async () => {
       // Demander un compte avant d'avoir choisi quoi que ce soit fait perdre

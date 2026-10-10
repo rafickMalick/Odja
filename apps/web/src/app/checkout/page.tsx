@@ -322,6 +322,9 @@ export default function CheckoutPage() {
           <Button onClick={() => router.push("/connexion?suite=/checkout")}>
             Se connecter
           </Button>
+          <Button variant="outline" onClick={() => router.push("/inscription?suite=/checkout")}>
+            Créer un compte
+          </Button>
         </div>
       </main>
     );
