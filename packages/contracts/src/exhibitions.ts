@@ -366,8 +366,26 @@ export interface TicketCheckout {
     reference: string;
     publicKey?: string;
     redirectUrl?: string;
+    /** Widget en mode test : aucun argent réel ne bouge. */
+    sandbox?: boolean;
   };
+  /** Ce que le widget de paiement préremplit. */
+  customer: { fullName: string; email: string; phone: string };
 }
+
+/**
+ * Vérification d'un billet au retour du widget. `providerRef` est
+ * l'identifiant de transaction appris par le navigateur : un confort, pas une
+ * preuve — le serveur relit la transaction auprès du fournisseur.
+ */
+export const passVerifySchema = z
+  .object({
+    providerRef: z.string().trim().min(1).max(120).optional(),
+  })
+  /* Sans corps : simple relecture du billet, après un paiement par
+     redirection ou au clic sur « J'ai payé ». */
+  .default({});
+export type PassVerifyInput = z.infer<typeof passVerifySchema>;
 
 /** Fréquentation et ventes d'une exposition (§ 11.4 et 11.5). */
 export interface ExhibitionStats {

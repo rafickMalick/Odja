@@ -16,10 +16,12 @@ import type {
   TicketCheckout,
 } from '@oja/contracts';
 import type { Exhibition, ExhibitionPass, Prisma } from '@oja/db';
-import type { PaymentProvider, ProviderPaymentStatus } from '@oja/domain';
+import type { PaymentProvider, ProviderPaymentStatus, WebhookEvent } from '@oja/domain';
+import { Prisma as PrismaRuntime } from '@oja/db';
 
 import { NotificationService } from '../notifications/notification.service';
 import { PAYMENT_PROVIDER } from '../payments/payment-provider.factory';
+import { PaymentService, type ExternalPaymentHandler } from '../payments/payment.service';
 import { SimulatedPaymentProvider } from '../payments/simulated.provider';
 import { PrismaService } from '../prisma/prisma.service';
 import { ExhibitionService, type PassChecker } from './exhibition.service';
@@ -38,7 +40,7 @@ type PassWithExhibition = ExhibitionPass & {
  * jamais sur celle du navigateur.
  */
 @Injectable()
-export class ExhibitionPassService implements PassChecker, OnModuleInit {
+export class ExhibitionPassService implements PassChecker, ExternalPaymentHandler, OnModuleInit {
   private readonly logger = new Logger(ExhibitionPassService.name);
   private readonly isProduction: boolean;
   private readonly webOrigin: string;
@@ -48,6 +50,7 @@ export class ExhibitionPassService implements PassChecker, OnModuleInit {
     private readonly exhibitions: ExhibitionService,
     private readonly notifications: NotificationService,
     private readonly simulated: SimulatedPaymentProvider,
+    private readonly payments: PaymentService,
     @Inject(PAYMENT_PROVIDER) private readonly provider: PaymentProvider,
     config: ConfigService,
   ) {
@@ -55,9 +58,40 @@ export class ExhibitionPassService implements PassChecker, OnModuleInit {
     this.webOrigin = config.get<string>('WEB_ORIGIN', 'http://localhost:3000');
   }
 
-  /** La page publique interroge la billetterie pour ouvrir la galerie. */
+  /**
+   * La page publique interroge la billetterie pour ouvrir la galerie, et le
+   * webhook de l'agrégateur lui transmet les notifications de billets.
+   */
   onModuleInit(): void {
     this.exhibitions.usePassChecker(this);
+    this.payments.useExternalPayments(this);
+  }
+
+  /**
+   * Notification de l'agrégateur portant sur un billet. KKiaPay renvoie notre
+   * identifiant (`partnerId`) : c'est lui qui relie la transaction au billet.
+   * Le statut annoncé a déjà été relu auprès du fournisseur par le webhook.
+   */
+  async handleWebhookEvent(event: WebhookEvent): Promise<boolean> {
+    const pass = event.paymentId
+      ? await this.prisma.exhibitionPass.findUnique({ where: { id: event.paymentId }, include: PASS_INCLUDE })
+      : await this.prisma.exhibitionPass.findFirst({ where: { providerRef: event.reference }, include: PASS_INCLUDE });
+    if (!pass) return false;
+
+    /* Notification rejouée, ou billet déjà confirmé par le retour du widget :
+       rien à refaire, mais c'est bien un billet. */
+    if (pass.status !== 'PENDING_PAYMENT') return true;
+
+    const known = await this.learnProviderRef(pass, event.reference);
+    try {
+      await this.apply(known, event.status);
+    } catch (error) {
+      /* Un montant ou un billet qui ne correspond pas est déjà signalé à
+         l'équipe : on répond quand même, pour ne pas faire réessayer
+         l'agrégateur sur un cas qui ne se résoudra pas seul. */
+      this.logger.warn(`Billet ${pass.reference} : ${(error as Error).message}`);
+    }
+    return true;
   }
 
   async hasConfirmedPass(exhibitionId: string, userId: string | undefined): Promise<boolean> {
@@ -204,6 +238,12 @@ export class ExhibitionPassService implements PassChecker, OnModuleInit {
         ...(initiated.checkout.redirectUrl !== undefined
           ? { redirectUrl: initiated.checkout.redirectUrl }
           : {}),
+        ...(initiated.checkout.sandbox !== undefined ? { sandbox: initiated.checkout.sandbox } : {}),
+      },
+      customer: {
+        fullName: `${user.firstName} ${user.lastName}`.trim(),
+        email: user.email,
+        phone: user.phone,
       },
     };
   }
@@ -214,15 +254,42 @@ export class ExhibitionPassService implements PassChecker, OnModuleInit {
    * Appelée au retour du paiement. Idempotente : un billet déjà confirmé le
    * reste, un billet impayé reste en attente.
    */
-  async verify(reference: string, userId: string): Promise<ExhibitionPassView> {
-    const pass = await this.prisma.exhibitionPass.findFirst({
+  async verify(reference: string, userId: string, knownProviderRef?: string): Promise<ExhibitionPassView> {
+    const found = await this.prisma.exhibitionPass.findFirst({
       where: { reference, userId },
       include: PASS_INCLUDE,
     });
-    if (!pass) throw new NotFoundException();
-    if (pass.status !== 'PENDING_PAYMENT' || !pass.providerRef) return toView(pass);
+    if (!found) throw new NotFoundException();
+    if (found.status !== 'PENDING_PAYMENT') return toView(found);
+
+    /* Le widget KKiaPay apprend au navigateur l'identifiant de transaction ;
+       le serveur ne le connaît pas autrement avant le webhook. */
+    const pass = knownProviderRef ? await this.learnProviderRef(found, knownProviderRef) : found;
+    if (!pass.providerRef) return toView(pass);
 
     return this.apply(pass, await this.provider.verify(pass.providerRef));
+  }
+
+  /**
+   * Retient la référence de transaction du fournisseur. Une référence déjà
+   * attribuée à un autre billet est ignorée : présenter la transaction d'un
+   * autre ne doit rien confirmer.
+   */
+  private async learnProviderRef(pass: PassWithExhibition, providerRef: string): Promise<PassWithExhibition> {
+    if (pass.providerRef === providerRef) return pass;
+    try {
+      return await this.prisma.exhibitionPass.update({
+        where: { id: pass.id },
+        data: { providerRef },
+        include: PASS_INCLUDE,
+      });
+    } catch (error) {
+      if (error instanceof PrismaRuntime.PrismaClientKnownRequestError && error.code === 'P2002') {
+        this.logger.warn(`Référence ${providerRef} déjà attribuée — ignorée pour le billet ${pass.reference}`);
+        return pass;
+      }
+      throw error;
+    }
   }
 
   /** Paiement simulé, refusé en production — comme pour les commandes. */
@@ -317,6 +384,18 @@ export class ExhibitionPassService implements PassChecker, OnModuleInit {
     if (status.status === 'failed') {
       this.logger.warn(`Billet ${pass.reference} : paiement refusé (${status.message})`);
       return toView(pass);
+    }
+
+    /* KKiaPay garde notre identifiant sur la transaction (`partnerId`) : une
+       transaction ouverte pour autre chose — une commande, un autre billet du
+       même prix — ne confirme pas ce billet. */
+    if (status.paymentId && status.paymentId !== pass.id) {
+      await this.notifications.adminNotice({
+        title: 'Transaction présentée pour un autre billet',
+        body: `${pass.reference} : la transaction appartient à un autre paiement.`,
+        href: '/admin/expositions',
+      });
+      throw new BadRequestException('Cette transaction ne correspond pas à ce billet.');
     }
 
     if (status.amountXof < pass.amountXof) {
