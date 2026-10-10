@@ -78,6 +78,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     { href: "/admin/formules", label: "Formules de visibilité" },
     { href: "/admin/expositions", label: "Expositions" },
     { href: "/admin/formules-expositions", label: "Formules d’exposition" },
+    { href: "/admin/signalements", label: "Signalements" },
     { href: "/admin/livreurs", label: "Dossiers livreurs", badge: couriers || undefined },
     { href: "/admin/catalogue", label: "Fiches à valider", badge: products || undefined },
     { href: "/admin/avis", label: "Avis clients" },

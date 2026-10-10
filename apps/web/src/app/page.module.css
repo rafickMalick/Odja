@@ -857,3 +857,23 @@
     gap: var(--grid-gutter);
   }
 }
+
+/* Expositions et créateurs à découvrir : trois cartes, deux puis une en dessous. */
+.exhibitionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-24);
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .exhibitionGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .exhibitionGrid {
+    grid-template-columns: 1fr;
+  }
+}

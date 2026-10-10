@@ -129,6 +129,7 @@ export class CartService {
         deletedAt: null,
         isForSale: true,
         availability: 'AVAILABLE',
+        maker: { suspendedAt: null },
       },
     });
     // Une pièce non publiée — ou publiée sans être à vendre — ne se met pas au
@@ -331,7 +332,7 @@ function describeIssue(
     isMadeToOrder: boolean;
     isForSale: boolean;
     availability: string;
-    maker: { kycStatus: string };
+    maker: { kycStatus: string; suspendedAt: Date | null };
   },
   wanted: number,
   available: number,
@@ -344,7 +345,7 @@ function describeIssue(
   if (!product.isForSale || product.availability !== 'AVAILABLE') {
     return "Cette pièce n'est plus disponible à la vente.";
   }
-  if (product.maker.kycStatus !== 'APPROVED') {
+  if (product.maker.kycStatus !== 'APPROVED' || product.maker.suspendedAt) {
     return "L'atelier n'est plus actif sur Ojà.";
   }
   if (product.isMadeToOrder) return null;

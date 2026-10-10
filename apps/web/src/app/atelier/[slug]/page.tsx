@@ -5,6 +5,8 @@ import { fetchMaker } from "@/lib/catalog";
 import { CREATOR_KIND_LABELS, fetchMakerWorks, isApprenticeKind } from "@/lib/creators";
 import { formatNumber } from "@/lib/format";
 
+import { ReportButton } from "@/components/ReportButton";
+
 import { WorksGallery } from "./WorksGallery";
 import styles from "./page.module.css";
 
@@ -160,6 +162,7 @@ export default async function AtelierPage({ params }: Params) {
       <section className={styles.section}>
         <h2 className={styles.heading}>Réalisations</h2>
         <WorksGallery works={works} />
+        <ReportButton targetType="MAKER" targetId={maker.id} label="Signaler ce profil" />
       </section>
     </main>
   );

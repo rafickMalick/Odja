@@ -130,6 +130,7 @@ model User {
   recoveryCodes    MfaRecoveryCode[]
   exhibitions      Exhibition[]
   exhibitionPasses ExhibitionPass[]
+  contentReports   ContentReport[]
 
   @@index([role, status])
   @@map("users")
@@ -306,6 +307,11 @@ model MakerProfile {
   /// Registre du commerce et du crédit mobilier.
   rccmNumber    String?
 
+  /// Suspension par l'administration pour un motif légitime (§ 11.1) :
+  /// le profil et ses fiches disparaissent du public, sans rien supprimer.
+  suspendedAt   DateTime?
+  suspendReason String?
+
   kycStatus       KycStatus @default(NOT_SUBMITTED)
   kycSubmittedAt  DateTime?
   kycReviewedAt   DateTime?
@@ -395,6 +401,9 @@ model MakerSubscription {
   note             String?
   activatedById    String?
   cancelledAt      DateTime?
+  /// Rappels envoyés au créateur (§ 12) : on ne prévient qu'une fois.
+  reminderSentAt   DateTime?
+  expiredNoticeAt  DateTime?
   createdAt        DateTime  @default(now())
 
   @@index([makerId, startsAt])
@@ -1829,4 +1838,54 @@ model ExhibitionPass {
   @@unique([exhibitionId, userId, format])
   @@index([exhibitionId, status])
   @@map("exhibition_passes")
+}
+
+// ═══════════════════════════════════════════ Signalements (§ 13, protection des créations)
+
+enum ReportTarget {
+  PRODUCT
+  MAKER
+  EXHIBITION
+  EXHIBITION_WORK
+}
+
+enum ReportReason {
+  /// Photo ou œuvre publiée sans l'autorisation de son auteur.
+  UNAUTHORIZED_USE
+  COUNTERFEIT
+  INAPPROPRIATE
+  MISLEADING
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+model ContentReport {
+  id          String       @id @default(cuid())
+  reference   String       @unique
+  targetType  ReportTarget
+  targetId    String
+  /// Libellé de la cible au moment du signalement, pour la file d'examen.
+  targetLabel String
+  reason      ReportReason
+  details     String
+
+  reporterId    String?
+  reporter      User?   @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+  reporterEmail String?
+
+  status        ReportStatus @default(OPEN)
+  resolution    String?
+  contentHidden Boolean      @default(false)
+  handledById   String?
+  handledAt     DateTime?
+  createdAt     DateTime     @default(now())
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@map("content_reports")
 }

@@ -308,6 +308,50 @@ export class MakerService {
   }
 
   /**
+   * Suspension d'un profil pour un motif légitime (§ 11.1).
+   *
+   * Le profil, ses fiches et sa galerie disparaissent du public ; rien n'est
+   * supprimé, et la levée de la suspension rend tout tel quel. Les commandes
+   * déjà passées suivent leur cours.
+   */
+  async suspend(makerId: string, adminId: string, reason: string | null): Promise<AdminMaker> {
+    const maker = await this.prisma.makerProfile.findFirst({ where: { id: makerId, deletedAt: null } });
+    if (!maker) throw new NotFoundException();
+    const suspending = reason !== null;
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const result = await tx.makerProfile.update({
+        where: { id: makerId },
+        data: suspending
+          ? { suspendedAt: new Date(), suspendReason: reason }
+          : { suspendedAt: null, suspendReason: null },
+        include: WITH_PLACE,
+      });
+      await tx.auditLog.create({
+        data: {
+          actorId: adminId,
+          actorRole: 'ADMIN',
+          action: suspending ? 'maker.suspend' : 'maker.reinstate',
+          targetType: 'MakerProfile',
+          targetId: makerId,
+          after: { reason },
+        },
+      });
+      return result;
+    });
+
+    await this.notifications.notice('creator_notice', maker.userId, {
+      title: suspending ? 'Votre profil est suspendu' : 'Votre profil est de nouveau visible',
+      body: suspending
+        ? `Votre profil et vos pièces ne sont plus visibles : ${reason}. Écrivez au support pour en parler.`
+        : 'La suspension est levée : votre profil et vos pièces sont de nouveau en ligne.',
+      href: suspending ? '/espace-createur/support' : '/espace-createur/boutique',
+    });
+
+    return toAdminMaker(updated, await this.contextFor(updated));
+  }
+
+  /**
    * Demande d'une pièce complémentaire (§ 4.4 et § 12).
    *
    * Le dossier reste en attente : l'administration ne refuse pas, elle dit ce
@@ -341,10 +385,10 @@ export class MakerService {
 
   async publicBySlug(slug: string): Promise<PublicMaker> {
     const maker = await this.prisma.makerProfile.findFirst({
-      where: { slug, deletedAt: null, kycStatus: 'APPROVED' },
+      where: { slug, deletedAt: null, kycStatus: 'APPROVED', suspendedAt: null },
       include: WITH_PLACE,
     });
-    // Un atelier non validé n'existe pas pour le public.
+    // Un atelier non validé — ou suspendu — n'existe pas pour le public.
     if (!maker) throw new NotFoundException();
 
     const productCount = await this.prisma.product.count({
@@ -361,7 +405,7 @@ export class MakerService {
    */
   async worksBySlug(slug: string): Promise<MakerWork[]> {
     const maker = await this.prisma.makerProfile.findFirst({
-      where: { slug, deletedAt: null, kycStatus: 'APPROVED' },
+      where: { slug, deletedAt: null, kycStatus: 'APPROVED', suspendedAt: null },
     });
     if (!maker) throw new NotFoundException();
 
@@ -403,6 +447,7 @@ export class MakerService {
       where: {
         deletedAt: null,
         kycStatus: 'APPROVED',
+        suspendedAt: null,
         ...(query.kind ? { creatorKind: query.kind } : {}),
         ...(query.country || query.city
           ? {

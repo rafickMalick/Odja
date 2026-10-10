@@ -25,6 +25,9 @@ export async function resetTestData(prisma: PrismaService): Promise<void> {
     },
   });
 
+  // Les signalements anonymes ne portent qu'une adresse.
+  await prisma.contentReport.deleteMany({ where: { reporterEmail: { endsWith: '@oja.market' } } });
+
   // Les abonnés à la newsletter ne sont liés à aucun compte.
   await prisma.newsletterSubscriber.deleteMany({
     where: { email: { endsWith: '@oja.market' } },
@@ -65,6 +68,7 @@ export async function resetTestData(prisma: PrismaService): Promise<void> {
   // Une exposition survit à son organisateur en production (on désactive le
   // compte) : en test, on la retire explicitement, œuvres et billets compris.
   await prisma.exhibition.deleteMany({ where: { organizerId: { in: userIds } } });
+  await prisma.contentReport.deleteMany({ where: { reporterId: { in: userIds } } });
 
   // Profils, adresses, paniers et sessions tombent en cascade avec l'utilisateur.
   await prisma.user.deleteMany({ where: { id: { in: userIds } } });

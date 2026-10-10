@@ -51,6 +51,8 @@ interface AdminMaker {
   creatorKind: CreatorKind;
   plan: MakerPlanSummary;
   training: { institution: string | null; specialty: string | null; level: string | null } | null;
+  suspendedAt: string | null;
+  suspendReason: string | null;
 }
 
 interface Document {
@@ -233,6 +235,24 @@ function MakerCard({
 
   const [notice, setNotice] = useState<string | null>(null);
 
+  const toggleSuspension = async () => {
+    let body: { reason: string } | undefined;
+    if (!maker.suspendedAt) {
+      const reason = window.prompt("Motif de la suspension (transmis au créateur) :");
+      if (!reason?.trim()) return;
+      body = { reason: reason.trim() };
+    }
+    try {
+      await apiFetch(`/admin/makers/${maker.id}/${maker.suspendedAt ? "reinstate" : "suspend"}`, {
+        method: "POST",
+        ...(body ? { body } : {}),
+      });
+      await onPlanChange();
+    } catch (cause) {
+      setNotice(cause instanceof ApiError ? cause.message : "Action impossible.");
+    }
+  };
+
   /* Demander une pièce plutôt que refuser : le dossier reste en attente, et
      le créateur sait exactement quoi envoyer. */
   const requestDocument = async () => {
@@ -320,6 +340,22 @@ function MakerCard({
 
       {maker.kycStatus === "APPROVED" ? (
         <VisibilityManager makerId={maker.id} plans={plans} onChange={onPlanChange} />
+      ) : null}
+
+      {/* Suspension pour motif légitime (§ 11.1) : le profil et ses fiches
+          disparaissent du public, rien n'est supprimé. */}
+      {maker.suspendedAt ? (
+        <p className={styles.error}>
+          Profil suspendu le {new Date(maker.suspendedAt).toLocaleDateString("fr-FR")} :{" "}
+          {maker.suspendReason}
+        </p>
+      ) : null}
+      {maker.kycStatus === "APPROVED" ? (
+        <div className={styles.rowActions}>
+          <Button type="button" variant="outline" onClick={() => void toggleSuspension()}>
+            {maker.suspendedAt ? "Lever la suspension" : "Suspendre le profil"}
+          </Button>
+        </div>
       ) : null}
 
       {maker.kycRejectReason ? (

@@ -189,6 +189,8 @@ export interface AdminMaker extends PublicMaker {
   commissionBps: number;
   /** Formule en cours. */
   plan: MakerPlanSummary;
+  suspendedAt: string | null;
+  suspendReason: string | null;
 }
 
 /**

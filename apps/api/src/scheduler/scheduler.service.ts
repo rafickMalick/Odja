@@ -7,6 +7,7 @@ import { InvoiceService } from '../checkout/invoice.service';
 import { PaymentService } from '../payments/payment.service';
 import { SubOrderService } from '../orders/sub-order.service';
 import { ValidationService } from '../orders/validation.service';
+import { VisibilityService } from '../makers/visibility.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 /**
@@ -39,6 +40,7 @@ export class SchedulerService {
     private readonly subOrders: SubOrderService,
     private readonly payments: PaymentService,
     private readonly invoices: InvoiceService,
+    private readonly visibility: VisibilityService,
     private readonly prisma: PrismaService,
     config: ConfigService,
   ) {
@@ -100,6 +102,15 @@ export class SchedulerService {
   @Cron(CronExpression.EVERY_5_MINUTES, { name: 'issue-invoices' })
   async issueInvoices(): Promise<void> {
     await this.run('émission des factures', () => this.invoices.issuePending());
+  }
+
+  /**
+   * Rappels de renouvellement des formules de visibilité (cahier des
+   * évolutions, § 12). Chaque matin : une échéance se compte en jours.
+   */
+  @Cron(CronExpression.EVERY_DAY_AT_8AM, { name: 'visibility-renewals' })
+  async visibilityRenewals(): Promise<void> {
+    await this.run('rappels de formule', () => this.visibility.notifyRenewals());
   }
 
   /** Clés d'idempotence de plus de 24 h : elles ne protègent plus rien. */
