@@ -34,6 +34,12 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type Session = $Result.DefaultSelection<Prisma.$SessionPayload>
 /**
+ * Model MfaRecoveryCode
+ * Code de secours de la double authentification : sert une fois, quand le
+ * téléphone est perdu. Jamais stocké en clair.
+ */
+export type MfaRecoveryCode = $Result.DefaultSelection<Prisma.$MfaRecoveryCodePayload>
+/**
  * Model VerificationToken
  * Codes à usage unique : OTP d'inscription, vérification d'e-mail,
  * réinitialisation de mot de passe.
@@ -211,8 +217,23 @@ export type MessageThread = $Result.DefaultSelection<Prisma.$MessageThreadPayloa
  */
 export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
 /**
- * Model Review
+ * Model SupportTicket
+ * Une demande au service client. Toujours entre une personne et Ojà : le
+ * client et le créateur ne s'écrivent jamais directement (§ 15.3).
+ */
+export type SupportTicket = $Result.DefaultSelection<Prisma.$SupportTicketPayload>
+/**
+ * Model SupportMessage
  * 
+ */
+export type SupportMessage = $Result.DefaultSelection<Prisma.$SupportMessagePayload>
+/**
+ * Model Review
+ * Avis client (cahier L6-11, L6-12). Un avis exige une ligne de commande
+ * réellement achetée **et** dont la réception a été validée : on ne note
+ * pas une pièce qu'on n'a pas eue entre les mains. Un seul par ligne.
+ * Publié après modération ; la publication recalcule les notes moyennes
+ * de la pièce et de l'atelier.
  */
 export type Review = $Result.DefaultSelection<Prisma.$ReviewPayload>
 /**
@@ -252,6 +273,26 @@ export type PromoRedemption = $Result.DefaultSelection<Prisma.$PromoRedemptionPa
  * à l'encaissement. Le PDF vit dans le stockage privé ; seule la clé est ici.
  */
 export type Invoice = $Result.DefaultSelection<Prisma.$InvoicePayload>
+/**
+ * Model NewsletterSubscriber
+ * Abonné à la newsletter (pied de page). La base fait foi ; la liste Brevo,
+ * d'où partent les campagnes, n'en est qu'une copie. Une désinscription se
+ * marque (`unsubscribedAt`) plutôt que de supprimer la ligne : on garde la
+ * trace du consentement et de son retrait.
+ */
+export type NewsletterSubscriber = $Result.DefaultSelection<Prisma.$NewsletterSubscriberPayload>
+/**
+ * Model IdempotencyKey
+ * Clé `Idempotency-Key` d'une requête qui engage de l'argent (cahier L0-25).
+ * Le client envoie la même clé quand il rejoue la même intention : un double
+ * clic ou un réseau qui renvoie la requête retrouve la première réponse au
+ * lieu de créer une seconde commande. Gardée 24 h, puis purgée.
+ * 
+ * En base plutôt que dans Redis, comme le prévoyait le backlog : Redis n'est
+ * pas déployé, et la ligne `IN_PROGRESS` doit survivre à un redémarrage
+ * pour qu'une requête interrompue ne soit pas rejouée en double.
+ */
+export type IdempotencyKey = $Result.DefaultSelection<Prisma.$IdempotencyKeyPayload>
 
 /**
  * Enums
@@ -360,6 +401,15 @@ export const PaymentStatus: {
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 
+export const PaymentMode: {
+  ONLINE_FULL: 'ONLINE_FULL',
+  DEPOSIT_50: 'DEPOSIT_50',
+  CASH_ON_DELIVERY: 'CASH_ON_DELIVERY'
+};
+
+export type PaymentMode = (typeof PaymentMode)[keyof typeof PaymentMode]
+
+
 export const PaymentChannel: {
   MOBILE_MONEY: 'MOBILE_MONEY',
   CARD: 'CARD',
@@ -376,7 +426,9 @@ export const LedgerAccountType: {
   COURIER_PAYABLE: 'COURIER_PAYABLE',
   CUSTOMER_REFUNDABLE: 'CUSTOMER_REFUNDABLE',
   PSP_FEE: 'PSP_FEE',
-  VAT_PAYABLE: 'VAT_PAYABLE'
+  VAT_PAYABLE: 'VAT_PAYABLE',
+  RECEIVABLE_ON_DELIVERY: 'RECEIVABLE_ON_DELIVERY',
+  COURIER_CASH_HELD: 'COURIER_CASH_HELD'
 };
 
 export type LedgerAccountType = (typeof LedgerAccountType)[keyof typeof LedgerAccountType]
@@ -435,6 +487,35 @@ export const ThreadParty: {
 export type ThreadParty = (typeof ThreadParty)[keyof typeof ThreadParty]
 
 
+export const TicketStatus: {
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  WAITING_CUSTOMER: 'WAITING_CUSTOMER',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED'
+};
+
+export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus]
+
+
+export const TicketPriority: {
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+};
+
+export type TicketPriority = (typeof TicketPriority)[keyof typeof TicketPriority]
+
+
+export const TicketChannel: {
+  ACCOUNT: 'ACCOUNT',
+  CONTACT_FORM: 'CONTACT_FORM'
+};
+
+export type TicketChannel = (typeof TicketChannel)[keyof typeof TicketChannel]
+
+
 export const PromoKind: {
   PERCENT: 'PERCENT',
   FIXED: 'FIXED'
@@ -480,6 +561,10 @@ export type PaymentStatus = $Enums.PaymentStatus
 
 export const PaymentStatus: typeof $Enums.PaymentStatus
 
+export type PaymentMode = $Enums.PaymentMode
+
+export const PaymentMode: typeof $Enums.PaymentMode
+
 export type PaymentChannel = $Enums.PaymentChannel
 
 export const PaymentChannel: typeof $Enums.PaymentChannel
@@ -507,6 +592,18 @@ export const DisputeStatus: typeof $Enums.DisputeStatus
 export type ThreadParty = $Enums.ThreadParty
 
 export const ThreadParty: typeof $Enums.ThreadParty
+
+export type TicketStatus = $Enums.TicketStatus
+
+export const TicketStatus: typeof $Enums.TicketStatus
+
+export type TicketPriority = $Enums.TicketPriority
+
+export const TicketPriority: typeof $Enums.TicketPriority
+
+export type TicketChannel = $Enums.TicketChannel
+
+export const TicketChannel: typeof $Enums.TicketChannel
 
 export type PromoKind = $Enums.PromoKind
 
@@ -669,6 +766,16 @@ export class PrismaClient<
     * ```
     */
   get session(): Prisma.SessionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.mfaRecoveryCode`: Exposes CRUD operations for the **MfaRecoveryCode** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MfaRecoveryCodes
+    * const mfaRecoveryCodes = await prisma.mfaRecoveryCode.findMany()
+    * ```
+    */
+  get mfaRecoveryCode(): Prisma.MfaRecoveryCodeDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.verificationToken`: Exposes CRUD operations for the **VerificationToken** model.
@@ -981,6 +1088,26 @@ export class PrismaClient<
   get message(): Prisma.MessageDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.supportTicket`: Exposes CRUD operations for the **SupportTicket** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SupportTickets
+    * const supportTickets = await prisma.supportTicket.findMany()
+    * ```
+    */
+  get supportTicket(): Prisma.SupportTicketDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.supportMessage`: Exposes CRUD operations for the **SupportMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SupportMessages
+    * const supportMessages = await prisma.supportMessage.findMany()
+    * ```
+    */
+  get supportMessage(): Prisma.SupportMessageDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.review`: Exposes CRUD operations for the **Review** model.
     * Example usage:
     * ```ts
@@ -1049,6 +1176,26 @@ export class PrismaClient<
     * ```
     */
   get invoice(): Prisma.InvoiceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.newsletterSubscriber`: Exposes CRUD operations for the **NewsletterSubscriber** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NewsletterSubscribers
+    * const newsletterSubscribers = await prisma.newsletterSubscriber.findMany()
+    * ```
+    */
+  get newsletterSubscriber(): Prisma.NewsletterSubscriberDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.idempotencyKey`: Exposes CRUD operations for the **IdempotencyKey** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more IdempotencyKeys
+    * const idempotencyKeys = await prisma.idempotencyKey.findMany()
+    * ```
+    */
+  get idempotencyKey(): Prisma.IdempotencyKeyDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1494,6 +1641,7 @@ export namespace Prisma {
     City: 'City',
     User: 'User',
     Session: 'Session',
+    MfaRecoveryCode: 'MfaRecoveryCode',
     VerificationToken: 'VerificationToken',
     TermsAcceptance: 'TermsAcceptance',
     Address: 'Address',
@@ -1525,13 +1673,17 @@ export namespace Prisma {
     DisputeMessage: 'DisputeMessage',
     MessageThread: 'MessageThread',
     Message: 'Message',
+    SupportTicket: 'SupportTicket',
+    SupportMessage: 'SupportMessage',
     Review: 'Review',
     Notification: 'Notification',
     AuditLog: 'AuditLog',
     ReferenceCounter: 'ReferenceCounter',
     PromoCode: 'PromoCode',
     PromoRedemption: 'PromoRedemption',
-    Invoice: 'Invoice'
+    Invoice: 'Invoice',
+    NewsletterSubscriber: 'NewsletterSubscriber',
+    IdempotencyKey: 'IdempotencyKey'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1550,7 +1702,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "country" | "city" | "user" | "session" | "verificationToken" | "termsAcceptance" | "address" | "makerProfile" | "kycDocument" | "courierProfile" | "vehicleRate" | "category" | "product" | "productImage" | "cart" | "cartItem" | "order" | "subOrder" | "orderLine" | "paymentMethodConfig" | "payment" | "paymentEvent" | "refund" | "ledgerAccount" | "ledgerTransaction" | "ledgerEntry" | "payoutBatch" | "payoutItem" | "deliveryRun" | "shipment" | "shipmentEvent" | "dispute" | "disputeMessage" | "messageThread" | "message" | "review" | "notification" | "auditLog" | "referenceCounter" | "promoCode" | "promoRedemption" | "invoice"
+      modelProps: "country" | "city" | "user" | "session" | "mfaRecoveryCode" | "verificationToken" | "termsAcceptance" | "address" | "makerProfile" | "kycDocument" | "courierProfile" | "vehicleRate" | "category" | "product" | "productImage" | "cart" | "cartItem" | "order" | "subOrder" | "orderLine" | "paymentMethodConfig" | "payment" | "paymentEvent" | "refund" | "ledgerAccount" | "ledgerTransaction" | "ledgerEntry" | "payoutBatch" | "payoutItem" | "deliveryRun" | "shipment" | "shipmentEvent" | "dispute" | "disputeMessage" | "messageThread" | "message" | "supportTicket" | "supportMessage" | "review" | "notification" | "auditLog" | "referenceCounter" | "promoCode" | "promoRedemption" | "invoice" | "newsletterSubscriber" | "idempotencyKey"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1847,6 +1999,80 @@ export namespace Prisma {
           count: {
             args: Prisma.SessionCountArgs<ExtArgs>
             result: $Utils.Optional<SessionCountAggregateOutputType> | number
+          }
+        }
+      }
+      MfaRecoveryCode: {
+        payload: Prisma.$MfaRecoveryCodePayload<ExtArgs>
+        fields: Prisma.MfaRecoveryCodeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MfaRecoveryCodeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MfaRecoveryCodeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload>
+          }
+          findFirst: {
+            args: Prisma.MfaRecoveryCodeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MfaRecoveryCodeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload>
+          }
+          findMany: {
+            args: Prisma.MfaRecoveryCodeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload>[]
+          }
+          create: {
+            args: Prisma.MfaRecoveryCodeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload>
+          }
+          createMany: {
+            args: Prisma.MfaRecoveryCodeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MfaRecoveryCodeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload>[]
+          }
+          delete: {
+            args: Prisma.MfaRecoveryCodeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload>
+          }
+          update: {
+            args: Prisma.MfaRecoveryCodeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload>
+          }
+          deleteMany: {
+            args: Prisma.MfaRecoveryCodeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MfaRecoveryCodeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MfaRecoveryCodeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload>[]
+          }
+          upsert: {
+            args: Prisma.MfaRecoveryCodeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MfaRecoveryCodePayload>
+          }
+          aggregate: {
+            args: Prisma.MfaRecoveryCodeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMfaRecoveryCode>
+          }
+          groupBy: {
+            args: Prisma.MfaRecoveryCodeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MfaRecoveryCodeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MfaRecoveryCodeCountArgs<ExtArgs>
+            result: $Utils.Optional<MfaRecoveryCodeCountAggregateOutputType> | number
           }
         }
       }
@@ -4144,6 +4370,154 @@ export namespace Prisma {
           }
         }
       }
+      SupportTicket: {
+        payload: Prisma.$SupportTicketPayload<ExtArgs>
+        fields: Prisma.SupportTicketFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SupportTicketFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SupportTicketFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload>
+          }
+          findFirst: {
+            args: Prisma.SupportTicketFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SupportTicketFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload>
+          }
+          findMany: {
+            args: Prisma.SupportTicketFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload>[]
+          }
+          create: {
+            args: Prisma.SupportTicketCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload>
+          }
+          createMany: {
+            args: Prisma.SupportTicketCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SupportTicketCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload>[]
+          }
+          delete: {
+            args: Prisma.SupportTicketDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload>
+          }
+          update: {
+            args: Prisma.SupportTicketUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload>
+          }
+          deleteMany: {
+            args: Prisma.SupportTicketDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SupportTicketUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SupportTicketUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload>[]
+          }
+          upsert: {
+            args: Prisma.SupportTicketUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportTicketPayload>
+          }
+          aggregate: {
+            args: Prisma.SupportTicketAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSupportTicket>
+          }
+          groupBy: {
+            args: Prisma.SupportTicketGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SupportTicketGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SupportTicketCountArgs<ExtArgs>
+            result: $Utils.Optional<SupportTicketCountAggregateOutputType> | number
+          }
+        }
+      }
+      SupportMessage: {
+        payload: Prisma.$SupportMessagePayload<ExtArgs>
+        fields: Prisma.SupportMessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SupportMessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SupportMessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload>
+          }
+          findFirst: {
+            args: Prisma.SupportMessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SupportMessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload>
+          }
+          findMany: {
+            args: Prisma.SupportMessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload>[]
+          }
+          create: {
+            args: Prisma.SupportMessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload>
+          }
+          createMany: {
+            args: Prisma.SupportMessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SupportMessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload>[]
+          }
+          delete: {
+            args: Prisma.SupportMessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload>
+          }
+          update: {
+            args: Prisma.SupportMessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.SupportMessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SupportMessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SupportMessageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload>[]
+          }
+          upsert: {
+            args: Prisma.SupportMessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupportMessagePayload>
+          }
+          aggregate: {
+            args: Prisma.SupportMessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSupportMessage>
+          }
+          groupBy: {
+            args: Prisma.SupportMessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SupportMessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SupportMessageCountArgs<ExtArgs>
+            result: $Utils.Optional<SupportMessageCountAggregateOutputType> | number
+          }
+        }
+      }
       Review: {
         payload: Prisma.$ReviewPayload<ExtArgs>
         fields: Prisma.ReviewFieldRefs
@@ -4662,6 +5036,154 @@ export namespace Prisma {
           }
         }
       }
+      NewsletterSubscriber: {
+        payload: Prisma.$NewsletterSubscriberPayload<ExtArgs>
+        fields: Prisma.NewsletterSubscriberFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NewsletterSubscriberFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NewsletterSubscriberFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload>
+          }
+          findFirst: {
+            args: Prisma.NewsletterSubscriberFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NewsletterSubscriberFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload>
+          }
+          findMany: {
+            args: Prisma.NewsletterSubscriberFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload>[]
+          }
+          create: {
+            args: Prisma.NewsletterSubscriberCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload>
+          }
+          createMany: {
+            args: Prisma.NewsletterSubscriberCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NewsletterSubscriberCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload>[]
+          }
+          delete: {
+            args: Prisma.NewsletterSubscriberDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload>
+          }
+          update: {
+            args: Prisma.NewsletterSubscriberUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload>
+          }
+          deleteMany: {
+            args: Prisma.NewsletterSubscriberDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NewsletterSubscriberUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NewsletterSubscriberUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload>[]
+          }
+          upsert: {
+            args: Prisma.NewsletterSubscriberUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsletterSubscriberPayload>
+          }
+          aggregate: {
+            args: Prisma.NewsletterSubscriberAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNewsletterSubscriber>
+          }
+          groupBy: {
+            args: Prisma.NewsletterSubscriberGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NewsletterSubscriberGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NewsletterSubscriberCountArgs<ExtArgs>
+            result: $Utils.Optional<NewsletterSubscriberCountAggregateOutputType> | number
+          }
+        }
+      }
+      IdempotencyKey: {
+        payload: Prisma.$IdempotencyKeyPayload<ExtArgs>
+        fields: Prisma.IdempotencyKeyFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.IdempotencyKeyFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.IdempotencyKeyFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload>
+          }
+          findFirst: {
+            args: Prisma.IdempotencyKeyFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.IdempotencyKeyFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload>
+          }
+          findMany: {
+            args: Prisma.IdempotencyKeyFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload>[]
+          }
+          create: {
+            args: Prisma.IdempotencyKeyCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload>
+          }
+          createMany: {
+            args: Prisma.IdempotencyKeyCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.IdempotencyKeyCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload>[]
+          }
+          delete: {
+            args: Prisma.IdempotencyKeyDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload>
+          }
+          update: {
+            args: Prisma.IdempotencyKeyUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload>
+          }
+          deleteMany: {
+            args: Prisma.IdempotencyKeyDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.IdempotencyKeyUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.IdempotencyKeyUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload>[]
+          }
+          upsert: {
+            args: Prisma.IdempotencyKeyUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IdempotencyKeyPayload>
+          }
+          aggregate: {
+            args: Prisma.IdempotencyKeyAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateIdempotencyKey>
+          }
+          groupBy: {
+            args: Prisma.IdempotencyKeyGroupByArgs<ExtArgs>
+            result: $Utils.Optional<IdempotencyKeyGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.IdempotencyKeyCountArgs<ExtArgs>
+            result: $Utils.Optional<IdempotencyKeyCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4762,6 +5284,7 @@ export namespace Prisma {
     city?: CityOmit
     user?: UserOmit
     session?: SessionOmit
+    mfaRecoveryCode?: MfaRecoveryCodeOmit
     verificationToken?: VerificationTokenOmit
     termsAcceptance?: TermsAcceptanceOmit
     address?: AddressOmit
@@ -4793,6 +5316,8 @@ export namespace Prisma {
     disputeMessage?: DisputeMessageOmit
     messageThread?: MessageThreadOmit
     message?: MessageOmit
+    supportTicket?: SupportTicketOmit
+    supportMessage?: SupportMessageOmit
     review?: ReviewOmit
     notification?: NotificationOmit
     auditLog?: AuditLogOmit
@@ -4800,6 +5325,8 @@ export namespace Prisma {
     promoCode?: PromoCodeOmit
     promoRedemption?: PromoRedemptionOmit
     invoice?: InvoiceOmit
+    newsletterSubscriber?: NewsletterSubscriberOmit
+    idempotencyKey?: IdempotencyKeyOmit
   }
 
   /* Types for Logging */
@@ -4977,6 +5504,10 @@ export namespace Prisma {
     notifications: number
     verifications: number
     promoRedemptions: number
+    supportTickets: number
+    reviews: number
+    idempotencyKeys: number
+    recoveryCodes: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4988,6 +5519,10 @@ export namespace Prisma {
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     verifications?: boolean | UserCountOutputTypeCountVerificationsArgs
     promoRedemptions?: boolean | UserCountOutputTypeCountPromoRedemptionsArgs
+    supportTickets?: boolean | UserCountOutputTypeCountSupportTicketsArgs
+    reviews?: boolean | UserCountOutputTypeCountReviewsArgs
+    idempotencyKeys?: boolean | UserCountOutputTypeCountIdempotencyKeysArgs
+    recoveryCodes?: boolean | UserCountOutputTypeCountRecoveryCodesArgs
   }
 
   // Custom InputTypes
@@ -5055,6 +5590,34 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountPromoRedemptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PromoRedemptionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSupportTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupportTicketWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReviewWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountIdempotencyKeysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: IdempotencyKeyWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountRecoveryCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MfaRecoveryCodeWhereInput
   }
 
 
@@ -5294,6 +5857,8 @@ export namespace Prisma {
     payments: number
     shipments: number
     disputes: number
+    refunds: number
+    supportTickets: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5301,6 +5866,8 @@ export namespace Prisma {
     payments?: boolean | OrderCountOutputTypeCountPaymentsArgs
     shipments?: boolean | OrderCountOutputTypeCountShipmentsArgs
     disputes?: boolean | OrderCountOutputTypeCountDisputesArgs
+    refunds?: boolean | OrderCountOutputTypeCountRefundsArgs
+    supportTickets?: boolean | OrderCountOutputTypeCountSupportTicketsArgs
   }
 
   // Custom InputTypes
@@ -5340,6 +5907,20 @@ export namespace Prisma {
    */
   export type OrderCountOutputTypeCountDisputesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DisputeWhereInput
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountRefundsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RefundWhereInput
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountSupportTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupportTicketWhereInput
   }
 
 
@@ -5637,6 +6218,37 @@ export namespace Prisma {
    */
   export type MessageThreadCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MessageWhereInput
+  }
+
+
+  /**
+   * Count Type SupportTicketCountOutputType
+   */
+
+  export type SupportTicketCountOutputType = {
+    messages: number
+  }
+
+  export type SupportTicketCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    messages?: boolean | SupportTicketCountOutputTypeCountMessagesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SupportTicketCountOutputType without action
+   */
+  export type SupportTicketCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicketCountOutputType
+     */
+    select?: SupportTicketCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SupportTicketCountOutputType without action
+   */
+  export type SupportTicketCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupportMessageWhereInput
   }
 
 
@@ -8037,8 +8649,18 @@ export namespace Prisma {
 
   export type AggregateUser = {
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
+  }
+
+  export type UserAvgAggregateOutputType = {
+    mfaLastStep: number | null
+  }
+
+  export type UserSumAggregateOutputType = {
+    mfaLastStep: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -8055,6 +8677,8 @@ export namespace Prisma {
     lastName: string | null
     locale: string | null
     mfaSecret: string | null
+    mfaEnabledAt: Date | null
+    mfaLastStep: number | null
     lastLoginAt: Date | null
     deletedAt: Date | null
     createdAt: Date | null
@@ -8075,6 +8699,8 @@ export namespace Prisma {
     lastName: string | null
     locale: string | null
     mfaSecret: string | null
+    mfaEnabledAt: Date | null
+    mfaLastStep: number | null
     lastLoginAt: Date | null
     deletedAt: Date | null
     createdAt: Date | null
@@ -8095,6 +8721,8 @@ export namespace Prisma {
     lastName: number
     locale: number
     mfaSecret: number
+    mfaEnabledAt: number
+    mfaLastStep: number
     lastLoginAt: number
     deletedAt: number
     createdAt: number
@@ -8102,6 +8730,14 @@ export namespace Prisma {
     _all: number
   }
 
+
+  export type UserAvgAggregateInputType = {
+    mfaLastStep?: true
+  }
+
+  export type UserSumAggregateInputType = {
+    mfaLastStep?: true
+  }
 
   export type UserMinAggregateInputType = {
     id?: true
@@ -8117,6 +8753,8 @@ export namespace Prisma {
     lastName?: true
     locale?: true
     mfaSecret?: true
+    mfaEnabledAt?: true
+    mfaLastStep?: true
     lastLoginAt?: true
     deletedAt?: true
     createdAt?: true
@@ -8137,6 +8775,8 @@ export namespace Prisma {
     lastName?: true
     locale?: true
     mfaSecret?: true
+    mfaEnabledAt?: true
+    mfaLastStep?: true
     lastLoginAt?: true
     deletedAt?: true
     createdAt?: true
@@ -8157,6 +8797,8 @@ export namespace Prisma {
     lastName?: true
     locale?: true
     mfaSecret?: true
+    mfaEnabledAt?: true
+    mfaLastStep?: true
     lastLoginAt?: true
     deletedAt?: true
     createdAt?: true
@@ -8202,6 +8844,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: UserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
@@ -8232,6 +8886,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: UserCountAggregateInputType | true
+    _avg?: UserAvgAggregateInputType
+    _sum?: UserSumAggregateInputType
     _min?: UserMinAggregateInputType
     _max?: UserMaxAggregateInputType
   }
@@ -8250,11 +8906,15 @@ export namespace Prisma {
     lastName: string
     locale: string
     mfaSecret: string | null
+    mfaEnabledAt: Date | null
+    mfaLastStep: number | null
     lastLoginAt: Date | null
     deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
@@ -8287,6 +8947,8 @@ export namespace Prisma {
     lastName?: boolean
     locale?: boolean
     mfaSecret?: boolean
+    mfaEnabledAt?: boolean
+    mfaLastStep?: boolean
     lastLoginAt?: boolean
     deletedAt?: boolean
     createdAt?: boolean
@@ -8301,6 +8963,10 @@ export namespace Prisma {
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     verifications?: boolean | User$verificationsArgs<ExtArgs>
     promoRedemptions?: boolean | User$promoRedemptionsArgs<ExtArgs>
+    supportTickets?: boolean | User$supportTicketsArgs<ExtArgs>
+    reviews?: boolean | User$reviewsArgs<ExtArgs>
+    idempotencyKeys?: boolean | User$idempotencyKeysArgs<ExtArgs>
+    recoveryCodes?: boolean | User$recoveryCodesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -8318,6 +8984,8 @@ export namespace Prisma {
     lastName?: boolean
     locale?: boolean
     mfaSecret?: boolean
+    mfaEnabledAt?: boolean
+    mfaLastStep?: boolean
     lastLoginAt?: boolean
     deletedAt?: boolean
     createdAt?: boolean
@@ -8338,6 +9006,8 @@ export namespace Prisma {
     lastName?: boolean
     locale?: boolean
     mfaSecret?: boolean
+    mfaEnabledAt?: boolean
+    mfaLastStep?: boolean
     lastLoginAt?: boolean
     deletedAt?: boolean
     createdAt?: boolean
@@ -8358,13 +9028,15 @@ export namespace Prisma {
     lastName?: boolean
     locale?: boolean
     mfaSecret?: boolean
+    mfaEnabledAt?: boolean
+    mfaLastStep?: boolean
     lastLoginAt?: boolean
     deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "status" | "email" | "emailVerifiedAt" | "phone" | "phoneVerifiedAt" | "passwordHash" | "googleId" | "firstName" | "lastName" | "locale" | "mfaSecret" | "lastLoginAt" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "status" | "email" | "emailVerifiedAt" | "phone" | "phoneVerifiedAt" | "passwordHash" | "googleId" | "firstName" | "lastName" | "locale" | "mfaSecret" | "mfaEnabledAt" | "mfaLastStep" | "lastLoginAt" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     maker?: boolean | User$makerArgs<ExtArgs>
     courier?: boolean | User$courierArgs<ExtArgs>
@@ -8376,6 +9048,10 @@ export namespace Prisma {
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     verifications?: boolean | User$verificationsArgs<ExtArgs>
     promoRedemptions?: boolean | User$promoRedemptionsArgs<ExtArgs>
+    supportTickets?: boolean | User$supportTicketsArgs<ExtArgs>
+    reviews?: boolean | User$reviewsArgs<ExtArgs>
+    idempotencyKeys?: boolean | User$idempotencyKeysArgs<ExtArgs>
+    recoveryCodes?: boolean | User$recoveryCodesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -8394,6 +9070,10 @@ export namespace Prisma {
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       verifications: Prisma.$VerificationTokenPayload<ExtArgs>[]
       promoRedemptions: Prisma.$PromoRedemptionPayload<ExtArgs>[]
+      supportTickets: Prisma.$SupportTicketPayload<ExtArgs>[]
+      reviews: Prisma.$ReviewPayload<ExtArgs>[]
+      idempotencyKeys: Prisma.$IdempotencyKeyPayload<ExtArgs>[]
+      recoveryCodes: Prisma.$MfaRecoveryCodePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8423,9 +9103,17 @@ export namespace Prisma {
       lastName: string
       locale: string
       /**
-       * TOTP. Obligatoire pour ADMIN, optionnel pour MAKER.
+       * Double authentification (TOTP, cahier L0-22) : obligatoire pour ADMIN,
+       * facultative pour les autres. Le secret est chiffré (AES-256-GCM) : une
+       * fuite de la base ne donne pas les codes. Renseigné sans `mfaEnabledAt`,
+       * c'est une activation commencée et pas encore confirmée.
        */
       mfaSecret: string | null
+      mfaEnabledAt: Date | null
+      /**
+       * Dernier pas de 30 s accepté : un code déjà utilisé ne passe pas deux fois.
+       */
+      mfaLastStep: number | null
       lastLoginAt: Date | null
       deletedAt: Date | null
       createdAt: Date
@@ -8834,6 +9522,10 @@ export namespace Prisma {
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     verifications<T extends User$verificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     promoRedemptions<T extends User$promoRedemptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$promoRedemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    supportTickets<T extends User$supportTicketsArgs<ExtArgs> = {}>(args?: Subset<T, User$supportTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reviews<T extends User$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    idempotencyKeys<T extends User$idempotencyKeysArgs<ExtArgs> = {}>(args?: Subset<T, User$idempotencyKeysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    recoveryCodes<T extends User$recoveryCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$recoveryCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8876,6 +9568,8 @@ export namespace Prisma {
     readonly lastName: FieldRef<"User", 'String'>
     readonly locale: FieldRef<"User", 'String'>
     readonly mfaSecret: FieldRef<"User", 'String'>
+    readonly mfaEnabledAt: FieldRef<"User", 'DateTime'>
+    readonly mfaLastStep: FieldRef<"User", 'Int'>
     readonly lastLoginAt: FieldRef<"User", 'DateTime'>
     readonly deletedAt: FieldRef<"User", 'DateTime'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
@@ -9498,6 +10192,102 @@ export namespace Prisma {
   }
 
   /**
+   * User.supportTickets
+   */
+  export type User$supportTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    where?: SupportTicketWhereInput
+    orderBy?: SupportTicketOrderByWithRelationInput | SupportTicketOrderByWithRelationInput[]
+    cursor?: SupportTicketWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupportTicketScalarFieldEnum | SupportTicketScalarFieldEnum[]
+  }
+
+  /**
+   * User.reviews
+   */
+  export type User$reviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    where?: ReviewWhereInput
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    cursor?: ReviewWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * User.idempotencyKeys
+   */
+  export type User$idempotencyKeysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    where?: IdempotencyKeyWhereInput
+    orderBy?: IdempotencyKeyOrderByWithRelationInput | IdempotencyKeyOrderByWithRelationInput[]
+    cursor?: IdempotencyKeyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: IdempotencyKeyScalarFieldEnum | IdempotencyKeyScalarFieldEnum[]
+  }
+
+  /**
+   * User.recoveryCodes
+   */
+  export type User$recoveryCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    where?: MfaRecoveryCodeWhereInput
+    orderBy?: MfaRecoveryCodeOrderByWithRelationInput | MfaRecoveryCodeOrderByWithRelationInput[]
+    cursor?: MfaRecoveryCodeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MfaRecoveryCodeScalarFieldEnum | MfaRecoveryCodeScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9535,6 +10325,7 @@ export namespace Prisma {
     expiresAt: Date | null
     revokedAt: Date | null
     createdAt: Date | null
+    mfaVerifiedAt: Date | null
   }
 
   export type SessionMaxAggregateOutputType = {
@@ -9546,6 +10337,7 @@ export namespace Prisma {
     expiresAt: Date | null
     revokedAt: Date | null
     createdAt: Date | null
+    mfaVerifiedAt: Date | null
   }
 
   export type SessionCountAggregateOutputType = {
@@ -9557,6 +10349,7 @@ export namespace Prisma {
     expiresAt: number
     revokedAt: number
     createdAt: number
+    mfaVerifiedAt: number
     _all: number
   }
 
@@ -9570,6 +10363,7 @@ export namespace Prisma {
     expiresAt?: true
     revokedAt?: true
     createdAt?: true
+    mfaVerifiedAt?: true
   }
 
   export type SessionMaxAggregateInputType = {
@@ -9581,6 +10375,7 @@ export namespace Prisma {
     expiresAt?: true
     revokedAt?: true
     createdAt?: true
+    mfaVerifiedAt?: true
   }
 
   export type SessionCountAggregateInputType = {
@@ -9592,6 +10387,7 @@ export namespace Prisma {
     expiresAt?: true
     revokedAt?: true
     createdAt?: true
+    mfaVerifiedAt?: true
     _all?: true
   }
 
@@ -9676,6 +10472,7 @@ export namespace Prisma {
     expiresAt: Date
     revokedAt: Date | null
     createdAt: Date
+    mfaVerifiedAt: Date | null
     _count: SessionCountAggregateOutputType | null
     _min: SessionMinAggregateOutputType | null
     _max: SessionMaxAggregateOutputType | null
@@ -9704,6 +10501,7 @@ export namespace Prisma {
     expiresAt?: boolean
     revokedAt?: boolean
     createdAt?: boolean
+    mfaVerifiedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["session"]>
 
@@ -9716,6 +10514,7 @@ export namespace Prisma {
     expiresAt?: boolean
     revokedAt?: boolean
     createdAt?: boolean
+    mfaVerifiedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["session"]>
 
@@ -9728,6 +10527,7 @@ export namespace Prisma {
     expiresAt?: boolean
     revokedAt?: boolean
     createdAt?: boolean
+    mfaVerifiedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["session"]>
 
@@ -9740,9 +10540,10 @@ export namespace Prisma {
     expiresAt?: boolean
     revokedAt?: boolean
     createdAt?: boolean
+    mfaVerifiedAt?: boolean
   }
 
-  export type SessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "refreshHash" | "userAgent" | "ip" | "expiresAt" | "revokedAt" | "createdAt", ExtArgs["result"]["session"]>
+  export type SessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "refreshHash" | "userAgent" | "ip" | "expiresAt" | "revokedAt" | "createdAt" | "mfaVerifiedAt", ExtArgs["result"]["session"]>
   export type SessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -9771,6 +10572,11 @@ export namespace Prisma {
       expiresAt: Date
       revokedAt: Date | null
       createdAt: Date
+      /**
+       * Ouverte avec un second facteur. Suit la session à chaque
+       * rafraîchissement ; exigée pour l'espace admin.
+       */
+      mfaVerifiedAt: Date | null
     }, ExtArgs["result"]["session"]>
     composites: {}
   }
@@ -10203,6 +11009,7 @@ export namespace Prisma {
     readonly expiresAt: FieldRef<"Session", 'DateTime'>
     readonly revokedAt: FieldRef<"Session", 'DateTime'>
     readonly createdAt: FieldRef<"Session", 'DateTime'>
+    readonly mfaVerifiedAt: FieldRef<"Session", 'DateTime'>
   }
     
 
@@ -10614,6 +11421,1051 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: SessionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model MfaRecoveryCode
+   */
+
+  export type AggregateMfaRecoveryCode = {
+    _count: MfaRecoveryCodeCountAggregateOutputType | null
+    _min: MfaRecoveryCodeMinAggregateOutputType | null
+    _max: MfaRecoveryCodeMaxAggregateOutputType | null
+  }
+
+  export type MfaRecoveryCodeMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    codeHash: string | null
+    usedAt: Date | null
+  }
+
+  export type MfaRecoveryCodeMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    codeHash: string | null
+    usedAt: Date | null
+  }
+
+  export type MfaRecoveryCodeCountAggregateOutputType = {
+    id: number
+    userId: number
+    codeHash: number
+    usedAt: number
+    _all: number
+  }
+
+
+  export type MfaRecoveryCodeMinAggregateInputType = {
+    id?: true
+    userId?: true
+    codeHash?: true
+    usedAt?: true
+  }
+
+  export type MfaRecoveryCodeMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    codeHash?: true
+    usedAt?: true
+  }
+
+  export type MfaRecoveryCodeCountAggregateInputType = {
+    id?: true
+    userId?: true
+    codeHash?: true
+    usedAt?: true
+    _all?: true
+  }
+
+  export type MfaRecoveryCodeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MfaRecoveryCode to aggregate.
+     */
+    where?: MfaRecoveryCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MfaRecoveryCodes to fetch.
+     */
+    orderBy?: MfaRecoveryCodeOrderByWithRelationInput | MfaRecoveryCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MfaRecoveryCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MfaRecoveryCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MfaRecoveryCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MfaRecoveryCodes
+    **/
+    _count?: true | MfaRecoveryCodeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MfaRecoveryCodeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MfaRecoveryCodeMaxAggregateInputType
+  }
+
+  export type GetMfaRecoveryCodeAggregateType<T extends MfaRecoveryCodeAggregateArgs> = {
+        [P in keyof T & keyof AggregateMfaRecoveryCode]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMfaRecoveryCode[P]>
+      : GetScalarType<T[P], AggregateMfaRecoveryCode[P]>
+  }
+
+
+
+
+  export type MfaRecoveryCodeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MfaRecoveryCodeWhereInput
+    orderBy?: MfaRecoveryCodeOrderByWithAggregationInput | MfaRecoveryCodeOrderByWithAggregationInput[]
+    by: MfaRecoveryCodeScalarFieldEnum[] | MfaRecoveryCodeScalarFieldEnum
+    having?: MfaRecoveryCodeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MfaRecoveryCodeCountAggregateInputType | true
+    _min?: MfaRecoveryCodeMinAggregateInputType
+    _max?: MfaRecoveryCodeMaxAggregateInputType
+  }
+
+  export type MfaRecoveryCodeGroupByOutputType = {
+    id: string
+    userId: string
+    codeHash: string
+    usedAt: Date | null
+    _count: MfaRecoveryCodeCountAggregateOutputType | null
+    _min: MfaRecoveryCodeMinAggregateOutputType | null
+    _max: MfaRecoveryCodeMaxAggregateOutputType | null
+  }
+
+  type GetMfaRecoveryCodeGroupByPayload<T extends MfaRecoveryCodeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MfaRecoveryCodeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MfaRecoveryCodeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MfaRecoveryCodeGroupByOutputType[P]>
+            : GetScalarType<T[P], MfaRecoveryCodeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MfaRecoveryCodeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    codeHash?: boolean
+    usedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["mfaRecoveryCode"]>
+
+  export type MfaRecoveryCodeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    codeHash?: boolean
+    usedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["mfaRecoveryCode"]>
+
+  export type MfaRecoveryCodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    codeHash?: boolean
+    usedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["mfaRecoveryCode"]>
+
+  export type MfaRecoveryCodeSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    codeHash?: boolean
+    usedAt?: boolean
+  }
+
+  export type MfaRecoveryCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "codeHash" | "usedAt", ExtArgs["result"]["mfaRecoveryCode"]>
+  export type MfaRecoveryCodeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type MfaRecoveryCodeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type MfaRecoveryCodeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $MfaRecoveryCodePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MfaRecoveryCode"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      codeHash: string
+      usedAt: Date | null
+    }, ExtArgs["result"]["mfaRecoveryCode"]>
+    composites: {}
+  }
+
+  type MfaRecoveryCodeGetPayload<S extends boolean | null | undefined | MfaRecoveryCodeDefaultArgs> = $Result.GetResult<Prisma.$MfaRecoveryCodePayload, S>
+
+  type MfaRecoveryCodeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MfaRecoveryCodeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MfaRecoveryCodeCountAggregateInputType | true
+    }
+
+  export interface MfaRecoveryCodeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MfaRecoveryCode'], meta: { name: 'MfaRecoveryCode' } }
+    /**
+     * Find zero or one MfaRecoveryCode that matches the filter.
+     * @param {MfaRecoveryCodeFindUniqueArgs} args - Arguments to find a MfaRecoveryCode
+     * @example
+     * // Get one MfaRecoveryCode
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MfaRecoveryCodeFindUniqueArgs>(args: SelectSubset<T, MfaRecoveryCodeFindUniqueArgs<ExtArgs>>): Prisma__MfaRecoveryCodeClient<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MfaRecoveryCode that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MfaRecoveryCodeFindUniqueOrThrowArgs} args - Arguments to find a MfaRecoveryCode
+     * @example
+     * // Get one MfaRecoveryCode
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MfaRecoveryCodeFindUniqueOrThrowArgs>(args: SelectSubset<T, MfaRecoveryCodeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MfaRecoveryCodeClient<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MfaRecoveryCode that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MfaRecoveryCodeFindFirstArgs} args - Arguments to find a MfaRecoveryCode
+     * @example
+     * // Get one MfaRecoveryCode
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MfaRecoveryCodeFindFirstArgs>(args?: SelectSubset<T, MfaRecoveryCodeFindFirstArgs<ExtArgs>>): Prisma__MfaRecoveryCodeClient<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MfaRecoveryCode that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MfaRecoveryCodeFindFirstOrThrowArgs} args - Arguments to find a MfaRecoveryCode
+     * @example
+     * // Get one MfaRecoveryCode
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MfaRecoveryCodeFindFirstOrThrowArgs>(args?: SelectSubset<T, MfaRecoveryCodeFindFirstOrThrowArgs<ExtArgs>>): Prisma__MfaRecoveryCodeClient<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MfaRecoveryCodes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MfaRecoveryCodeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MfaRecoveryCodes
+     * const mfaRecoveryCodes = await prisma.mfaRecoveryCode.findMany()
+     * 
+     * // Get first 10 MfaRecoveryCodes
+     * const mfaRecoveryCodes = await prisma.mfaRecoveryCode.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const mfaRecoveryCodeWithIdOnly = await prisma.mfaRecoveryCode.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MfaRecoveryCodeFindManyArgs>(args?: SelectSubset<T, MfaRecoveryCodeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MfaRecoveryCode.
+     * @param {MfaRecoveryCodeCreateArgs} args - Arguments to create a MfaRecoveryCode.
+     * @example
+     * // Create one MfaRecoveryCode
+     * const MfaRecoveryCode = await prisma.mfaRecoveryCode.create({
+     *   data: {
+     *     // ... data to create a MfaRecoveryCode
+     *   }
+     * })
+     * 
+     */
+    create<T extends MfaRecoveryCodeCreateArgs>(args: SelectSubset<T, MfaRecoveryCodeCreateArgs<ExtArgs>>): Prisma__MfaRecoveryCodeClient<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MfaRecoveryCodes.
+     * @param {MfaRecoveryCodeCreateManyArgs} args - Arguments to create many MfaRecoveryCodes.
+     * @example
+     * // Create many MfaRecoveryCodes
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MfaRecoveryCodeCreateManyArgs>(args?: SelectSubset<T, MfaRecoveryCodeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MfaRecoveryCodes and returns the data saved in the database.
+     * @param {MfaRecoveryCodeCreateManyAndReturnArgs} args - Arguments to create many MfaRecoveryCodes.
+     * @example
+     * // Create many MfaRecoveryCodes
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MfaRecoveryCodes and only return the `id`
+     * const mfaRecoveryCodeWithIdOnly = await prisma.mfaRecoveryCode.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MfaRecoveryCodeCreateManyAndReturnArgs>(args?: SelectSubset<T, MfaRecoveryCodeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MfaRecoveryCode.
+     * @param {MfaRecoveryCodeDeleteArgs} args - Arguments to delete one MfaRecoveryCode.
+     * @example
+     * // Delete one MfaRecoveryCode
+     * const MfaRecoveryCode = await prisma.mfaRecoveryCode.delete({
+     *   where: {
+     *     // ... filter to delete one MfaRecoveryCode
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MfaRecoveryCodeDeleteArgs>(args: SelectSubset<T, MfaRecoveryCodeDeleteArgs<ExtArgs>>): Prisma__MfaRecoveryCodeClient<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MfaRecoveryCode.
+     * @param {MfaRecoveryCodeUpdateArgs} args - Arguments to update one MfaRecoveryCode.
+     * @example
+     * // Update one MfaRecoveryCode
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MfaRecoveryCodeUpdateArgs>(args: SelectSubset<T, MfaRecoveryCodeUpdateArgs<ExtArgs>>): Prisma__MfaRecoveryCodeClient<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MfaRecoveryCodes.
+     * @param {MfaRecoveryCodeDeleteManyArgs} args - Arguments to filter MfaRecoveryCodes to delete.
+     * @example
+     * // Delete a few MfaRecoveryCodes
+     * const { count } = await prisma.mfaRecoveryCode.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MfaRecoveryCodeDeleteManyArgs>(args?: SelectSubset<T, MfaRecoveryCodeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MfaRecoveryCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MfaRecoveryCodeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MfaRecoveryCodes
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MfaRecoveryCodeUpdateManyArgs>(args: SelectSubset<T, MfaRecoveryCodeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MfaRecoveryCodes and returns the data updated in the database.
+     * @param {MfaRecoveryCodeUpdateManyAndReturnArgs} args - Arguments to update many MfaRecoveryCodes.
+     * @example
+     * // Update many MfaRecoveryCodes
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MfaRecoveryCodes and only return the `id`
+     * const mfaRecoveryCodeWithIdOnly = await prisma.mfaRecoveryCode.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MfaRecoveryCodeUpdateManyAndReturnArgs>(args: SelectSubset<T, MfaRecoveryCodeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MfaRecoveryCode.
+     * @param {MfaRecoveryCodeUpsertArgs} args - Arguments to update or create a MfaRecoveryCode.
+     * @example
+     * // Update or create a MfaRecoveryCode
+     * const mfaRecoveryCode = await prisma.mfaRecoveryCode.upsert({
+     *   create: {
+     *     // ... data to create a MfaRecoveryCode
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MfaRecoveryCode we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MfaRecoveryCodeUpsertArgs>(args: SelectSubset<T, MfaRecoveryCodeUpsertArgs<ExtArgs>>): Prisma__MfaRecoveryCodeClient<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MfaRecoveryCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MfaRecoveryCodeCountArgs} args - Arguments to filter MfaRecoveryCodes to count.
+     * @example
+     * // Count the number of MfaRecoveryCodes
+     * const count = await prisma.mfaRecoveryCode.count({
+     *   where: {
+     *     // ... the filter for the MfaRecoveryCodes we want to count
+     *   }
+     * })
+    **/
+    count<T extends MfaRecoveryCodeCountArgs>(
+      args?: Subset<T, MfaRecoveryCodeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MfaRecoveryCodeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MfaRecoveryCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MfaRecoveryCodeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MfaRecoveryCodeAggregateArgs>(args: Subset<T, MfaRecoveryCodeAggregateArgs>): Prisma.PrismaPromise<GetMfaRecoveryCodeAggregateType<T>>
+
+    /**
+     * Group by MfaRecoveryCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MfaRecoveryCodeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MfaRecoveryCodeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MfaRecoveryCodeGroupByArgs['orderBy'] }
+        : { orderBy?: MfaRecoveryCodeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MfaRecoveryCodeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMfaRecoveryCodeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MfaRecoveryCode model
+   */
+  readonly fields: MfaRecoveryCodeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MfaRecoveryCode.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MfaRecoveryCodeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MfaRecoveryCode model
+   */
+  interface MfaRecoveryCodeFieldRefs {
+    readonly id: FieldRef<"MfaRecoveryCode", 'String'>
+    readonly userId: FieldRef<"MfaRecoveryCode", 'String'>
+    readonly codeHash: FieldRef<"MfaRecoveryCode", 'String'>
+    readonly usedAt: FieldRef<"MfaRecoveryCode", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MfaRecoveryCode findUnique
+   */
+  export type MfaRecoveryCodeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which MfaRecoveryCode to fetch.
+     */
+    where: MfaRecoveryCodeWhereUniqueInput
+  }
+
+  /**
+   * MfaRecoveryCode findUniqueOrThrow
+   */
+  export type MfaRecoveryCodeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which MfaRecoveryCode to fetch.
+     */
+    where: MfaRecoveryCodeWhereUniqueInput
+  }
+
+  /**
+   * MfaRecoveryCode findFirst
+   */
+  export type MfaRecoveryCodeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which MfaRecoveryCode to fetch.
+     */
+    where?: MfaRecoveryCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MfaRecoveryCodes to fetch.
+     */
+    orderBy?: MfaRecoveryCodeOrderByWithRelationInput | MfaRecoveryCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MfaRecoveryCodes.
+     */
+    cursor?: MfaRecoveryCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MfaRecoveryCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MfaRecoveryCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MfaRecoveryCodes.
+     */
+    distinct?: MfaRecoveryCodeScalarFieldEnum | MfaRecoveryCodeScalarFieldEnum[]
+  }
+
+  /**
+   * MfaRecoveryCode findFirstOrThrow
+   */
+  export type MfaRecoveryCodeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which MfaRecoveryCode to fetch.
+     */
+    where?: MfaRecoveryCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MfaRecoveryCodes to fetch.
+     */
+    orderBy?: MfaRecoveryCodeOrderByWithRelationInput | MfaRecoveryCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MfaRecoveryCodes.
+     */
+    cursor?: MfaRecoveryCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MfaRecoveryCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MfaRecoveryCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MfaRecoveryCodes.
+     */
+    distinct?: MfaRecoveryCodeScalarFieldEnum | MfaRecoveryCodeScalarFieldEnum[]
+  }
+
+  /**
+   * MfaRecoveryCode findMany
+   */
+  export type MfaRecoveryCodeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which MfaRecoveryCodes to fetch.
+     */
+    where?: MfaRecoveryCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MfaRecoveryCodes to fetch.
+     */
+    orderBy?: MfaRecoveryCodeOrderByWithRelationInput | MfaRecoveryCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MfaRecoveryCodes.
+     */
+    cursor?: MfaRecoveryCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MfaRecoveryCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MfaRecoveryCodes.
+     */
+    skip?: number
+    distinct?: MfaRecoveryCodeScalarFieldEnum | MfaRecoveryCodeScalarFieldEnum[]
+  }
+
+  /**
+   * MfaRecoveryCode create
+   */
+  export type MfaRecoveryCodeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MfaRecoveryCode.
+     */
+    data: XOR<MfaRecoveryCodeCreateInput, MfaRecoveryCodeUncheckedCreateInput>
+  }
+
+  /**
+   * MfaRecoveryCode createMany
+   */
+  export type MfaRecoveryCodeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MfaRecoveryCodes.
+     */
+    data: MfaRecoveryCodeCreateManyInput | MfaRecoveryCodeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MfaRecoveryCode createManyAndReturn
+   */
+  export type MfaRecoveryCodeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * The data used to create many MfaRecoveryCodes.
+     */
+    data: MfaRecoveryCodeCreateManyInput | MfaRecoveryCodeCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MfaRecoveryCode update
+   */
+  export type MfaRecoveryCodeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MfaRecoveryCode.
+     */
+    data: XOR<MfaRecoveryCodeUpdateInput, MfaRecoveryCodeUncheckedUpdateInput>
+    /**
+     * Choose, which MfaRecoveryCode to update.
+     */
+    where: MfaRecoveryCodeWhereUniqueInput
+  }
+
+  /**
+   * MfaRecoveryCode updateMany
+   */
+  export type MfaRecoveryCodeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MfaRecoveryCodes.
+     */
+    data: XOR<MfaRecoveryCodeUpdateManyMutationInput, MfaRecoveryCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which MfaRecoveryCodes to update
+     */
+    where?: MfaRecoveryCodeWhereInput
+    /**
+     * Limit how many MfaRecoveryCodes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MfaRecoveryCode updateManyAndReturn
+   */
+  export type MfaRecoveryCodeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * The data used to update MfaRecoveryCodes.
+     */
+    data: XOR<MfaRecoveryCodeUpdateManyMutationInput, MfaRecoveryCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which MfaRecoveryCodes to update
+     */
+    where?: MfaRecoveryCodeWhereInput
+    /**
+     * Limit how many MfaRecoveryCodes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MfaRecoveryCode upsert
+   */
+  export type MfaRecoveryCodeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MfaRecoveryCode to update in case it exists.
+     */
+    where: MfaRecoveryCodeWhereUniqueInput
+    /**
+     * In case the MfaRecoveryCode found by the `where` argument doesn't exist, create a new MfaRecoveryCode with this data.
+     */
+    create: XOR<MfaRecoveryCodeCreateInput, MfaRecoveryCodeUncheckedCreateInput>
+    /**
+     * In case the MfaRecoveryCode was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MfaRecoveryCodeUpdateInput, MfaRecoveryCodeUncheckedUpdateInput>
+  }
+
+  /**
+   * MfaRecoveryCode delete
+   */
+  export type MfaRecoveryCodeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
+    /**
+     * Filter which MfaRecoveryCode to delete.
+     */
+    where: MfaRecoveryCodeWhereUniqueInput
+  }
+
+  /**
+   * MfaRecoveryCode deleteMany
+   */
+  export type MfaRecoveryCodeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MfaRecoveryCodes to delete
+     */
+    where?: MfaRecoveryCodeWhereInput
+    /**
+     * Limit how many MfaRecoveryCodes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MfaRecoveryCode without action
+   */
+  export type MfaRecoveryCodeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MfaRecoveryCode
+     */
+    select?: MfaRecoveryCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MfaRecoveryCode
+     */
+    omit?: MfaRecoveryCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MfaRecoveryCodeInclude<ExtArgs> | null
   }
 
 
@@ -25332,6 +27184,8 @@ export namespace Prisma {
     vatXof: number | null
     discountXof: number | null
     totalXof: number | null
+    upfrontXof: number | null
+    balanceXof: number | null
   }
 
   export type OrderSumAggregateOutputType = {
@@ -25344,6 +27198,8 @@ export namespace Prisma {
     vatXof: number | null
     discountXof: number | null
     totalXof: number | null
+    upfrontXof: number | null
+    balanceXof: number | null
   }
 
   export type OrderMinAggregateOutputType = {
@@ -25365,6 +27221,9 @@ export namespace Prisma {
     vatXof: number | null
     discountXof: number | null
     totalXof: number | null
+    paymentMode: $Enums.PaymentMode | null
+    upfrontXof: number | null
+    balanceXof: number | null
     promoCodeId: string | null
     placedAt: Date | null
     deliveredAt: Date | null
@@ -25396,6 +27255,9 @@ export namespace Prisma {
     vatXof: number | null
     discountXof: number | null
     totalXof: number | null
+    paymentMode: $Enums.PaymentMode | null
+    upfrontXof: number | null
+    balanceXof: number | null
     promoCodeId: string | null
     placedAt: Date | null
     deliveredAt: Date | null
@@ -25427,6 +27289,9 @@ export namespace Prisma {
     vatXof: number
     discountXof: number
     totalXof: number
+    paymentMode: number
+    upfrontXof: number
+    balanceXof: number
     promoCodeId: number
     placedAt: number
     deliveredAt: number
@@ -25451,6 +27316,8 @@ export namespace Prisma {
     vatXof?: true
     discountXof?: true
     totalXof?: true
+    upfrontXof?: true
+    balanceXof?: true
   }
 
   export type OrderSumAggregateInputType = {
@@ -25463,6 +27330,8 @@ export namespace Prisma {
     vatXof?: true
     discountXof?: true
     totalXof?: true
+    upfrontXof?: true
+    balanceXof?: true
   }
 
   export type OrderMinAggregateInputType = {
@@ -25484,6 +27353,9 @@ export namespace Prisma {
     vatXof?: true
     discountXof?: true
     totalXof?: true
+    paymentMode?: true
+    upfrontXof?: true
+    balanceXof?: true
     promoCodeId?: true
     placedAt?: true
     deliveredAt?: true
@@ -25515,6 +27387,9 @@ export namespace Prisma {
     vatXof?: true
     discountXof?: true
     totalXof?: true
+    paymentMode?: true
+    upfrontXof?: true
+    balanceXof?: true
     promoCodeId?: true
     placedAt?: true
     deliveredAt?: true
@@ -25546,6 +27421,9 @@ export namespace Prisma {
     vatXof?: true
     discountXof?: true
     totalXof?: true
+    paymentMode?: true
+    upfrontXof?: true
+    balanceXof?: true
     promoCodeId?: true
     placedAt?: true
     deliveredAt?: true
@@ -25664,6 +27542,9 @@ export namespace Prisma {
     vatXof: number
     discountXof: number
     totalXof: number
+    paymentMode: $Enums.PaymentMode
+    upfrontXof: number
+    balanceXof: number
     promoCodeId: string | null
     placedAt: Date | null
     deliveredAt: Date | null
@@ -25714,6 +27595,9 @@ export namespace Prisma {
     vatXof?: boolean
     discountXof?: boolean
     totalXof?: boolean
+    paymentMode?: boolean
+    upfrontXof?: boolean
+    balanceXof?: boolean
     promoCodeId?: boolean
     placedAt?: boolean
     deliveredAt?: boolean
@@ -25730,6 +27614,8 @@ export namespace Prisma {
     payments?: boolean | Order$paymentsArgs<ExtArgs>
     shipments?: boolean | Order$shipmentsArgs<ExtArgs>
     disputes?: boolean | Order$disputesArgs<ExtArgs>
+    refunds?: boolean | Order$refundsArgs<ExtArgs>
+    supportTickets?: boolean | Order$supportTicketsArgs<ExtArgs>
     invoice?: boolean | Order$invoiceArgs<ExtArgs>
     promoRedemption?: boolean | Order$promoRedemptionArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -25754,6 +27640,9 @@ export namespace Prisma {
     vatXof?: boolean
     discountXof?: boolean
     totalXof?: boolean
+    paymentMode?: boolean
+    upfrontXof?: boolean
+    balanceXof?: boolean
     promoCodeId?: boolean
     placedAt?: boolean
     deliveredAt?: boolean
@@ -25787,6 +27676,9 @@ export namespace Prisma {
     vatXof?: boolean
     discountXof?: boolean
     totalXof?: boolean
+    paymentMode?: boolean
+    upfrontXof?: boolean
+    balanceXof?: boolean
     promoCodeId?: boolean
     placedAt?: boolean
     deliveredAt?: boolean
@@ -25820,6 +27712,9 @@ export namespace Prisma {
     vatXof?: boolean
     discountXof?: boolean
     totalXof?: boolean
+    paymentMode?: boolean
+    upfrontXof?: boolean
+    balanceXof?: boolean
     promoCodeId?: boolean
     placedAt?: boolean
     deliveredAt?: boolean
@@ -25832,7 +27727,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reference" | "customerId" | "status" | "shipFullName" | "shipPhone" | "shipCityId" | "shipLine1" | "shipLandmark" | "shipLatitude" | "shipLongitude" | "itemsMakerTotalXof" | "commissionTotalXof" | "itemsFinalTotalXof" | "deliveryTotalXof" | "vatXof" | "discountXof" | "totalXof" | "promoCodeId" | "placedAt" | "deliveredAt" | "validatedAt" | "autoValidateAt" | "completedAt" | "cancelledAt" | "cancelReason" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reference" | "customerId" | "status" | "shipFullName" | "shipPhone" | "shipCityId" | "shipLine1" | "shipLandmark" | "shipLatitude" | "shipLongitude" | "itemsMakerTotalXof" | "commissionTotalXof" | "itemsFinalTotalXof" | "deliveryTotalXof" | "vatXof" | "discountXof" | "totalXof" | "paymentMode" | "upfrontXof" | "balanceXof" | "promoCodeId" | "placedAt" | "deliveredAt" | "validatedAt" | "autoValidateAt" | "completedAt" | "cancelledAt" | "cancelReason" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     promoCode?: boolean | Order$promoCodeArgs<ExtArgs>
@@ -25840,6 +27735,8 @@ export namespace Prisma {
     payments?: boolean | Order$paymentsArgs<ExtArgs>
     shipments?: boolean | Order$shipmentsArgs<ExtArgs>
     disputes?: boolean | Order$disputesArgs<ExtArgs>
+    refunds?: boolean | Order$refundsArgs<ExtArgs>
+    supportTickets?: boolean | Order$supportTicketsArgs<ExtArgs>
     invoice?: boolean | Order$invoiceArgs<ExtArgs>
     promoRedemption?: boolean | Order$promoRedemptionArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -25862,6 +27759,8 @@ export namespace Prisma {
       payments: Prisma.$PaymentPayload<ExtArgs>[]
       shipments: Prisma.$ShipmentPayload<ExtArgs>[]
       disputes: Prisma.$DisputePayload<ExtArgs>[]
+      refunds: Prisma.$RefundPayload<ExtArgs>[]
+      supportTickets: Prisma.$SupportTicketPayload<ExtArgs>[]
       invoice: Prisma.$InvoicePayload<ExtArgs> | null
       promoRedemption: Prisma.$PromoRedemptionPayload<ExtArgs> | null
     }
@@ -25901,6 +27800,18 @@ export namespace Prisma {
        */
       discountXof: number
       totalXof: number
+      /**
+       * Mode de règlement choisi à la caisse.
+       */
+      paymentMode: $Enums.PaymentMode
+      /**
+       * Part payée en ligne à la commande (`totalXof` si tout est en ligne).
+       */
+      upfrontXof: number
+      /**
+       * Part remise au livreur à la réception. `upfrontXof + balanceXof = totalXof`.
+       */
+      balanceXof: number
       /**
        * Code promo utilisé, figé sur la commande.
        */
@@ -26320,6 +28231,8 @@ export namespace Prisma {
     payments<T extends Order$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shipments<T extends Order$shipmentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$shipmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShipmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     disputes<T extends Order$disputesArgs<ExtArgs> = {}>(args?: Subset<T, Order$disputesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DisputePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    refunds<T extends Order$refundsArgs<ExtArgs> = {}>(args?: Subset<T, Order$refundsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RefundPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    supportTickets<T extends Order$supportTicketsArgs<ExtArgs> = {}>(args?: Subset<T, Order$supportTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     invoice<T extends Order$invoiceArgs<ExtArgs> = {}>(args?: Subset<T, Order$invoiceArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     promoRedemption<T extends Order$promoRedemptionArgs<ExtArgs> = {}>(args?: Subset<T, Order$promoRedemptionArgs<ExtArgs>>): Prisma__PromoRedemptionClient<$Result.GetResult<Prisma.$PromoRedemptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
@@ -26369,6 +28282,9 @@ export namespace Prisma {
     readonly vatXof: FieldRef<"Order", 'Int'>
     readonly discountXof: FieldRef<"Order", 'Int'>
     readonly totalXof: FieldRef<"Order", 'Int'>
+    readonly paymentMode: FieldRef<"Order", 'PaymentMode'>
+    readonly upfrontXof: FieldRef<"Order", 'Int'>
+    readonly balanceXof: FieldRef<"Order", 'Int'>
     readonly promoCodeId: FieldRef<"Order", 'String'>
     readonly placedAt: FieldRef<"Order", 'DateTime'>
     readonly deliveredAt: FieldRef<"Order", 'DateTime'>
@@ -26890,6 +28806,54 @@ export namespace Prisma {
   }
 
   /**
+   * Order.refunds
+   */
+  export type Order$refundsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Refund
+     */
+    select?: RefundSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Refund
+     */
+    omit?: RefundOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RefundInclude<ExtArgs> | null
+    where?: RefundWhereInput
+    orderBy?: RefundOrderByWithRelationInput | RefundOrderByWithRelationInput[]
+    cursor?: RefundWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RefundScalarFieldEnum | RefundScalarFieldEnum[]
+  }
+
+  /**
+   * Order.supportTickets
+   */
+  export type Order$supportTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    where?: SupportTicketWhereInput
+    orderBy?: SupportTicketOrderByWithRelationInput | SupportTicketOrderByWithRelationInput[]
+    cursor?: SupportTicketWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupportTicketScalarFieldEnum | SupportTicketScalarFieldEnum[]
+  }
+
+  /**
    * Order.invoice
    */
   export type Order$invoiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -26962,12 +28926,16 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number | null
     commissionSubtotalXof: number | null
     deliveryFeeXof: number | null
+    balanceDueXof: number | null
+    cashCollectedXof: number | null
   }
 
   export type SubOrderSumAggregateOutputType = {
     itemsMakerSubtotalXof: number | null
     commissionSubtotalXof: number | null
     deliveryFeeXof: number | null
+    balanceDueXof: number | null
+    cashCollectedXof: number | null
   }
 
   export type SubOrderMinAggregateOutputType = {
@@ -26979,6 +28947,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number | null
     commissionSubtotalXof: number | null
     deliveryFeeXof: number | null
+    balanceDueXof: number | null
+    cashCollectedAt: Date | null
+    cashCollectedXof: number | null
     acceptedAt: Date | null
     rejectedAt: Date | null
     rejectReason: string | null
@@ -27001,6 +28972,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number | null
     commissionSubtotalXof: number | null
     deliveryFeeXof: number | null
+    balanceDueXof: number | null
+    cashCollectedAt: Date | null
+    cashCollectedXof: number | null
     acceptedAt: Date | null
     rejectedAt: Date | null
     rejectReason: string | null
@@ -27023,6 +28997,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof: number
+    balanceDueXof: number
+    cashCollectedAt: number
+    cashCollectedXof: number
     acceptedAt: number
     rejectedAt: number
     rejectReason: number
@@ -27042,12 +29019,16 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: true
     commissionSubtotalXof?: true
     deliveryFeeXof?: true
+    balanceDueXof?: true
+    cashCollectedXof?: true
   }
 
   export type SubOrderSumAggregateInputType = {
     itemsMakerSubtotalXof?: true
     commissionSubtotalXof?: true
     deliveryFeeXof?: true
+    balanceDueXof?: true
+    cashCollectedXof?: true
   }
 
   export type SubOrderMinAggregateInputType = {
@@ -27059,6 +29040,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: true
     commissionSubtotalXof?: true
     deliveryFeeXof?: true
+    balanceDueXof?: true
+    cashCollectedAt?: true
+    cashCollectedXof?: true
     acceptedAt?: true
     rejectedAt?: true
     rejectReason?: true
@@ -27081,6 +29065,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: true
     commissionSubtotalXof?: true
     deliveryFeeXof?: true
+    balanceDueXof?: true
+    cashCollectedAt?: true
+    cashCollectedXof?: true
     acceptedAt?: true
     rejectedAt?: true
     rejectReason?: true
@@ -27103,6 +29090,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: true
     commissionSubtotalXof?: true
     deliveryFeeXof?: true
+    balanceDueXof?: true
+    cashCollectedAt?: true
+    cashCollectedXof?: true
     acceptedAt?: true
     rejectedAt?: true
     rejectReason?: true
@@ -27212,6 +29202,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof: number
+    balanceDueXof: number
+    cashCollectedAt: Date | null
+    cashCollectedXof: number | null
     acceptedAt: Date | null
     rejectedAt: Date | null
     rejectReason: string | null
@@ -27253,6 +29246,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: boolean
     commissionSubtotalXof?: boolean
     deliveryFeeXof?: boolean
+    balanceDueXof?: boolean
+    cashCollectedAt?: boolean
+    cashCollectedXof?: boolean
     acceptedAt?: boolean
     rejectedAt?: boolean
     rejectReason?: boolean
@@ -27282,6 +29278,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: boolean
     commissionSubtotalXof?: boolean
     deliveryFeeXof?: boolean
+    balanceDueXof?: boolean
+    cashCollectedAt?: boolean
+    cashCollectedXof?: boolean
     acceptedAt?: boolean
     rejectedAt?: boolean
     rejectReason?: boolean
@@ -27306,6 +29305,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: boolean
     commissionSubtotalXof?: boolean
     deliveryFeeXof?: boolean
+    balanceDueXof?: boolean
+    cashCollectedAt?: boolean
+    cashCollectedXof?: boolean
     acceptedAt?: boolean
     rejectedAt?: boolean
     rejectReason?: boolean
@@ -27330,6 +29332,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: boolean
     commissionSubtotalXof?: boolean
     deliveryFeeXof?: boolean
+    balanceDueXof?: boolean
+    cashCollectedAt?: boolean
+    cashCollectedXof?: boolean
     acceptedAt?: boolean
     rejectedAt?: boolean
     rejectReason?: boolean
@@ -27343,7 +29348,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type SubOrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reference" | "orderId" | "makerId" | "status" | "itemsMakerSubtotalXof" | "commissionSubtotalXof" | "deliveryFeeXof" | "acceptedAt" | "rejectedAt" | "rejectReason" | "respondByAt" | "reminderSentAt" | "dueReadyAt" | "readyAt" | "deliveredAt" | "validatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["subOrder"]>
+  export type SubOrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reference" | "orderId" | "makerId" | "status" | "itemsMakerSubtotalXof" | "commissionSubtotalXof" | "deliveryFeeXof" | "balanceDueXof" | "cashCollectedAt" | "cashCollectedXof" | "acceptedAt" | "rejectedAt" | "rejectReason" | "respondByAt" | "reminderSentAt" | "dueReadyAt" | "readyAt" | "deliveredAt" | "validatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["subOrder"]>
   export type SubOrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     maker?: boolean | MakerProfileDefaultArgs<ExtArgs>
@@ -27385,6 +29390,14 @@ export namespace Prisma {
       itemsMakerSubtotalXof: number
       commissionSubtotalXof: number
       deliveryFeeXof: number
+      /**
+       * Part du solde que le livreur encaisse en remettant CETTE sous-commande.
+       * Chaque atelier a sa livraison, donc son livreur : le solde de la commande
+       * est réparti entre elles (somme des parts = `Order.balanceXof`).
+       */
+      balanceDueXof: number
+      cashCollectedAt: Date | null
+      cashCollectedXof: number | null
       acceptedAt: Date | null
       rejectedAt: Date | null
       rejectReason: string | null
@@ -27843,6 +29856,9 @@ export namespace Prisma {
     readonly itemsMakerSubtotalXof: FieldRef<"SubOrder", 'Int'>
     readonly commissionSubtotalXof: FieldRef<"SubOrder", 'Int'>
     readonly deliveryFeeXof: FieldRef<"SubOrder", 'Int'>
+    readonly balanceDueXof: FieldRef<"SubOrder", 'Int'>
+    readonly cashCollectedAt: FieldRef<"SubOrder", 'DateTime'>
+    readonly cashCollectedXof: FieldRef<"SubOrder", 'Int'>
     readonly acceptedAt: FieldRef<"SubOrder", 'DateTime'>
     readonly rejectedAt: FieldRef<"SubOrder", 'DateTime'>
     readonly rejectReason: FieldRef<"SubOrder", 'String'>
@@ -28614,6 +30630,7 @@ export namespace Prisma {
     lineTotalXof?: boolean
     subOrder?: boolean | SubOrderDefaultArgs<ExtArgs>
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    review?: boolean | OrderLine$reviewArgs<ExtArgs>
   }, ExtArgs["result"]["orderLine"]>
 
   export type OrderLineSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -28663,6 +30680,7 @@ export namespace Prisma {
   export type OrderLineInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subOrder?: boolean | SubOrderDefaultArgs<ExtArgs>
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    review?: boolean | OrderLine$reviewArgs<ExtArgs>
   }
   export type OrderLineIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subOrder?: boolean | SubOrderDefaultArgs<ExtArgs>
@@ -28678,6 +30696,7 @@ export namespace Prisma {
     objects: {
       subOrder: Prisma.$SubOrderPayload<ExtArgs>
       product: Prisma.$ProductPayload<ExtArgs>
+      review: Prisma.$ReviewPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -29101,6 +31120,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     subOrder<T extends SubOrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SubOrderDefaultArgs<ExtArgs>>): Prisma__SubOrderClient<$Result.GetResult<Prisma.$SubOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     product<T extends ProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProductDefaultArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    review<T extends OrderLine$reviewArgs<ExtArgs> = {}>(args?: Subset<T, OrderLine$reviewArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -29533,6 +31553,25 @@ export namespace Prisma {
      * Limit how many OrderLines to delete.
      */
     limit?: number
+  }
+
+  /**
+   * OrderLine.review
+   */
+  export type OrderLine$reviewArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    where?: ReviewWhereInput
   }
 
   /**
@@ -33244,6 +35283,7 @@ export namespace Prisma {
   export type RefundMinAggregateOutputType = {
     id: string | null
     paymentId: string | null
+    orderId: string | null
     amountXof: number | null
     reason: string | null
     status: string | null
@@ -33256,6 +35296,7 @@ export namespace Prisma {
   export type RefundMaxAggregateOutputType = {
     id: string | null
     paymentId: string | null
+    orderId: string | null
     amountXof: number | null
     reason: string | null
     status: string | null
@@ -33268,6 +35309,7 @@ export namespace Prisma {
   export type RefundCountAggregateOutputType = {
     id: number
     paymentId: number
+    orderId: number
     amountXof: number
     reason: number
     status: number
@@ -33290,6 +35332,7 @@ export namespace Prisma {
   export type RefundMinAggregateInputType = {
     id?: true
     paymentId?: true
+    orderId?: true
     amountXof?: true
     reason?: true
     status?: true
@@ -33302,6 +35345,7 @@ export namespace Prisma {
   export type RefundMaxAggregateInputType = {
     id?: true
     paymentId?: true
+    orderId?: true
     amountXof?: true
     reason?: true
     status?: true
@@ -33314,6 +35358,7 @@ export namespace Prisma {
   export type RefundCountAggregateInputType = {
     id?: true
     paymentId?: true
+    orderId?: true
     amountXof?: true
     reason?: true
     status?: true
@@ -33412,7 +35457,8 @@ export namespace Prisma {
 
   export type RefundGroupByOutputType = {
     id: string
-    paymentId: string
+    paymentId: string | null
+    orderId: string | null
     amountXof: number
     reason: string
     status: string
@@ -33444,6 +35490,7 @@ export namespace Prisma {
   export type RefundSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     paymentId?: boolean
+    orderId?: boolean
     amountXof?: boolean
     reason?: boolean
     status?: boolean
@@ -33451,12 +35498,14 @@ export namespace Prisma {
     requestedBy?: boolean
     createdAt?: boolean
     settledAt?: boolean
-    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    payment?: boolean | Refund$paymentArgs<ExtArgs>
+    order?: boolean | Refund$orderArgs<ExtArgs>
   }, ExtArgs["result"]["refund"]>
 
   export type RefundSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     paymentId?: boolean
+    orderId?: boolean
     amountXof?: boolean
     reason?: boolean
     status?: boolean
@@ -33464,12 +35513,14 @@ export namespace Prisma {
     requestedBy?: boolean
     createdAt?: boolean
     settledAt?: boolean
-    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    payment?: boolean | Refund$paymentArgs<ExtArgs>
+    order?: boolean | Refund$orderArgs<ExtArgs>
   }, ExtArgs["result"]["refund"]>
 
   export type RefundSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     paymentId?: boolean
+    orderId?: boolean
     amountXof?: boolean
     reason?: boolean
     status?: boolean
@@ -33477,12 +35528,14 @@ export namespace Prisma {
     requestedBy?: boolean
     createdAt?: boolean
     settledAt?: boolean
-    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    payment?: boolean | Refund$paymentArgs<ExtArgs>
+    order?: boolean | Refund$orderArgs<ExtArgs>
   }, ExtArgs["result"]["refund"]>
 
   export type RefundSelectScalar = {
     id?: boolean
     paymentId?: boolean
+    orderId?: boolean
     amountXof?: boolean
     reason?: boolean
     status?: boolean
@@ -33492,25 +35545,36 @@ export namespace Prisma {
     settledAt?: boolean
   }
 
-  export type RefundOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "paymentId" | "amountXof" | "reason" | "status" | "providerRef" | "requestedBy" | "createdAt" | "settledAt", ExtArgs["result"]["refund"]>
+  export type RefundOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "paymentId" | "orderId" | "amountXof" | "reason" | "status" | "providerRef" | "requestedBy" | "createdAt" | "settledAt", ExtArgs["result"]["refund"]>
   export type RefundInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    payment?: boolean | Refund$paymentArgs<ExtArgs>
+    order?: boolean | Refund$orderArgs<ExtArgs>
   }
   export type RefundIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    payment?: boolean | Refund$paymentArgs<ExtArgs>
+    order?: boolean | Refund$orderArgs<ExtArgs>
   }
   export type RefundIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+    payment?: boolean | Refund$paymentArgs<ExtArgs>
+    order?: boolean | Refund$orderArgs<ExtArgs>
   }
 
   export type $RefundPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Refund"
     objects: {
-      payment: Prisma.$PaymentPayload<ExtArgs>
+      payment: Prisma.$PaymentPayload<ExtArgs> | null
+      order: Prisma.$OrderPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      paymentId: string
+      /**
+       * Absent quand rien n'a été payé en ligne (paiement à la livraison).
+       */
+      paymentId: string | null
+      /**
+       * Toujours renseigné : la commande remboursée, avec ou sans paiement en ligne.
+       */
+      orderId: string | null
       /**
        * Σ (makerPriceXof × quantité) des lignes remboursées.
        */
@@ -33915,7 +35979,8 @@ export namespace Prisma {
    */
   export interface Prisma__RefundClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    payment<T extends PaymentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PaymentDefaultArgs<ExtArgs>>): Prisma__PaymentClient<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    payment<T extends Refund$paymentArgs<ExtArgs> = {}>(args?: Subset<T, Refund$paymentArgs<ExtArgs>>): Prisma__PaymentClient<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    order<T extends Refund$orderArgs<ExtArgs> = {}>(args?: Subset<T, Refund$orderArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -33947,6 +36012,7 @@ export namespace Prisma {
   interface RefundFieldRefs {
     readonly id: FieldRef<"Refund", 'String'>
     readonly paymentId: FieldRef<"Refund", 'String'>
+    readonly orderId: FieldRef<"Refund", 'String'>
     readonly amountXof: FieldRef<"Refund", 'Int'>
     readonly reason: FieldRef<"Refund", 'String'>
     readonly status: FieldRef<"Refund", 'String'>
@@ -34347,6 +36413,44 @@ export namespace Prisma {
      * Limit how many Refunds to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Refund.payment
+   */
+  export type Refund$paymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Payment
+     */
+    select?: PaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentInclude<ExtArgs> | null
+    where?: PaymentWhereInput
+  }
+
+  /**
+   * Refund.order
+   */
+  export type Refund$orderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
   }
 
   /**
@@ -48477,6 +50581,2420 @@ export namespace Prisma {
 
 
   /**
+   * Model SupportTicket
+   */
+
+  export type AggregateSupportTicket = {
+    _count: SupportTicketCountAggregateOutputType | null
+    _min: SupportTicketMinAggregateOutputType | null
+    _max: SupportTicketMaxAggregateOutputType | null
+  }
+
+  export type SupportTicketMinAggregateOutputType = {
+    id: string | null
+    reference: string | null
+    channel: $Enums.TicketChannel | null
+    userId: string | null
+    authorRole: $Enums.UserRole | null
+    guestName: string | null
+    guestEmail: string | null
+    category: string | null
+    subject: string | null
+    status: $Enums.TicketStatus | null
+    priority: $Enums.TicketPriority | null
+    orderId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    lastMessageAt: Date | null
+    resolvedAt: Date | null
+    closedAt: Date | null
+  }
+
+  export type SupportTicketMaxAggregateOutputType = {
+    id: string | null
+    reference: string | null
+    channel: $Enums.TicketChannel | null
+    userId: string | null
+    authorRole: $Enums.UserRole | null
+    guestName: string | null
+    guestEmail: string | null
+    category: string | null
+    subject: string | null
+    status: $Enums.TicketStatus | null
+    priority: $Enums.TicketPriority | null
+    orderId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    lastMessageAt: Date | null
+    resolvedAt: Date | null
+    closedAt: Date | null
+  }
+
+  export type SupportTicketCountAggregateOutputType = {
+    id: number
+    reference: number
+    channel: number
+    userId: number
+    authorRole: number
+    guestName: number
+    guestEmail: number
+    category: number
+    subject: number
+    status: number
+    priority: number
+    orderId: number
+    createdAt: number
+    updatedAt: number
+    lastMessageAt: number
+    resolvedAt: number
+    closedAt: number
+    _all: number
+  }
+
+
+  export type SupportTicketMinAggregateInputType = {
+    id?: true
+    reference?: true
+    channel?: true
+    userId?: true
+    authorRole?: true
+    guestName?: true
+    guestEmail?: true
+    category?: true
+    subject?: true
+    status?: true
+    priority?: true
+    orderId?: true
+    createdAt?: true
+    updatedAt?: true
+    lastMessageAt?: true
+    resolvedAt?: true
+    closedAt?: true
+  }
+
+  export type SupportTicketMaxAggregateInputType = {
+    id?: true
+    reference?: true
+    channel?: true
+    userId?: true
+    authorRole?: true
+    guestName?: true
+    guestEmail?: true
+    category?: true
+    subject?: true
+    status?: true
+    priority?: true
+    orderId?: true
+    createdAt?: true
+    updatedAt?: true
+    lastMessageAt?: true
+    resolvedAt?: true
+    closedAt?: true
+  }
+
+  export type SupportTicketCountAggregateInputType = {
+    id?: true
+    reference?: true
+    channel?: true
+    userId?: true
+    authorRole?: true
+    guestName?: true
+    guestEmail?: true
+    category?: true
+    subject?: true
+    status?: true
+    priority?: true
+    orderId?: true
+    createdAt?: true
+    updatedAt?: true
+    lastMessageAt?: true
+    resolvedAt?: true
+    closedAt?: true
+    _all?: true
+  }
+
+  export type SupportTicketAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupportTicket to aggregate.
+     */
+    where?: SupportTicketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportTickets to fetch.
+     */
+    orderBy?: SupportTicketOrderByWithRelationInput | SupportTicketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SupportTicketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportTickets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportTickets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SupportTickets
+    **/
+    _count?: true | SupportTicketCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SupportTicketMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SupportTicketMaxAggregateInputType
+  }
+
+  export type GetSupportTicketAggregateType<T extends SupportTicketAggregateArgs> = {
+        [P in keyof T & keyof AggregateSupportTicket]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSupportTicket[P]>
+      : GetScalarType<T[P], AggregateSupportTicket[P]>
+  }
+
+
+
+
+  export type SupportTicketGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupportTicketWhereInput
+    orderBy?: SupportTicketOrderByWithAggregationInput | SupportTicketOrderByWithAggregationInput[]
+    by: SupportTicketScalarFieldEnum[] | SupportTicketScalarFieldEnum
+    having?: SupportTicketScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SupportTicketCountAggregateInputType | true
+    _min?: SupportTicketMinAggregateInputType
+    _max?: SupportTicketMaxAggregateInputType
+  }
+
+  export type SupportTicketGroupByOutputType = {
+    id: string
+    reference: string
+    channel: $Enums.TicketChannel
+    userId: string | null
+    authorRole: $Enums.UserRole | null
+    guestName: string | null
+    guestEmail: string | null
+    category: string
+    subject: string
+    status: $Enums.TicketStatus
+    priority: $Enums.TicketPriority
+    orderId: string | null
+    createdAt: Date
+    updatedAt: Date
+    lastMessageAt: Date
+    resolvedAt: Date | null
+    closedAt: Date | null
+    _count: SupportTicketCountAggregateOutputType | null
+    _min: SupportTicketMinAggregateOutputType | null
+    _max: SupportTicketMaxAggregateOutputType | null
+  }
+
+  type GetSupportTicketGroupByPayload<T extends SupportTicketGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SupportTicketGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SupportTicketGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SupportTicketGroupByOutputType[P]>
+            : GetScalarType<T[P], SupportTicketGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SupportTicketSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reference?: boolean
+    channel?: boolean
+    userId?: boolean
+    authorRole?: boolean
+    guestName?: boolean
+    guestEmail?: boolean
+    category?: boolean
+    subject?: boolean
+    status?: boolean
+    priority?: boolean
+    orderId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastMessageAt?: boolean
+    resolvedAt?: boolean
+    closedAt?: boolean
+    user?: boolean | SupportTicket$userArgs<ExtArgs>
+    order?: boolean | SupportTicket$orderArgs<ExtArgs>
+    messages?: boolean | SupportTicket$messagesArgs<ExtArgs>
+    _count?: boolean | SupportTicketCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supportTicket"]>
+
+  export type SupportTicketSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reference?: boolean
+    channel?: boolean
+    userId?: boolean
+    authorRole?: boolean
+    guestName?: boolean
+    guestEmail?: boolean
+    category?: boolean
+    subject?: boolean
+    status?: boolean
+    priority?: boolean
+    orderId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastMessageAt?: boolean
+    resolvedAt?: boolean
+    closedAt?: boolean
+    user?: boolean | SupportTicket$userArgs<ExtArgs>
+    order?: boolean | SupportTicket$orderArgs<ExtArgs>
+  }, ExtArgs["result"]["supportTicket"]>
+
+  export type SupportTicketSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reference?: boolean
+    channel?: boolean
+    userId?: boolean
+    authorRole?: boolean
+    guestName?: boolean
+    guestEmail?: boolean
+    category?: boolean
+    subject?: boolean
+    status?: boolean
+    priority?: boolean
+    orderId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastMessageAt?: boolean
+    resolvedAt?: boolean
+    closedAt?: boolean
+    user?: boolean | SupportTicket$userArgs<ExtArgs>
+    order?: boolean | SupportTicket$orderArgs<ExtArgs>
+  }, ExtArgs["result"]["supportTicket"]>
+
+  export type SupportTicketSelectScalar = {
+    id?: boolean
+    reference?: boolean
+    channel?: boolean
+    userId?: boolean
+    authorRole?: boolean
+    guestName?: boolean
+    guestEmail?: boolean
+    category?: boolean
+    subject?: boolean
+    status?: boolean
+    priority?: boolean
+    orderId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastMessageAt?: boolean
+    resolvedAt?: boolean
+    closedAt?: boolean
+  }
+
+  export type SupportTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reference" | "channel" | "userId" | "authorRole" | "guestName" | "guestEmail" | "category" | "subject" | "status" | "priority" | "orderId" | "createdAt" | "updatedAt" | "lastMessageAt" | "resolvedAt" | "closedAt", ExtArgs["result"]["supportTicket"]>
+  export type SupportTicketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | SupportTicket$userArgs<ExtArgs>
+    order?: boolean | SupportTicket$orderArgs<ExtArgs>
+    messages?: boolean | SupportTicket$messagesArgs<ExtArgs>
+    _count?: boolean | SupportTicketCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type SupportTicketIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | SupportTicket$userArgs<ExtArgs>
+    order?: boolean | SupportTicket$orderArgs<ExtArgs>
+  }
+  export type SupportTicketIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | SupportTicket$userArgs<ExtArgs>
+    order?: boolean | SupportTicket$orderArgs<ExtArgs>
+  }
+
+  export type $SupportTicketPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SupportTicket"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+      order: Prisma.$OrderPayload<ExtArgs> | null
+      messages: Prisma.$SupportMessagePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      /**
+       * SUP-2026-000123 : la référence que le client cite au téléphone.
+       */
+      reference: string
+      channel: $Enums.TicketChannel
+      /**
+       * Auteur inscrit. Nul pour un visiteur dont l'e-mail ne correspond à
+       * aucun compte.
+       */
+      userId: string | null
+      /**
+       * Rôle de l'auteur à l'ouverture (CUSTOMER, MAKER…). Nul pour un visiteur.
+       */
+      authorRole: $Enums.UserRole | null
+      /**
+       * Coordonnées saisies sur le formulaire public.
+       */
+      guestName: string | null
+      guestEmail: string | null
+      /**
+       * Type de problème : clé stable de `@oja/contracts` (livraison, paiement…).
+       */
+      category: string
+      subject: string
+      status: $Enums.TicketStatus
+      priority: $Enums.TicketPriority
+      /**
+       * Commande concernée, facultative (espace acheteur).
+       */
+      orderId: string | null
+      createdAt: Date
+      updatedAt: Date
+      /**
+       * Dernier message, interne compris : trie la file du service client.
+       */
+      lastMessageAt: Date
+      resolvedAt: Date | null
+      closedAt: Date | null
+    }, ExtArgs["result"]["supportTicket"]>
+    composites: {}
+  }
+
+  type SupportTicketGetPayload<S extends boolean | null | undefined | SupportTicketDefaultArgs> = $Result.GetResult<Prisma.$SupportTicketPayload, S>
+
+  type SupportTicketCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SupportTicketFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SupportTicketCountAggregateInputType | true
+    }
+
+  export interface SupportTicketDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SupportTicket'], meta: { name: 'SupportTicket' } }
+    /**
+     * Find zero or one SupportTicket that matches the filter.
+     * @param {SupportTicketFindUniqueArgs} args - Arguments to find a SupportTicket
+     * @example
+     * // Get one SupportTicket
+     * const supportTicket = await prisma.supportTicket.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SupportTicketFindUniqueArgs>(args: SelectSubset<T, SupportTicketFindUniqueArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SupportTicket that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SupportTicketFindUniqueOrThrowArgs} args - Arguments to find a SupportTicket
+     * @example
+     * // Get one SupportTicket
+     * const supportTicket = await prisma.supportTicket.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SupportTicketFindUniqueOrThrowArgs>(args: SelectSubset<T, SupportTicketFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SupportTicket that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportTicketFindFirstArgs} args - Arguments to find a SupportTicket
+     * @example
+     * // Get one SupportTicket
+     * const supportTicket = await prisma.supportTicket.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SupportTicketFindFirstArgs>(args?: SelectSubset<T, SupportTicketFindFirstArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SupportTicket that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportTicketFindFirstOrThrowArgs} args - Arguments to find a SupportTicket
+     * @example
+     * // Get one SupportTicket
+     * const supportTicket = await prisma.supportTicket.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SupportTicketFindFirstOrThrowArgs>(args?: SelectSubset<T, SupportTicketFindFirstOrThrowArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SupportTickets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportTicketFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SupportTickets
+     * const supportTickets = await prisma.supportTicket.findMany()
+     * 
+     * // Get first 10 SupportTickets
+     * const supportTickets = await prisma.supportTicket.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const supportTicketWithIdOnly = await prisma.supportTicket.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SupportTicketFindManyArgs>(args?: SelectSubset<T, SupportTicketFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SupportTicket.
+     * @param {SupportTicketCreateArgs} args - Arguments to create a SupportTicket.
+     * @example
+     * // Create one SupportTicket
+     * const SupportTicket = await prisma.supportTicket.create({
+     *   data: {
+     *     // ... data to create a SupportTicket
+     *   }
+     * })
+     * 
+     */
+    create<T extends SupportTicketCreateArgs>(args: SelectSubset<T, SupportTicketCreateArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SupportTickets.
+     * @param {SupportTicketCreateManyArgs} args - Arguments to create many SupportTickets.
+     * @example
+     * // Create many SupportTickets
+     * const supportTicket = await prisma.supportTicket.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SupportTicketCreateManyArgs>(args?: SelectSubset<T, SupportTicketCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SupportTickets and returns the data saved in the database.
+     * @param {SupportTicketCreateManyAndReturnArgs} args - Arguments to create many SupportTickets.
+     * @example
+     * // Create many SupportTickets
+     * const supportTicket = await prisma.supportTicket.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SupportTickets and only return the `id`
+     * const supportTicketWithIdOnly = await prisma.supportTicket.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SupportTicketCreateManyAndReturnArgs>(args?: SelectSubset<T, SupportTicketCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SupportTicket.
+     * @param {SupportTicketDeleteArgs} args - Arguments to delete one SupportTicket.
+     * @example
+     * // Delete one SupportTicket
+     * const SupportTicket = await prisma.supportTicket.delete({
+     *   where: {
+     *     // ... filter to delete one SupportTicket
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SupportTicketDeleteArgs>(args: SelectSubset<T, SupportTicketDeleteArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SupportTicket.
+     * @param {SupportTicketUpdateArgs} args - Arguments to update one SupportTicket.
+     * @example
+     * // Update one SupportTicket
+     * const supportTicket = await prisma.supportTicket.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SupportTicketUpdateArgs>(args: SelectSubset<T, SupportTicketUpdateArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SupportTickets.
+     * @param {SupportTicketDeleteManyArgs} args - Arguments to filter SupportTickets to delete.
+     * @example
+     * // Delete a few SupportTickets
+     * const { count } = await prisma.supportTicket.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SupportTicketDeleteManyArgs>(args?: SelectSubset<T, SupportTicketDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SupportTickets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportTicketUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SupportTickets
+     * const supportTicket = await prisma.supportTicket.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SupportTicketUpdateManyArgs>(args: SelectSubset<T, SupportTicketUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SupportTickets and returns the data updated in the database.
+     * @param {SupportTicketUpdateManyAndReturnArgs} args - Arguments to update many SupportTickets.
+     * @example
+     * // Update many SupportTickets
+     * const supportTicket = await prisma.supportTicket.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SupportTickets and only return the `id`
+     * const supportTicketWithIdOnly = await prisma.supportTicket.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SupportTicketUpdateManyAndReturnArgs>(args: SelectSubset<T, SupportTicketUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SupportTicket.
+     * @param {SupportTicketUpsertArgs} args - Arguments to update or create a SupportTicket.
+     * @example
+     * // Update or create a SupportTicket
+     * const supportTicket = await prisma.supportTicket.upsert({
+     *   create: {
+     *     // ... data to create a SupportTicket
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SupportTicket we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SupportTicketUpsertArgs>(args: SelectSubset<T, SupportTicketUpsertArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SupportTickets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportTicketCountArgs} args - Arguments to filter SupportTickets to count.
+     * @example
+     * // Count the number of SupportTickets
+     * const count = await prisma.supportTicket.count({
+     *   where: {
+     *     // ... the filter for the SupportTickets we want to count
+     *   }
+     * })
+    **/
+    count<T extends SupportTicketCountArgs>(
+      args?: Subset<T, SupportTicketCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SupportTicketCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SupportTicket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportTicketAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SupportTicketAggregateArgs>(args: Subset<T, SupportTicketAggregateArgs>): Prisma.PrismaPromise<GetSupportTicketAggregateType<T>>
+
+    /**
+     * Group by SupportTicket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportTicketGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SupportTicketGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SupportTicketGroupByArgs['orderBy'] }
+        : { orderBy?: SupportTicketGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SupportTicketGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSupportTicketGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SupportTicket model
+   */
+  readonly fields: SupportTicketFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SupportTicket.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SupportTicketClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends SupportTicket$userArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    order<T extends SupportTicket$orderArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$orderArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    messages<T extends SupportTicket$messagesArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SupportTicket model
+   */
+  interface SupportTicketFieldRefs {
+    readonly id: FieldRef<"SupportTicket", 'String'>
+    readonly reference: FieldRef<"SupportTicket", 'String'>
+    readonly channel: FieldRef<"SupportTicket", 'TicketChannel'>
+    readonly userId: FieldRef<"SupportTicket", 'String'>
+    readonly authorRole: FieldRef<"SupportTicket", 'UserRole'>
+    readonly guestName: FieldRef<"SupportTicket", 'String'>
+    readonly guestEmail: FieldRef<"SupportTicket", 'String'>
+    readonly category: FieldRef<"SupportTicket", 'String'>
+    readonly subject: FieldRef<"SupportTicket", 'String'>
+    readonly status: FieldRef<"SupportTicket", 'TicketStatus'>
+    readonly priority: FieldRef<"SupportTicket", 'TicketPriority'>
+    readonly orderId: FieldRef<"SupportTicket", 'String'>
+    readonly createdAt: FieldRef<"SupportTicket", 'DateTime'>
+    readonly updatedAt: FieldRef<"SupportTicket", 'DateTime'>
+    readonly lastMessageAt: FieldRef<"SupportTicket", 'DateTime'>
+    readonly resolvedAt: FieldRef<"SupportTicket", 'DateTime'>
+    readonly closedAt: FieldRef<"SupportTicket", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SupportTicket findUnique
+   */
+  export type SupportTicketFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportTicket to fetch.
+     */
+    where: SupportTicketWhereUniqueInput
+  }
+
+  /**
+   * SupportTicket findUniqueOrThrow
+   */
+  export type SupportTicketFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportTicket to fetch.
+     */
+    where: SupportTicketWhereUniqueInput
+  }
+
+  /**
+   * SupportTicket findFirst
+   */
+  export type SupportTicketFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportTicket to fetch.
+     */
+    where?: SupportTicketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportTickets to fetch.
+     */
+    orderBy?: SupportTicketOrderByWithRelationInput | SupportTicketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupportTickets.
+     */
+    cursor?: SupportTicketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportTickets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportTickets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupportTickets.
+     */
+    distinct?: SupportTicketScalarFieldEnum | SupportTicketScalarFieldEnum[]
+  }
+
+  /**
+   * SupportTicket findFirstOrThrow
+   */
+  export type SupportTicketFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportTicket to fetch.
+     */
+    where?: SupportTicketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportTickets to fetch.
+     */
+    orderBy?: SupportTicketOrderByWithRelationInput | SupportTicketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupportTickets.
+     */
+    cursor?: SupportTicketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportTickets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportTickets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupportTickets.
+     */
+    distinct?: SupportTicketScalarFieldEnum | SupportTicketScalarFieldEnum[]
+  }
+
+  /**
+   * SupportTicket findMany
+   */
+  export type SupportTicketFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportTickets to fetch.
+     */
+    where?: SupportTicketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportTickets to fetch.
+     */
+    orderBy?: SupportTicketOrderByWithRelationInput | SupportTicketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SupportTickets.
+     */
+    cursor?: SupportTicketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportTickets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportTickets.
+     */
+    skip?: number
+    distinct?: SupportTicketScalarFieldEnum | SupportTicketScalarFieldEnum[]
+  }
+
+  /**
+   * SupportTicket create
+   */
+  export type SupportTicketCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SupportTicket.
+     */
+    data: XOR<SupportTicketCreateInput, SupportTicketUncheckedCreateInput>
+  }
+
+  /**
+   * SupportTicket createMany
+   */
+  export type SupportTicketCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SupportTickets.
+     */
+    data: SupportTicketCreateManyInput | SupportTicketCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SupportTicket createManyAndReturn
+   */
+  export type SupportTicketCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * The data used to create many SupportTickets.
+     */
+    data: SupportTicketCreateManyInput | SupportTicketCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SupportTicket update
+   */
+  export type SupportTicketUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SupportTicket.
+     */
+    data: XOR<SupportTicketUpdateInput, SupportTicketUncheckedUpdateInput>
+    /**
+     * Choose, which SupportTicket to update.
+     */
+    where: SupportTicketWhereUniqueInput
+  }
+
+  /**
+   * SupportTicket updateMany
+   */
+  export type SupportTicketUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SupportTickets.
+     */
+    data: XOR<SupportTicketUpdateManyMutationInput, SupportTicketUncheckedUpdateManyInput>
+    /**
+     * Filter which SupportTickets to update
+     */
+    where?: SupportTicketWhereInput
+    /**
+     * Limit how many SupportTickets to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SupportTicket updateManyAndReturn
+   */
+  export type SupportTicketUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * The data used to update SupportTickets.
+     */
+    data: XOR<SupportTicketUpdateManyMutationInput, SupportTicketUncheckedUpdateManyInput>
+    /**
+     * Filter which SupportTickets to update
+     */
+    where?: SupportTicketWhereInput
+    /**
+     * Limit how many SupportTickets to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SupportTicket upsert
+   */
+  export type SupportTicketUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SupportTicket to update in case it exists.
+     */
+    where: SupportTicketWhereUniqueInput
+    /**
+     * In case the SupportTicket found by the `where` argument doesn't exist, create a new SupportTicket with this data.
+     */
+    create: XOR<SupportTicketCreateInput, SupportTicketUncheckedCreateInput>
+    /**
+     * In case the SupportTicket was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SupportTicketUpdateInput, SupportTicketUncheckedUpdateInput>
+  }
+
+  /**
+   * SupportTicket delete
+   */
+  export type SupportTicketDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    /**
+     * Filter which SupportTicket to delete.
+     */
+    where: SupportTicketWhereUniqueInput
+  }
+
+  /**
+   * SupportTicket deleteMany
+   */
+  export type SupportTicketDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupportTickets to delete
+     */
+    where?: SupportTicketWhereInput
+    /**
+     * Limit how many SupportTickets to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SupportTicket.user
+   */
+  export type SupportTicket$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * SupportTicket.order
+   */
+  export type SupportTicket$orderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+  }
+
+  /**
+   * SupportTicket.messages
+   */
+  export type SupportTicket$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    where?: SupportMessageWhereInput
+    orderBy?: SupportMessageOrderByWithRelationInput | SupportMessageOrderByWithRelationInput[]
+    cursor?: SupportMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupportMessageScalarFieldEnum | SupportMessageScalarFieldEnum[]
+  }
+
+  /**
+   * SupportTicket without action
+   */
+  export type SupportTicketDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SupportMessage
+   */
+
+  export type AggregateSupportMessage = {
+    _count: SupportMessageCountAggregateOutputType | null
+    _min: SupportMessageMinAggregateOutputType | null
+    _max: SupportMessageMaxAggregateOutputType | null
+  }
+
+  export type SupportMessageMinAggregateOutputType = {
+    id: string | null
+    ticketId: string | null
+    authorId: string | null
+    fromStaff: boolean | null
+    internal: boolean | null
+    body: string | null
+    createdAt: Date | null
+  }
+
+  export type SupportMessageMaxAggregateOutputType = {
+    id: string | null
+    ticketId: string | null
+    authorId: string | null
+    fromStaff: boolean | null
+    internal: boolean | null
+    body: string | null
+    createdAt: Date | null
+  }
+
+  export type SupportMessageCountAggregateOutputType = {
+    id: number
+    ticketId: number
+    authorId: number
+    fromStaff: number
+    internal: number
+    body: number
+    fileKeys: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type SupportMessageMinAggregateInputType = {
+    id?: true
+    ticketId?: true
+    authorId?: true
+    fromStaff?: true
+    internal?: true
+    body?: true
+    createdAt?: true
+  }
+
+  export type SupportMessageMaxAggregateInputType = {
+    id?: true
+    ticketId?: true
+    authorId?: true
+    fromStaff?: true
+    internal?: true
+    body?: true
+    createdAt?: true
+  }
+
+  export type SupportMessageCountAggregateInputType = {
+    id?: true
+    ticketId?: true
+    authorId?: true
+    fromStaff?: true
+    internal?: true
+    body?: true
+    fileKeys?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type SupportMessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupportMessage to aggregate.
+     */
+    where?: SupportMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportMessages to fetch.
+     */
+    orderBy?: SupportMessageOrderByWithRelationInput | SupportMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SupportMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SupportMessages
+    **/
+    _count?: true | SupportMessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SupportMessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SupportMessageMaxAggregateInputType
+  }
+
+  export type GetSupportMessageAggregateType<T extends SupportMessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateSupportMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSupportMessage[P]>
+      : GetScalarType<T[P], AggregateSupportMessage[P]>
+  }
+
+
+
+
+  export type SupportMessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupportMessageWhereInput
+    orderBy?: SupportMessageOrderByWithAggregationInput | SupportMessageOrderByWithAggregationInput[]
+    by: SupportMessageScalarFieldEnum[] | SupportMessageScalarFieldEnum
+    having?: SupportMessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SupportMessageCountAggregateInputType | true
+    _min?: SupportMessageMinAggregateInputType
+    _max?: SupportMessageMaxAggregateInputType
+  }
+
+  export type SupportMessageGroupByOutputType = {
+    id: string
+    ticketId: string
+    authorId: string | null
+    fromStaff: boolean
+    internal: boolean
+    body: string
+    fileKeys: string[]
+    createdAt: Date
+    _count: SupportMessageCountAggregateOutputType | null
+    _min: SupportMessageMinAggregateOutputType | null
+    _max: SupportMessageMaxAggregateOutputType | null
+  }
+
+  type GetSupportMessageGroupByPayload<T extends SupportMessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SupportMessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SupportMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SupportMessageGroupByOutputType[P]>
+            : GetScalarType<T[P], SupportMessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SupportMessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ticketId?: boolean
+    authorId?: boolean
+    fromStaff?: boolean
+    internal?: boolean
+    body?: boolean
+    fileKeys?: boolean
+    createdAt?: boolean
+    ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supportMessage"]>
+
+  export type SupportMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ticketId?: boolean
+    authorId?: boolean
+    fromStaff?: boolean
+    internal?: boolean
+    body?: boolean
+    fileKeys?: boolean
+    createdAt?: boolean
+    ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supportMessage"]>
+
+  export type SupportMessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ticketId?: boolean
+    authorId?: boolean
+    fromStaff?: boolean
+    internal?: boolean
+    body?: boolean
+    fileKeys?: boolean
+    createdAt?: boolean
+    ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supportMessage"]>
+
+  export type SupportMessageSelectScalar = {
+    id?: boolean
+    ticketId?: boolean
+    authorId?: boolean
+    fromStaff?: boolean
+    internal?: boolean
+    body?: boolean
+    fileKeys?: boolean
+    createdAt?: boolean
+  }
+
+  export type SupportMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ticketId" | "authorId" | "fromStaff" | "internal" | "body" | "fileKeys" | "createdAt", ExtArgs["result"]["supportMessage"]>
+  export type SupportMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
+  }
+  export type SupportMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
+  }
+  export type SupportMessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
+  }
+
+  export type $SupportMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SupportMessage"
+    objects: {
+      ticket: Prisma.$SupportTicketPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      ticketId: string
+      /**
+       * Nul pour un visiteur non inscrit.
+       */
+      authorId: string | null
+      /**
+       * Écrit par le service client.
+       */
+      fromStaff: boolean
+      /**
+       * Note interne : jamais montrée au client, ni renvoyée par ses routes.
+       */
+      internal: boolean
+      body: string
+      fileKeys: string[]
+      createdAt: Date
+    }, ExtArgs["result"]["supportMessage"]>
+    composites: {}
+  }
+
+  type SupportMessageGetPayload<S extends boolean | null | undefined | SupportMessageDefaultArgs> = $Result.GetResult<Prisma.$SupportMessagePayload, S>
+
+  type SupportMessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SupportMessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SupportMessageCountAggregateInputType | true
+    }
+
+  export interface SupportMessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SupportMessage'], meta: { name: 'SupportMessage' } }
+    /**
+     * Find zero or one SupportMessage that matches the filter.
+     * @param {SupportMessageFindUniqueArgs} args - Arguments to find a SupportMessage
+     * @example
+     * // Get one SupportMessage
+     * const supportMessage = await prisma.supportMessage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SupportMessageFindUniqueArgs>(args: SelectSubset<T, SupportMessageFindUniqueArgs<ExtArgs>>): Prisma__SupportMessageClient<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SupportMessage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SupportMessageFindUniqueOrThrowArgs} args - Arguments to find a SupportMessage
+     * @example
+     * // Get one SupportMessage
+     * const supportMessage = await prisma.supportMessage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SupportMessageFindUniqueOrThrowArgs>(args: SelectSubset<T, SupportMessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SupportMessageClient<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SupportMessage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportMessageFindFirstArgs} args - Arguments to find a SupportMessage
+     * @example
+     * // Get one SupportMessage
+     * const supportMessage = await prisma.supportMessage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SupportMessageFindFirstArgs>(args?: SelectSubset<T, SupportMessageFindFirstArgs<ExtArgs>>): Prisma__SupportMessageClient<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SupportMessage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportMessageFindFirstOrThrowArgs} args - Arguments to find a SupportMessage
+     * @example
+     * // Get one SupportMessage
+     * const supportMessage = await prisma.supportMessage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SupportMessageFindFirstOrThrowArgs>(args?: SelectSubset<T, SupportMessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__SupportMessageClient<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SupportMessages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportMessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SupportMessages
+     * const supportMessages = await prisma.supportMessage.findMany()
+     * 
+     * // Get first 10 SupportMessages
+     * const supportMessages = await prisma.supportMessage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const supportMessageWithIdOnly = await prisma.supportMessage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SupportMessageFindManyArgs>(args?: SelectSubset<T, SupportMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SupportMessage.
+     * @param {SupportMessageCreateArgs} args - Arguments to create a SupportMessage.
+     * @example
+     * // Create one SupportMessage
+     * const SupportMessage = await prisma.supportMessage.create({
+     *   data: {
+     *     // ... data to create a SupportMessage
+     *   }
+     * })
+     * 
+     */
+    create<T extends SupportMessageCreateArgs>(args: SelectSubset<T, SupportMessageCreateArgs<ExtArgs>>): Prisma__SupportMessageClient<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SupportMessages.
+     * @param {SupportMessageCreateManyArgs} args - Arguments to create many SupportMessages.
+     * @example
+     * // Create many SupportMessages
+     * const supportMessage = await prisma.supportMessage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SupportMessageCreateManyArgs>(args?: SelectSubset<T, SupportMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SupportMessages and returns the data saved in the database.
+     * @param {SupportMessageCreateManyAndReturnArgs} args - Arguments to create many SupportMessages.
+     * @example
+     * // Create many SupportMessages
+     * const supportMessage = await prisma.supportMessage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SupportMessages and only return the `id`
+     * const supportMessageWithIdOnly = await prisma.supportMessage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SupportMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, SupportMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SupportMessage.
+     * @param {SupportMessageDeleteArgs} args - Arguments to delete one SupportMessage.
+     * @example
+     * // Delete one SupportMessage
+     * const SupportMessage = await prisma.supportMessage.delete({
+     *   where: {
+     *     // ... filter to delete one SupportMessage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SupportMessageDeleteArgs>(args: SelectSubset<T, SupportMessageDeleteArgs<ExtArgs>>): Prisma__SupportMessageClient<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SupportMessage.
+     * @param {SupportMessageUpdateArgs} args - Arguments to update one SupportMessage.
+     * @example
+     * // Update one SupportMessage
+     * const supportMessage = await prisma.supportMessage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SupportMessageUpdateArgs>(args: SelectSubset<T, SupportMessageUpdateArgs<ExtArgs>>): Prisma__SupportMessageClient<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SupportMessages.
+     * @param {SupportMessageDeleteManyArgs} args - Arguments to filter SupportMessages to delete.
+     * @example
+     * // Delete a few SupportMessages
+     * const { count } = await prisma.supportMessage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SupportMessageDeleteManyArgs>(args?: SelectSubset<T, SupportMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SupportMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportMessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SupportMessages
+     * const supportMessage = await prisma.supportMessage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SupportMessageUpdateManyArgs>(args: SelectSubset<T, SupportMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SupportMessages and returns the data updated in the database.
+     * @param {SupportMessageUpdateManyAndReturnArgs} args - Arguments to update many SupportMessages.
+     * @example
+     * // Update many SupportMessages
+     * const supportMessage = await prisma.supportMessage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SupportMessages and only return the `id`
+     * const supportMessageWithIdOnly = await prisma.supportMessage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SupportMessageUpdateManyAndReturnArgs>(args: SelectSubset<T, SupportMessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SupportMessage.
+     * @param {SupportMessageUpsertArgs} args - Arguments to update or create a SupportMessage.
+     * @example
+     * // Update or create a SupportMessage
+     * const supportMessage = await prisma.supportMessage.upsert({
+     *   create: {
+     *     // ... data to create a SupportMessage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SupportMessage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SupportMessageUpsertArgs>(args: SelectSubset<T, SupportMessageUpsertArgs<ExtArgs>>): Prisma__SupportMessageClient<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SupportMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportMessageCountArgs} args - Arguments to filter SupportMessages to count.
+     * @example
+     * // Count the number of SupportMessages
+     * const count = await prisma.supportMessage.count({
+     *   where: {
+     *     // ... the filter for the SupportMessages we want to count
+     *   }
+     * })
+    **/
+    count<T extends SupportMessageCountArgs>(
+      args?: Subset<T, SupportMessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SupportMessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SupportMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportMessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SupportMessageAggregateArgs>(args: Subset<T, SupportMessageAggregateArgs>): Prisma.PrismaPromise<GetSupportMessageAggregateType<T>>
+
+    /**
+     * Group by SupportMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupportMessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SupportMessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SupportMessageGroupByArgs['orderBy'] }
+        : { orderBy?: SupportMessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SupportMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSupportMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SupportMessage model
+   */
+  readonly fields: SupportMessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SupportMessage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SupportMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    ticket<T extends SupportTicketDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicketDefaultArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SupportMessage model
+   */
+  interface SupportMessageFieldRefs {
+    readonly id: FieldRef<"SupportMessage", 'String'>
+    readonly ticketId: FieldRef<"SupportMessage", 'String'>
+    readonly authorId: FieldRef<"SupportMessage", 'String'>
+    readonly fromStaff: FieldRef<"SupportMessage", 'Boolean'>
+    readonly internal: FieldRef<"SupportMessage", 'Boolean'>
+    readonly body: FieldRef<"SupportMessage", 'String'>
+    readonly fileKeys: FieldRef<"SupportMessage", 'String[]'>
+    readonly createdAt: FieldRef<"SupportMessage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SupportMessage findUnique
+   */
+  export type SupportMessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportMessage to fetch.
+     */
+    where: SupportMessageWhereUniqueInput
+  }
+
+  /**
+   * SupportMessage findUniqueOrThrow
+   */
+  export type SupportMessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportMessage to fetch.
+     */
+    where: SupportMessageWhereUniqueInput
+  }
+
+  /**
+   * SupportMessage findFirst
+   */
+  export type SupportMessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportMessage to fetch.
+     */
+    where?: SupportMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportMessages to fetch.
+     */
+    orderBy?: SupportMessageOrderByWithRelationInput | SupportMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupportMessages.
+     */
+    cursor?: SupportMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupportMessages.
+     */
+    distinct?: SupportMessageScalarFieldEnum | SupportMessageScalarFieldEnum[]
+  }
+
+  /**
+   * SupportMessage findFirstOrThrow
+   */
+  export type SupportMessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportMessage to fetch.
+     */
+    where?: SupportMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportMessages to fetch.
+     */
+    orderBy?: SupportMessageOrderByWithRelationInput | SupportMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupportMessages.
+     */
+    cursor?: SupportMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupportMessages.
+     */
+    distinct?: SupportMessageScalarFieldEnum | SupportMessageScalarFieldEnum[]
+  }
+
+  /**
+   * SupportMessage findMany
+   */
+  export type SupportMessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SupportMessages to fetch.
+     */
+    where?: SupportMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupportMessages to fetch.
+     */
+    orderBy?: SupportMessageOrderByWithRelationInput | SupportMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SupportMessages.
+     */
+    cursor?: SupportMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupportMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupportMessages.
+     */
+    skip?: number
+    distinct?: SupportMessageScalarFieldEnum | SupportMessageScalarFieldEnum[]
+  }
+
+  /**
+   * SupportMessage create
+   */
+  export type SupportMessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SupportMessage.
+     */
+    data: XOR<SupportMessageCreateInput, SupportMessageUncheckedCreateInput>
+  }
+
+  /**
+   * SupportMessage createMany
+   */
+  export type SupportMessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SupportMessages.
+     */
+    data: SupportMessageCreateManyInput | SupportMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SupportMessage createManyAndReturn
+   */
+  export type SupportMessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * The data used to create many SupportMessages.
+     */
+    data: SupportMessageCreateManyInput | SupportMessageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SupportMessage update
+   */
+  export type SupportMessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SupportMessage.
+     */
+    data: XOR<SupportMessageUpdateInput, SupportMessageUncheckedUpdateInput>
+    /**
+     * Choose, which SupportMessage to update.
+     */
+    where: SupportMessageWhereUniqueInput
+  }
+
+  /**
+   * SupportMessage updateMany
+   */
+  export type SupportMessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SupportMessages.
+     */
+    data: XOR<SupportMessageUpdateManyMutationInput, SupportMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which SupportMessages to update
+     */
+    where?: SupportMessageWhereInput
+    /**
+     * Limit how many SupportMessages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SupportMessage updateManyAndReturn
+   */
+  export type SupportMessageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * The data used to update SupportMessages.
+     */
+    data: XOR<SupportMessageUpdateManyMutationInput, SupportMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which SupportMessages to update
+     */
+    where?: SupportMessageWhereInput
+    /**
+     * Limit how many SupportMessages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SupportMessage upsert
+   */
+  export type SupportMessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SupportMessage to update in case it exists.
+     */
+    where: SupportMessageWhereUniqueInput
+    /**
+     * In case the SupportMessage found by the `where` argument doesn't exist, create a new SupportMessage with this data.
+     */
+    create: XOR<SupportMessageCreateInput, SupportMessageUncheckedCreateInput>
+    /**
+     * In case the SupportMessage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SupportMessageUpdateInput, SupportMessageUncheckedUpdateInput>
+  }
+
+  /**
+   * SupportMessage delete
+   */
+  export type SupportMessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+    /**
+     * Filter which SupportMessage to delete.
+     */
+    where: SupportMessageWhereUniqueInput
+  }
+
+  /**
+   * SupportMessage deleteMany
+   */
+  export type SupportMessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupportMessages to delete
+     */
+    where?: SupportMessageWhereInput
+    /**
+     * Limit how many SupportMessages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SupportMessage without action
+   */
+  export type SupportMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportMessage
+     */
+    select?: SupportMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportMessage
+     */
+    omit?: SupportMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportMessageInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Review
    */
 
@@ -48505,6 +53023,9 @@ export namespace Prisma {
     body: string | null
     status: string | null
     createdAt: Date | null
+    moderatedAt: Date | null
+    moderatorId: string | null
+    rejectReason: string | null
   }
 
   export type ReviewMaxAggregateOutputType = {
@@ -48516,6 +53037,9 @@ export namespace Prisma {
     body: string | null
     status: string | null
     createdAt: Date | null
+    moderatedAt: Date | null
+    moderatorId: string | null
+    rejectReason: string | null
   }
 
   export type ReviewCountAggregateOutputType = {
@@ -48527,6 +53051,9 @@ export namespace Prisma {
     body: number
     status: number
     createdAt: number
+    moderatedAt: number
+    moderatorId: number
+    rejectReason: number
     _all: number
   }
 
@@ -48548,6 +53075,9 @@ export namespace Prisma {
     body?: true
     status?: true
     createdAt?: true
+    moderatedAt?: true
+    moderatorId?: true
+    rejectReason?: true
   }
 
   export type ReviewMaxAggregateInputType = {
@@ -48559,6 +53089,9 @@ export namespace Prisma {
     body?: true
     status?: true
     createdAt?: true
+    moderatedAt?: true
+    moderatorId?: true
+    rejectReason?: true
   }
 
   export type ReviewCountAggregateInputType = {
@@ -48570,6 +53103,9 @@ export namespace Prisma {
     body?: true
     status?: true
     createdAt?: true
+    moderatedAt?: true
+    moderatorId?: true
+    rejectReason?: true
     _all?: true
   }
 
@@ -48668,6 +53204,9 @@ export namespace Prisma {
     body: string | null
     status: string
     createdAt: Date
+    moderatedAt: Date | null
+    moderatorId: string | null
+    rejectReason: string | null
     _count: ReviewCountAggregateOutputType | null
     _avg: ReviewAvgAggregateOutputType | null
     _sum: ReviewSumAggregateOutputType | null
@@ -48698,7 +53237,12 @@ export namespace Prisma {
     body?: boolean
     status?: boolean
     createdAt?: boolean
+    moderatedAt?: boolean
+    moderatorId?: boolean
+    rejectReason?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    orderLine?: boolean | OrderLineDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
   export type ReviewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -48710,7 +53254,12 @@ export namespace Prisma {
     body?: boolean
     status?: boolean
     createdAt?: boolean
+    moderatedAt?: boolean
+    moderatorId?: boolean
+    rejectReason?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    orderLine?: boolean | OrderLineDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
   export type ReviewSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -48722,7 +53271,12 @@ export namespace Prisma {
     body?: boolean
     status?: boolean
     createdAt?: boolean
+    moderatedAt?: boolean
+    moderatorId?: boolean
+    rejectReason?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    orderLine?: boolean | OrderLineDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
   export type ReviewSelectScalar = {
@@ -48734,23 +53288,34 @@ export namespace Prisma {
     body?: boolean
     status?: boolean
     createdAt?: boolean
+    moderatedAt?: boolean
+    moderatorId?: boolean
+    rejectReason?: boolean
   }
 
-  export type ReviewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "productId" | "authorId" | "orderLineId" | "rating" | "body" | "status" | "createdAt", ExtArgs["result"]["review"]>
+  export type ReviewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "productId" | "authorId" | "orderLineId" | "rating" | "body" | "status" | "createdAt" | "moderatedAt" | "moderatorId" | "rejectReason", ExtArgs["result"]["review"]>
   export type ReviewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    orderLine?: boolean | OrderLineDefaultArgs<ExtArgs>
   }
   export type ReviewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    orderLine?: boolean | OrderLineDefaultArgs<ExtArgs>
   }
   export type ReviewIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    orderLine?: boolean | OrderLineDefaultArgs<ExtArgs>
   }
 
   export type $ReviewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Review"
     objects: {
       product: Prisma.$ProductPayload<ExtArgs>
+      author: Prisma.$UserPayload<ExtArgs>
+      orderLine: Prisma.$OrderLinePayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -48762,8 +53327,17 @@ export namespace Prisma {
       orderLineId: string
       rating: number
       body: string | null
+      /**
+       * PENDING (en modération) | PUBLISHED | REJECTED
+       */
       status: string
       createdAt: Date
+      moderatedAt: Date | null
+      moderatorId: string | null
+      /**
+       * Motif d'un refus, montré à l'auteur.
+       */
+      rejectReason: string | null
     }, ExtArgs["result"]["review"]>
     composites: {}
   }
@@ -49159,6 +53733,8 @@ export namespace Prisma {
   export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     product<T extends ProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProductDefaultArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    orderLine<T extends OrderLineDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderLineDefaultArgs<ExtArgs>>): Prisma__OrderLineClient<$Result.GetResult<Prisma.$OrderLinePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -49196,6 +53772,9 @@ export namespace Prisma {
     readonly body: FieldRef<"Review", 'String'>
     readonly status: FieldRef<"Review", 'String'>
     readonly createdAt: FieldRef<"Review", 'DateTime'>
+    readonly moderatedAt: FieldRef<"Review", 'DateTime'>
+    readonly moderatorId: FieldRef<"Review", 'String'>
+    readonly rejectReason: FieldRef<"Review", 'String'>
   }
     
 
@@ -56413,6 +60992,2140 @@ export namespace Prisma {
 
 
   /**
+   * Model NewsletterSubscriber
+   */
+
+  export type AggregateNewsletterSubscriber = {
+    _count: NewsletterSubscriberCountAggregateOutputType | null
+    _min: NewsletterSubscriberMinAggregateOutputType | null
+    _max: NewsletterSubscriberMaxAggregateOutputType | null
+  }
+
+  export type NewsletterSubscriberMinAggregateOutputType = {
+    id: string | null
+    email: string | null
+    source: string | null
+    createdAt: Date | null
+    subscribedAt: Date | null
+    unsubscribedAt: Date | null
+    brevoSyncedAt: Date | null
+  }
+
+  export type NewsletterSubscriberMaxAggregateOutputType = {
+    id: string | null
+    email: string | null
+    source: string | null
+    createdAt: Date | null
+    subscribedAt: Date | null
+    unsubscribedAt: Date | null
+    brevoSyncedAt: Date | null
+  }
+
+  export type NewsletterSubscriberCountAggregateOutputType = {
+    id: number
+    email: number
+    source: number
+    createdAt: number
+    subscribedAt: number
+    unsubscribedAt: number
+    brevoSyncedAt: number
+    _all: number
+  }
+
+
+  export type NewsletterSubscriberMinAggregateInputType = {
+    id?: true
+    email?: true
+    source?: true
+    createdAt?: true
+    subscribedAt?: true
+    unsubscribedAt?: true
+    brevoSyncedAt?: true
+  }
+
+  export type NewsletterSubscriberMaxAggregateInputType = {
+    id?: true
+    email?: true
+    source?: true
+    createdAt?: true
+    subscribedAt?: true
+    unsubscribedAt?: true
+    brevoSyncedAt?: true
+  }
+
+  export type NewsletterSubscriberCountAggregateInputType = {
+    id?: true
+    email?: true
+    source?: true
+    createdAt?: true
+    subscribedAt?: true
+    unsubscribedAt?: true
+    brevoSyncedAt?: true
+    _all?: true
+  }
+
+  export type NewsletterSubscriberAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NewsletterSubscriber to aggregate.
+     */
+    where?: NewsletterSubscriberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NewsletterSubscribers to fetch.
+     */
+    orderBy?: NewsletterSubscriberOrderByWithRelationInput | NewsletterSubscriberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NewsletterSubscriberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NewsletterSubscribers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NewsletterSubscribers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NewsletterSubscribers
+    **/
+    _count?: true | NewsletterSubscriberCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NewsletterSubscriberMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NewsletterSubscriberMaxAggregateInputType
+  }
+
+  export type GetNewsletterSubscriberAggregateType<T extends NewsletterSubscriberAggregateArgs> = {
+        [P in keyof T & keyof AggregateNewsletterSubscriber]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNewsletterSubscriber[P]>
+      : GetScalarType<T[P], AggregateNewsletterSubscriber[P]>
+  }
+
+
+
+
+  export type NewsletterSubscriberGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NewsletterSubscriberWhereInput
+    orderBy?: NewsletterSubscriberOrderByWithAggregationInput | NewsletterSubscriberOrderByWithAggregationInput[]
+    by: NewsletterSubscriberScalarFieldEnum[] | NewsletterSubscriberScalarFieldEnum
+    having?: NewsletterSubscriberScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NewsletterSubscriberCountAggregateInputType | true
+    _min?: NewsletterSubscriberMinAggregateInputType
+    _max?: NewsletterSubscriberMaxAggregateInputType
+  }
+
+  export type NewsletterSubscriberGroupByOutputType = {
+    id: string
+    email: string
+    source: string
+    createdAt: Date
+    subscribedAt: Date
+    unsubscribedAt: Date | null
+    brevoSyncedAt: Date | null
+    _count: NewsletterSubscriberCountAggregateOutputType | null
+    _min: NewsletterSubscriberMinAggregateOutputType | null
+    _max: NewsletterSubscriberMaxAggregateOutputType | null
+  }
+
+  type GetNewsletterSubscriberGroupByPayload<T extends NewsletterSubscriberGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NewsletterSubscriberGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NewsletterSubscriberGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NewsletterSubscriberGroupByOutputType[P]>
+            : GetScalarType<T[P], NewsletterSubscriberGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NewsletterSubscriberSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    email?: boolean
+    source?: boolean
+    createdAt?: boolean
+    subscribedAt?: boolean
+    unsubscribedAt?: boolean
+    brevoSyncedAt?: boolean
+  }, ExtArgs["result"]["newsletterSubscriber"]>
+
+  export type NewsletterSubscriberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    email?: boolean
+    source?: boolean
+    createdAt?: boolean
+    subscribedAt?: boolean
+    unsubscribedAt?: boolean
+    brevoSyncedAt?: boolean
+  }, ExtArgs["result"]["newsletterSubscriber"]>
+
+  export type NewsletterSubscriberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    email?: boolean
+    source?: boolean
+    createdAt?: boolean
+    subscribedAt?: boolean
+    unsubscribedAt?: boolean
+    brevoSyncedAt?: boolean
+  }, ExtArgs["result"]["newsletterSubscriber"]>
+
+  export type NewsletterSubscriberSelectScalar = {
+    id?: boolean
+    email?: boolean
+    source?: boolean
+    createdAt?: boolean
+    subscribedAt?: boolean
+    unsubscribedAt?: boolean
+    brevoSyncedAt?: boolean
+  }
+
+  export type NewsletterSubscriberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "source" | "createdAt" | "subscribedAt" | "unsubscribedAt" | "brevoSyncedAt", ExtArgs["result"]["newsletterSubscriber"]>
+
+  export type $NewsletterSubscriberPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NewsletterSubscriber"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      email: string
+      /**
+       * D'où vient l'inscription (`footer`…), pour savoir quel formulaire convertit.
+       */
+      source: string
+      createdAt: Date
+      /**
+       * Dernière inscription, réinscription comprise : la date du consentement.
+       */
+      subscribedAt: Date
+      unsubscribedAt: Date | null
+      /**
+       * Dernière copie réussie vers la liste Brevo. Nul : à rattraper.
+       */
+      brevoSyncedAt: Date | null
+    }, ExtArgs["result"]["newsletterSubscriber"]>
+    composites: {}
+  }
+
+  type NewsletterSubscriberGetPayload<S extends boolean | null | undefined | NewsletterSubscriberDefaultArgs> = $Result.GetResult<Prisma.$NewsletterSubscriberPayload, S>
+
+  type NewsletterSubscriberCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NewsletterSubscriberFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NewsletterSubscriberCountAggregateInputType | true
+    }
+
+  export interface NewsletterSubscriberDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NewsletterSubscriber'], meta: { name: 'NewsletterSubscriber' } }
+    /**
+     * Find zero or one NewsletterSubscriber that matches the filter.
+     * @param {NewsletterSubscriberFindUniqueArgs} args - Arguments to find a NewsletterSubscriber
+     * @example
+     * // Get one NewsletterSubscriber
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NewsletterSubscriberFindUniqueArgs>(args: SelectSubset<T, NewsletterSubscriberFindUniqueArgs<ExtArgs>>): Prisma__NewsletterSubscriberClient<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NewsletterSubscriber that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NewsletterSubscriberFindUniqueOrThrowArgs} args - Arguments to find a NewsletterSubscriber
+     * @example
+     * // Get one NewsletterSubscriber
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NewsletterSubscriberFindUniqueOrThrowArgs>(args: SelectSubset<T, NewsletterSubscriberFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NewsletterSubscriberClient<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NewsletterSubscriber that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsletterSubscriberFindFirstArgs} args - Arguments to find a NewsletterSubscriber
+     * @example
+     * // Get one NewsletterSubscriber
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NewsletterSubscriberFindFirstArgs>(args?: SelectSubset<T, NewsletterSubscriberFindFirstArgs<ExtArgs>>): Prisma__NewsletterSubscriberClient<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NewsletterSubscriber that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsletterSubscriberFindFirstOrThrowArgs} args - Arguments to find a NewsletterSubscriber
+     * @example
+     * // Get one NewsletterSubscriber
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NewsletterSubscriberFindFirstOrThrowArgs>(args?: SelectSubset<T, NewsletterSubscriberFindFirstOrThrowArgs<ExtArgs>>): Prisma__NewsletterSubscriberClient<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NewsletterSubscribers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsletterSubscriberFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NewsletterSubscribers
+     * const newsletterSubscribers = await prisma.newsletterSubscriber.findMany()
+     * 
+     * // Get first 10 NewsletterSubscribers
+     * const newsletterSubscribers = await prisma.newsletterSubscriber.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const newsletterSubscriberWithIdOnly = await prisma.newsletterSubscriber.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NewsletterSubscriberFindManyArgs>(args?: SelectSubset<T, NewsletterSubscriberFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NewsletterSubscriber.
+     * @param {NewsletterSubscriberCreateArgs} args - Arguments to create a NewsletterSubscriber.
+     * @example
+     * // Create one NewsletterSubscriber
+     * const NewsletterSubscriber = await prisma.newsletterSubscriber.create({
+     *   data: {
+     *     // ... data to create a NewsletterSubscriber
+     *   }
+     * })
+     * 
+     */
+    create<T extends NewsletterSubscriberCreateArgs>(args: SelectSubset<T, NewsletterSubscriberCreateArgs<ExtArgs>>): Prisma__NewsletterSubscriberClient<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NewsletterSubscribers.
+     * @param {NewsletterSubscriberCreateManyArgs} args - Arguments to create many NewsletterSubscribers.
+     * @example
+     * // Create many NewsletterSubscribers
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NewsletterSubscriberCreateManyArgs>(args?: SelectSubset<T, NewsletterSubscriberCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NewsletterSubscribers and returns the data saved in the database.
+     * @param {NewsletterSubscriberCreateManyAndReturnArgs} args - Arguments to create many NewsletterSubscribers.
+     * @example
+     * // Create many NewsletterSubscribers
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NewsletterSubscribers and only return the `id`
+     * const newsletterSubscriberWithIdOnly = await prisma.newsletterSubscriber.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NewsletterSubscriberCreateManyAndReturnArgs>(args?: SelectSubset<T, NewsletterSubscriberCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NewsletterSubscriber.
+     * @param {NewsletterSubscriberDeleteArgs} args - Arguments to delete one NewsletterSubscriber.
+     * @example
+     * // Delete one NewsletterSubscriber
+     * const NewsletterSubscriber = await prisma.newsletterSubscriber.delete({
+     *   where: {
+     *     // ... filter to delete one NewsletterSubscriber
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NewsletterSubscriberDeleteArgs>(args: SelectSubset<T, NewsletterSubscriberDeleteArgs<ExtArgs>>): Prisma__NewsletterSubscriberClient<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NewsletterSubscriber.
+     * @param {NewsletterSubscriberUpdateArgs} args - Arguments to update one NewsletterSubscriber.
+     * @example
+     * // Update one NewsletterSubscriber
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NewsletterSubscriberUpdateArgs>(args: SelectSubset<T, NewsletterSubscriberUpdateArgs<ExtArgs>>): Prisma__NewsletterSubscriberClient<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NewsletterSubscribers.
+     * @param {NewsletterSubscriberDeleteManyArgs} args - Arguments to filter NewsletterSubscribers to delete.
+     * @example
+     * // Delete a few NewsletterSubscribers
+     * const { count } = await prisma.newsletterSubscriber.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NewsletterSubscriberDeleteManyArgs>(args?: SelectSubset<T, NewsletterSubscriberDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NewsletterSubscribers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsletterSubscriberUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NewsletterSubscribers
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NewsletterSubscriberUpdateManyArgs>(args: SelectSubset<T, NewsletterSubscriberUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NewsletterSubscribers and returns the data updated in the database.
+     * @param {NewsletterSubscriberUpdateManyAndReturnArgs} args - Arguments to update many NewsletterSubscribers.
+     * @example
+     * // Update many NewsletterSubscribers
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NewsletterSubscribers and only return the `id`
+     * const newsletterSubscriberWithIdOnly = await prisma.newsletterSubscriber.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NewsletterSubscriberUpdateManyAndReturnArgs>(args: SelectSubset<T, NewsletterSubscriberUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NewsletterSubscriber.
+     * @param {NewsletterSubscriberUpsertArgs} args - Arguments to update or create a NewsletterSubscriber.
+     * @example
+     * // Update or create a NewsletterSubscriber
+     * const newsletterSubscriber = await prisma.newsletterSubscriber.upsert({
+     *   create: {
+     *     // ... data to create a NewsletterSubscriber
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NewsletterSubscriber we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NewsletterSubscriberUpsertArgs>(args: SelectSubset<T, NewsletterSubscriberUpsertArgs<ExtArgs>>): Prisma__NewsletterSubscriberClient<$Result.GetResult<Prisma.$NewsletterSubscriberPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NewsletterSubscribers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsletterSubscriberCountArgs} args - Arguments to filter NewsletterSubscribers to count.
+     * @example
+     * // Count the number of NewsletterSubscribers
+     * const count = await prisma.newsletterSubscriber.count({
+     *   where: {
+     *     // ... the filter for the NewsletterSubscribers we want to count
+     *   }
+     * })
+    **/
+    count<T extends NewsletterSubscriberCountArgs>(
+      args?: Subset<T, NewsletterSubscriberCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NewsletterSubscriberCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NewsletterSubscriber.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsletterSubscriberAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NewsletterSubscriberAggregateArgs>(args: Subset<T, NewsletterSubscriberAggregateArgs>): Prisma.PrismaPromise<GetNewsletterSubscriberAggregateType<T>>
+
+    /**
+     * Group by NewsletterSubscriber.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsletterSubscriberGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NewsletterSubscriberGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NewsletterSubscriberGroupByArgs['orderBy'] }
+        : { orderBy?: NewsletterSubscriberGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NewsletterSubscriberGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNewsletterSubscriberGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NewsletterSubscriber model
+   */
+  readonly fields: NewsletterSubscriberFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NewsletterSubscriber.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NewsletterSubscriberClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NewsletterSubscriber model
+   */
+  interface NewsletterSubscriberFieldRefs {
+    readonly id: FieldRef<"NewsletterSubscriber", 'String'>
+    readonly email: FieldRef<"NewsletterSubscriber", 'String'>
+    readonly source: FieldRef<"NewsletterSubscriber", 'String'>
+    readonly createdAt: FieldRef<"NewsletterSubscriber", 'DateTime'>
+    readonly subscribedAt: FieldRef<"NewsletterSubscriber", 'DateTime'>
+    readonly unsubscribedAt: FieldRef<"NewsletterSubscriber", 'DateTime'>
+    readonly brevoSyncedAt: FieldRef<"NewsletterSubscriber", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NewsletterSubscriber findUnique
+   */
+  export type NewsletterSubscriberFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsletterSubscriber to fetch.
+     */
+    where: NewsletterSubscriberWhereUniqueInput
+  }
+
+  /**
+   * NewsletterSubscriber findUniqueOrThrow
+   */
+  export type NewsletterSubscriberFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsletterSubscriber to fetch.
+     */
+    where: NewsletterSubscriberWhereUniqueInput
+  }
+
+  /**
+   * NewsletterSubscriber findFirst
+   */
+  export type NewsletterSubscriberFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsletterSubscriber to fetch.
+     */
+    where?: NewsletterSubscriberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NewsletterSubscribers to fetch.
+     */
+    orderBy?: NewsletterSubscriberOrderByWithRelationInput | NewsletterSubscriberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NewsletterSubscribers.
+     */
+    cursor?: NewsletterSubscriberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NewsletterSubscribers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NewsletterSubscribers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NewsletterSubscribers.
+     */
+    distinct?: NewsletterSubscriberScalarFieldEnum | NewsletterSubscriberScalarFieldEnum[]
+  }
+
+  /**
+   * NewsletterSubscriber findFirstOrThrow
+   */
+  export type NewsletterSubscriberFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsletterSubscriber to fetch.
+     */
+    where?: NewsletterSubscriberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NewsletterSubscribers to fetch.
+     */
+    orderBy?: NewsletterSubscriberOrderByWithRelationInput | NewsletterSubscriberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NewsletterSubscribers.
+     */
+    cursor?: NewsletterSubscriberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NewsletterSubscribers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NewsletterSubscribers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NewsletterSubscribers.
+     */
+    distinct?: NewsletterSubscriberScalarFieldEnum | NewsletterSubscriberScalarFieldEnum[]
+  }
+
+  /**
+   * NewsletterSubscriber findMany
+   */
+  export type NewsletterSubscriberFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsletterSubscribers to fetch.
+     */
+    where?: NewsletterSubscriberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NewsletterSubscribers to fetch.
+     */
+    orderBy?: NewsletterSubscriberOrderByWithRelationInput | NewsletterSubscriberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NewsletterSubscribers.
+     */
+    cursor?: NewsletterSubscriberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NewsletterSubscribers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NewsletterSubscribers.
+     */
+    skip?: number
+    distinct?: NewsletterSubscriberScalarFieldEnum | NewsletterSubscriberScalarFieldEnum[]
+  }
+
+  /**
+   * NewsletterSubscriber create
+   */
+  export type NewsletterSubscriberCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * The data needed to create a NewsletterSubscriber.
+     */
+    data: XOR<NewsletterSubscriberCreateInput, NewsletterSubscriberUncheckedCreateInput>
+  }
+
+  /**
+   * NewsletterSubscriber createMany
+   */
+  export type NewsletterSubscriberCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NewsletterSubscribers.
+     */
+    data: NewsletterSubscriberCreateManyInput | NewsletterSubscriberCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NewsletterSubscriber createManyAndReturn
+   */
+  export type NewsletterSubscriberCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * The data used to create many NewsletterSubscribers.
+     */
+    data: NewsletterSubscriberCreateManyInput | NewsletterSubscriberCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NewsletterSubscriber update
+   */
+  export type NewsletterSubscriberUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * The data needed to update a NewsletterSubscriber.
+     */
+    data: XOR<NewsletterSubscriberUpdateInput, NewsletterSubscriberUncheckedUpdateInput>
+    /**
+     * Choose, which NewsletterSubscriber to update.
+     */
+    where: NewsletterSubscriberWhereUniqueInput
+  }
+
+  /**
+   * NewsletterSubscriber updateMany
+   */
+  export type NewsletterSubscriberUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NewsletterSubscribers.
+     */
+    data: XOR<NewsletterSubscriberUpdateManyMutationInput, NewsletterSubscriberUncheckedUpdateManyInput>
+    /**
+     * Filter which NewsletterSubscribers to update
+     */
+    where?: NewsletterSubscriberWhereInput
+    /**
+     * Limit how many NewsletterSubscribers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NewsletterSubscriber updateManyAndReturn
+   */
+  export type NewsletterSubscriberUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * The data used to update NewsletterSubscribers.
+     */
+    data: XOR<NewsletterSubscriberUpdateManyMutationInput, NewsletterSubscriberUncheckedUpdateManyInput>
+    /**
+     * Filter which NewsletterSubscribers to update
+     */
+    where?: NewsletterSubscriberWhereInput
+    /**
+     * Limit how many NewsletterSubscribers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NewsletterSubscriber upsert
+   */
+  export type NewsletterSubscriberUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * The filter to search for the NewsletterSubscriber to update in case it exists.
+     */
+    where: NewsletterSubscriberWhereUniqueInput
+    /**
+     * In case the NewsletterSubscriber found by the `where` argument doesn't exist, create a new NewsletterSubscriber with this data.
+     */
+    create: XOR<NewsletterSubscriberCreateInput, NewsletterSubscriberUncheckedCreateInput>
+    /**
+     * In case the NewsletterSubscriber was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NewsletterSubscriberUpdateInput, NewsletterSubscriberUncheckedUpdateInput>
+  }
+
+  /**
+   * NewsletterSubscriber delete
+   */
+  export type NewsletterSubscriberDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+    /**
+     * Filter which NewsletterSubscriber to delete.
+     */
+    where: NewsletterSubscriberWhereUniqueInput
+  }
+
+  /**
+   * NewsletterSubscriber deleteMany
+   */
+  export type NewsletterSubscriberDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NewsletterSubscribers to delete
+     */
+    where?: NewsletterSubscriberWhereInput
+    /**
+     * Limit how many NewsletterSubscribers to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NewsletterSubscriber without action
+   */
+  export type NewsletterSubscriberDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsletterSubscriber
+     */
+    select?: NewsletterSubscriberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsletterSubscriber
+     */
+    omit?: NewsletterSubscriberOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model IdempotencyKey
+   */
+
+  export type AggregateIdempotencyKey = {
+    _count: IdempotencyKeyCountAggregateOutputType | null
+    _min: IdempotencyKeyMinAggregateOutputType | null
+    _max: IdempotencyKeyMaxAggregateOutputType | null
+  }
+
+  export type IdempotencyKeyMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    key: string | null
+    requestHash: string | null
+    status: string | null
+    createdAt: Date | null
+    expiresAt: Date | null
+  }
+
+  export type IdempotencyKeyMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    key: string | null
+    requestHash: string | null
+    status: string | null
+    createdAt: Date | null
+    expiresAt: Date | null
+  }
+
+  export type IdempotencyKeyCountAggregateOutputType = {
+    id: number
+    userId: number
+    key: number
+    requestHash: number
+    status: number
+    responseBody: number
+    createdAt: number
+    expiresAt: number
+    _all: number
+  }
+
+
+  export type IdempotencyKeyMinAggregateInputType = {
+    id?: true
+    userId?: true
+    key?: true
+    requestHash?: true
+    status?: true
+    createdAt?: true
+    expiresAt?: true
+  }
+
+  export type IdempotencyKeyMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    key?: true
+    requestHash?: true
+    status?: true
+    createdAt?: true
+    expiresAt?: true
+  }
+
+  export type IdempotencyKeyCountAggregateInputType = {
+    id?: true
+    userId?: true
+    key?: true
+    requestHash?: true
+    status?: true
+    responseBody?: true
+    createdAt?: true
+    expiresAt?: true
+    _all?: true
+  }
+
+  export type IdempotencyKeyAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which IdempotencyKey to aggregate.
+     */
+    where?: IdempotencyKeyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IdempotencyKeys to fetch.
+     */
+    orderBy?: IdempotencyKeyOrderByWithRelationInput | IdempotencyKeyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: IdempotencyKeyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IdempotencyKeys from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IdempotencyKeys.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned IdempotencyKeys
+    **/
+    _count?: true | IdempotencyKeyCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: IdempotencyKeyMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: IdempotencyKeyMaxAggregateInputType
+  }
+
+  export type GetIdempotencyKeyAggregateType<T extends IdempotencyKeyAggregateArgs> = {
+        [P in keyof T & keyof AggregateIdempotencyKey]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateIdempotencyKey[P]>
+      : GetScalarType<T[P], AggregateIdempotencyKey[P]>
+  }
+
+
+
+
+  export type IdempotencyKeyGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: IdempotencyKeyWhereInput
+    orderBy?: IdempotencyKeyOrderByWithAggregationInput | IdempotencyKeyOrderByWithAggregationInput[]
+    by: IdempotencyKeyScalarFieldEnum[] | IdempotencyKeyScalarFieldEnum
+    having?: IdempotencyKeyScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: IdempotencyKeyCountAggregateInputType | true
+    _min?: IdempotencyKeyMinAggregateInputType
+    _max?: IdempotencyKeyMaxAggregateInputType
+  }
+
+  export type IdempotencyKeyGroupByOutputType = {
+    id: string
+    userId: string
+    key: string
+    requestHash: string
+    status: string
+    responseBody: JsonValue | null
+    createdAt: Date
+    expiresAt: Date
+    _count: IdempotencyKeyCountAggregateOutputType | null
+    _min: IdempotencyKeyMinAggregateOutputType | null
+    _max: IdempotencyKeyMaxAggregateOutputType | null
+  }
+
+  type GetIdempotencyKeyGroupByPayload<T extends IdempotencyKeyGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<IdempotencyKeyGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof IdempotencyKeyGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], IdempotencyKeyGroupByOutputType[P]>
+            : GetScalarType<T[P], IdempotencyKeyGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type IdempotencyKeySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    key?: boolean
+    requestHash?: boolean
+    status?: boolean
+    responseBody?: boolean
+    createdAt?: boolean
+    expiresAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["idempotencyKey"]>
+
+  export type IdempotencyKeySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    key?: boolean
+    requestHash?: boolean
+    status?: boolean
+    responseBody?: boolean
+    createdAt?: boolean
+    expiresAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["idempotencyKey"]>
+
+  export type IdempotencyKeySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    key?: boolean
+    requestHash?: boolean
+    status?: boolean
+    responseBody?: boolean
+    createdAt?: boolean
+    expiresAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["idempotencyKey"]>
+
+  export type IdempotencyKeySelectScalar = {
+    id?: boolean
+    userId?: boolean
+    key?: boolean
+    requestHash?: boolean
+    status?: boolean
+    responseBody?: boolean
+    createdAt?: boolean
+    expiresAt?: boolean
+  }
+
+  export type IdempotencyKeyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "key" | "requestHash" | "status" | "responseBody" | "createdAt" | "expiresAt", ExtArgs["result"]["idempotencyKey"]>
+  export type IdempotencyKeyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type IdempotencyKeyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type IdempotencyKeyIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $IdempotencyKeyPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "IdempotencyKey"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      /**
+       * Valeur de l'en-tête, choisie par le client. Unique par utilisateur.
+       */
+      key: string
+      /**
+       * Empreinte de la méthode, du chemin et du corps : la même clé ne peut
+       * pas servir à une autre requête.
+       */
+      requestHash: string
+      /**
+       * IN_PROGRESS tant que la requête tourne, COMPLETED une fois la réponse
+       * mémorisée. Une requête en échec efface sa ligne : on peut réessayer.
+       */
+      status: string
+      responseBody: Prisma.JsonValue | null
+      createdAt: Date
+      expiresAt: Date
+    }, ExtArgs["result"]["idempotencyKey"]>
+    composites: {}
+  }
+
+  type IdempotencyKeyGetPayload<S extends boolean | null | undefined | IdempotencyKeyDefaultArgs> = $Result.GetResult<Prisma.$IdempotencyKeyPayload, S>
+
+  type IdempotencyKeyCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<IdempotencyKeyFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: IdempotencyKeyCountAggregateInputType | true
+    }
+
+  export interface IdempotencyKeyDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['IdempotencyKey'], meta: { name: 'IdempotencyKey' } }
+    /**
+     * Find zero or one IdempotencyKey that matches the filter.
+     * @param {IdempotencyKeyFindUniqueArgs} args - Arguments to find a IdempotencyKey
+     * @example
+     * // Get one IdempotencyKey
+     * const idempotencyKey = await prisma.idempotencyKey.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends IdempotencyKeyFindUniqueArgs>(args: SelectSubset<T, IdempotencyKeyFindUniqueArgs<ExtArgs>>): Prisma__IdempotencyKeyClient<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one IdempotencyKey that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {IdempotencyKeyFindUniqueOrThrowArgs} args - Arguments to find a IdempotencyKey
+     * @example
+     * // Get one IdempotencyKey
+     * const idempotencyKey = await prisma.idempotencyKey.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends IdempotencyKeyFindUniqueOrThrowArgs>(args: SelectSubset<T, IdempotencyKeyFindUniqueOrThrowArgs<ExtArgs>>): Prisma__IdempotencyKeyClient<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first IdempotencyKey that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IdempotencyKeyFindFirstArgs} args - Arguments to find a IdempotencyKey
+     * @example
+     * // Get one IdempotencyKey
+     * const idempotencyKey = await prisma.idempotencyKey.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends IdempotencyKeyFindFirstArgs>(args?: SelectSubset<T, IdempotencyKeyFindFirstArgs<ExtArgs>>): Prisma__IdempotencyKeyClient<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first IdempotencyKey that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IdempotencyKeyFindFirstOrThrowArgs} args - Arguments to find a IdempotencyKey
+     * @example
+     * // Get one IdempotencyKey
+     * const idempotencyKey = await prisma.idempotencyKey.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends IdempotencyKeyFindFirstOrThrowArgs>(args?: SelectSubset<T, IdempotencyKeyFindFirstOrThrowArgs<ExtArgs>>): Prisma__IdempotencyKeyClient<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more IdempotencyKeys that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IdempotencyKeyFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all IdempotencyKeys
+     * const idempotencyKeys = await prisma.idempotencyKey.findMany()
+     * 
+     * // Get first 10 IdempotencyKeys
+     * const idempotencyKeys = await prisma.idempotencyKey.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const idempotencyKeyWithIdOnly = await prisma.idempotencyKey.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends IdempotencyKeyFindManyArgs>(args?: SelectSubset<T, IdempotencyKeyFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a IdempotencyKey.
+     * @param {IdempotencyKeyCreateArgs} args - Arguments to create a IdempotencyKey.
+     * @example
+     * // Create one IdempotencyKey
+     * const IdempotencyKey = await prisma.idempotencyKey.create({
+     *   data: {
+     *     // ... data to create a IdempotencyKey
+     *   }
+     * })
+     * 
+     */
+    create<T extends IdempotencyKeyCreateArgs>(args: SelectSubset<T, IdempotencyKeyCreateArgs<ExtArgs>>): Prisma__IdempotencyKeyClient<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many IdempotencyKeys.
+     * @param {IdempotencyKeyCreateManyArgs} args - Arguments to create many IdempotencyKeys.
+     * @example
+     * // Create many IdempotencyKeys
+     * const idempotencyKey = await prisma.idempotencyKey.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends IdempotencyKeyCreateManyArgs>(args?: SelectSubset<T, IdempotencyKeyCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many IdempotencyKeys and returns the data saved in the database.
+     * @param {IdempotencyKeyCreateManyAndReturnArgs} args - Arguments to create many IdempotencyKeys.
+     * @example
+     * // Create many IdempotencyKeys
+     * const idempotencyKey = await prisma.idempotencyKey.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many IdempotencyKeys and only return the `id`
+     * const idempotencyKeyWithIdOnly = await prisma.idempotencyKey.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends IdempotencyKeyCreateManyAndReturnArgs>(args?: SelectSubset<T, IdempotencyKeyCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a IdempotencyKey.
+     * @param {IdempotencyKeyDeleteArgs} args - Arguments to delete one IdempotencyKey.
+     * @example
+     * // Delete one IdempotencyKey
+     * const IdempotencyKey = await prisma.idempotencyKey.delete({
+     *   where: {
+     *     // ... filter to delete one IdempotencyKey
+     *   }
+     * })
+     * 
+     */
+    delete<T extends IdempotencyKeyDeleteArgs>(args: SelectSubset<T, IdempotencyKeyDeleteArgs<ExtArgs>>): Prisma__IdempotencyKeyClient<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one IdempotencyKey.
+     * @param {IdempotencyKeyUpdateArgs} args - Arguments to update one IdempotencyKey.
+     * @example
+     * // Update one IdempotencyKey
+     * const idempotencyKey = await prisma.idempotencyKey.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends IdempotencyKeyUpdateArgs>(args: SelectSubset<T, IdempotencyKeyUpdateArgs<ExtArgs>>): Prisma__IdempotencyKeyClient<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more IdempotencyKeys.
+     * @param {IdempotencyKeyDeleteManyArgs} args - Arguments to filter IdempotencyKeys to delete.
+     * @example
+     * // Delete a few IdempotencyKeys
+     * const { count } = await prisma.idempotencyKey.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends IdempotencyKeyDeleteManyArgs>(args?: SelectSubset<T, IdempotencyKeyDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more IdempotencyKeys.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IdempotencyKeyUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many IdempotencyKeys
+     * const idempotencyKey = await prisma.idempotencyKey.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends IdempotencyKeyUpdateManyArgs>(args: SelectSubset<T, IdempotencyKeyUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more IdempotencyKeys and returns the data updated in the database.
+     * @param {IdempotencyKeyUpdateManyAndReturnArgs} args - Arguments to update many IdempotencyKeys.
+     * @example
+     * // Update many IdempotencyKeys
+     * const idempotencyKey = await prisma.idempotencyKey.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more IdempotencyKeys and only return the `id`
+     * const idempotencyKeyWithIdOnly = await prisma.idempotencyKey.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends IdempotencyKeyUpdateManyAndReturnArgs>(args: SelectSubset<T, IdempotencyKeyUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one IdempotencyKey.
+     * @param {IdempotencyKeyUpsertArgs} args - Arguments to update or create a IdempotencyKey.
+     * @example
+     * // Update or create a IdempotencyKey
+     * const idempotencyKey = await prisma.idempotencyKey.upsert({
+     *   create: {
+     *     // ... data to create a IdempotencyKey
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the IdempotencyKey we want to update
+     *   }
+     * })
+     */
+    upsert<T extends IdempotencyKeyUpsertArgs>(args: SelectSubset<T, IdempotencyKeyUpsertArgs<ExtArgs>>): Prisma__IdempotencyKeyClient<$Result.GetResult<Prisma.$IdempotencyKeyPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of IdempotencyKeys.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IdempotencyKeyCountArgs} args - Arguments to filter IdempotencyKeys to count.
+     * @example
+     * // Count the number of IdempotencyKeys
+     * const count = await prisma.idempotencyKey.count({
+     *   where: {
+     *     // ... the filter for the IdempotencyKeys we want to count
+     *   }
+     * })
+    **/
+    count<T extends IdempotencyKeyCountArgs>(
+      args?: Subset<T, IdempotencyKeyCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], IdempotencyKeyCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a IdempotencyKey.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IdempotencyKeyAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends IdempotencyKeyAggregateArgs>(args: Subset<T, IdempotencyKeyAggregateArgs>): Prisma.PrismaPromise<GetIdempotencyKeyAggregateType<T>>
+
+    /**
+     * Group by IdempotencyKey.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IdempotencyKeyGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends IdempotencyKeyGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: IdempotencyKeyGroupByArgs['orderBy'] }
+        : { orderBy?: IdempotencyKeyGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, IdempotencyKeyGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIdempotencyKeyGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the IdempotencyKey model
+   */
+  readonly fields: IdempotencyKeyFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for IdempotencyKey.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__IdempotencyKeyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the IdempotencyKey model
+   */
+  interface IdempotencyKeyFieldRefs {
+    readonly id: FieldRef<"IdempotencyKey", 'String'>
+    readonly userId: FieldRef<"IdempotencyKey", 'String'>
+    readonly key: FieldRef<"IdempotencyKey", 'String'>
+    readonly requestHash: FieldRef<"IdempotencyKey", 'String'>
+    readonly status: FieldRef<"IdempotencyKey", 'String'>
+    readonly responseBody: FieldRef<"IdempotencyKey", 'Json'>
+    readonly createdAt: FieldRef<"IdempotencyKey", 'DateTime'>
+    readonly expiresAt: FieldRef<"IdempotencyKey", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * IdempotencyKey findUnique
+   */
+  export type IdempotencyKeyFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which IdempotencyKey to fetch.
+     */
+    where: IdempotencyKeyWhereUniqueInput
+  }
+
+  /**
+   * IdempotencyKey findUniqueOrThrow
+   */
+  export type IdempotencyKeyFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which IdempotencyKey to fetch.
+     */
+    where: IdempotencyKeyWhereUniqueInput
+  }
+
+  /**
+   * IdempotencyKey findFirst
+   */
+  export type IdempotencyKeyFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which IdempotencyKey to fetch.
+     */
+    where?: IdempotencyKeyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IdempotencyKeys to fetch.
+     */
+    orderBy?: IdempotencyKeyOrderByWithRelationInput | IdempotencyKeyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for IdempotencyKeys.
+     */
+    cursor?: IdempotencyKeyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IdempotencyKeys from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IdempotencyKeys.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of IdempotencyKeys.
+     */
+    distinct?: IdempotencyKeyScalarFieldEnum | IdempotencyKeyScalarFieldEnum[]
+  }
+
+  /**
+   * IdempotencyKey findFirstOrThrow
+   */
+  export type IdempotencyKeyFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which IdempotencyKey to fetch.
+     */
+    where?: IdempotencyKeyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IdempotencyKeys to fetch.
+     */
+    orderBy?: IdempotencyKeyOrderByWithRelationInput | IdempotencyKeyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for IdempotencyKeys.
+     */
+    cursor?: IdempotencyKeyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IdempotencyKeys from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IdempotencyKeys.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of IdempotencyKeys.
+     */
+    distinct?: IdempotencyKeyScalarFieldEnum | IdempotencyKeyScalarFieldEnum[]
+  }
+
+  /**
+   * IdempotencyKey findMany
+   */
+  export type IdempotencyKeyFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which IdempotencyKeys to fetch.
+     */
+    where?: IdempotencyKeyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IdempotencyKeys to fetch.
+     */
+    orderBy?: IdempotencyKeyOrderByWithRelationInput | IdempotencyKeyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing IdempotencyKeys.
+     */
+    cursor?: IdempotencyKeyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IdempotencyKeys from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IdempotencyKeys.
+     */
+    skip?: number
+    distinct?: IdempotencyKeyScalarFieldEnum | IdempotencyKeyScalarFieldEnum[]
+  }
+
+  /**
+   * IdempotencyKey create
+   */
+  export type IdempotencyKeyCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    /**
+     * The data needed to create a IdempotencyKey.
+     */
+    data: XOR<IdempotencyKeyCreateInput, IdempotencyKeyUncheckedCreateInput>
+  }
+
+  /**
+   * IdempotencyKey createMany
+   */
+  export type IdempotencyKeyCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many IdempotencyKeys.
+     */
+    data: IdempotencyKeyCreateManyInput | IdempotencyKeyCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * IdempotencyKey createManyAndReturn
+   */
+  export type IdempotencyKeyCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * The data used to create many IdempotencyKeys.
+     */
+    data: IdempotencyKeyCreateManyInput | IdempotencyKeyCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * IdempotencyKey update
+   */
+  export type IdempotencyKeyUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    /**
+     * The data needed to update a IdempotencyKey.
+     */
+    data: XOR<IdempotencyKeyUpdateInput, IdempotencyKeyUncheckedUpdateInput>
+    /**
+     * Choose, which IdempotencyKey to update.
+     */
+    where: IdempotencyKeyWhereUniqueInput
+  }
+
+  /**
+   * IdempotencyKey updateMany
+   */
+  export type IdempotencyKeyUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update IdempotencyKeys.
+     */
+    data: XOR<IdempotencyKeyUpdateManyMutationInput, IdempotencyKeyUncheckedUpdateManyInput>
+    /**
+     * Filter which IdempotencyKeys to update
+     */
+    where?: IdempotencyKeyWhereInput
+    /**
+     * Limit how many IdempotencyKeys to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * IdempotencyKey updateManyAndReturn
+   */
+  export type IdempotencyKeyUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * The data used to update IdempotencyKeys.
+     */
+    data: XOR<IdempotencyKeyUpdateManyMutationInput, IdempotencyKeyUncheckedUpdateManyInput>
+    /**
+     * Filter which IdempotencyKeys to update
+     */
+    where?: IdempotencyKeyWhereInput
+    /**
+     * Limit how many IdempotencyKeys to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * IdempotencyKey upsert
+   */
+  export type IdempotencyKeyUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    /**
+     * The filter to search for the IdempotencyKey to update in case it exists.
+     */
+    where: IdempotencyKeyWhereUniqueInput
+    /**
+     * In case the IdempotencyKey found by the `where` argument doesn't exist, create a new IdempotencyKey with this data.
+     */
+    create: XOR<IdempotencyKeyCreateInput, IdempotencyKeyUncheckedCreateInput>
+    /**
+     * In case the IdempotencyKey was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<IdempotencyKeyUpdateInput, IdempotencyKeyUncheckedUpdateInput>
+  }
+
+  /**
+   * IdempotencyKey delete
+   */
+  export type IdempotencyKeyDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+    /**
+     * Filter which IdempotencyKey to delete.
+     */
+    where: IdempotencyKeyWhereUniqueInput
+  }
+
+  /**
+   * IdempotencyKey deleteMany
+   */
+  export type IdempotencyKeyDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which IdempotencyKeys to delete
+     */
+    where?: IdempotencyKeyWhereInput
+    /**
+     * Limit how many IdempotencyKeys to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * IdempotencyKey without action
+   */
+  export type IdempotencyKeyDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IdempotencyKey
+     */
+    select?: IdempotencyKeySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IdempotencyKey
+     */
+    omit?: IdempotencyKeyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IdempotencyKeyInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -56464,6 +63177,8 @@ export namespace Prisma {
     lastName: 'lastName',
     locale: 'locale',
     mfaSecret: 'mfaSecret',
+    mfaEnabledAt: 'mfaEnabledAt',
+    mfaLastStep: 'mfaLastStep',
     lastLoginAt: 'lastLoginAt',
     deletedAt: 'deletedAt',
     createdAt: 'createdAt',
@@ -56481,10 +63196,21 @@ export namespace Prisma {
     ip: 'ip',
     expiresAt: 'expiresAt',
     revokedAt: 'revokedAt',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    mfaVerifiedAt: 'mfaVerifiedAt'
   };
 
   export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+  export const MfaRecoveryCodeScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    codeHash: 'codeHash',
+    usedAt: 'usedAt'
+  };
+
+  export type MfaRecoveryCodeScalarFieldEnum = (typeof MfaRecoveryCodeScalarFieldEnum)[keyof typeof MfaRecoveryCodeScalarFieldEnum]
 
 
   export const VerificationTokenScalarFieldEnum: {
@@ -56720,6 +63446,9 @@ export namespace Prisma {
     vatXof: 'vatXof',
     discountXof: 'discountXof',
     totalXof: 'totalXof',
+    paymentMode: 'paymentMode',
+    upfrontXof: 'upfrontXof',
+    balanceXof: 'balanceXof',
     promoCodeId: 'promoCodeId',
     placedAt: 'placedAt',
     deliveredAt: 'deliveredAt',
@@ -56744,6 +63473,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: 'itemsMakerSubtotalXof',
     commissionSubtotalXof: 'commissionSubtotalXof',
     deliveryFeeXof: 'deliveryFeeXof',
+    balanceDueXof: 'balanceDueXof',
+    cashCollectedAt: 'cashCollectedAt',
+    cashCollectedXof: 'cashCollectedXof',
     acceptedAt: 'acceptedAt',
     rejectedAt: 'rejectedAt',
     rejectReason: 'rejectReason',
@@ -56836,6 +63568,7 @@ export namespace Prisma {
   export const RefundScalarFieldEnum: {
     id: 'id',
     paymentId: 'paymentId',
+    orderId: 'orderId',
     amountXof: 'amountXof',
     reason: 'reason',
     status: 'status',
@@ -57042,6 +63775,43 @@ export namespace Prisma {
   export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
 
 
+  export const SupportTicketScalarFieldEnum: {
+    id: 'id',
+    reference: 'reference',
+    channel: 'channel',
+    userId: 'userId',
+    authorRole: 'authorRole',
+    guestName: 'guestName',
+    guestEmail: 'guestEmail',
+    category: 'category',
+    subject: 'subject',
+    status: 'status',
+    priority: 'priority',
+    orderId: 'orderId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    lastMessageAt: 'lastMessageAt',
+    resolvedAt: 'resolvedAt',
+    closedAt: 'closedAt'
+  };
+
+  export type SupportTicketScalarFieldEnum = (typeof SupportTicketScalarFieldEnum)[keyof typeof SupportTicketScalarFieldEnum]
+
+
+  export const SupportMessageScalarFieldEnum: {
+    id: 'id',
+    ticketId: 'ticketId',
+    authorId: 'authorId',
+    fromStaff: 'fromStaff',
+    internal: 'internal',
+    body: 'body',
+    fileKeys: 'fileKeys',
+    createdAt: 'createdAt'
+  };
+
+  export type SupportMessageScalarFieldEnum = (typeof SupportMessageScalarFieldEnum)[keyof typeof SupportMessageScalarFieldEnum]
+
+
   export const ReviewScalarFieldEnum: {
     id: 'id',
     productId: 'productId',
@@ -57050,7 +63820,10 @@ export namespace Prisma {
     rating: 'rating',
     body: 'body',
     status: 'status',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    moderatedAt: 'moderatedAt',
+    moderatorId: 'moderatorId',
+    rejectReason: 'rejectReason'
   };
 
   export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
@@ -57144,6 +63917,33 @@ export namespace Prisma {
   };
 
   export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+  export const NewsletterSubscriberScalarFieldEnum: {
+    id: 'id',
+    email: 'email',
+    source: 'source',
+    createdAt: 'createdAt',
+    subscribedAt: 'subscribedAt',
+    unsubscribedAt: 'unsubscribedAt',
+    brevoSyncedAt: 'brevoSyncedAt'
+  };
+
+  export type NewsletterSubscriberScalarFieldEnum = (typeof NewsletterSubscriberScalarFieldEnum)[keyof typeof NewsletterSubscriberScalarFieldEnum]
+
+
+  export const IdempotencyKeyScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    key: 'key',
+    requestHash: 'requestHash',
+    status: 'status',
+    responseBody: 'responseBody',
+    createdAt: 'createdAt',
+    expiresAt: 'expiresAt'
+  };
+
+  export type IdempotencyKeyScalarFieldEnum = (typeof IdempotencyKeyScalarFieldEnum)[keyof typeof IdempotencyKeyScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -57375,6 +64175,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'PaymentMode'
+   */
+  export type EnumPaymentModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'PaymentMode[]'
+   */
+  export type ListEnumPaymentModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMode[]'>
+    
+
+
+  /**
    * Reference to a field of type 'SubOrderStatus'
    */
   export type EnumSubOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SubOrderStatus'>
@@ -57497,6 +64311,48 @@ export namespace Prisma {
    * Reference to a field of type 'ThreadParty[]'
    */
   export type ListEnumThreadPartyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ThreadParty[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TicketChannel'
+   */
+  export type EnumTicketChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TicketChannel'>
+    
+
+
+  /**
+   * Reference to a field of type 'TicketChannel[]'
+   */
+  export type ListEnumTicketChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TicketChannel[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TicketStatus'
+   */
+  export type EnumTicketStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TicketStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'TicketStatus[]'
+   */
+  export type ListEnumTicketStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TicketStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TicketPriority'
+   */
+  export type EnumTicketPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TicketPriority'>
+    
+
+
+  /**
+   * Reference to a field of type 'TicketPriority[]'
+   */
+  export type ListEnumTicketPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TicketPriority[]'>
     
 
 
@@ -57671,6 +64527,8 @@ export namespace Prisma {
     lastName?: StringFilter<"User"> | string
     locale?: StringFilter<"User"> | string
     mfaSecret?: StringNullableFilter<"User"> | string | null
+    mfaEnabledAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    mfaLastStep?: IntNullableFilter<"User"> | number | null
     lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
     deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -57685,6 +64543,10 @@ export namespace Prisma {
     notifications?: NotificationListRelationFilter
     verifications?: VerificationTokenListRelationFilter
     promoRedemptions?: PromoRedemptionListRelationFilter
+    supportTickets?: SupportTicketListRelationFilter
+    reviews?: ReviewListRelationFilter
+    idempotencyKeys?: IdempotencyKeyListRelationFilter
+    recoveryCodes?: MfaRecoveryCodeListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -57701,6 +64563,8 @@ export namespace Prisma {
     lastName?: SortOrder
     locale?: SortOrder
     mfaSecret?: SortOrderInput | SortOrder
+    mfaEnabledAt?: SortOrderInput | SortOrder
+    mfaLastStep?: SortOrderInput | SortOrder
     lastLoginAt?: SortOrderInput | SortOrder
     deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -57715,6 +64579,10 @@ export namespace Prisma {
     notifications?: NotificationOrderByRelationAggregateInput
     verifications?: VerificationTokenOrderByRelationAggregateInput
     promoRedemptions?: PromoRedemptionOrderByRelationAggregateInput
+    supportTickets?: SupportTicketOrderByRelationAggregateInput
+    reviews?: ReviewOrderByRelationAggregateInput
+    idempotencyKeys?: IdempotencyKeyOrderByRelationAggregateInput
+    recoveryCodes?: MfaRecoveryCodeOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -57734,6 +64602,8 @@ export namespace Prisma {
     lastName?: StringFilter<"User"> | string
     locale?: StringFilter<"User"> | string
     mfaSecret?: StringNullableFilter<"User"> | string | null
+    mfaEnabledAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    mfaLastStep?: IntNullableFilter<"User"> | number | null
     lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
     deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -57748,6 +64618,10 @@ export namespace Prisma {
     notifications?: NotificationListRelationFilter
     verifications?: VerificationTokenListRelationFilter
     promoRedemptions?: PromoRedemptionListRelationFilter
+    supportTickets?: SupportTicketListRelationFilter
+    reviews?: ReviewListRelationFilter
+    idempotencyKeys?: IdempotencyKeyListRelationFilter
+    recoveryCodes?: MfaRecoveryCodeListRelationFilter
   }, "id" | "email" | "phone" | "googleId">
 
   export type UserOrderByWithAggregationInput = {
@@ -57764,13 +64638,17 @@ export namespace Prisma {
     lastName?: SortOrder
     locale?: SortOrder
     mfaSecret?: SortOrderInput | SortOrder
+    mfaEnabledAt?: SortOrderInput | SortOrder
+    mfaLastStep?: SortOrderInput | SortOrder
     lastLoginAt?: SortOrderInput | SortOrder
     deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
+    _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
+    _sum?: UserSumOrderByAggregateInput
   }
 
   export type UserScalarWhereWithAggregatesInput = {
@@ -57790,6 +64668,8 @@ export namespace Prisma {
     lastName?: StringWithAggregatesFilter<"User"> | string
     locale?: StringWithAggregatesFilter<"User"> | string
     mfaSecret?: StringNullableWithAggregatesFilter<"User"> | string | null
+    mfaEnabledAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    mfaLastStep?: IntNullableWithAggregatesFilter<"User"> | number | null
     lastLoginAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     deletedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -57808,6 +64688,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFilter<"Session"> | Date | string
     revokedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
     createdAt?: DateTimeFilter<"Session"> | Date | string
+    mfaVerifiedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -57820,6 +64701,7 @@ export namespace Prisma {
     expiresAt?: SortOrder
     revokedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    mfaVerifiedAt?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -57835,6 +64717,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFilter<"Session"> | Date | string
     revokedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
     createdAt?: DateTimeFilter<"Session"> | Date | string
+    mfaVerifiedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
@@ -57847,6 +64730,7 @@ export namespace Prisma {
     expiresAt?: SortOrder
     revokedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    mfaVerifiedAt?: SortOrderInput | SortOrder
     _count?: SessionCountOrderByAggregateInput
     _max?: SessionMaxOrderByAggregateInput
     _min?: SessionMinOrderByAggregateInput
@@ -57864,6 +64748,57 @@ export namespace Prisma {
     expiresAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
     revokedAt?: DateTimeNullableWithAggregatesFilter<"Session"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
+    mfaVerifiedAt?: DateTimeNullableWithAggregatesFilter<"Session"> | Date | string | null
+  }
+
+  export type MfaRecoveryCodeWhereInput = {
+    AND?: MfaRecoveryCodeWhereInput | MfaRecoveryCodeWhereInput[]
+    OR?: MfaRecoveryCodeWhereInput[]
+    NOT?: MfaRecoveryCodeWhereInput | MfaRecoveryCodeWhereInput[]
+    id?: StringFilter<"MfaRecoveryCode"> | string
+    userId?: StringFilter<"MfaRecoveryCode"> | string
+    codeHash?: StringFilter<"MfaRecoveryCode"> | string
+    usedAt?: DateTimeNullableFilter<"MfaRecoveryCode"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type MfaRecoveryCodeOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    codeHash?: SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type MfaRecoveryCodeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: MfaRecoveryCodeWhereInput | MfaRecoveryCodeWhereInput[]
+    OR?: MfaRecoveryCodeWhereInput[]
+    NOT?: MfaRecoveryCodeWhereInput | MfaRecoveryCodeWhereInput[]
+    userId?: StringFilter<"MfaRecoveryCode"> | string
+    codeHash?: StringFilter<"MfaRecoveryCode"> | string
+    usedAt?: DateTimeNullableFilter<"MfaRecoveryCode"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type MfaRecoveryCodeOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    codeHash?: SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    _count?: MfaRecoveryCodeCountOrderByAggregateInput
+    _max?: MfaRecoveryCodeMaxOrderByAggregateInput
+    _min?: MfaRecoveryCodeMinOrderByAggregateInput
+  }
+
+  export type MfaRecoveryCodeScalarWhereWithAggregatesInput = {
+    AND?: MfaRecoveryCodeScalarWhereWithAggregatesInput | MfaRecoveryCodeScalarWhereWithAggregatesInput[]
+    OR?: MfaRecoveryCodeScalarWhereWithAggregatesInput[]
+    NOT?: MfaRecoveryCodeScalarWhereWithAggregatesInput | MfaRecoveryCodeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"MfaRecoveryCode"> | string
+    userId?: StringWithAggregatesFilter<"MfaRecoveryCode"> | string
+    codeHash?: StringWithAggregatesFilter<"MfaRecoveryCode"> | string
+    usedAt?: DateTimeNullableWithAggregatesFilter<"MfaRecoveryCode"> | Date | string | null
   }
 
   export type VerificationTokenWhereInput = {
@@ -59033,6 +65968,9 @@ export namespace Prisma {
     vatXof?: IntFilter<"Order"> | number
     discountXof?: IntFilter<"Order"> | number
     totalXof?: IntFilter<"Order"> | number
+    paymentMode?: EnumPaymentModeFilter<"Order"> | $Enums.PaymentMode
+    upfrontXof?: IntFilter<"Order"> | number
+    balanceXof?: IntFilter<"Order"> | number
     promoCodeId?: StringNullableFilter<"Order"> | string | null
     placedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     deliveredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -59049,6 +65987,8 @@ export namespace Prisma {
     payments?: PaymentListRelationFilter
     shipments?: ShipmentListRelationFilter
     disputes?: DisputeListRelationFilter
+    refunds?: RefundListRelationFilter
+    supportTickets?: SupportTicketListRelationFilter
     invoice?: XOR<InvoiceNullableScalarRelationFilter, InvoiceWhereInput> | null
     promoRedemption?: XOR<PromoRedemptionNullableScalarRelationFilter, PromoRedemptionWhereInput> | null
   }
@@ -59072,6 +66012,9 @@ export namespace Prisma {
     vatXof?: SortOrder
     discountXof?: SortOrder
     totalXof?: SortOrder
+    paymentMode?: SortOrder
+    upfrontXof?: SortOrder
+    balanceXof?: SortOrder
     promoCodeId?: SortOrderInput | SortOrder
     placedAt?: SortOrderInput | SortOrder
     deliveredAt?: SortOrderInput | SortOrder
@@ -59088,6 +66031,8 @@ export namespace Prisma {
     payments?: PaymentOrderByRelationAggregateInput
     shipments?: ShipmentOrderByRelationAggregateInput
     disputes?: DisputeOrderByRelationAggregateInput
+    refunds?: RefundOrderByRelationAggregateInput
+    supportTickets?: SupportTicketOrderByRelationAggregateInput
     invoice?: InvoiceOrderByWithRelationInput
     promoRedemption?: PromoRedemptionOrderByWithRelationInput
   }
@@ -59114,6 +66059,9 @@ export namespace Prisma {
     vatXof?: IntFilter<"Order"> | number
     discountXof?: IntFilter<"Order"> | number
     totalXof?: IntFilter<"Order"> | number
+    paymentMode?: EnumPaymentModeFilter<"Order"> | $Enums.PaymentMode
+    upfrontXof?: IntFilter<"Order"> | number
+    balanceXof?: IntFilter<"Order"> | number
     promoCodeId?: StringNullableFilter<"Order"> | string | null
     placedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     deliveredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -59130,6 +66078,8 @@ export namespace Prisma {
     payments?: PaymentListRelationFilter
     shipments?: ShipmentListRelationFilter
     disputes?: DisputeListRelationFilter
+    refunds?: RefundListRelationFilter
+    supportTickets?: SupportTicketListRelationFilter
     invoice?: XOR<InvoiceNullableScalarRelationFilter, InvoiceWhereInput> | null
     promoRedemption?: XOR<PromoRedemptionNullableScalarRelationFilter, PromoRedemptionWhereInput> | null
   }, "id" | "reference">
@@ -59153,6 +66103,9 @@ export namespace Prisma {
     vatXof?: SortOrder
     discountXof?: SortOrder
     totalXof?: SortOrder
+    paymentMode?: SortOrder
+    upfrontXof?: SortOrder
+    balanceXof?: SortOrder
     promoCodeId?: SortOrderInput | SortOrder
     placedAt?: SortOrderInput | SortOrder
     deliveredAt?: SortOrderInput | SortOrder
@@ -59192,6 +66145,9 @@ export namespace Prisma {
     vatXof?: IntWithAggregatesFilter<"Order"> | number
     discountXof?: IntWithAggregatesFilter<"Order"> | number
     totalXof?: IntWithAggregatesFilter<"Order"> | number
+    paymentMode?: EnumPaymentModeWithAggregatesFilter<"Order"> | $Enums.PaymentMode
+    upfrontXof?: IntWithAggregatesFilter<"Order"> | number
+    balanceXof?: IntWithAggregatesFilter<"Order"> | number
     promoCodeId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     placedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     deliveredAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
@@ -59216,6 +66172,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFilter<"SubOrder"> | number
     commissionSubtotalXof?: IntFilter<"SubOrder"> | number
     deliveryFeeXof?: IntFilter<"SubOrder"> | number
+    balanceDueXof?: IntFilter<"SubOrder"> | number
+    cashCollectedAt?: DateTimeNullableFilter<"SubOrder"> | Date | string | null
+    cashCollectedXof?: IntNullableFilter<"SubOrder"> | number | null
     acceptedAt?: DateTimeNullableFilter<"SubOrder"> | Date | string | null
     rejectedAt?: DateTimeNullableFilter<"SubOrder"> | Date | string | null
     rejectReason?: StringNullableFilter<"SubOrder"> | string | null
@@ -59244,6 +66203,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: SortOrder
     commissionSubtotalXof?: SortOrder
     deliveryFeeXof?: SortOrder
+    balanceDueXof?: SortOrder
+    cashCollectedAt?: SortOrderInput | SortOrder
+    cashCollectedXof?: SortOrderInput | SortOrder
     acceptedAt?: SortOrderInput | SortOrder
     rejectedAt?: SortOrderInput | SortOrder
     rejectReason?: SortOrderInput | SortOrder
@@ -59275,6 +66237,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFilter<"SubOrder"> | number
     commissionSubtotalXof?: IntFilter<"SubOrder"> | number
     deliveryFeeXof?: IntFilter<"SubOrder"> | number
+    balanceDueXof?: IntFilter<"SubOrder"> | number
+    cashCollectedAt?: DateTimeNullableFilter<"SubOrder"> | Date | string | null
+    cashCollectedXof?: IntNullableFilter<"SubOrder"> | number | null
     acceptedAt?: DateTimeNullableFilter<"SubOrder"> | Date | string | null
     rejectedAt?: DateTimeNullableFilter<"SubOrder"> | Date | string | null
     rejectReason?: StringNullableFilter<"SubOrder"> | string | null
@@ -59303,6 +66268,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: SortOrder
     commissionSubtotalXof?: SortOrder
     deliveryFeeXof?: SortOrder
+    balanceDueXof?: SortOrder
+    cashCollectedAt?: SortOrderInput | SortOrder
+    cashCollectedXof?: SortOrderInput | SortOrder
     acceptedAt?: SortOrderInput | SortOrder
     rejectedAt?: SortOrderInput | SortOrder
     rejectReason?: SortOrderInput | SortOrder
@@ -59333,6 +66301,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntWithAggregatesFilter<"SubOrder"> | number
     commissionSubtotalXof?: IntWithAggregatesFilter<"SubOrder"> | number
     deliveryFeeXof?: IntWithAggregatesFilter<"SubOrder"> | number
+    balanceDueXof?: IntWithAggregatesFilter<"SubOrder"> | number
+    cashCollectedAt?: DateTimeNullableWithAggregatesFilter<"SubOrder"> | Date | string | null
+    cashCollectedXof?: IntNullableWithAggregatesFilter<"SubOrder"> | number | null
     acceptedAt?: DateTimeNullableWithAggregatesFilter<"SubOrder"> | Date | string | null
     rejectedAt?: DateTimeNullableWithAggregatesFilter<"SubOrder"> | Date | string | null
     rejectReason?: StringNullableWithAggregatesFilter<"SubOrder"> | string | null
@@ -59362,6 +66333,7 @@ export namespace Prisma {
     lineTotalXof?: IntFilter<"OrderLine"> | number
     subOrder?: XOR<SubOrderScalarRelationFilter, SubOrderWhereInput>
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+    review?: XOR<ReviewNullableScalarRelationFilter, ReviewWhereInput> | null
   }
 
   export type OrderLineOrderByWithRelationInput = {
@@ -59377,6 +66349,7 @@ export namespace Prisma {
     lineTotalXof?: SortOrder
     subOrder?: SubOrderOrderByWithRelationInput
     product?: ProductOrderByWithRelationInput
+    review?: ReviewOrderByWithRelationInput
   }
 
   export type OrderLineWhereUniqueInput = Prisma.AtLeast<{
@@ -59395,6 +66368,7 @@ export namespace Prisma {
     lineTotalXof?: IntFilter<"OrderLine"> | number
     subOrder?: XOR<SubOrderScalarRelationFilter, SubOrderWhereInput>
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+    review?: XOR<ReviewNullableScalarRelationFilter, ReviewWhereInput> | null
   }, "id">
 
   export type OrderLineOrderByWithAggregationInput = {
@@ -59733,7 +66707,8 @@ export namespace Prisma {
     OR?: RefundWhereInput[]
     NOT?: RefundWhereInput | RefundWhereInput[]
     id?: StringFilter<"Refund"> | string
-    paymentId?: StringFilter<"Refund"> | string
+    paymentId?: StringNullableFilter<"Refund"> | string | null
+    orderId?: StringNullableFilter<"Refund"> | string | null
     amountXof?: IntFilter<"Refund"> | number
     reason?: StringFilter<"Refund"> | string
     status?: StringFilter<"Refund"> | string
@@ -59741,12 +66716,14 @@ export namespace Prisma {
     requestedBy?: StringFilter<"Refund"> | string
     createdAt?: DateTimeFilter<"Refund"> | Date | string
     settledAt?: DateTimeNullableFilter<"Refund"> | Date | string | null
-    payment?: XOR<PaymentScalarRelationFilter, PaymentWhereInput>
+    payment?: XOR<PaymentNullableScalarRelationFilter, PaymentWhereInput> | null
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
   }
 
   export type RefundOrderByWithRelationInput = {
     id?: SortOrder
-    paymentId?: SortOrder
+    paymentId?: SortOrderInput | SortOrder
+    orderId?: SortOrderInput | SortOrder
     amountXof?: SortOrder
     reason?: SortOrder
     status?: SortOrder
@@ -59755,6 +66732,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     settledAt?: SortOrderInput | SortOrder
     payment?: PaymentOrderByWithRelationInput
+    order?: OrderOrderByWithRelationInput
   }
 
   export type RefundWhereUniqueInput = Prisma.AtLeast<{
@@ -59762,7 +66740,8 @@ export namespace Prisma {
     AND?: RefundWhereInput | RefundWhereInput[]
     OR?: RefundWhereInput[]
     NOT?: RefundWhereInput | RefundWhereInput[]
-    paymentId?: StringFilter<"Refund"> | string
+    paymentId?: StringNullableFilter<"Refund"> | string | null
+    orderId?: StringNullableFilter<"Refund"> | string | null
     amountXof?: IntFilter<"Refund"> | number
     reason?: StringFilter<"Refund"> | string
     status?: StringFilter<"Refund"> | string
@@ -59770,12 +66749,14 @@ export namespace Prisma {
     requestedBy?: StringFilter<"Refund"> | string
     createdAt?: DateTimeFilter<"Refund"> | Date | string
     settledAt?: DateTimeNullableFilter<"Refund"> | Date | string | null
-    payment?: XOR<PaymentScalarRelationFilter, PaymentWhereInput>
+    payment?: XOR<PaymentNullableScalarRelationFilter, PaymentWhereInput> | null
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
   }, "id">
 
   export type RefundOrderByWithAggregationInput = {
     id?: SortOrder
-    paymentId?: SortOrder
+    paymentId?: SortOrderInput | SortOrder
+    orderId?: SortOrderInput | SortOrder
     amountXof?: SortOrder
     reason?: SortOrder
     status?: SortOrder
@@ -59795,7 +66776,8 @@ export namespace Prisma {
     OR?: RefundScalarWhereWithAggregatesInput[]
     NOT?: RefundScalarWhereWithAggregatesInput | RefundScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Refund"> | string
-    paymentId?: StringWithAggregatesFilter<"Refund"> | string
+    paymentId?: StringNullableWithAggregatesFilter<"Refund"> | string | null
+    orderId?: StringNullableWithAggregatesFilter<"Refund"> | string | null
     amountXof?: IntWithAggregatesFilter<"Refund"> | number
     reason?: StringWithAggregatesFilter<"Refund"> | string
     status?: StringWithAggregatesFilter<"Refund"> | string
@@ -60821,6 +67803,197 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Message"> | Date | string
   }
 
+  export type SupportTicketWhereInput = {
+    AND?: SupportTicketWhereInput | SupportTicketWhereInput[]
+    OR?: SupportTicketWhereInput[]
+    NOT?: SupportTicketWhereInput | SupportTicketWhereInput[]
+    id?: StringFilter<"SupportTicket"> | string
+    reference?: StringFilter<"SupportTicket"> | string
+    channel?: EnumTicketChannelFilter<"SupportTicket"> | $Enums.TicketChannel
+    userId?: StringNullableFilter<"SupportTicket"> | string | null
+    authorRole?: EnumUserRoleNullableFilter<"SupportTicket"> | $Enums.UserRole | null
+    guestName?: StringNullableFilter<"SupportTicket"> | string | null
+    guestEmail?: StringNullableFilter<"SupportTicket"> | string | null
+    category?: StringFilter<"SupportTicket"> | string
+    subject?: StringFilter<"SupportTicket"> | string
+    status?: EnumTicketStatusFilter<"SupportTicket"> | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFilter<"SupportTicket"> | $Enums.TicketPriority
+    orderId?: StringNullableFilter<"SupportTicket"> | string | null
+    createdAt?: DateTimeFilter<"SupportTicket"> | Date | string
+    updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
+    lastMessageAt?: DateTimeFilter<"SupportTicket"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"SupportTicket"> | Date | string | null
+    closedAt?: DateTimeNullableFilter<"SupportTicket"> | Date | string | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+    messages?: SupportMessageListRelationFilter
+  }
+
+  export type SupportTicketOrderByWithRelationInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    channel?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    authorRole?: SortOrderInput | SortOrder
+    guestName?: SortOrderInput | SortOrder
+    guestEmail?: SortOrderInput | SortOrder
+    category?: SortOrder
+    subject?: SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    orderId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    closedAt?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+    order?: OrderOrderByWithRelationInput
+    messages?: SupportMessageOrderByRelationAggregateInput
+  }
+
+  export type SupportTicketWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    reference?: string
+    AND?: SupportTicketWhereInput | SupportTicketWhereInput[]
+    OR?: SupportTicketWhereInput[]
+    NOT?: SupportTicketWhereInput | SupportTicketWhereInput[]
+    channel?: EnumTicketChannelFilter<"SupportTicket"> | $Enums.TicketChannel
+    userId?: StringNullableFilter<"SupportTicket"> | string | null
+    authorRole?: EnumUserRoleNullableFilter<"SupportTicket"> | $Enums.UserRole | null
+    guestName?: StringNullableFilter<"SupportTicket"> | string | null
+    guestEmail?: StringNullableFilter<"SupportTicket"> | string | null
+    category?: StringFilter<"SupportTicket"> | string
+    subject?: StringFilter<"SupportTicket"> | string
+    status?: EnumTicketStatusFilter<"SupportTicket"> | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFilter<"SupportTicket"> | $Enums.TicketPriority
+    orderId?: StringNullableFilter<"SupportTicket"> | string | null
+    createdAt?: DateTimeFilter<"SupportTicket"> | Date | string
+    updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
+    lastMessageAt?: DateTimeFilter<"SupportTicket"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"SupportTicket"> | Date | string | null
+    closedAt?: DateTimeNullableFilter<"SupportTicket"> | Date | string | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+    messages?: SupportMessageListRelationFilter
+  }, "id" | "reference">
+
+  export type SupportTicketOrderByWithAggregationInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    channel?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    authorRole?: SortOrderInput | SortOrder
+    guestName?: SortOrderInput | SortOrder
+    guestEmail?: SortOrderInput | SortOrder
+    category?: SortOrder
+    subject?: SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    orderId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    closedAt?: SortOrderInput | SortOrder
+    _count?: SupportTicketCountOrderByAggregateInput
+    _max?: SupportTicketMaxOrderByAggregateInput
+    _min?: SupportTicketMinOrderByAggregateInput
+  }
+
+  export type SupportTicketScalarWhereWithAggregatesInput = {
+    AND?: SupportTicketScalarWhereWithAggregatesInput | SupportTicketScalarWhereWithAggregatesInput[]
+    OR?: SupportTicketScalarWhereWithAggregatesInput[]
+    NOT?: SupportTicketScalarWhereWithAggregatesInput | SupportTicketScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SupportTicket"> | string
+    reference?: StringWithAggregatesFilter<"SupportTicket"> | string
+    channel?: EnumTicketChannelWithAggregatesFilter<"SupportTicket"> | $Enums.TicketChannel
+    userId?: StringNullableWithAggregatesFilter<"SupportTicket"> | string | null
+    authorRole?: EnumUserRoleNullableWithAggregatesFilter<"SupportTicket"> | $Enums.UserRole | null
+    guestName?: StringNullableWithAggregatesFilter<"SupportTicket"> | string | null
+    guestEmail?: StringNullableWithAggregatesFilter<"SupportTicket"> | string | null
+    category?: StringWithAggregatesFilter<"SupportTicket"> | string
+    subject?: StringWithAggregatesFilter<"SupportTicket"> | string
+    status?: EnumTicketStatusWithAggregatesFilter<"SupportTicket"> | $Enums.TicketStatus
+    priority?: EnumTicketPriorityWithAggregatesFilter<"SupportTicket"> | $Enums.TicketPriority
+    orderId?: StringNullableWithAggregatesFilter<"SupportTicket"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SupportTicket"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SupportTicket"> | Date | string
+    lastMessageAt?: DateTimeWithAggregatesFilter<"SupportTicket"> | Date | string
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"SupportTicket"> | Date | string | null
+    closedAt?: DateTimeNullableWithAggregatesFilter<"SupportTicket"> | Date | string | null
+  }
+
+  export type SupportMessageWhereInput = {
+    AND?: SupportMessageWhereInput | SupportMessageWhereInput[]
+    OR?: SupportMessageWhereInput[]
+    NOT?: SupportMessageWhereInput | SupportMessageWhereInput[]
+    id?: StringFilter<"SupportMessage"> | string
+    ticketId?: StringFilter<"SupportMessage"> | string
+    authorId?: StringNullableFilter<"SupportMessage"> | string | null
+    fromStaff?: BoolFilter<"SupportMessage"> | boolean
+    internal?: BoolFilter<"SupportMessage"> | boolean
+    body?: StringFilter<"SupportMessage"> | string
+    fileKeys?: StringNullableListFilter<"SupportMessage">
+    createdAt?: DateTimeFilter<"SupportMessage"> | Date | string
+    ticket?: XOR<SupportTicketScalarRelationFilter, SupportTicketWhereInput>
+  }
+
+  export type SupportMessageOrderByWithRelationInput = {
+    id?: SortOrder
+    ticketId?: SortOrder
+    authorId?: SortOrderInput | SortOrder
+    fromStaff?: SortOrder
+    internal?: SortOrder
+    body?: SortOrder
+    fileKeys?: SortOrder
+    createdAt?: SortOrder
+    ticket?: SupportTicketOrderByWithRelationInput
+  }
+
+  export type SupportMessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SupportMessageWhereInput | SupportMessageWhereInput[]
+    OR?: SupportMessageWhereInput[]
+    NOT?: SupportMessageWhereInput | SupportMessageWhereInput[]
+    ticketId?: StringFilter<"SupportMessage"> | string
+    authorId?: StringNullableFilter<"SupportMessage"> | string | null
+    fromStaff?: BoolFilter<"SupportMessage"> | boolean
+    internal?: BoolFilter<"SupportMessage"> | boolean
+    body?: StringFilter<"SupportMessage"> | string
+    fileKeys?: StringNullableListFilter<"SupportMessage">
+    createdAt?: DateTimeFilter<"SupportMessage"> | Date | string
+    ticket?: XOR<SupportTicketScalarRelationFilter, SupportTicketWhereInput>
+  }, "id">
+
+  export type SupportMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    ticketId?: SortOrder
+    authorId?: SortOrderInput | SortOrder
+    fromStaff?: SortOrder
+    internal?: SortOrder
+    body?: SortOrder
+    fileKeys?: SortOrder
+    createdAt?: SortOrder
+    _count?: SupportMessageCountOrderByAggregateInput
+    _max?: SupportMessageMaxOrderByAggregateInput
+    _min?: SupportMessageMinOrderByAggregateInput
+  }
+
+  export type SupportMessageScalarWhereWithAggregatesInput = {
+    AND?: SupportMessageScalarWhereWithAggregatesInput | SupportMessageScalarWhereWithAggregatesInput[]
+    OR?: SupportMessageScalarWhereWithAggregatesInput[]
+    NOT?: SupportMessageScalarWhereWithAggregatesInput | SupportMessageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SupportMessage"> | string
+    ticketId?: StringWithAggregatesFilter<"SupportMessage"> | string
+    authorId?: StringNullableWithAggregatesFilter<"SupportMessage"> | string | null
+    fromStaff?: BoolWithAggregatesFilter<"SupportMessage"> | boolean
+    internal?: BoolWithAggregatesFilter<"SupportMessage"> | boolean
+    body?: StringWithAggregatesFilter<"SupportMessage"> | string
+    fileKeys?: StringNullableListFilter<"SupportMessage">
+    createdAt?: DateTimeWithAggregatesFilter<"SupportMessage"> | Date | string
+  }
+
   export type ReviewWhereInput = {
     AND?: ReviewWhereInput | ReviewWhereInput[]
     OR?: ReviewWhereInput[]
@@ -60833,7 +68006,12 @@ export namespace Prisma {
     body?: StringNullableFilter<"Review"> | string | null
     status?: StringFilter<"Review"> | string
     createdAt?: DateTimeFilter<"Review"> | Date | string
+    moderatedAt?: DateTimeNullableFilter<"Review"> | Date | string | null
+    moderatorId?: StringNullableFilter<"Review"> | string | null
+    rejectReason?: StringNullableFilter<"Review"> | string | null
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    orderLine?: XOR<OrderLineScalarRelationFilter, OrderLineWhereInput>
   }
 
   export type ReviewOrderByWithRelationInput = {
@@ -60845,7 +68023,12 @@ export namespace Prisma {
     body?: SortOrderInput | SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    moderatedAt?: SortOrderInput | SortOrder
+    moderatorId?: SortOrderInput | SortOrder
+    rejectReason?: SortOrderInput | SortOrder
     product?: ProductOrderByWithRelationInput
+    author?: UserOrderByWithRelationInput
+    orderLine?: OrderLineOrderByWithRelationInput
   }
 
   export type ReviewWhereUniqueInput = Prisma.AtLeast<{
@@ -60860,7 +68043,12 @@ export namespace Prisma {
     body?: StringNullableFilter<"Review"> | string | null
     status?: StringFilter<"Review"> | string
     createdAt?: DateTimeFilter<"Review"> | Date | string
+    moderatedAt?: DateTimeNullableFilter<"Review"> | Date | string | null
+    moderatorId?: StringNullableFilter<"Review"> | string | null
+    rejectReason?: StringNullableFilter<"Review"> | string | null
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    orderLine?: XOR<OrderLineScalarRelationFilter, OrderLineWhereInput>
   }, "id" | "orderLineId">
 
   export type ReviewOrderByWithAggregationInput = {
@@ -60872,6 +68060,9 @@ export namespace Prisma {
     body?: SortOrderInput | SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    moderatedAt?: SortOrderInput | SortOrder
+    moderatorId?: SortOrderInput | SortOrder
+    rejectReason?: SortOrderInput | SortOrder
     _count?: ReviewCountOrderByAggregateInput
     _avg?: ReviewAvgOrderByAggregateInput
     _max?: ReviewMaxOrderByAggregateInput
@@ -60891,6 +68082,9 @@ export namespace Prisma {
     body?: StringNullableWithAggregatesFilter<"Review"> | string | null
     status?: StringWithAggregatesFilter<"Review"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Review"> | Date | string
+    moderatedAt?: DateTimeNullableWithAggregatesFilter<"Review"> | Date | string | null
+    moderatorId?: StringNullableWithAggregatesFilter<"Review"> | string | null
+    rejectReason?: StringNullableWithAggregatesFilter<"Review"> | string | null
   }
 
   export type NotificationWhereInput = {
@@ -61358,6 +68552,139 @@ export namespace Prisma {
     country?: StringWithAggregatesFilter<"Invoice"> | string
   }
 
+  export type NewsletterSubscriberWhereInput = {
+    AND?: NewsletterSubscriberWhereInput | NewsletterSubscriberWhereInput[]
+    OR?: NewsletterSubscriberWhereInput[]
+    NOT?: NewsletterSubscriberWhereInput | NewsletterSubscriberWhereInput[]
+    id?: StringFilter<"NewsletterSubscriber"> | string
+    email?: StringFilter<"NewsletterSubscriber"> | string
+    source?: StringFilter<"NewsletterSubscriber"> | string
+    createdAt?: DateTimeFilter<"NewsletterSubscriber"> | Date | string
+    subscribedAt?: DateTimeFilter<"NewsletterSubscriber"> | Date | string
+    unsubscribedAt?: DateTimeNullableFilter<"NewsletterSubscriber"> | Date | string | null
+    brevoSyncedAt?: DateTimeNullableFilter<"NewsletterSubscriber"> | Date | string | null
+  }
+
+  export type NewsletterSubscriberOrderByWithRelationInput = {
+    id?: SortOrder
+    email?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    subscribedAt?: SortOrder
+    unsubscribedAt?: SortOrderInput | SortOrder
+    brevoSyncedAt?: SortOrderInput | SortOrder
+  }
+
+  export type NewsletterSubscriberWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    email?: string
+    AND?: NewsletterSubscriberWhereInput | NewsletterSubscriberWhereInput[]
+    OR?: NewsletterSubscriberWhereInput[]
+    NOT?: NewsletterSubscriberWhereInput | NewsletterSubscriberWhereInput[]
+    source?: StringFilter<"NewsletterSubscriber"> | string
+    createdAt?: DateTimeFilter<"NewsletterSubscriber"> | Date | string
+    subscribedAt?: DateTimeFilter<"NewsletterSubscriber"> | Date | string
+    unsubscribedAt?: DateTimeNullableFilter<"NewsletterSubscriber"> | Date | string | null
+    brevoSyncedAt?: DateTimeNullableFilter<"NewsletterSubscriber"> | Date | string | null
+  }, "id" | "email">
+
+  export type NewsletterSubscriberOrderByWithAggregationInput = {
+    id?: SortOrder
+    email?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    subscribedAt?: SortOrder
+    unsubscribedAt?: SortOrderInput | SortOrder
+    brevoSyncedAt?: SortOrderInput | SortOrder
+    _count?: NewsletterSubscriberCountOrderByAggregateInput
+    _max?: NewsletterSubscriberMaxOrderByAggregateInput
+    _min?: NewsletterSubscriberMinOrderByAggregateInput
+  }
+
+  export type NewsletterSubscriberScalarWhereWithAggregatesInput = {
+    AND?: NewsletterSubscriberScalarWhereWithAggregatesInput | NewsletterSubscriberScalarWhereWithAggregatesInput[]
+    OR?: NewsletterSubscriberScalarWhereWithAggregatesInput[]
+    NOT?: NewsletterSubscriberScalarWhereWithAggregatesInput | NewsletterSubscriberScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NewsletterSubscriber"> | string
+    email?: StringWithAggregatesFilter<"NewsletterSubscriber"> | string
+    source?: StringWithAggregatesFilter<"NewsletterSubscriber"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"NewsletterSubscriber"> | Date | string
+    subscribedAt?: DateTimeWithAggregatesFilter<"NewsletterSubscriber"> | Date | string
+    unsubscribedAt?: DateTimeNullableWithAggregatesFilter<"NewsletterSubscriber"> | Date | string | null
+    brevoSyncedAt?: DateTimeNullableWithAggregatesFilter<"NewsletterSubscriber"> | Date | string | null
+  }
+
+  export type IdempotencyKeyWhereInput = {
+    AND?: IdempotencyKeyWhereInput | IdempotencyKeyWhereInput[]
+    OR?: IdempotencyKeyWhereInput[]
+    NOT?: IdempotencyKeyWhereInput | IdempotencyKeyWhereInput[]
+    id?: StringFilter<"IdempotencyKey"> | string
+    userId?: StringFilter<"IdempotencyKey"> | string
+    key?: StringFilter<"IdempotencyKey"> | string
+    requestHash?: StringFilter<"IdempotencyKey"> | string
+    status?: StringFilter<"IdempotencyKey"> | string
+    responseBody?: JsonNullableFilter<"IdempotencyKey">
+    createdAt?: DateTimeFilter<"IdempotencyKey"> | Date | string
+    expiresAt?: DateTimeFilter<"IdempotencyKey"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type IdempotencyKeyOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    key?: SortOrder
+    requestHash?: SortOrder
+    status?: SortOrder
+    responseBody?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type IdempotencyKeyWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_key?: IdempotencyKeyUserIdKeyCompoundUniqueInput
+    AND?: IdempotencyKeyWhereInput | IdempotencyKeyWhereInput[]
+    OR?: IdempotencyKeyWhereInput[]
+    NOT?: IdempotencyKeyWhereInput | IdempotencyKeyWhereInput[]
+    userId?: StringFilter<"IdempotencyKey"> | string
+    key?: StringFilter<"IdempotencyKey"> | string
+    requestHash?: StringFilter<"IdempotencyKey"> | string
+    status?: StringFilter<"IdempotencyKey"> | string
+    responseBody?: JsonNullableFilter<"IdempotencyKey">
+    createdAt?: DateTimeFilter<"IdempotencyKey"> | Date | string
+    expiresAt?: DateTimeFilter<"IdempotencyKey"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_key">
+
+  export type IdempotencyKeyOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    key?: SortOrder
+    requestHash?: SortOrder
+    status?: SortOrder
+    responseBody?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrder
+    _count?: IdempotencyKeyCountOrderByAggregateInput
+    _max?: IdempotencyKeyMaxOrderByAggregateInput
+    _min?: IdempotencyKeyMinOrderByAggregateInput
+  }
+
+  export type IdempotencyKeyScalarWhereWithAggregatesInput = {
+    AND?: IdempotencyKeyScalarWhereWithAggregatesInput | IdempotencyKeyScalarWhereWithAggregatesInput[]
+    OR?: IdempotencyKeyScalarWhereWithAggregatesInput[]
+    NOT?: IdempotencyKeyScalarWhereWithAggregatesInput | IdempotencyKeyScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"IdempotencyKey"> | string
+    userId?: StringWithAggregatesFilter<"IdempotencyKey"> | string
+    key?: StringWithAggregatesFilter<"IdempotencyKey"> | string
+    requestHash?: StringWithAggregatesFilter<"IdempotencyKey"> | string
+    status?: StringWithAggregatesFilter<"IdempotencyKey"> | string
+    responseBody?: JsonNullableWithAggregatesFilter<"IdempotencyKey">
+    createdAt?: DateTimeWithAggregatesFilter<"IdempotencyKey"> | Date | string
+    expiresAt?: DateTimeWithAggregatesFilter<"IdempotencyKey"> | Date | string
+  }
+
   export type CountryCreateInput = {
     id?: string
     iso2: string
@@ -61517,6 +68844,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -61531,6 +68860,10 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -61547,6 +68880,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -61561,6 +68896,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -61577,6 +68916,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61591,6 +68932,10 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -61607,6 +68952,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61621,6 +68968,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -61637,6 +68988,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -61657,6 +69010,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61677,6 +69032,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61691,6 +69048,7 @@ export namespace Prisma {
     expiresAt: Date | string
     revokedAt?: Date | string | null
     createdAt?: Date | string
+    mfaVerifiedAt?: Date | string | null
     user: UserCreateNestedOneWithoutSessionsInput
   }
 
@@ -61703,6 +69061,7 @@ export namespace Prisma {
     expiresAt: Date | string
     revokedAt?: Date | string | null
     createdAt?: Date | string
+    mfaVerifiedAt?: Date | string | null
   }
 
   export type SessionUpdateInput = {
@@ -61713,6 +69072,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    mfaVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutSessionsNestedInput
   }
 
@@ -61725,6 +69085,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    mfaVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SessionCreateManyInput = {
@@ -61736,6 +69097,7 @@ export namespace Prisma {
     expiresAt: Date | string
     revokedAt?: Date | string | null
     createdAt?: Date | string
+    mfaVerifiedAt?: Date | string | null
   }
 
   export type SessionUpdateManyMutationInput = {
@@ -61746,6 +69108,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    mfaVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SessionUncheckedUpdateManyInput = {
@@ -61757,6 +69120,55 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    mfaVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type MfaRecoveryCodeCreateInput = {
+    id?: string
+    codeHash: string
+    usedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutRecoveryCodesInput
+  }
+
+  export type MfaRecoveryCodeUncheckedCreateInput = {
+    id?: string
+    userId: string
+    codeHash: string
+    usedAt?: Date | string | null
+  }
+
+  export type MfaRecoveryCodeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutRecoveryCodesNestedInput
+  }
+
+  export type MfaRecoveryCodeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type MfaRecoveryCodeCreateManyInput = {
+    id?: string
+    userId: string
+    codeHash: string
+    usedAt?: Date | string | null
+  }
+
+  export type MfaRecoveryCodeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type MfaRecoveryCodeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type VerificationTokenCreateInput = {
@@ -63058,6 +70470,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -63073,6 +70488,8 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutOrderInput
     shipments?: ShipmentCreateNestedManyWithoutOrderInput
     disputes?: DisputeCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
     invoice?: InvoiceCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
   }
@@ -63096,6 +70513,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -63110,6 +70530,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
     shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
     disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
     invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -63132,6 +70554,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63147,6 +70572,8 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
   }
@@ -63170,6 +70597,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63184,6 +70614,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -63207,6 +70639,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -63237,6 +70672,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63267,6 +70705,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63286,6 +70727,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -63314,6 +70758,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -63338,6 +70785,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63366,6 +70816,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63392,6 +70845,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -63412,6 +70868,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63434,6 +70893,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63458,6 +70920,7 @@ export namespace Prisma {
     lineTotalXof: number
     subOrder: SubOrderCreateNestedOneWithoutLinesInput
     product: ProductCreateNestedOneWithoutOrderLinesInput
+    review?: ReviewCreateNestedOneWithoutOrderLineInput
   }
 
   export type OrderLineUncheckedCreateInput = {
@@ -63471,6 +70934,7 @@ export namespace Prisma {
     commissionXof: number
     finalPriceXof: number
     lineTotalXof: number
+    review?: ReviewUncheckedCreateNestedOneWithoutOrderLineInput
   }
 
   export type OrderLineUpdateInput = {
@@ -63484,6 +70948,7 @@ export namespace Prisma {
     lineTotalXof?: IntFieldUpdateOperationsInput | number
     subOrder?: SubOrderUpdateOneRequiredWithoutLinesNestedInput
     product?: ProductUpdateOneRequiredWithoutOrderLinesNestedInput
+    review?: ReviewUpdateOneWithoutOrderLineNestedInput
   }
 
   export type OrderLineUncheckedUpdateInput = {
@@ -63497,6 +70962,7 @@ export namespace Prisma {
     commissionXof?: IntFieldUpdateOperationsInput | number
     finalPriceXof?: IntFieldUpdateOperationsInput | number
     lineTotalXof?: IntFieldUpdateOperationsInput | number
+    review?: ReviewUncheckedUpdateOneWithoutOrderLineNestedInput
   }
 
   export type OrderLineCreateManyInput = {
@@ -63886,12 +71352,14 @@ export namespace Prisma {
     requestedBy: string
     createdAt?: Date | string
     settledAt?: Date | string | null
-    payment: PaymentCreateNestedOneWithoutRefundsInput
+    payment?: PaymentCreateNestedOneWithoutRefundsInput
+    order?: OrderCreateNestedOneWithoutRefundsInput
   }
 
   export type RefundUncheckedCreateInput = {
     id?: string
-    paymentId: string
+    paymentId?: string | null
+    orderId?: string | null
     amountXof: number
     reason: string
     status?: string
@@ -63910,12 +71378,14 @@ export namespace Prisma {
     requestedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     settledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    payment?: PaymentUpdateOneRequiredWithoutRefundsNestedInput
+    payment?: PaymentUpdateOneWithoutRefundsNestedInput
+    order?: OrderUpdateOneWithoutRefundsNestedInput
   }
 
   export type RefundUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    paymentId?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
     amountXof?: IntFieldUpdateOperationsInput | number
     reason?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -63927,7 +71397,8 @@ export namespace Prisma {
 
   export type RefundCreateManyInput = {
     id?: string
-    paymentId: string
+    paymentId?: string | null
+    orderId?: string | null
     amountXof: number
     reason: string
     status?: string
@@ -63950,7 +71421,8 @@ export namespace Prisma {
 
   export type RefundUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    paymentId?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
     amountXof?: IntFieldUpdateOperationsInput | number
     reason?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -65083,15 +72555,236 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SupportTicketCreateInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    user?: UserCreateNestedOneWithoutSupportTicketsInput
+    order?: OrderCreateNestedOneWithoutSupportTicketsInput
+    messages?: SupportMessageCreateNestedManyWithoutTicketInput
+  }
+
+  export type SupportTicketUncheckedCreateInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    userId?: string | null
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    orderId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    messages?: SupportMessageUncheckedCreateNestedManyWithoutTicketInput
+  }
+
+  export type SupportTicketUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneWithoutSupportTicketsNestedInput
+    order?: OrderUpdateOneWithoutSupportTicketsNestedInput
+    messages?: SupportMessageUpdateManyWithoutTicketNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    messages?: SupportMessageUncheckedUpdateManyWithoutTicketNestedInput
+  }
+
+  export type SupportTicketCreateManyInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    userId?: string | null
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    orderId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+  }
+
+  export type SupportTicketUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SupportTicketUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SupportMessageCreateInput = {
+    id?: string
+    authorId?: string | null
+    fromStaff?: boolean
+    internal?: boolean
+    body: string
+    fileKeys?: SupportMessageCreatefileKeysInput | string[]
+    createdAt?: Date | string
+    ticket: SupportTicketCreateNestedOneWithoutMessagesInput
+  }
+
+  export type SupportMessageUncheckedCreateInput = {
+    id?: string
+    ticketId: string
+    authorId?: string | null
+    fromStaff?: boolean
+    internal?: boolean
+    body: string
+    fileKeys?: SupportMessageCreatefileKeysInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type SupportMessageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    authorId?: NullableStringFieldUpdateOperationsInput | string | null
+    fromStaff?: BoolFieldUpdateOperationsInput | boolean
+    internal?: BoolFieldUpdateOperationsInput | boolean
+    body?: StringFieldUpdateOperationsInput | string
+    fileKeys?: SupportMessageUpdatefileKeysInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ticket?: SupportTicketUpdateOneRequiredWithoutMessagesNestedInput
+  }
+
+  export type SupportMessageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    authorId?: NullableStringFieldUpdateOperationsInput | string | null
+    fromStaff?: BoolFieldUpdateOperationsInput | boolean
+    internal?: BoolFieldUpdateOperationsInput | boolean
+    body?: StringFieldUpdateOperationsInput | string
+    fileKeys?: SupportMessageUpdatefileKeysInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportMessageCreateManyInput = {
+    id?: string
+    ticketId: string
+    authorId?: string | null
+    fromStaff?: boolean
+    internal?: boolean
+    body: string
+    fileKeys?: SupportMessageCreatefileKeysInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type SupportMessageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    authorId?: NullableStringFieldUpdateOperationsInput | string | null
+    fromStaff?: BoolFieldUpdateOperationsInput | boolean
+    internal?: BoolFieldUpdateOperationsInput | boolean
+    body?: StringFieldUpdateOperationsInput | string
+    fileKeys?: SupportMessageUpdatefileKeysInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportMessageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    authorId?: NullableStringFieldUpdateOperationsInput | string | null
+    fromStaff?: BoolFieldUpdateOperationsInput | boolean
+    internal?: BoolFieldUpdateOperationsInput | boolean
+    body?: StringFieldUpdateOperationsInput | string
+    fileKeys?: SupportMessageUpdatefileKeysInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ReviewCreateInput = {
     id?: string
-    authorId: string
-    orderLineId: string
     rating: number
     body?: string | null
     status?: string
     createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
     product: ProductCreateNestedOneWithoutReviewsInput
+    author: UserCreateNestedOneWithoutReviewsInput
+    orderLine: OrderLineCreateNestedOneWithoutReviewInput
   }
 
   export type ReviewUncheckedCreateInput = {
@@ -65103,17 +72796,23 @@ export namespace Prisma {
     body?: string | null
     status?: string
     createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
   }
 
   export type ReviewUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    orderLineId?: StringFieldUpdateOperationsInput | string
     rating?: IntFieldUpdateOperationsInput | number
     body?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneRequiredWithoutReviewsNestedInput
+    author?: UserUpdateOneRequiredWithoutReviewsNestedInput
+    orderLine?: OrderLineUpdateOneRequiredWithoutReviewNestedInput
   }
 
   export type ReviewUncheckedUpdateInput = {
@@ -65125,6 +72824,9 @@ export namespace Prisma {
     body?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReviewCreateManyInput = {
@@ -65136,16 +72838,20 @@ export namespace Prisma {
     body?: string | null
     status?: string
     createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
   }
 
   export type ReviewUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    orderLineId?: StringFieldUpdateOperationsInput | string
     rating?: IntFieldUpdateOperationsInput | number
     body?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReviewUncheckedUpdateManyInput = {
@@ -65157,6 +72863,9 @@ export namespace Prisma {
     body?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type NotificationCreateInput = {
@@ -65666,6 +73375,152 @@ export namespace Prisma {
     country?: StringFieldUpdateOperationsInput | string
   }
 
+  export type NewsletterSubscriberCreateInput = {
+    id?: string
+    email: string
+    source?: string
+    createdAt?: Date | string
+    subscribedAt?: Date | string
+    unsubscribedAt?: Date | string | null
+    brevoSyncedAt?: Date | string | null
+  }
+
+  export type NewsletterSubscriberUncheckedCreateInput = {
+    id?: string
+    email: string
+    source?: string
+    createdAt?: Date | string
+    subscribedAt?: Date | string
+    unsubscribedAt?: Date | string | null
+    brevoSyncedAt?: Date | string | null
+  }
+
+  export type NewsletterSubscriberUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscribedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    unsubscribedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    brevoSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type NewsletterSubscriberUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscribedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    unsubscribedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    brevoSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type NewsletterSubscriberCreateManyInput = {
+    id?: string
+    email: string
+    source?: string
+    createdAt?: Date | string
+    subscribedAt?: Date | string
+    unsubscribedAt?: Date | string | null
+    brevoSyncedAt?: Date | string | null
+  }
+
+  export type NewsletterSubscriberUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscribedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    unsubscribedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    brevoSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type NewsletterSubscriberUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscribedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    unsubscribedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    brevoSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type IdempotencyKeyCreateInput = {
+    id?: string
+    key: string
+    requestHash: string
+    status?: string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    expiresAt: Date | string
+    user: UserCreateNestedOneWithoutIdempotencyKeysInput
+  }
+
+  export type IdempotencyKeyUncheckedCreateInput = {
+    id?: string
+    userId: string
+    key: string
+    requestHash: string
+    status?: string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    expiresAt: Date | string
+  }
+
+  export type IdempotencyKeyUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutIdempotencyKeysNestedInput
+  }
+
+  export type IdempotencyKeyUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IdempotencyKeyCreateManyInput = {
+    id?: string
+    userId: string
+    key: string
+    requestHash: string
+    status?: string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    expiresAt: Date | string
+  }
+
+  export type IdempotencyKeyUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IdempotencyKeyUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -65943,6 +73798,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -66006,6 +73872,30 @@ export namespace Prisma {
     none?: PromoRedemptionWhereInput
   }
 
+  export type SupportTicketListRelationFilter = {
+    every?: SupportTicketWhereInput
+    some?: SupportTicketWhereInput
+    none?: SupportTicketWhereInput
+  }
+
+  export type ReviewListRelationFilter = {
+    every?: ReviewWhereInput
+    some?: ReviewWhereInput
+    none?: ReviewWhereInput
+  }
+
+  export type IdempotencyKeyListRelationFilter = {
+    every?: IdempotencyKeyWhereInput
+    some?: IdempotencyKeyWhereInput
+    none?: IdempotencyKeyWhereInput
+  }
+
+  export type MfaRecoveryCodeListRelationFilter = {
+    every?: MfaRecoveryCodeWhereInput
+    some?: MfaRecoveryCodeWhereInput
+    none?: MfaRecoveryCodeWhereInput
+  }
+
   export type SessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -66034,6 +73924,22 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type SupportTicketOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ReviewOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type IdempotencyKeyOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type MfaRecoveryCodeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
@@ -66048,10 +73954,16 @@ export namespace Prisma {
     lastName?: SortOrder
     locale?: SortOrder
     mfaSecret?: SortOrder
+    mfaEnabledAt?: SortOrder
+    mfaLastStep?: SortOrder
     lastLoginAt?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type UserAvgOrderByAggregateInput = {
+    mfaLastStep?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -66068,6 +73980,8 @@ export namespace Prisma {
     lastName?: SortOrder
     locale?: SortOrder
     mfaSecret?: SortOrder
+    mfaEnabledAt?: SortOrder
+    mfaLastStep?: SortOrder
     lastLoginAt?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
@@ -66088,10 +74002,16 @@ export namespace Prisma {
     lastName?: SortOrder
     locale?: SortOrder
     mfaSecret?: SortOrder
+    mfaEnabledAt?: SortOrder
+    mfaLastStep?: SortOrder
     lastLoginAt?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type UserSumOrderByAggregateInput = {
+    mfaLastStep?: SortOrder
   }
 
   export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -66146,6 +74066,22 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -66174,6 +74110,7 @@ export namespace Prisma {
     expiresAt?: SortOrder
     revokedAt?: SortOrder
     createdAt?: SortOrder
+    mfaVerifiedAt?: SortOrder
   }
 
   export type SessionMaxOrderByAggregateInput = {
@@ -66185,6 +74122,7 @@ export namespace Prisma {
     expiresAt?: SortOrder
     revokedAt?: SortOrder
     createdAt?: SortOrder
+    mfaVerifiedAt?: SortOrder
   }
 
   export type SessionMinOrderByAggregateInput = {
@@ -66196,6 +74134,28 @@ export namespace Prisma {
     expiresAt?: SortOrder
     revokedAt?: SortOrder
     createdAt?: SortOrder
+    mfaVerifiedAt?: SortOrder
+  }
+
+  export type MfaRecoveryCodeCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    codeHash?: SortOrder
+    usedAt?: SortOrder
+  }
+
+  export type MfaRecoveryCodeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    codeHash?: SortOrder
+    usedAt?: SortOrder
+  }
+
+  export type MfaRecoveryCodeMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    codeHash?: SortOrder
+    usedAt?: SortOrder
   }
 
   export type EnumVerificationPurposeFilter<$PrismaModel = never> = {
@@ -66813,17 +74773,6 @@ export namespace Prisma {
     position?: SortOrder
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type EnumProductStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ProductStatus | EnumProductStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ProductStatus[] | ListEnumProductStatusFieldRefInput<$PrismaModel>
@@ -66859,12 +74808,6 @@ export namespace Prisma {
     none?: CartItemWhereInput
   }
 
-  export type ReviewListRelationFilter = {
-    every?: ReviewWhereInput
-    some?: ReviewWhereInput
-    none?: ReviewWhereInput
-  }
-
   export type ProductImageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -66874,10 +74817,6 @@ export namespace Prisma {
   }
 
   export type CartItemOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type ReviewOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -66998,22 +74937,6 @@ export namespace Prisma {
     heightMm?: SortOrder
     ratingAvg?: SortOrder
     ratingCount?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type EnumProductStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -67141,6 +75064,13 @@ export namespace Prisma {
     not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
   }
 
+  export type EnumPaymentModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMode | EnumPaymentModeFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMode[] | ListEnumPaymentModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMode[] | ListEnumPaymentModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentModeFilter<$PrismaModel> | $Enums.PaymentMode
+  }
+
   export type PromoCodeNullableScalarRelationFilter = {
     is?: PromoCodeWhereInput | null
     isNot?: PromoCodeWhereInput | null
@@ -67158,6 +75088,12 @@ export namespace Prisma {
     none?: DisputeWhereInput
   }
 
+  export type RefundListRelationFilter = {
+    every?: RefundWhereInput
+    some?: RefundWhereInput
+    none?: RefundWhereInput
+  }
+
   export type InvoiceNullableScalarRelationFilter = {
     is?: InvoiceWhereInput | null
     isNot?: InvoiceWhereInput | null
@@ -67173,6 +75109,10 @@ export namespace Prisma {
   }
 
   export type DisputeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RefundOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -67195,6 +75135,9 @@ export namespace Prisma {
     vatXof?: SortOrder
     discountXof?: SortOrder
     totalXof?: SortOrder
+    paymentMode?: SortOrder
+    upfrontXof?: SortOrder
+    balanceXof?: SortOrder
     promoCodeId?: SortOrder
     placedAt?: SortOrder
     deliveredAt?: SortOrder
@@ -67217,6 +75160,8 @@ export namespace Prisma {
     vatXof?: SortOrder
     discountXof?: SortOrder
     totalXof?: SortOrder
+    upfrontXof?: SortOrder
+    balanceXof?: SortOrder
   }
 
   export type OrderMaxOrderByAggregateInput = {
@@ -67238,6 +75183,9 @@ export namespace Prisma {
     vatXof?: SortOrder
     discountXof?: SortOrder
     totalXof?: SortOrder
+    paymentMode?: SortOrder
+    upfrontXof?: SortOrder
+    balanceXof?: SortOrder
     promoCodeId?: SortOrder
     placedAt?: SortOrder
     deliveredAt?: SortOrder
@@ -67269,6 +75217,9 @@ export namespace Prisma {
     vatXof?: SortOrder
     discountXof?: SortOrder
     totalXof?: SortOrder
+    paymentMode?: SortOrder
+    upfrontXof?: SortOrder
+    balanceXof?: SortOrder
     promoCodeId?: SortOrder
     placedAt?: SortOrder
     deliveredAt?: SortOrder
@@ -67291,6 +75242,8 @@ export namespace Prisma {
     vatXof?: SortOrder
     discountXof?: SortOrder
     totalXof?: SortOrder
+    upfrontXof?: SortOrder
+    balanceXof?: SortOrder
   }
 
   export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -67301,6 +75254,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
+  }
+
+  export type EnumPaymentModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMode | EnumPaymentModeFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMode[] | ListEnumPaymentModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMode[] | ListEnumPaymentModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentModeWithAggregatesFilter<$PrismaModel> | $Enums.PaymentMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentModeFilter<$PrismaModel>
+    _max?: NestedEnumPaymentModeFilter<$PrismaModel>
   }
 
   export type EnumSubOrderStatusFilter<$PrismaModel = never> = {
@@ -67334,6 +75297,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: SortOrder
     commissionSubtotalXof?: SortOrder
     deliveryFeeXof?: SortOrder
+    balanceDueXof?: SortOrder
+    cashCollectedAt?: SortOrder
+    cashCollectedXof?: SortOrder
     acceptedAt?: SortOrder
     rejectedAt?: SortOrder
     rejectReason?: SortOrder
@@ -67351,6 +75317,8 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: SortOrder
     commissionSubtotalXof?: SortOrder
     deliveryFeeXof?: SortOrder
+    balanceDueXof?: SortOrder
+    cashCollectedXof?: SortOrder
   }
 
   export type SubOrderMaxOrderByAggregateInput = {
@@ -67362,6 +75330,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: SortOrder
     commissionSubtotalXof?: SortOrder
     deliveryFeeXof?: SortOrder
+    balanceDueXof?: SortOrder
+    cashCollectedAt?: SortOrder
+    cashCollectedXof?: SortOrder
     acceptedAt?: SortOrder
     rejectedAt?: SortOrder
     rejectReason?: SortOrder
@@ -67384,6 +75355,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: SortOrder
     commissionSubtotalXof?: SortOrder
     deliveryFeeXof?: SortOrder
+    balanceDueXof?: SortOrder
+    cashCollectedAt?: SortOrder
+    cashCollectedXof?: SortOrder
     acceptedAt?: SortOrder
     rejectedAt?: SortOrder
     rejectReason?: SortOrder
@@ -67401,6 +75375,8 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: SortOrder
     commissionSubtotalXof?: SortOrder
     deliveryFeeXof?: SortOrder
+    balanceDueXof?: SortOrder
+    cashCollectedXof?: SortOrder
   }
 
   export type EnumSubOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -67416,6 +75392,11 @@ export namespace Prisma {
   export type SubOrderScalarRelationFilter = {
     is?: SubOrderWhereInput
     isNot?: SubOrderWhereInput
+  }
+
+  export type ReviewNullableScalarRelationFilter = {
+    is?: ReviewWhereInput | null
+    isNot?: ReviewWhereInput | null
   }
 
   export type OrderLineCountOrderByAggregateInput = {
@@ -67557,17 +75538,7 @@ export namespace Prisma {
     none?: PaymentEventWhereInput
   }
 
-  export type RefundListRelationFilter = {
-    every?: RefundWhereInput
-    some?: RefundWhereInput
-    none?: RefundWhereInput
-  }
-
   export type PaymentEventOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type RefundOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -67761,14 +75732,15 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
-  export type PaymentScalarRelationFilter = {
-    is?: PaymentWhereInput
-    isNot?: PaymentWhereInput
+  export type OrderNullableScalarRelationFilter = {
+    is?: OrderWhereInput | null
+    isNot?: OrderWhereInput | null
   }
 
   export type RefundCountOrderByAggregateInput = {
     id?: SortOrder
     paymentId?: SortOrder
+    orderId?: SortOrder
     amountXof?: SortOrder
     reason?: SortOrder
     status?: SortOrder
@@ -67785,6 +75757,7 @@ export namespace Prisma {
   export type RefundMaxOrderByAggregateInput = {
     id?: SortOrder
     paymentId?: SortOrder
+    orderId?: SortOrder
     amountXof?: SortOrder
     reason?: SortOrder
     status?: SortOrder
@@ -67797,6 +75770,7 @@ export namespace Prisma {
   export type RefundMinOrderByAggregateInput = {
     id?: SortOrder
     paymentId?: SortOrder
+    orderId?: SortOrder
     amountXof?: SortOrder
     reason?: SortOrder
     status?: SortOrder
@@ -68541,6 +76515,185 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumTicketChannelFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketChannel | EnumTicketChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketChannel[] | ListEnumTicketChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketChannel[] | ListEnumTicketChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketChannelFilter<$PrismaModel> | $Enums.TicketChannel
+  }
+
+  export type EnumUserRoleNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumUserRoleNullableFilter<$PrismaModel> | $Enums.UserRole | null
+  }
+
+  export type EnumTicketStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketStatus | EnumTicketStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketStatusFilter<$PrismaModel> | $Enums.TicketStatus
+  }
+
+  export type EnumTicketPriorityFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketPriority | EnumTicketPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketPriority[] | ListEnumTicketPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketPriority[] | ListEnumTicketPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketPriorityFilter<$PrismaModel> | $Enums.TicketPriority
+  }
+
+  export type SupportMessageListRelationFilter = {
+    every?: SupportMessageWhereInput
+    some?: SupportMessageWhereInput
+    none?: SupportMessageWhereInput
+  }
+
+  export type SupportMessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SupportTicketCountOrderByAggregateInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    channel?: SortOrder
+    userId?: SortOrder
+    authorRole?: SortOrder
+    guestName?: SortOrder
+    guestEmail?: SortOrder
+    category?: SortOrder
+    subject?: SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    orderId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+    resolvedAt?: SortOrder
+    closedAt?: SortOrder
+  }
+
+  export type SupportTicketMaxOrderByAggregateInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    channel?: SortOrder
+    userId?: SortOrder
+    authorRole?: SortOrder
+    guestName?: SortOrder
+    guestEmail?: SortOrder
+    category?: SortOrder
+    subject?: SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    orderId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+    resolvedAt?: SortOrder
+    closedAt?: SortOrder
+  }
+
+  export type SupportTicketMinOrderByAggregateInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    channel?: SortOrder
+    userId?: SortOrder
+    authorRole?: SortOrder
+    guestName?: SortOrder
+    guestEmail?: SortOrder
+    category?: SortOrder
+    subject?: SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    orderId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+    resolvedAt?: SortOrder
+    closedAt?: SortOrder
+  }
+
+  export type EnumTicketChannelWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketChannel | EnumTicketChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketChannel[] | ListEnumTicketChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketChannel[] | ListEnumTicketChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketChannelWithAggregatesFilter<$PrismaModel> | $Enums.TicketChannel
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTicketChannelFilter<$PrismaModel>
+    _max?: NestedEnumTicketChannelFilter<$PrismaModel>
+  }
+
+  export type EnumUserRoleNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumUserRoleNullableWithAggregatesFilter<$PrismaModel> | $Enums.UserRole | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleNullableFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleNullableFilter<$PrismaModel>
+  }
+
+  export type EnumTicketStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketStatus | EnumTicketStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketStatusWithAggregatesFilter<$PrismaModel> | $Enums.TicketStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTicketStatusFilter<$PrismaModel>
+    _max?: NestedEnumTicketStatusFilter<$PrismaModel>
+  }
+
+  export type EnumTicketPriorityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketPriority | EnumTicketPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketPriority[] | ListEnumTicketPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketPriority[] | ListEnumTicketPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketPriorityWithAggregatesFilter<$PrismaModel> | $Enums.TicketPriority
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTicketPriorityFilter<$PrismaModel>
+    _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
+  }
+
+  export type SupportTicketScalarRelationFilter = {
+    is?: SupportTicketWhereInput
+    isNot?: SupportTicketWhereInput
+  }
+
+  export type SupportMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    ticketId?: SortOrder
+    authorId?: SortOrder
+    fromStaff?: SortOrder
+    internal?: SortOrder
+    body?: SortOrder
+    fileKeys?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SupportMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    ticketId?: SortOrder
+    authorId?: SortOrder
+    fromStaff?: SortOrder
+    internal?: SortOrder
+    body?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SupportMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    ticketId?: SortOrder
+    authorId?: SortOrder
+    fromStaff?: SortOrder
+    internal?: SortOrder
+    body?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderLineScalarRelationFilter = {
+    is?: OrderLineWhereInput
+    isNot?: OrderLineWhereInput
+  }
+
   export type ReviewCountOrderByAggregateInput = {
     id?: SortOrder
     productId?: SortOrder
@@ -68550,6 +76703,9 @@ export namespace Prisma {
     body?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    moderatedAt?: SortOrder
+    moderatorId?: SortOrder
+    rejectReason?: SortOrder
   }
 
   export type ReviewAvgOrderByAggregateInput = {
@@ -68565,6 +76721,9 @@ export namespace Prisma {
     body?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    moderatedAt?: SortOrder
+    moderatorId?: SortOrder
+    rejectReason?: SortOrder
   }
 
   export type ReviewMinOrderByAggregateInput = {
@@ -68576,6 +76735,9 @@ export namespace Prisma {
     body?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    moderatedAt?: SortOrder
+    moderatorId?: SortOrder
+    rejectReason?: SortOrder
   }
 
   export type ReviewSumOrderByAggregateInput = {
@@ -68625,13 +76787,6 @@ export namespace Prisma {
 
   export type NotificationSumOrderByAggregateInput = {
     templateVersion?: SortOrder
-  }
-
-  export type EnumUserRoleNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumUserRoleNullableFilter<$PrismaModel> | $Enums.UserRole | null
   }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -68690,16 +76845,6 @@ export namespace Prisma {
     targetId?: SortOrder
     ip?: SortOrder
     createdAt?: SortOrder
-  }
-
-  export type EnumUserRoleNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumUserRoleNullableWithAggregatesFilter<$PrismaModel> | $Enums.UserRole | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumUserRoleNullableFilter<$PrismaModel>
-    _max?: NestedEnumUserRoleNullableFilter<$PrismaModel>
   }
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -68944,6 +77089,72 @@ export namespace Prisma {
     totalXof?: SortOrder
     vatXof?: SortOrder
     discountXof?: SortOrder
+  }
+
+  export type NewsletterSubscriberCountOrderByAggregateInput = {
+    id?: SortOrder
+    email?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    subscribedAt?: SortOrder
+    unsubscribedAt?: SortOrder
+    brevoSyncedAt?: SortOrder
+  }
+
+  export type NewsletterSubscriberMaxOrderByAggregateInput = {
+    id?: SortOrder
+    email?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    subscribedAt?: SortOrder
+    unsubscribedAt?: SortOrder
+    brevoSyncedAt?: SortOrder
+  }
+
+  export type NewsletterSubscriberMinOrderByAggregateInput = {
+    id?: SortOrder
+    email?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    subscribedAt?: SortOrder
+    unsubscribedAt?: SortOrder
+    brevoSyncedAt?: SortOrder
+  }
+
+  export type IdempotencyKeyUserIdKeyCompoundUniqueInput = {
+    userId: string
+    key: string
+  }
+
+  export type IdempotencyKeyCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    key?: SortOrder
+    requestHash?: SortOrder
+    status?: SortOrder
+    responseBody?: SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type IdempotencyKeyMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    key?: SortOrder
+    requestHash?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type IdempotencyKeyMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    key?: SortOrder
+    requestHash?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrder
   }
 
   export type CityCreateNestedManyWithoutCountryInput = {
@@ -69262,6 +77473,34 @@ export namespace Prisma {
     connect?: PromoRedemptionWhereUniqueInput | PromoRedemptionWhereUniqueInput[]
   }
 
+  export type SupportTicketCreateNestedManyWithoutUserInput = {
+    create?: XOR<SupportTicketCreateWithoutUserInput, SupportTicketUncheckedCreateWithoutUserInput> | SupportTicketCreateWithoutUserInput[] | SupportTicketUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutUserInput | SupportTicketCreateOrConnectWithoutUserInput[]
+    createMany?: SupportTicketCreateManyUserInputEnvelope
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+  }
+
+  export type ReviewCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<ReviewCreateWithoutAuthorInput, ReviewUncheckedCreateWithoutAuthorInput> | ReviewCreateWithoutAuthorInput[] | ReviewUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutAuthorInput | ReviewCreateOrConnectWithoutAuthorInput[]
+    createMany?: ReviewCreateManyAuthorInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+  }
+
+  export type IdempotencyKeyCreateNestedManyWithoutUserInput = {
+    create?: XOR<IdempotencyKeyCreateWithoutUserInput, IdempotencyKeyUncheckedCreateWithoutUserInput> | IdempotencyKeyCreateWithoutUserInput[] | IdempotencyKeyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IdempotencyKeyCreateOrConnectWithoutUserInput | IdempotencyKeyCreateOrConnectWithoutUserInput[]
+    createMany?: IdempotencyKeyCreateManyUserInputEnvelope
+    connect?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+  }
+
+  export type MfaRecoveryCodeCreateNestedManyWithoutUserInput = {
+    create?: XOR<MfaRecoveryCodeCreateWithoutUserInput, MfaRecoveryCodeUncheckedCreateWithoutUserInput> | MfaRecoveryCodeCreateWithoutUserInput[] | MfaRecoveryCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: MfaRecoveryCodeCreateOrConnectWithoutUserInput | MfaRecoveryCodeCreateOrConnectWithoutUserInput[]
+    createMany?: MfaRecoveryCodeCreateManyUserInputEnvelope
+    connect?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+  }
+
   export type MakerProfileUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<MakerProfileCreateWithoutUserInput, MakerProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: MakerProfileCreateOrConnectWithoutUserInput
@@ -69330,6 +77569,34 @@ export namespace Prisma {
     connect?: PromoRedemptionWhereUniqueInput | PromoRedemptionWhereUniqueInput[]
   }
 
+  export type SupportTicketUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<SupportTicketCreateWithoutUserInput, SupportTicketUncheckedCreateWithoutUserInput> | SupportTicketCreateWithoutUserInput[] | SupportTicketUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutUserInput | SupportTicketCreateOrConnectWithoutUserInput[]
+    createMany?: SupportTicketCreateManyUserInputEnvelope
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+  }
+
+  export type ReviewUncheckedCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<ReviewCreateWithoutAuthorInput, ReviewUncheckedCreateWithoutAuthorInput> | ReviewCreateWithoutAuthorInput[] | ReviewUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutAuthorInput | ReviewCreateOrConnectWithoutAuthorInput[]
+    createMany?: ReviewCreateManyAuthorInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+  }
+
+  export type IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<IdempotencyKeyCreateWithoutUserInput, IdempotencyKeyUncheckedCreateWithoutUserInput> | IdempotencyKeyCreateWithoutUserInput[] | IdempotencyKeyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IdempotencyKeyCreateOrConnectWithoutUserInput | IdempotencyKeyCreateOrConnectWithoutUserInput[]
+    createMany?: IdempotencyKeyCreateManyUserInputEnvelope
+    connect?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+  }
+
+  export type MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<MfaRecoveryCodeCreateWithoutUserInput, MfaRecoveryCodeUncheckedCreateWithoutUserInput> | MfaRecoveryCodeCreateWithoutUserInput[] | MfaRecoveryCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: MfaRecoveryCodeCreateOrConnectWithoutUserInput | MfaRecoveryCodeCreateOrConnectWithoutUserInput[]
+    createMany?: MfaRecoveryCodeCreateManyUserInputEnvelope
+    connect?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+  }
+
   export type EnumUserRoleFieldUpdateOperationsInput = {
     set?: $Enums.UserRole
   }
@@ -69344,6 +77611,14 @@ export namespace Prisma {
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -69482,6 +77757,62 @@ export namespace Prisma {
     deleteMany?: PromoRedemptionScalarWhereInput | PromoRedemptionScalarWhereInput[]
   }
 
+  export type SupportTicketUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutUserInput, SupportTicketUncheckedCreateWithoutUserInput> | SupportTicketCreateWithoutUserInput[] | SupportTicketUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutUserInput | SupportTicketCreateOrConnectWithoutUserInput[]
+    upsert?: SupportTicketUpsertWithWhereUniqueWithoutUserInput | SupportTicketUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SupportTicketCreateManyUserInputEnvelope
+    set?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    disconnect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    delete?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    update?: SupportTicketUpdateWithWhereUniqueWithoutUserInput | SupportTicketUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SupportTicketUpdateManyWithWhereWithoutUserInput | SupportTicketUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
+  }
+
+  export type ReviewUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<ReviewCreateWithoutAuthorInput, ReviewUncheckedCreateWithoutAuthorInput> | ReviewCreateWithoutAuthorInput[] | ReviewUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutAuthorInput | ReviewCreateOrConnectWithoutAuthorInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutAuthorInput | ReviewUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: ReviewCreateManyAuthorInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutAuthorInput | ReviewUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutAuthorInput | ReviewUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type IdempotencyKeyUpdateManyWithoutUserNestedInput = {
+    create?: XOR<IdempotencyKeyCreateWithoutUserInput, IdempotencyKeyUncheckedCreateWithoutUserInput> | IdempotencyKeyCreateWithoutUserInput[] | IdempotencyKeyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IdempotencyKeyCreateOrConnectWithoutUserInput | IdempotencyKeyCreateOrConnectWithoutUserInput[]
+    upsert?: IdempotencyKeyUpsertWithWhereUniqueWithoutUserInput | IdempotencyKeyUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: IdempotencyKeyCreateManyUserInputEnvelope
+    set?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+    disconnect?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+    delete?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+    connect?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+    update?: IdempotencyKeyUpdateWithWhereUniqueWithoutUserInput | IdempotencyKeyUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: IdempotencyKeyUpdateManyWithWhereWithoutUserInput | IdempotencyKeyUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: IdempotencyKeyScalarWhereInput | IdempotencyKeyScalarWhereInput[]
+  }
+
+  export type MfaRecoveryCodeUpdateManyWithoutUserNestedInput = {
+    create?: XOR<MfaRecoveryCodeCreateWithoutUserInput, MfaRecoveryCodeUncheckedCreateWithoutUserInput> | MfaRecoveryCodeCreateWithoutUserInput[] | MfaRecoveryCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: MfaRecoveryCodeCreateOrConnectWithoutUserInput | MfaRecoveryCodeCreateOrConnectWithoutUserInput[]
+    upsert?: MfaRecoveryCodeUpsertWithWhereUniqueWithoutUserInput | MfaRecoveryCodeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: MfaRecoveryCodeCreateManyUserInputEnvelope
+    set?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+    disconnect?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+    delete?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+    connect?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+    update?: MfaRecoveryCodeUpdateWithWhereUniqueWithoutUserInput | MfaRecoveryCodeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: MfaRecoveryCodeUpdateManyWithWhereWithoutUserInput | MfaRecoveryCodeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: MfaRecoveryCodeScalarWhereInput | MfaRecoveryCodeScalarWhereInput[]
+  }
+
   export type MakerProfileUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<MakerProfileCreateWithoutUserInput, MakerProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: MakerProfileCreateOrConnectWithoutUserInput
@@ -69614,6 +77945,62 @@ export namespace Prisma {
     deleteMany?: PromoRedemptionScalarWhereInput | PromoRedemptionScalarWhereInput[]
   }
 
+  export type SupportTicketUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutUserInput, SupportTicketUncheckedCreateWithoutUserInput> | SupportTicketCreateWithoutUserInput[] | SupportTicketUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutUserInput | SupportTicketCreateOrConnectWithoutUserInput[]
+    upsert?: SupportTicketUpsertWithWhereUniqueWithoutUserInput | SupportTicketUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SupportTicketCreateManyUserInputEnvelope
+    set?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    disconnect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    delete?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    update?: SupportTicketUpdateWithWhereUniqueWithoutUserInput | SupportTicketUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SupportTicketUpdateManyWithWhereWithoutUserInput | SupportTicketUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
+  }
+
+  export type ReviewUncheckedUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<ReviewCreateWithoutAuthorInput, ReviewUncheckedCreateWithoutAuthorInput> | ReviewCreateWithoutAuthorInput[] | ReviewUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutAuthorInput | ReviewCreateOrConnectWithoutAuthorInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutAuthorInput | ReviewUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: ReviewCreateManyAuthorInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutAuthorInput | ReviewUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutAuthorInput | ReviewUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<IdempotencyKeyCreateWithoutUserInput, IdempotencyKeyUncheckedCreateWithoutUserInput> | IdempotencyKeyCreateWithoutUserInput[] | IdempotencyKeyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IdempotencyKeyCreateOrConnectWithoutUserInput | IdempotencyKeyCreateOrConnectWithoutUserInput[]
+    upsert?: IdempotencyKeyUpsertWithWhereUniqueWithoutUserInput | IdempotencyKeyUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: IdempotencyKeyCreateManyUserInputEnvelope
+    set?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+    disconnect?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+    delete?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+    connect?: IdempotencyKeyWhereUniqueInput | IdempotencyKeyWhereUniqueInput[]
+    update?: IdempotencyKeyUpdateWithWhereUniqueWithoutUserInput | IdempotencyKeyUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: IdempotencyKeyUpdateManyWithWhereWithoutUserInput | IdempotencyKeyUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: IdempotencyKeyScalarWhereInput | IdempotencyKeyScalarWhereInput[]
+  }
+
+  export type MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<MfaRecoveryCodeCreateWithoutUserInput, MfaRecoveryCodeUncheckedCreateWithoutUserInput> | MfaRecoveryCodeCreateWithoutUserInput[] | MfaRecoveryCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: MfaRecoveryCodeCreateOrConnectWithoutUserInput | MfaRecoveryCodeCreateOrConnectWithoutUserInput[]
+    upsert?: MfaRecoveryCodeUpsertWithWhereUniqueWithoutUserInput | MfaRecoveryCodeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: MfaRecoveryCodeCreateManyUserInputEnvelope
+    set?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+    disconnect?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+    delete?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+    connect?: MfaRecoveryCodeWhereUniqueInput | MfaRecoveryCodeWhereUniqueInput[]
+    update?: MfaRecoveryCodeUpdateWithWhereUniqueWithoutUserInput | MfaRecoveryCodeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: MfaRecoveryCodeUpdateManyWithWhereWithoutUserInput | MfaRecoveryCodeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: MfaRecoveryCodeScalarWhereInput | MfaRecoveryCodeScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutSessionsInput = {
     create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
@@ -69626,6 +78013,20 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutSessionsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSessionsInput, UserUpdateWithoutSessionsInput>, UserUncheckedUpdateWithoutSessionsInput>
+  }
+
+  export type UserCreateNestedOneWithoutRecoveryCodesInput = {
+    create?: XOR<UserCreateWithoutRecoveryCodesInput, UserUncheckedCreateWithoutRecoveryCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRecoveryCodesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutRecoveryCodesNestedInput = {
+    create?: XOR<UserCreateWithoutRecoveryCodesInput, UserUncheckedCreateWithoutRecoveryCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRecoveryCodesInput
+    upsert?: UserUpsertWithoutRecoveryCodesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRecoveryCodesInput, UserUpdateWithoutRecoveryCodesInput>, UserUncheckedUpdateWithoutRecoveryCodesInput>
   }
 
   export type UserCreateNestedOneWithoutVerificationsInput = {
@@ -70216,14 +78617,6 @@ export namespace Prisma {
     connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
   }
 
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type EnumProductStatusFieldUpdateOperationsInput = {
     set?: $Enums.ProductStatus
   }
@@ -70496,6 +78889,20 @@ export namespace Prisma {
     connect?: DisputeWhereUniqueInput | DisputeWhereUniqueInput[]
   }
 
+  export type RefundCreateNestedManyWithoutOrderInput = {
+    create?: XOR<RefundCreateWithoutOrderInput, RefundUncheckedCreateWithoutOrderInput> | RefundCreateWithoutOrderInput[] | RefundUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: RefundCreateOrConnectWithoutOrderInput | RefundCreateOrConnectWithoutOrderInput[]
+    createMany?: RefundCreateManyOrderInputEnvelope
+    connect?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+  }
+
+  export type SupportTicketCreateNestedManyWithoutOrderInput = {
+    create?: XOR<SupportTicketCreateWithoutOrderInput, SupportTicketUncheckedCreateWithoutOrderInput> | SupportTicketCreateWithoutOrderInput[] | SupportTicketUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutOrderInput | SupportTicketCreateOrConnectWithoutOrderInput[]
+    createMany?: SupportTicketCreateManyOrderInputEnvelope
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+  }
+
   export type InvoiceCreateNestedOneWithoutOrderInput = {
     create?: XOR<InvoiceCreateWithoutOrderInput, InvoiceUncheckedCreateWithoutOrderInput>
     connectOrCreate?: InvoiceCreateOrConnectWithoutOrderInput
@@ -70536,6 +78943,20 @@ export namespace Prisma {
     connect?: DisputeWhereUniqueInput | DisputeWhereUniqueInput[]
   }
 
+  export type RefundUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<RefundCreateWithoutOrderInput, RefundUncheckedCreateWithoutOrderInput> | RefundCreateWithoutOrderInput[] | RefundUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: RefundCreateOrConnectWithoutOrderInput | RefundCreateOrConnectWithoutOrderInput[]
+    createMany?: RefundCreateManyOrderInputEnvelope
+    connect?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+  }
+
+  export type SupportTicketUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<SupportTicketCreateWithoutOrderInput, SupportTicketUncheckedCreateWithoutOrderInput> | SupportTicketCreateWithoutOrderInput[] | SupportTicketUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutOrderInput | SupportTicketCreateOrConnectWithoutOrderInput[]
+    createMany?: SupportTicketCreateManyOrderInputEnvelope
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+  }
+
   export type InvoiceUncheckedCreateNestedOneWithoutOrderInput = {
     create?: XOR<InvoiceCreateWithoutOrderInput, InvoiceUncheckedCreateWithoutOrderInput>
     connectOrCreate?: InvoiceCreateOrConnectWithoutOrderInput
@@ -70550,6 +78971,10 @@ export namespace Prisma {
 
   export type EnumOrderStatusFieldUpdateOperationsInput = {
     set?: $Enums.OrderStatus
+  }
+
+  export type EnumPaymentModeFieldUpdateOperationsInput = {
+    set?: $Enums.PaymentMode
   }
 
   export type UserUpdateOneRequiredWithoutOrdersNestedInput = {
@@ -70626,6 +79051,34 @@ export namespace Prisma {
     deleteMany?: DisputeScalarWhereInput | DisputeScalarWhereInput[]
   }
 
+  export type RefundUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<RefundCreateWithoutOrderInput, RefundUncheckedCreateWithoutOrderInput> | RefundCreateWithoutOrderInput[] | RefundUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: RefundCreateOrConnectWithoutOrderInput | RefundCreateOrConnectWithoutOrderInput[]
+    upsert?: RefundUpsertWithWhereUniqueWithoutOrderInput | RefundUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: RefundCreateManyOrderInputEnvelope
+    set?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+    disconnect?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+    delete?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+    connect?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+    update?: RefundUpdateWithWhereUniqueWithoutOrderInput | RefundUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: RefundUpdateManyWithWhereWithoutOrderInput | RefundUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: RefundScalarWhereInput | RefundScalarWhereInput[]
+  }
+
+  export type SupportTicketUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutOrderInput, SupportTicketUncheckedCreateWithoutOrderInput> | SupportTicketCreateWithoutOrderInput[] | SupportTicketUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutOrderInput | SupportTicketCreateOrConnectWithoutOrderInput[]
+    upsert?: SupportTicketUpsertWithWhereUniqueWithoutOrderInput | SupportTicketUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: SupportTicketCreateManyOrderInputEnvelope
+    set?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    disconnect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    delete?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    update?: SupportTicketUpdateWithWhereUniqueWithoutOrderInput | SupportTicketUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: SupportTicketUpdateManyWithWhereWithoutOrderInput | SupportTicketUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
+  }
+
   export type InvoiceUpdateOneWithoutOrderNestedInput = {
     create?: XOR<InvoiceCreateWithoutOrderInput, InvoiceUncheckedCreateWithoutOrderInput>
     connectOrCreate?: InvoiceCreateOrConnectWithoutOrderInput
@@ -70700,6 +79153,34 @@ export namespace Prisma {
     update?: DisputeUpdateWithWhereUniqueWithoutOrderInput | DisputeUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: DisputeUpdateManyWithWhereWithoutOrderInput | DisputeUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: DisputeScalarWhereInput | DisputeScalarWhereInput[]
+  }
+
+  export type RefundUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<RefundCreateWithoutOrderInput, RefundUncheckedCreateWithoutOrderInput> | RefundCreateWithoutOrderInput[] | RefundUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: RefundCreateOrConnectWithoutOrderInput | RefundCreateOrConnectWithoutOrderInput[]
+    upsert?: RefundUpsertWithWhereUniqueWithoutOrderInput | RefundUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: RefundCreateManyOrderInputEnvelope
+    set?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+    disconnect?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+    delete?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+    connect?: RefundWhereUniqueInput | RefundWhereUniqueInput[]
+    update?: RefundUpdateWithWhereUniqueWithoutOrderInput | RefundUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: RefundUpdateManyWithWhereWithoutOrderInput | RefundUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: RefundScalarWhereInput | RefundScalarWhereInput[]
+  }
+
+  export type SupportTicketUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutOrderInput, SupportTicketUncheckedCreateWithoutOrderInput> | SupportTicketCreateWithoutOrderInput[] | SupportTicketUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutOrderInput | SupportTicketCreateOrConnectWithoutOrderInput[]
+    upsert?: SupportTicketUpsertWithWhereUniqueWithoutOrderInput | SupportTicketUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: SupportTicketCreateManyOrderInputEnvelope
+    set?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    disconnect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    delete?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    update?: SupportTicketUpdateWithWhereUniqueWithoutOrderInput | SupportTicketUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: SupportTicketUpdateManyWithWhereWithoutOrderInput | SupportTicketUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
   }
 
   export type InvoiceUncheckedUpdateOneWithoutOrderNestedInput = {
@@ -70914,6 +79395,18 @@ export namespace Prisma {
     connect?: ProductWhereUniqueInput
   }
 
+  export type ReviewCreateNestedOneWithoutOrderLineInput = {
+    create?: XOR<ReviewCreateWithoutOrderLineInput, ReviewUncheckedCreateWithoutOrderLineInput>
+    connectOrCreate?: ReviewCreateOrConnectWithoutOrderLineInput
+    connect?: ReviewWhereUniqueInput
+  }
+
+  export type ReviewUncheckedCreateNestedOneWithoutOrderLineInput = {
+    create?: XOR<ReviewCreateWithoutOrderLineInput, ReviewUncheckedCreateWithoutOrderLineInput>
+    connectOrCreate?: ReviewCreateOrConnectWithoutOrderLineInput
+    connect?: ReviewWhereUniqueInput
+  }
+
   export type SubOrderUpdateOneRequiredWithoutLinesNestedInput = {
     create?: XOR<SubOrderCreateWithoutLinesInput, SubOrderUncheckedCreateWithoutLinesInput>
     connectOrCreate?: SubOrderCreateOrConnectWithoutLinesInput
@@ -70928,6 +79421,26 @@ export namespace Prisma {
     upsert?: ProductUpsertWithoutOrderLinesInput
     connect?: ProductWhereUniqueInput
     update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutOrderLinesInput, ProductUpdateWithoutOrderLinesInput>, ProductUncheckedUpdateWithoutOrderLinesInput>
+  }
+
+  export type ReviewUpdateOneWithoutOrderLineNestedInput = {
+    create?: XOR<ReviewCreateWithoutOrderLineInput, ReviewUncheckedCreateWithoutOrderLineInput>
+    connectOrCreate?: ReviewCreateOrConnectWithoutOrderLineInput
+    upsert?: ReviewUpsertWithoutOrderLineInput
+    disconnect?: ReviewWhereInput | boolean
+    delete?: ReviewWhereInput | boolean
+    connect?: ReviewWhereUniqueInput
+    update?: XOR<XOR<ReviewUpdateToOneWithWhereWithoutOrderLineInput, ReviewUpdateWithoutOrderLineInput>, ReviewUncheckedUpdateWithoutOrderLineInput>
+  }
+
+  export type ReviewUncheckedUpdateOneWithoutOrderLineNestedInput = {
+    create?: XOR<ReviewCreateWithoutOrderLineInput, ReviewUncheckedCreateWithoutOrderLineInput>
+    connectOrCreate?: ReviewCreateOrConnectWithoutOrderLineInput
+    upsert?: ReviewUpsertWithoutOrderLineInput
+    disconnect?: ReviewWhereInput | boolean
+    delete?: ReviewWhereInput | boolean
+    connect?: ReviewWhereUniqueInput
+    update?: XOR<XOR<ReviewUpdateToOneWithWhereWithoutOrderLineInput, ReviewUpdateWithoutOrderLineInput>, ReviewUncheckedUpdateWithoutOrderLineInput>
   }
 
   export type CountryCreateNestedOneWithoutPaymentMethodsInput = {
@@ -71072,12 +79585,30 @@ export namespace Prisma {
     connect?: PaymentWhereUniqueInput
   }
 
-  export type PaymentUpdateOneRequiredWithoutRefundsNestedInput = {
+  export type OrderCreateNestedOneWithoutRefundsInput = {
+    create?: XOR<OrderCreateWithoutRefundsInput, OrderUncheckedCreateWithoutRefundsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutRefundsInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type PaymentUpdateOneWithoutRefundsNestedInput = {
     create?: XOR<PaymentCreateWithoutRefundsInput, PaymentUncheckedCreateWithoutRefundsInput>
     connectOrCreate?: PaymentCreateOrConnectWithoutRefundsInput
     upsert?: PaymentUpsertWithoutRefundsInput
+    disconnect?: PaymentWhereInput | boolean
+    delete?: PaymentWhereInput | boolean
     connect?: PaymentWhereUniqueInput
     update?: XOR<XOR<PaymentUpdateToOneWithWhereWithoutRefundsInput, PaymentUpdateWithoutRefundsInput>, PaymentUncheckedUpdateWithoutRefundsInput>
+  }
+
+  export type OrderUpdateOneWithoutRefundsNestedInput = {
+    create?: XOR<OrderCreateWithoutRefundsInput, OrderUncheckedCreateWithoutRefundsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutRefundsInput
+    upsert?: OrderUpsertWithoutRefundsInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutRefundsInput, OrderUpdateWithoutRefundsInput>, OrderUncheckedUpdateWithoutRefundsInput>
   }
 
   export type LedgerEntryCreateNestedManyWithoutAccountInput = {
@@ -71666,10 +80197,135 @@ export namespace Prisma {
     update?: XOR<XOR<MessageThreadUpdateToOneWithWhereWithoutMessagesInput, MessageThreadUpdateWithoutMessagesInput>, MessageThreadUncheckedUpdateWithoutMessagesInput>
   }
 
+  export type UserCreateNestedOneWithoutSupportTicketsInput = {
+    create?: XOR<UserCreateWithoutSupportTicketsInput, UserUncheckedCreateWithoutSupportTicketsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSupportTicketsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrderCreateNestedOneWithoutSupportTicketsInput = {
+    create?: XOR<OrderCreateWithoutSupportTicketsInput, OrderUncheckedCreateWithoutSupportTicketsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutSupportTicketsInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type SupportMessageCreateNestedManyWithoutTicketInput = {
+    create?: XOR<SupportMessageCreateWithoutTicketInput, SupportMessageUncheckedCreateWithoutTicketInput> | SupportMessageCreateWithoutTicketInput[] | SupportMessageUncheckedCreateWithoutTicketInput[]
+    connectOrCreate?: SupportMessageCreateOrConnectWithoutTicketInput | SupportMessageCreateOrConnectWithoutTicketInput[]
+    createMany?: SupportMessageCreateManyTicketInputEnvelope
+    connect?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+  }
+
+  export type SupportMessageUncheckedCreateNestedManyWithoutTicketInput = {
+    create?: XOR<SupportMessageCreateWithoutTicketInput, SupportMessageUncheckedCreateWithoutTicketInput> | SupportMessageCreateWithoutTicketInput[] | SupportMessageUncheckedCreateWithoutTicketInput[]
+    connectOrCreate?: SupportMessageCreateOrConnectWithoutTicketInput | SupportMessageCreateOrConnectWithoutTicketInput[]
+    createMany?: SupportMessageCreateManyTicketInputEnvelope
+    connect?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+  }
+
+  export type EnumTicketChannelFieldUpdateOperationsInput = {
+    set?: $Enums.TicketChannel
+  }
+
+  export type NullableEnumUserRoleFieldUpdateOperationsInput = {
+    set?: $Enums.UserRole | null
+  }
+
+  export type EnumTicketStatusFieldUpdateOperationsInput = {
+    set?: $Enums.TicketStatus
+  }
+
+  export type EnumTicketPriorityFieldUpdateOperationsInput = {
+    set?: $Enums.TicketPriority
+  }
+
+  export type UserUpdateOneWithoutSupportTicketsNestedInput = {
+    create?: XOR<UserCreateWithoutSupportTicketsInput, UserUncheckedCreateWithoutSupportTicketsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSupportTicketsInput
+    upsert?: UserUpsertWithoutSupportTicketsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSupportTicketsInput, UserUpdateWithoutSupportTicketsInput>, UserUncheckedUpdateWithoutSupportTicketsInput>
+  }
+
+  export type OrderUpdateOneWithoutSupportTicketsNestedInput = {
+    create?: XOR<OrderCreateWithoutSupportTicketsInput, OrderUncheckedCreateWithoutSupportTicketsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutSupportTicketsInput
+    upsert?: OrderUpsertWithoutSupportTicketsInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutSupportTicketsInput, OrderUpdateWithoutSupportTicketsInput>, OrderUncheckedUpdateWithoutSupportTicketsInput>
+  }
+
+  export type SupportMessageUpdateManyWithoutTicketNestedInput = {
+    create?: XOR<SupportMessageCreateWithoutTicketInput, SupportMessageUncheckedCreateWithoutTicketInput> | SupportMessageCreateWithoutTicketInput[] | SupportMessageUncheckedCreateWithoutTicketInput[]
+    connectOrCreate?: SupportMessageCreateOrConnectWithoutTicketInput | SupportMessageCreateOrConnectWithoutTicketInput[]
+    upsert?: SupportMessageUpsertWithWhereUniqueWithoutTicketInput | SupportMessageUpsertWithWhereUniqueWithoutTicketInput[]
+    createMany?: SupportMessageCreateManyTicketInputEnvelope
+    set?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+    disconnect?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+    delete?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+    connect?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+    update?: SupportMessageUpdateWithWhereUniqueWithoutTicketInput | SupportMessageUpdateWithWhereUniqueWithoutTicketInput[]
+    updateMany?: SupportMessageUpdateManyWithWhereWithoutTicketInput | SupportMessageUpdateManyWithWhereWithoutTicketInput[]
+    deleteMany?: SupportMessageScalarWhereInput | SupportMessageScalarWhereInput[]
+  }
+
+  export type SupportMessageUncheckedUpdateManyWithoutTicketNestedInput = {
+    create?: XOR<SupportMessageCreateWithoutTicketInput, SupportMessageUncheckedCreateWithoutTicketInput> | SupportMessageCreateWithoutTicketInput[] | SupportMessageUncheckedCreateWithoutTicketInput[]
+    connectOrCreate?: SupportMessageCreateOrConnectWithoutTicketInput | SupportMessageCreateOrConnectWithoutTicketInput[]
+    upsert?: SupportMessageUpsertWithWhereUniqueWithoutTicketInput | SupportMessageUpsertWithWhereUniqueWithoutTicketInput[]
+    createMany?: SupportMessageCreateManyTicketInputEnvelope
+    set?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+    disconnect?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+    delete?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+    connect?: SupportMessageWhereUniqueInput | SupportMessageWhereUniqueInput[]
+    update?: SupportMessageUpdateWithWhereUniqueWithoutTicketInput | SupportMessageUpdateWithWhereUniqueWithoutTicketInput[]
+    updateMany?: SupportMessageUpdateManyWithWhereWithoutTicketInput | SupportMessageUpdateManyWithWhereWithoutTicketInput[]
+    deleteMany?: SupportMessageScalarWhereInput | SupportMessageScalarWhereInput[]
+  }
+
+  export type SupportMessageCreatefileKeysInput = {
+    set: string[]
+  }
+
+  export type SupportTicketCreateNestedOneWithoutMessagesInput = {
+    create?: XOR<SupportTicketCreateWithoutMessagesInput, SupportTicketUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMessagesInput
+    connect?: SupportTicketWhereUniqueInput
+  }
+
+  export type SupportMessageUpdatefileKeysInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type SupportTicketUpdateOneRequiredWithoutMessagesNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutMessagesInput, SupportTicketUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMessagesInput
+    upsert?: SupportTicketUpsertWithoutMessagesInput
+    connect?: SupportTicketWhereUniqueInput
+    update?: XOR<XOR<SupportTicketUpdateToOneWithWhereWithoutMessagesInput, SupportTicketUpdateWithoutMessagesInput>, SupportTicketUncheckedUpdateWithoutMessagesInput>
+  }
+
   export type ProductCreateNestedOneWithoutReviewsInput = {
     create?: XOR<ProductCreateWithoutReviewsInput, ProductUncheckedCreateWithoutReviewsInput>
     connectOrCreate?: ProductCreateOrConnectWithoutReviewsInput
     connect?: ProductWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReviewsInput = {
+    create?: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrderLineCreateNestedOneWithoutReviewInput = {
+    create?: XOR<OrderLineCreateWithoutReviewInput, OrderLineUncheckedCreateWithoutReviewInput>
+    connectOrCreate?: OrderLineCreateOrConnectWithoutReviewInput
+    connect?: OrderLineWhereUniqueInput
   }
 
   export type ProductUpdateOneRequiredWithoutReviewsNestedInput = {
@@ -71678,6 +80334,22 @@ export namespace Prisma {
     upsert?: ProductUpsertWithoutReviewsInput
     connect?: ProductWhereUniqueInput
     update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutReviewsInput, ProductUpdateWithoutReviewsInput>, ProductUncheckedUpdateWithoutReviewsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutReviewsNestedInput = {
+    create?: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewsInput
+    upsert?: UserUpsertWithoutReviewsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewsInput, UserUpdateWithoutReviewsInput>, UserUncheckedUpdateWithoutReviewsInput>
+  }
+
+  export type OrderLineUpdateOneRequiredWithoutReviewNestedInput = {
+    create?: XOR<OrderLineCreateWithoutReviewInput, OrderLineUncheckedCreateWithoutReviewInput>
+    connectOrCreate?: OrderLineCreateOrConnectWithoutReviewInput
+    upsert?: OrderLineUpsertWithoutReviewInput
+    connect?: OrderLineWhereUniqueInput
+    update?: XOR<XOR<OrderLineUpdateToOneWithWhereWithoutReviewInput, OrderLineUpdateWithoutReviewInput>, OrderLineUncheckedUpdateWithoutReviewInput>
   }
 
   export type UserCreateNestedOneWithoutNotificationsInput = {
@@ -71692,10 +80364,6 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutNotificationsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
-  }
-
-  export type NullableEnumUserRoleFieldUpdateOperationsInput = {
-    set?: $Enums.UserRole | null
   }
 
   export type PromoRedemptionCreateNestedManyWithoutPromoCodeInput = {
@@ -71840,6 +80508,20 @@ export namespace Prisma {
     upsert?: OrderUpsertWithoutInvoiceInput
     connect?: OrderWhereUniqueInput
     update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutInvoiceInput, OrderUpdateWithoutInvoiceInput>, OrderUncheckedUpdateWithoutInvoiceInput>
+  }
+
+  export type UserCreateNestedOneWithoutIdempotencyKeysInput = {
+    create?: XOR<UserCreateWithoutIdempotencyKeysInput, UserUncheckedCreateWithoutIdempotencyKeysInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIdempotencyKeysInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutIdempotencyKeysNestedInput = {
+    create?: XOR<UserCreateWithoutIdempotencyKeysInput, UserUncheckedCreateWithoutIdempotencyKeysInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIdempotencyKeysInput
+    upsert?: UserUpsertWithoutIdempotencyKeysInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutIdempotencyKeysInput, UserUpdateWithoutIdempotencyKeysInput>, UserUncheckedUpdateWithoutIdempotencyKeysInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -72063,6 +80745,22 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -72168,22 +80866,6 @@ export namespace Prisma {
     not?: NestedEnumProductStatusFilter<$PrismaModel> | $Enums.ProductStatus
   }
 
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
   export type NestedEnumProductStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ProductStatus | EnumProductStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ProductStatus[] | ListEnumProductStatusFieldRefInput<$PrismaModel>
@@ -72201,6 +80883,13 @@ export namespace Prisma {
     not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
   }
 
+  export type NestedEnumPaymentModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMode | EnumPaymentModeFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMode[] | ListEnumPaymentModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMode[] | ListEnumPaymentModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentModeFilter<$PrismaModel> | $Enums.PaymentMode
+  }
+
   export type NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
     in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
@@ -72209,6 +80898,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPaymentModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMode | EnumPaymentModeFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMode[] | ListEnumPaymentModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMode[] | ListEnumPaymentModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentModeWithAggregatesFilter<$PrismaModel> | $Enums.PaymentMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentModeFilter<$PrismaModel>
+    _max?: NestedEnumPaymentModeFilter<$PrismaModel>
   }
 
   export type NestedEnumSubOrderStatusFilter<$PrismaModel = never> = {
@@ -72370,11 +81069,42 @@ export namespace Prisma {
     _max?: NestedEnumThreadPartyFilter<$PrismaModel>
   }
 
+  export type NestedEnumTicketChannelFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketChannel | EnumTicketChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketChannel[] | ListEnumTicketChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketChannel[] | ListEnumTicketChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketChannelFilter<$PrismaModel> | $Enums.TicketChannel
+  }
+
   export type NestedEnumUserRoleNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
     notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
     not?: NestedEnumUserRoleNullableFilter<$PrismaModel> | $Enums.UserRole | null
+  }
+
+  export type NestedEnumTicketStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketStatus | EnumTicketStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketStatusFilter<$PrismaModel> | $Enums.TicketStatus
+  }
+
+  export type NestedEnumTicketPriorityFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketPriority | EnumTicketPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketPriority[] | ListEnumTicketPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketPriority[] | ListEnumTicketPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketPriorityFilter<$PrismaModel> | $Enums.TicketPriority
+  }
+
+  export type NestedEnumTicketChannelWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketChannel | EnumTicketChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketChannel[] | ListEnumTicketChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketChannel[] | ListEnumTicketChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketChannelWithAggregatesFilter<$PrismaModel> | $Enums.TicketChannel
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTicketChannelFilter<$PrismaModel>
+    _max?: NestedEnumTicketChannelFilter<$PrismaModel>
   }
 
   export type NestedEnumUserRoleNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -72385,6 +81115,26 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumUserRoleNullableFilter<$PrismaModel>
     _max?: NestedEnumUserRoleNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTicketStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketStatus | EnumTicketStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketStatusWithAggregatesFilter<$PrismaModel> | $Enums.TicketStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTicketStatusFilter<$PrismaModel>
+    _max?: NestedEnumTicketStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTicketPriorityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TicketPriority | EnumTicketPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.TicketPriority[] | ListEnumTicketPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TicketPriority[] | ListEnumTicketPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumTicketPriorityWithAggregatesFilter<$PrismaModel> | $Enums.TicketPriority
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTicketPriorityFilter<$PrismaModel>
+    _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -73068,6 +81818,7 @@ export namespace Prisma {
     expiresAt: Date | string
     revokedAt?: Date | string | null
     createdAt?: Date | string
+    mfaVerifiedAt?: Date | string | null
   }
 
   export type SessionUncheckedCreateWithoutUserInput = {
@@ -73078,6 +81829,7 @@ export namespace Prisma {
     expiresAt: Date | string
     revokedAt?: Date | string | null
     createdAt?: Date | string
+    mfaVerifiedAt?: Date | string | null
   }
 
   export type SessionCreateOrConnectWithoutUserInput = {
@@ -73108,6 +81860,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -73122,6 +81877,8 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutOrderInput
     shipments?: ShipmentCreateNestedManyWithoutOrderInput
     disputes?: DisputeCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
     invoice?: InvoiceCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
   }
@@ -73144,6 +81901,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -73158,6 +81918,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
     shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
     disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
     invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -73315,6 +82077,144 @@ export namespace Prisma {
 
   export type PromoRedemptionCreateManyUserInputEnvelope = {
     data: PromoRedemptionCreateManyUserInput | PromoRedemptionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SupportTicketCreateWithoutUserInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    order?: OrderCreateNestedOneWithoutSupportTicketsInput
+    messages?: SupportMessageCreateNestedManyWithoutTicketInput
+  }
+
+  export type SupportTicketUncheckedCreateWithoutUserInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    orderId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    messages?: SupportMessageUncheckedCreateNestedManyWithoutTicketInput
+  }
+
+  export type SupportTicketCreateOrConnectWithoutUserInput = {
+    where: SupportTicketWhereUniqueInput
+    create: XOR<SupportTicketCreateWithoutUserInput, SupportTicketUncheckedCreateWithoutUserInput>
+  }
+
+  export type SupportTicketCreateManyUserInputEnvelope = {
+    data: SupportTicketCreateManyUserInput | SupportTicketCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ReviewCreateWithoutAuthorInput = {
+    id?: string
+    rating: number
+    body?: string | null
+    status?: string
+    createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
+    product: ProductCreateNestedOneWithoutReviewsInput
+    orderLine: OrderLineCreateNestedOneWithoutReviewInput
+  }
+
+  export type ReviewUncheckedCreateWithoutAuthorInput = {
+    id?: string
+    productId: string
+    orderLineId: string
+    rating: number
+    body?: string | null
+    status?: string
+    createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
+  }
+
+  export type ReviewCreateOrConnectWithoutAuthorInput = {
+    where: ReviewWhereUniqueInput
+    create: XOR<ReviewCreateWithoutAuthorInput, ReviewUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type ReviewCreateManyAuthorInputEnvelope = {
+    data: ReviewCreateManyAuthorInput | ReviewCreateManyAuthorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type IdempotencyKeyCreateWithoutUserInput = {
+    id?: string
+    key: string
+    requestHash: string
+    status?: string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    expiresAt: Date | string
+  }
+
+  export type IdempotencyKeyUncheckedCreateWithoutUserInput = {
+    id?: string
+    key: string
+    requestHash: string
+    status?: string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    expiresAt: Date | string
+  }
+
+  export type IdempotencyKeyCreateOrConnectWithoutUserInput = {
+    where: IdempotencyKeyWhereUniqueInput
+    create: XOR<IdempotencyKeyCreateWithoutUserInput, IdempotencyKeyUncheckedCreateWithoutUserInput>
+  }
+
+  export type IdempotencyKeyCreateManyUserInputEnvelope = {
+    data: IdempotencyKeyCreateManyUserInput | IdempotencyKeyCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MfaRecoveryCodeCreateWithoutUserInput = {
+    id?: string
+    codeHash: string
+    usedAt?: Date | string | null
+  }
+
+  export type MfaRecoveryCodeUncheckedCreateWithoutUserInput = {
+    id?: string
+    codeHash: string
+    usedAt?: Date | string | null
+  }
+
+  export type MfaRecoveryCodeCreateOrConnectWithoutUserInput = {
+    where: MfaRecoveryCodeWhereUniqueInput
+    create: XOR<MfaRecoveryCodeCreateWithoutUserInput, MfaRecoveryCodeUncheckedCreateWithoutUserInput>
+  }
+
+  export type MfaRecoveryCodeCreateManyUserInputEnvelope = {
+    data: MfaRecoveryCodeCreateManyUserInput | MfaRecoveryCodeCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -73500,6 +82400,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFilter<"Session"> | Date | string
     revokedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
     createdAt?: DateTimeFilter<"Session"> | Date | string
+    mfaVerifiedAt?: DateTimeNullableFilter<"Session"> | Date | string | null
   }
 
   export type OrderUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -73540,6 +82441,9 @@ export namespace Prisma {
     vatXof?: IntFilter<"Order"> | number
     discountXof?: IntFilter<"Order"> | number
     totalXof?: IntFilter<"Order"> | number
+    paymentMode?: EnumPaymentModeFilter<"Order"> | $Enums.PaymentMode
+    upfrontXof?: IntFilter<"Order"> | number
+    balanceXof?: IntFilter<"Order"> | number
     promoCodeId?: StringNullableFilter<"Order"> | string | null
     placedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     deliveredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -73699,6 +82603,134 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"PromoRedemption"> | Date | string
   }
 
+  export type SupportTicketUpsertWithWhereUniqueWithoutUserInput = {
+    where: SupportTicketWhereUniqueInput
+    update: XOR<SupportTicketUpdateWithoutUserInput, SupportTicketUncheckedUpdateWithoutUserInput>
+    create: XOR<SupportTicketCreateWithoutUserInput, SupportTicketUncheckedCreateWithoutUserInput>
+  }
+
+  export type SupportTicketUpdateWithWhereUniqueWithoutUserInput = {
+    where: SupportTicketWhereUniqueInput
+    data: XOR<SupportTicketUpdateWithoutUserInput, SupportTicketUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SupportTicketUpdateManyWithWhereWithoutUserInput = {
+    where: SupportTicketScalarWhereInput
+    data: XOR<SupportTicketUpdateManyMutationInput, SupportTicketUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type SupportTicketScalarWhereInput = {
+    AND?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
+    OR?: SupportTicketScalarWhereInput[]
+    NOT?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
+    id?: StringFilter<"SupportTicket"> | string
+    reference?: StringFilter<"SupportTicket"> | string
+    channel?: EnumTicketChannelFilter<"SupportTicket"> | $Enums.TicketChannel
+    userId?: StringNullableFilter<"SupportTicket"> | string | null
+    authorRole?: EnumUserRoleNullableFilter<"SupportTicket"> | $Enums.UserRole | null
+    guestName?: StringNullableFilter<"SupportTicket"> | string | null
+    guestEmail?: StringNullableFilter<"SupportTicket"> | string | null
+    category?: StringFilter<"SupportTicket"> | string
+    subject?: StringFilter<"SupportTicket"> | string
+    status?: EnumTicketStatusFilter<"SupportTicket"> | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFilter<"SupportTicket"> | $Enums.TicketPriority
+    orderId?: StringNullableFilter<"SupportTicket"> | string | null
+    createdAt?: DateTimeFilter<"SupportTicket"> | Date | string
+    updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
+    lastMessageAt?: DateTimeFilter<"SupportTicket"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"SupportTicket"> | Date | string | null
+    closedAt?: DateTimeNullableFilter<"SupportTicket"> | Date | string | null
+  }
+
+  export type ReviewUpsertWithWhereUniqueWithoutAuthorInput = {
+    where: ReviewWhereUniqueInput
+    update: XOR<ReviewUpdateWithoutAuthorInput, ReviewUncheckedUpdateWithoutAuthorInput>
+    create: XOR<ReviewCreateWithoutAuthorInput, ReviewUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type ReviewUpdateWithWhereUniqueWithoutAuthorInput = {
+    where: ReviewWhereUniqueInput
+    data: XOR<ReviewUpdateWithoutAuthorInput, ReviewUncheckedUpdateWithoutAuthorInput>
+  }
+
+  export type ReviewUpdateManyWithWhereWithoutAuthorInput = {
+    where: ReviewScalarWhereInput
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyWithoutAuthorInput>
+  }
+
+  export type ReviewScalarWhereInput = {
+    AND?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+    OR?: ReviewScalarWhereInput[]
+    NOT?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+    id?: StringFilter<"Review"> | string
+    productId?: StringFilter<"Review"> | string
+    authorId?: StringFilter<"Review"> | string
+    orderLineId?: StringFilter<"Review"> | string
+    rating?: IntFilter<"Review"> | number
+    body?: StringNullableFilter<"Review"> | string | null
+    status?: StringFilter<"Review"> | string
+    createdAt?: DateTimeFilter<"Review"> | Date | string
+    moderatedAt?: DateTimeNullableFilter<"Review"> | Date | string | null
+    moderatorId?: StringNullableFilter<"Review"> | string | null
+    rejectReason?: StringNullableFilter<"Review"> | string | null
+  }
+
+  export type IdempotencyKeyUpsertWithWhereUniqueWithoutUserInput = {
+    where: IdempotencyKeyWhereUniqueInput
+    update: XOR<IdempotencyKeyUpdateWithoutUserInput, IdempotencyKeyUncheckedUpdateWithoutUserInput>
+    create: XOR<IdempotencyKeyCreateWithoutUserInput, IdempotencyKeyUncheckedCreateWithoutUserInput>
+  }
+
+  export type IdempotencyKeyUpdateWithWhereUniqueWithoutUserInput = {
+    where: IdempotencyKeyWhereUniqueInput
+    data: XOR<IdempotencyKeyUpdateWithoutUserInput, IdempotencyKeyUncheckedUpdateWithoutUserInput>
+  }
+
+  export type IdempotencyKeyUpdateManyWithWhereWithoutUserInput = {
+    where: IdempotencyKeyScalarWhereInput
+    data: XOR<IdempotencyKeyUpdateManyMutationInput, IdempotencyKeyUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type IdempotencyKeyScalarWhereInput = {
+    AND?: IdempotencyKeyScalarWhereInput | IdempotencyKeyScalarWhereInput[]
+    OR?: IdempotencyKeyScalarWhereInput[]
+    NOT?: IdempotencyKeyScalarWhereInput | IdempotencyKeyScalarWhereInput[]
+    id?: StringFilter<"IdempotencyKey"> | string
+    userId?: StringFilter<"IdempotencyKey"> | string
+    key?: StringFilter<"IdempotencyKey"> | string
+    requestHash?: StringFilter<"IdempotencyKey"> | string
+    status?: StringFilter<"IdempotencyKey"> | string
+    responseBody?: JsonNullableFilter<"IdempotencyKey">
+    createdAt?: DateTimeFilter<"IdempotencyKey"> | Date | string
+    expiresAt?: DateTimeFilter<"IdempotencyKey"> | Date | string
+  }
+
+  export type MfaRecoveryCodeUpsertWithWhereUniqueWithoutUserInput = {
+    where: MfaRecoveryCodeWhereUniqueInput
+    update: XOR<MfaRecoveryCodeUpdateWithoutUserInput, MfaRecoveryCodeUncheckedUpdateWithoutUserInput>
+    create: XOR<MfaRecoveryCodeCreateWithoutUserInput, MfaRecoveryCodeUncheckedCreateWithoutUserInput>
+  }
+
+  export type MfaRecoveryCodeUpdateWithWhereUniqueWithoutUserInput = {
+    where: MfaRecoveryCodeWhereUniqueInput
+    data: XOR<MfaRecoveryCodeUpdateWithoutUserInput, MfaRecoveryCodeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type MfaRecoveryCodeUpdateManyWithWhereWithoutUserInput = {
+    where: MfaRecoveryCodeScalarWhereInput
+    data: XOR<MfaRecoveryCodeUpdateManyMutationInput, MfaRecoveryCodeUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type MfaRecoveryCodeScalarWhereInput = {
+    AND?: MfaRecoveryCodeScalarWhereInput | MfaRecoveryCodeScalarWhereInput[]
+    OR?: MfaRecoveryCodeScalarWhereInput[]
+    NOT?: MfaRecoveryCodeScalarWhereInput | MfaRecoveryCodeScalarWhereInput[]
+    id?: StringFilter<"MfaRecoveryCode"> | string
+    userId?: StringFilter<"MfaRecoveryCode"> | string
+    codeHash?: StringFilter<"MfaRecoveryCode"> | string
+    usedAt?: DateTimeNullableFilter<"MfaRecoveryCode"> | Date | string | null
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     role: $Enums.UserRole
@@ -73713,6 +82745,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -73726,6 +82760,10 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -73742,6 +82780,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -73755,6 +82795,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -73787,6 +82831,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73800,6 +82846,10 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -73816,6 +82866,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73829,6 +82881,166 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutRecoveryCodesInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileCreateNestedOneWithoutUserInput
+    courier?: CourierProfileCreateNestedOneWithoutUserInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    carts?: CartCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutRecoveryCodesInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileUncheckedCreateNestedOneWithoutUserInput
+    courier?: CourierProfileUncheckedCreateNestedOneWithoutUserInput
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    carts?: CartUncheckedCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutRecoveryCodesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutRecoveryCodesInput, UserUncheckedCreateWithoutRecoveryCodesInput>
+  }
+
+  export type UserUpsertWithoutRecoveryCodesInput = {
+    update: XOR<UserUpdateWithoutRecoveryCodesInput, UserUncheckedUpdateWithoutRecoveryCodesInput>
+    create: XOR<UserCreateWithoutRecoveryCodesInput, UserUncheckedCreateWithoutRecoveryCodesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutRecoveryCodesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutRecoveryCodesInput, UserUncheckedUpdateWithoutRecoveryCodesInput>
+  }
+
+  export type UserUpdateWithoutRecoveryCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUpdateOneWithoutUserNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    carts?: CartUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutRecoveryCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUncheckedUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUncheckedUpdateOneWithoutUserNestedInput
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    carts?: CartUncheckedUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutVerificationsInput = {
@@ -73845,6 +83057,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -73858,6 +83072,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVerificationsInput = {
@@ -73874,6 +83092,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -73887,6 +83107,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVerificationsInput = {
@@ -73919,6 +83143,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73932,6 +83158,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerificationsInput = {
@@ -73948,6 +83178,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73961,6 +83193,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutTermsAcceptanceInput = {
@@ -73977,6 +83213,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -73990,6 +83228,10 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTermsAcceptanceInput = {
@@ -74006,6 +83248,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -74019,6 +83263,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTermsAcceptanceInput = {
@@ -74051,6 +83299,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74064,6 +83314,10 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTermsAcceptanceInput = {
@@ -74080,6 +83334,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74093,6 +83349,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAddressesInput = {
@@ -74109,6 +83369,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -74122,6 +83384,10 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAddressesInput = {
@@ -74138,6 +83404,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -74151,6 +83419,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAddressesInput = {
@@ -74206,6 +83478,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74219,6 +83493,10 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAddressesInput = {
@@ -74235,6 +83513,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74248,6 +83528,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CityUpsertWithoutAddressesInput = {
@@ -74293,6 +83577,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -74306,6 +83592,10 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMakerInput = {
@@ -74322,6 +83612,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -74335,6 +83627,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMakerInput = {
@@ -74450,6 +83746,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -74476,6 +83775,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -74558,6 +83860,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74571,6 +83875,10 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMakerInput = {
@@ -74587,6 +83895,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74600,6 +83910,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CityUpsertWithoutMakerProfilesInput = {
@@ -74709,6 +84023,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFilter<"SubOrder"> | number
     commissionSubtotalXof?: IntFilter<"SubOrder"> | number
     deliveryFeeXof?: IntFilter<"SubOrder"> | number
+    balanceDueXof?: IntFilter<"SubOrder"> | number
+    cashCollectedAt?: DateTimeNullableFilter<"SubOrder"> | Date | string | null
+    cashCollectedXof?: IntNullableFilter<"SubOrder"> | number | null
     acceptedAt?: DateTimeNullableFilter<"SubOrder"> | Date | string | null
     rejectedAt?: DateTimeNullableFilter<"SubOrder"> | Date | string | null
     rejectReason?: StringNullableFilter<"SubOrder"> | string | null
@@ -75030,6 +84347,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -75043,6 +84362,10 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCourierInput = {
@@ -75059,6 +84382,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -75072,6 +84397,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCourierInput = {
@@ -75242,6 +84571,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75255,6 +84586,10 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCourierInput = {
@@ -75271,6 +84606,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75284,6 +84621,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type KycDocumentUpsertWithWhereUniqueWithoutCourierInput = {
@@ -75788,6 +85129,7 @@ export namespace Prisma {
     finalPriceXof: number
     lineTotalXof: number
     subOrder: SubOrderCreateNestedOneWithoutLinesInput
+    review?: ReviewCreateNestedOneWithoutOrderLineInput
   }
 
   export type OrderLineUncheckedCreateWithoutProductInput = {
@@ -75800,6 +85142,7 @@ export namespace Prisma {
     commissionXof: number
     finalPriceXof: number
     lineTotalXof: number
+    review?: ReviewUncheckedCreateNestedOneWithoutOrderLineInput
   }
 
   export type OrderLineCreateOrConnectWithoutProductInput = {
@@ -75836,12 +85179,15 @@ export namespace Prisma {
 
   export type ReviewCreateWithoutProductInput = {
     id?: string
-    authorId: string
-    orderLineId: string
     rating: number
     body?: string | null
     status?: string
     createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
+    author: UserCreateNestedOneWithoutReviewsInput
+    orderLine: OrderLineCreateNestedOneWithoutReviewInput
   }
 
   export type ReviewUncheckedCreateWithoutProductInput = {
@@ -75852,6 +85198,9 @@ export namespace Prisma {
     body?: string | null
     status?: string
     createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
   }
 
   export type ReviewCreateOrConnectWithoutProductInput = {
@@ -76083,20 +85432,6 @@ export namespace Prisma {
     data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyWithoutProductInput>
   }
 
-  export type ReviewScalarWhereInput = {
-    AND?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
-    OR?: ReviewScalarWhereInput[]
-    NOT?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
-    id?: StringFilter<"Review"> | string
-    productId?: StringFilter<"Review"> | string
-    authorId?: StringFilter<"Review"> | string
-    orderLineId?: StringFilter<"Review"> | string
-    rating?: IntFilter<"Review"> | number
-    body?: StringNullableFilter<"Review"> | string | null
-    status?: StringFilter<"Review"> | string
-    createdAt?: DateTimeFilter<"Review"> | Date | string
-  }
-
   export type ProductCreateWithoutImagesInput = {
     id?: string
     slug: string
@@ -76263,6 +85598,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -76276,6 +85613,10 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCartsInput = {
@@ -76292,6 +85633,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -76305,6 +85648,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCartsInput = {
@@ -76359,6 +85706,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76372,6 +85721,10 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCartsInput = {
@@ -76388,6 +85741,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76401,6 +85756,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CartItemUpsertWithWhereUniqueWithoutCartInput = {
@@ -76637,6 +85996,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -76650,6 +86011,10 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -76666,6 +86031,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -76679,6 +86046,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -76736,6 +86107,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -76762,6 +86136,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -76963,6 +86340,90 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type RefundCreateWithoutOrderInput = {
+    id?: string
+    amountXof: number
+    reason: string
+    status?: string
+    providerRef?: string | null
+    requestedBy: string
+    createdAt?: Date | string
+    settledAt?: Date | string | null
+    payment?: PaymentCreateNestedOneWithoutRefundsInput
+  }
+
+  export type RefundUncheckedCreateWithoutOrderInput = {
+    id?: string
+    paymentId?: string | null
+    amountXof: number
+    reason: string
+    status?: string
+    providerRef?: string | null
+    requestedBy: string
+    createdAt?: Date | string
+    settledAt?: Date | string | null
+  }
+
+  export type RefundCreateOrConnectWithoutOrderInput = {
+    where: RefundWhereUniqueInput
+    create: XOR<RefundCreateWithoutOrderInput, RefundUncheckedCreateWithoutOrderInput>
+  }
+
+  export type RefundCreateManyOrderInputEnvelope = {
+    data: RefundCreateManyOrderInput | RefundCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SupportTicketCreateWithoutOrderInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    user?: UserCreateNestedOneWithoutSupportTicketsInput
+    messages?: SupportMessageCreateNestedManyWithoutTicketInput
+  }
+
+  export type SupportTicketUncheckedCreateWithoutOrderInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    userId?: string | null
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    messages?: SupportMessageUncheckedCreateNestedManyWithoutTicketInput
+  }
+
+  export type SupportTicketCreateOrConnectWithoutOrderInput = {
+    where: SupportTicketWhereUniqueInput
+    create: XOR<SupportTicketCreateWithoutOrderInput, SupportTicketUncheckedCreateWithoutOrderInput>
+  }
+
+  export type SupportTicketCreateManyOrderInputEnvelope = {
+    data: SupportTicketCreateManyOrderInput | SupportTicketCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
   export type InvoiceCreateWithoutOrderInput = {
     id?: string
     number: string
@@ -77036,6 +86497,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77049,6 +86512,10 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -77065,6 +86532,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77078,6 +86547,10 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PromoCodeUpsertWithoutOrdersInput = {
@@ -77237,6 +86710,54 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Dispute"> | Date | string
   }
 
+  export type RefundUpsertWithWhereUniqueWithoutOrderInput = {
+    where: RefundWhereUniqueInput
+    update: XOR<RefundUpdateWithoutOrderInput, RefundUncheckedUpdateWithoutOrderInput>
+    create: XOR<RefundCreateWithoutOrderInput, RefundUncheckedCreateWithoutOrderInput>
+  }
+
+  export type RefundUpdateWithWhereUniqueWithoutOrderInput = {
+    where: RefundWhereUniqueInput
+    data: XOR<RefundUpdateWithoutOrderInput, RefundUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type RefundUpdateManyWithWhereWithoutOrderInput = {
+    where: RefundScalarWhereInput
+    data: XOR<RefundUpdateManyMutationInput, RefundUncheckedUpdateManyWithoutOrderInput>
+  }
+
+  export type RefundScalarWhereInput = {
+    AND?: RefundScalarWhereInput | RefundScalarWhereInput[]
+    OR?: RefundScalarWhereInput[]
+    NOT?: RefundScalarWhereInput | RefundScalarWhereInput[]
+    id?: StringFilter<"Refund"> | string
+    paymentId?: StringNullableFilter<"Refund"> | string | null
+    orderId?: StringNullableFilter<"Refund"> | string | null
+    amountXof?: IntFilter<"Refund"> | number
+    reason?: StringFilter<"Refund"> | string
+    status?: StringFilter<"Refund"> | string
+    providerRef?: StringNullableFilter<"Refund"> | string | null
+    requestedBy?: StringFilter<"Refund"> | string
+    createdAt?: DateTimeFilter<"Refund"> | Date | string
+    settledAt?: DateTimeNullableFilter<"Refund"> | Date | string | null
+  }
+
+  export type SupportTicketUpsertWithWhereUniqueWithoutOrderInput = {
+    where: SupportTicketWhereUniqueInput
+    update: XOR<SupportTicketUpdateWithoutOrderInput, SupportTicketUncheckedUpdateWithoutOrderInput>
+    create: XOR<SupportTicketCreateWithoutOrderInput, SupportTicketUncheckedCreateWithoutOrderInput>
+  }
+
+  export type SupportTicketUpdateWithWhereUniqueWithoutOrderInput = {
+    where: SupportTicketWhereUniqueInput
+    data: XOR<SupportTicketUpdateWithoutOrderInput, SupportTicketUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type SupportTicketUpdateManyWithWhereWithoutOrderInput = {
+    where: SupportTicketScalarWhereInput
+    data: XOR<SupportTicketUpdateManyMutationInput, SupportTicketUncheckedUpdateManyWithoutOrderInput>
+  }
+
   export type InvoiceUpsertWithoutOrderInput = {
     update: XOR<InvoiceUpdateWithoutOrderInput, InvoiceUncheckedUpdateWithoutOrderInput>
     create: XOR<InvoiceCreateWithoutOrderInput, InvoiceUncheckedCreateWithoutOrderInput>
@@ -77315,6 +86836,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -77329,6 +86853,8 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutOrderInput
     shipments?: ShipmentCreateNestedManyWithoutOrderInput
     disputes?: DisputeCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
     invoice?: InvoiceCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
   }
@@ -77352,6 +86878,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -77365,6 +86894,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
     shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
     disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
     invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -77467,6 +86998,7 @@ export namespace Prisma {
     finalPriceXof: number
     lineTotalXof: number
     product: ProductCreateNestedOneWithoutOrderLinesInput
+    review?: ReviewCreateNestedOneWithoutOrderLineInput
   }
 
   export type OrderLineUncheckedCreateWithoutSubOrderInput = {
@@ -77479,6 +87011,7 @@ export namespace Prisma {
     commissionXof: number
     finalPriceXof: number
     lineTotalXof: number
+    review?: ReviewUncheckedCreateNestedOneWithoutOrderLineInput
   }
 
   export type OrderLineCreateOrConnectWithoutSubOrderInput = {
@@ -77676,6 +87209,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -77690,6 +87226,8 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
   }
@@ -77713,6 +87251,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -77726,6 +87267,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -77984,6 +87527,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -78011,6 +87557,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -78105,6 +87654,37 @@ export namespace Prisma {
     create: XOR<ProductCreateWithoutOrderLinesInput, ProductUncheckedCreateWithoutOrderLinesInput>
   }
 
+  export type ReviewCreateWithoutOrderLineInput = {
+    id?: string
+    rating: number
+    body?: string | null
+    status?: string
+    createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
+    product: ProductCreateNestedOneWithoutReviewsInput
+    author: UserCreateNestedOneWithoutReviewsInput
+  }
+
+  export type ReviewUncheckedCreateWithoutOrderLineInput = {
+    id?: string
+    productId: string
+    authorId: string
+    rating: number
+    body?: string | null
+    status?: string
+    createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
+  }
+
+  export type ReviewCreateOrConnectWithoutOrderLineInput = {
+    where: ReviewWhereUniqueInput
+    create: XOR<ReviewCreateWithoutOrderLineInput, ReviewUncheckedCreateWithoutOrderLineInput>
+  }
+
   export type SubOrderUpsertWithoutLinesInput = {
     update: XOR<SubOrderUpdateWithoutLinesInput, SubOrderUncheckedUpdateWithoutLinesInput>
     create: XOR<SubOrderCreateWithoutLinesInput, SubOrderUncheckedCreateWithoutLinesInput>
@@ -78123,6 +87703,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78150,6 +87733,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78245,6 +87831,43 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
   }
 
+  export type ReviewUpsertWithoutOrderLineInput = {
+    update: XOR<ReviewUpdateWithoutOrderLineInput, ReviewUncheckedUpdateWithoutOrderLineInput>
+    create: XOR<ReviewCreateWithoutOrderLineInput, ReviewUncheckedCreateWithoutOrderLineInput>
+    where?: ReviewWhereInput
+  }
+
+  export type ReviewUpdateToOneWithWhereWithoutOrderLineInput = {
+    where?: ReviewWhereInput
+    data: XOR<ReviewUpdateWithoutOrderLineInput, ReviewUncheckedUpdateWithoutOrderLineInput>
+  }
+
+  export type ReviewUpdateWithoutOrderLineInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    product?: ProductUpdateOneRequiredWithoutReviewsNestedInput
+    author?: UserUpdateOneRequiredWithoutReviewsNestedInput
+  }
+
+  export type ReviewUncheckedUpdateWithoutOrderLineInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type CountryCreateWithoutPaymentMethodsInput = {
     id?: string
     iso2: string
@@ -78327,6 +87950,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -78341,6 +87967,8 @@ export namespace Prisma {
     subOrders?: SubOrderCreateNestedManyWithoutOrderInput
     shipments?: ShipmentCreateNestedManyWithoutOrderInput
     disputes?: DisputeCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
     invoice?: InvoiceCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
   }
@@ -78364,6 +87992,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -78377,6 +88008,8 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedCreateNestedManyWithoutOrderInput
     shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
     disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
     invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -78431,10 +88064,12 @@ export namespace Prisma {
     requestedBy: string
     createdAt?: Date | string
     settledAt?: Date | string | null
+    order?: OrderCreateNestedOneWithoutRefundsInput
   }
 
   export type RefundUncheckedCreateWithoutPaymentInput = {
     id?: string
+    orderId?: string | null
     amountXof: number
     reason: string
     status?: string
@@ -78483,6 +88118,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -78497,6 +88135,8 @@ export namespace Prisma {
     subOrders?: SubOrderUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
   }
@@ -78520,6 +88160,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -78533,6 +88176,8 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -78584,21 +88229,6 @@ export namespace Prisma {
   export type RefundUpdateManyWithWhereWithoutPaymentInput = {
     where: RefundScalarWhereInput
     data: XOR<RefundUpdateManyMutationInput, RefundUncheckedUpdateManyWithoutPaymentInput>
-  }
-
-  export type RefundScalarWhereInput = {
-    AND?: RefundScalarWhereInput | RefundScalarWhereInput[]
-    OR?: RefundScalarWhereInput[]
-    NOT?: RefundScalarWhereInput | RefundScalarWhereInput[]
-    id?: StringFilter<"Refund"> | string
-    paymentId?: StringFilter<"Refund"> | string
-    amountXof?: IntFilter<"Refund"> | number
-    reason?: StringFilter<"Refund"> | string
-    status?: StringFilter<"Refund"> | string
-    providerRef?: StringNullableFilter<"Refund"> | string | null
-    requestedBy?: StringFilter<"Refund"> | string
-    createdAt?: DateTimeFilter<"Refund"> | Date | string
-    settledAt?: DateTimeNullableFilter<"Refund"> | Date | string | null
   }
 
   export type PaymentCreateWithoutEventsInput = {
@@ -78760,6 +88390,93 @@ export namespace Prisma {
     create: XOR<PaymentCreateWithoutRefundsInput, PaymentUncheckedCreateWithoutRefundsInput>
   }
 
+  export type OrderCreateWithoutRefundsInput = {
+    id?: string
+    reference: string
+    status?: $Enums.OrderStatus
+    shipFullName: string
+    shipPhone: string
+    shipCityId: string
+    shipLine1: string
+    shipLandmark?: string | null
+    shipLatitude?: number | null
+    shipLongitude?: number | null
+    itemsMakerTotalXof: number
+    commissionTotalXof: number
+    itemsFinalTotalXof: number
+    deliveryTotalXof: number
+    vatXof?: number
+    discountXof?: number
+    totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
+    placedAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    validatedAt?: Date | string | null
+    autoValidateAt?: Date | string | null
+    completedAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: UserCreateNestedOneWithoutOrdersInput
+    promoCode?: PromoCodeCreateNestedOneWithoutOrdersInput
+    subOrders?: SubOrderCreateNestedManyWithoutOrderInput
+    payments?: PaymentCreateNestedManyWithoutOrderInput
+    shipments?: ShipmentCreateNestedManyWithoutOrderInput
+    disputes?: DisputeCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
+    invoice?: InvoiceCreateNestedOneWithoutOrderInput
+    promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutRefundsInput = {
+    id?: string
+    reference: string
+    customerId: string
+    status?: $Enums.OrderStatus
+    shipFullName: string
+    shipPhone: string
+    shipCityId: string
+    shipLine1: string
+    shipLandmark?: string | null
+    shipLatitude?: number | null
+    shipLongitude?: number | null
+    itemsMakerTotalXof: number
+    commissionTotalXof: number
+    itemsFinalTotalXof: number
+    deliveryTotalXof: number
+    vatXof?: number
+    discountXof?: number
+    totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
+    promoCodeId?: string | null
+    placedAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    validatedAt?: Date | string | null
+    autoValidateAt?: Date | string | null
+    completedAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subOrders?: SubOrderUncheckedCreateNestedManyWithoutOrderInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
+    shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
+    disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
+    invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
+    promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutRefundsInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutRefundsInput, OrderUncheckedCreateWithoutRefundsInput>
+  }
+
   export type PaymentUpsertWithoutRefundsInput = {
     update: XOR<PaymentUpdateWithoutRefundsInput, PaymentUncheckedUpdateWithoutRefundsInput>
     create: XOR<PaymentCreateWithoutRefundsInput, PaymentUncheckedCreateWithoutRefundsInput>
@@ -78815,6 +88532,99 @@ export namespace Prisma {
     failureMessage?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     events?: PaymentEventUncheckedUpdateManyWithoutPaymentNestedInput
+  }
+
+  export type OrderUpsertWithoutRefundsInput = {
+    update: XOR<OrderUpdateWithoutRefundsInput, OrderUncheckedUpdateWithoutRefundsInput>
+    create: XOR<OrderCreateWithoutRefundsInput, OrderUncheckedCreateWithoutRefundsInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutRefundsInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutRefundsInput, OrderUncheckedUpdateWithoutRefundsInput>
+  }
+
+  export type OrderUpdateWithoutRefundsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    shipFullName?: StringFieldUpdateOperationsInput | string
+    shipPhone?: StringFieldUpdateOperationsInput | string
+    shipCityId?: StringFieldUpdateOperationsInput | string
+    shipLine1?: StringFieldUpdateOperationsInput | string
+    shipLandmark?: NullableStringFieldUpdateOperationsInput | string | null
+    shipLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    shipLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    itemsMakerTotalXof?: IntFieldUpdateOperationsInput | number
+    commissionTotalXof?: IntFieldUpdateOperationsInput | number
+    itemsFinalTotalXof?: IntFieldUpdateOperationsInput | number
+    deliveryTotalXof?: IntFieldUpdateOperationsInput | number
+    vatXof?: IntFieldUpdateOperationsInput | number
+    discountXof?: IntFieldUpdateOperationsInput | number
+    totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
+    placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    autoValidateAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    promoCode?: PromoCodeUpdateOneWithoutOrdersNestedInput
+    subOrders?: SubOrderUpdateManyWithoutOrderNestedInput
+    payments?: PaymentUpdateManyWithoutOrderNestedInput
+    shipments?: ShipmentUpdateManyWithoutOrderNestedInput
+    disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
+    invoice?: InvoiceUpdateOneWithoutOrderNestedInput
+    promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutRefundsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    shipFullName?: StringFieldUpdateOperationsInput | string
+    shipPhone?: StringFieldUpdateOperationsInput | string
+    shipCityId?: StringFieldUpdateOperationsInput | string
+    shipLine1?: StringFieldUpdateOperationsInput | string
+    shipLandmark?: NullableStringFieldUpdateOperationsInput | string | null
+    shipLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    shipLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    itemsMakerTotalXof?: IntFieldUpdateOperationsInput | number
+    commissionTotalXof?: IntFieldUpdateOperationsInput | number
+    itemsFinalTotalXof?: IntFieldUpdateOperationsInput | number
+    deliveryTotalXof?: IntFieldUpdateOperationsInput | number
+    vatXof?: IntFieldUpdateOperationsInput | number
+    discountXof?: IntFieldUpdateOperationsInput | number
+    totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    autoValidateAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subOrders?: SubOrderUncheckedUpdateManyWithoutOrderNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
+    shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
+    disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
+    invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
+    promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type LedgerEntryCreateWithoutAccountInput = {
@@ -79129,6 +88939,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -79156,6 +88969,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -79303,6 +89119,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79330,6 +89149,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79625,6 +89447,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -79639,6 +89464,8 @@ export namespace Prisma {
     subOrders?: SubOrderCreateNestedManyWithoutOrderInput
     payments?: PaymentCreateNestedManyWithoutOrderInput
     disputes?: DisputeCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
     invoice?: InvoiceCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
   }
@@ -79662,6 +89489,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -79675,6 +89505,8 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedCreateNestedManyWithoutOrderInput
     payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
     disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
     invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -79691,6 +89523,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -79718,6 +89553,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -79911,6 +89749,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79925,6 +89766,8 @@ export namespace Prisma {
     subOrders?: SubOrderUpdateManyWithoutOrderNestedInput
     payments?: PaymentUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
   }
@@ -79948,6 +89791,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79961,6 +89807,8 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedUpdateManyWithoutOrderNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -79983,6 +89831,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80010,6 +89861,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80353,6 +90207,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -80367,6 +90224,8 @@ export namespace Prisma {
     subOrders?: SubOrderCreateNestedManyWithoutOrderInput
     payments?: PaymentCreateNestedManyWithoutOrderInput
     shipments?: ShipmentCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
     invoice?: InvoiceCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
   }
@@ -80390,6 +90249,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -80403,6 +90265,8 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedCreateNestedManyWithoutOrderInput
     payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
     shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
     invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -80419,6 +90283,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -80446,6 +90313,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -80524,6 +90394,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80538,6 +90411,8 @@ export namespace Prisma {
     subOrders?: SubOrderUpdateManyWithoutOrderNestedInput
     payments?: PaymentUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
   }
@@ -80561,6 +90436,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80574,6 +90452,8 @@ export namespace Prisma {
     subOrders?: SubOrderUncheckedUpdateManyWithoutOrderNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -80596,6 +90476,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80623,6 +90506,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80864,6 +90750,498 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateWithoutSupportTicketsInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileCreateNestedOneWithoutUserInput
+    courier?: CourierProfileCreateNestedOneWithoutUserInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    carts?: CartCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSupportTicketsInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileUncheckedCreateNestedOneWithoutUserInput
+    courier?: CourierProfileUncheckedCreateNestedOneWithoutUserInput
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    carts?: CartUncheckedCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSupportTicketsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSupportTicketsInput, UserUncheckedCreateWithoutSupportTicketsInput>
+  }
+
+  export type OrderCreateWithoutSupportTicketsInput = {
+    id?: string
+    reference: string
+    status?: $Enums.OrderStatus
+    shipFullName: string
+    shipPhone: string
+    shipCityId: string
+    shipLine1: string
+    shipLandmark?: string | null
+    shipLatitude?: number | null
+    shipLongitude?: number | null
+    itemsMakerTotalXof: number
+    commissionTotalXof: number
+    itemsFinalTotalXof: number
+    deliveryTotalXof: number
+    vatXof?: number
+    discountXof?: number
+    totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
+    placedAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    validatedAt?: Date | string | null
+    autoValidateAt?: Date | string | null
+    completedAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: UserCreateNestedOneWithoutOrdersInput
+    promoCode?: PromoCodeCreateNestedOneWithoutOrdersInput
+    subOrders?: SubOrderCreateNestedManyWithoutOrderInput
+    payments?: PaymentCreateNestedManyWithoutOrderInput
+    shipments?: ShipmentCreateNestedManyWithoutOrderInput
+    disputes?: DisputeCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    invoice?: InvoiceCreateNestedOneWithoutOrderInput
+    promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutSupportTicketsInput = {
+    id?: string
+    reference: string
+    customerId: string
+    status?: $Enums.OrderStatus
+    shipFullName: string
+    shipPhone: string
+    shipCityId: string
+    shipLine1: string
+    shipLandmark?: string | null
+    shipLatitude?: number | null
+    shipLongitude?: number | null
+    itemsMakerTotalXof: number
+    commissionTotalXof: number
+    itemsFinalTotalXof: number
+    deliveryTotalXof: number
+    vatXof?: number
+    discountXof?: number
+    totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
+    promoCodeId?: string | null
+    placedAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    validatedAt?: Date | string | null
+    autoValidateAt?: Date | string | null
+    completedAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subOrders?: SubOrderUncheckedCreateNestedManyWithoutOrderInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
+    shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
+    disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
+    promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutSupportTicketsInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutSupportTicketsInput, OrderUncheckedCreateWithoutSupportTicketsInput>
+  }
+
+  export type SupportMessageCreateWithoutTicketInput = {
+    id?: string
+    authorId?: string | null
+    fromStaff?: boolean
+    internal?: boolean
+    body: string
+    fileKeys?: SupportMessageCreatefileKeysInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type SupportMessageUncheckedCreateWithoutTicketInput = {
+    id?: string
+    authorId?: string | null
+    fromStaff?: boolean
+    internal?: boolean
+    body: string
+    fileKeys?: SupportMessageCreatefileKeysInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type SupportMessageCreateOrConnectWithoutTicketInput = {
+    where: SupportMessageWhereUniqueInput
+    create: XOR<SupportMessageCreateWithoutTicketInput, SupportMessageUncheckedCreateWithoutTicketInput>
+  }
+
+  export type SupportMessageCreateManyTicketInputEnvelope = {
+    data: SupportMessageCreateManyTicketInput | SupportMessageCreateManyTicketInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutSupportTicketsInput = {
+    update: XOR<UserUpdateWithoutSupportTicketsInput, UserUncheckedUpdateWithoutSupportTicketsInput>
+    create: XOR<UserCreateWithoutSupportTicketsInput, UserUncheckedCreateWithoutSupportTicketsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSupportTicketsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSupportTicketsInput, UserUncheckedUpdateWithoutSupportTicketsInput>
+  }
+
+  export type UserUpdateWithoutSupportTicketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUpdateOneWithoutUserNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    carts?: CartUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSupportTicketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUncheckedUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUncheckedUpdateOneWithoutUserNestedInput
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    carts?: CartUncheckedUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type OrderUpsertWithoutSupportTicketsInput = {
+    update: XOR<OrderUpdateWithoutSupportTicketsInput, OrderUncheckedUpdateWithoutSupportTicketsInput>
+    create: XOR<OrderCreateWithoutSupportTicketsInput, OrderUncheckedCreateWithoutSupportTicketsInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutSupportTicketsInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutSupportTicketsInput, OrderUncheckedUpdateWithoutSupportTicketsInput>
+  }
+
+  export type OrderUpdateWithoutSupportTicketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    shipFullName?: StringFieldUpdateOperationsInput | string
+    shipPhone?: StringFieldUpdateOperationsInput | string
+    shipCityId?: StringFieldUpdateOperationsInput | string
+    shipLine1?: StringFieldUpdateOperationsInput | string
+    shipLandmark?: NullableStringFieldUpdateOperationsInput | string | null
+    shipLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    shipLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    itemsMakerTotalXof?: IntFieldUpdateOperationsInput | number
+    commissionTotalXof?: IntFieldUpdateOperationsInput | number
+    itemsFinalTotalXof?: IntFieldUpdateOperationsInput | number
+    deliveryTotalXof?: IntFieldUpdateOperationsInput | number
+    vatXof?: IntFieldUpdateOperationsInput | number
+    discountXof?: IntFieldUpdateOperationsInput | number
+    totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
+    placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    autoValidateAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    promoCode?: PromoCodeUpdateOneWithoutOrdersNestedInput
+    subOrders?: SubOrderUpdateManyWithoutOrderNestedInput
+    payments?: PaymentUpdateManyWithoutOrderNestedInput
+    shipments?: ShipmentUpdateManyWithoutOrderNestedInput
+    disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    invoice?: InvoiceUpdateOneWithoutOrderNestedInput
+    promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutSupportTicketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    shipFullName?: StringFieldUpdateOperationsInput | string
+    shipPhone?: StringFieldUpdateOperationsInput | string
+    shipCityId?: StringFieldUpdateOperationsInput | string
+    shipLine1?: StringFieldUpdateOperationsInput | string
+    shipLandmark?: NullableStringFieldUpdateOperationsInput | string | null
+    shipLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    shipLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    itemsMakerTotalXof?: IntFieldUpdateOperationsInput | number
+    commissionTotalXof?: IntFieldUpdateOperationsInput | number
+    itemsFinalTotalXof?: IntFieldUpdateOperationsInput | number
+    deliveryTotalXof?: IntFieldUpdateOperationsInput | number
+    vatXof?: IntFieldUpdateOperationsInput | number
+    discountXof?: IntFieldUpdateOperationsInput | number
+    totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    autoValidateAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subOrders?: SubOrderUncheckedUpdateManyWithoutOrderNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
+    shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
+    disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
+    promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
+  }
+
+  export type SupportMessageUpsertWithWhereUniqueWithoutTicketInput = {
+    where: SupportMessageWhereUniqueInput
+    update: XOR<SupportMessageUpdateWithoutTicketInput, SupportMessageUncheckedUpdateWithoutTicketInput>
+    create: XOR<SupportMessageCreateWithoutTicketInput, SupportMessageUncheckedCreateWithoutTicketInput>
+  }
+
+  export type SupportMessageUpdateWithWhereUniqueWithoutTicketInput = {
+    where: SupportMessageWhereUniqueInput
+    data: XOR<SupportMessageUpdateWithoutTicketInput, SupportMessageUncheckedUpdateWithoutTicketInput>
+  }
+
+  export type SupportMessageUpdateManyWithWhereWithoutTicketInput = {
+    where: SupportMessageScalarWhereInput
+    data: XOR<SupportMessageUpdateManyMutationInput, SupportMessageUncheckedUpdateManyWithoutTicketInput>
+  }
+
+  export type SupportMessageScalarWhereInput = {
+    AND?: SupportMessageScalarWhereInput | SupportMessageScalarWhereInput[]
+    OR?: SupportMessageScalarWhereInput[]
+    NOT?: SupportMessageScalarWhereInput | SupportMessageScalarWhereInput[]
+    id?: StringFilter<"SupportMessage"> | string
+    ticketId?: StringFilter<"SupportMessage"> | string
+    authorId?: StringNullableFilter<"SupportMessage"> | string | null
+    fromStaff?: BoolFilter<"SupportMessage"> | boolean
+    internal?: BoolFilter<"SupportMessage"> | boolean
+    body?: StringFilter<"SupportMessage"> | string
+    fileKeys?: StringNullableListFilter<"SupportMessage">
+    createdAt?: DateTimeFilter<"SupportMessage"> | Date | string
+  }
+
+  export type SupportTicketCreateWithoutMessagesInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    user?: UserCreateNestedOneWithoutSupportTicketsInput
+    order?: OrderCreateNestedOneWithoutSupportTicketsInput
+  }
+
+  export type SupportTicketUncheckedCreateWithoutMessagesInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    userId?: string | null
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    orderId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+  }
+
+  export type SupportTicketCreateOrConnectWithoutMessagesInput = {
+    where: SupportTicketWhereUniqueInput
+    create: XOR<SupportTicketCreateWithoutMessagesInput, SupportTicketUncheckedCreateWithoutMessagesInput>
+  }
+
+  export type SupportTicketUpsertWithoutMessagesInput = {
+    update: XOR<SupportTicketUpdateWithoutMessagesInput, SupportTicketUncheckedUpdateWithoutMessagesInput>
+    create: XOR<SupportTicketCreateWithoutMessagesInput, SupportTicketUncheckedCreateWithoutMessagesInput>
+    where?: SupportTicketWhereInput
+  }
+
+  export type SupportTicketUpdateToOneWithWhereWithoutMessagesInput = {
+    where?: SupportTicketWhereInput
+    data: XOR<SupportTicketUpdateWithoutMessagesInput, SupportTicketUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type SupportTicketUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneWithoutSupportTicketsNestedInput
+    order?: OrderUpdateOneWithoutSupportTicketsNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type ProductCreateWithoutReviewsInput = {
     id?: string
     slug: string
@@ -80935,6 +91313,112 @@ export namespace Prisma {
   export type ProductCreateOrConnectWithoutReviewsInput = {
     where: ProductWhereUniqueInput
     create: XOR<ProductCreateWithoutReviewsInput, ProductUncheckedCreateWithoutReviewsInput>
+  }
+
+  export type UserCreateWithoutReviewsInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileCreateNestedOneWithoutUserInput
+    courier?: CourierProfileCreateNestedOneWithoutUserInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    carts?: CartCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutReviewsInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileUncheckedCreateNestedOneWithoutUserInput
+    courier?: CourierProfileUncheckedCreateNestedOneWithoutUserInput
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    carts?: CartUncheckedCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutReviewsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
+  }
+
+  export type OrderLineCreateWithoutReviewInput = {
+    id?: string
+    productName: string
+    quantity: number
+    makerPriceXof: number
+    commissionBps: number
+    commissionXof: number
+    finalPriceXof: number
+    lineTotalXof: number
+    subOrder: SubOrderCreateNestedOneWithoutLinesInput
+    product: ProductCreateNestedOneWithoutOrderLinesInput
+  }
+
+  export type OrderLineUncheckedCreateWithoutReviewInput = {
+    id?: string
+    subOrderId: string
+    productId: string
+    productName: string
+    quantity: number
+    makerPriceXof: number
+    commissionBps: number
+    commissionXof: number
+    finalPriceXof: number
+    lineTotalXof: number
+  }
+
+  export type OrderLineCreateOrConnectWithoutReviewInput = {
+    where: OrderLineWhereUniqueInput
+    create: XOR<OrderLineCreateWithoutReviewInput, OrderLineUncheckedCreateWithoutReviewInput>
   }
 
   export type ProductUpsertWithoutReviewsInput = {
@@ -81016,6 +91500,124 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
   }
 
+  export type UserUpsertWithoutReviewsInput = {
+    update: XOR<UserUpdateWithoutReviewsInput, UserUncheckedUpdateWithoutReviewsInput>
+    create: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReviewsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReviewsInput, UserUncheckedUpdateWithoutReviewsInput>
+  }
+
+  export type UserUpdateWithoutReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUpdateOneWithoutUserNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    carts?: CartUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUncheckedUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUncheckedUpdateOneWithoutUserNestedInput
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    carts?: CartUncheckedUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type OrderLineUpsertWithoutReviewInput = {
+    update: XOR<OrderLineUpdateWithoutReviewInput, OrderLineUncheckedUpdateWithoutReviewInput>
+    create: XOR<OrderLineCreateWithoutReviewInput, OrderLineUncheckedCreateWithoutReviewInput>
+    where?: OrderLineWhereInput
+  }
+
+  export type OrderLineUpdateToOneWithWhereWithoutReviewInput = {
+    where?: OrderLineWhereInput
+    data: XOR<OrderLineUpdateWithoutReviewInput, OrderLineUncheckedUpdateWithoutReviewInput>
+  }
+
+  export type OrderLineUpdateWithoutReviewInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productName?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    makerPriceXof?: IntFieldUpdateOperationsInput | number
+    commissionBps?: IntFieldUpdateOperationsInput | number
+    commissionXof?: IntFieldUpdateOperationsInput | number
+    finalPriceXof?: IntFieldUpdateOperationsInput | number
+    lineTotalXof?: IntFieldUpdateOperationsInput | number
+    subOrder?: SubOrderUpdateOneRequiredWithoutLinesNestedInput
+    product?: ProductUpdateOneRequiredWithoutOrderLinesNestedInput
+  }
+
+  export type OrderLineUncheckedUpdateWithoutReviewInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subOrderId?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    productName?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    makerPriceXof?: IntFieldUpdateOperationsInput | number
+    commissionBps?: IntFieldUpdateOperationsInput | number
+    commissionXof?: IntFieldUpdateOperationsInput | number
+    finalPriceXof?: IntFieldUpdateOperationsInput | number
+    lineTotalXof?: IntFieldUpdateOperationsInput | number
+  }
+
   export type UserCreateWithoutNotificationsInput = {
     id?: string
     role: $Enums.UserRole
@@ -81030,6 +91632,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -81043,6 +91647,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -81059,6 +91667,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -81072,6 +91682,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
     promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -81104,6 +91718,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81117,6 +91733,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -81133,6 +91753,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81146,6 +91768,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PromoRedemptionCreateWithoutPromoCodeInput = {
@@ -81192,6 +91818,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -81206,6 +91835,8 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutOrderInput
     shipments?: ShipmentCreateNestedManyWithoutOrderInput
     disputes?: DisputeCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
     invoice?: InvoiceCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
   }
@@ -81229,6 +91860,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -81242,6 +91876,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
     shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
     disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
     invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
     promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -81345,6 +91981,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -81358,6 +91996,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPromoRedemptionsInput = {
@@ -81374,6 +92016,8 @@ export namespace Prisma {
     lastName: string
     locale?: string
     mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
     lastLoginAt?: Date | string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -81387,6 +92031,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPromoRedemptionsInput = {
@@ -81412,6 +92060,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -81427,6 +92078,8 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutOrderInput
     shipments?: ShipmentCreateNestedManyWithoutOrderInput
     disputes?: DisputeCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
     invoice?: InvoiceCreateNestedOneWithoutOrderInput
   }
 
@@ -81449,6 +92102,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -81463,6 +92119,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
     shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
     disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
     invoice?: InvoiceUncheckedCreateNestedOneWithoutOrderInput
   }
 
@@ -81545,6 +92203,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81558,6 +92218,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPromoRedemptionsInput = {
@@ -81574,6 +92238,8 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     locale?: StringFieldUpdateOperationsInput | string
     mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81587,6 +92253,10 @@ export namespace Prisma {
     termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrderUpsertWithoutPromoRedemptionInput = {
@@ -81618,6 +92288,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -81633,6 +92306,8 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUpdateOneWithoutOrderNestedInput
   }
 
@@ -81655,6 +92330,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -81669,6 +92347,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
   }
 
@@ -81690,6 +92370,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -81705,6 +92388,8 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutOrderInput
     shipments?: ShipmentCreateNestedManyWithoutOrderInput
     disputes?: DisputeCreateNestedManyWithoutOrderInput
+    refunds?: RefundCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutOrderInput
     promoRedemption?: PromoRedemptionCreateNestedOneWithoutOrderInput
   }
 
@@ -81727,6 +92412,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -81741,6 +92429,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutOrderInput
     shipments?: ShipmentUncheckedCreateNestedManyWithoutOrderInput
     disputes?: DisputeUncheckedCreateNestedManyWithoutOrderInput
+    refunds?: RefundUncheckedCreateNestedManyWithoutOrderInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutOrderInput
     promoRedemption?: PromoRedemptionUncheckedCreateNestedOneWithoutOrderInput
   }
 
@@ -81778,6 +92468,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -81793,6 +92486,8 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
   }
 
@@ -81815,6 +92510,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -81829,7 +92527,165 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
+  }
+
+  export type UserCreateWithoutIdempotencyKeysInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileCreateNestedOneWithoutUserInput
+    courier?: CourierProfileCreateNestedOneWithoutUserInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    carts?: CartCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutIdempotencyKeysInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileUncheckedCreateNestedOneWithoutUserInput
+    courier?: CourierProfileUncheckedCreateNestedOneWithoutUserInput
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    carts?: CartUncheckedCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutIdempotencyKeysInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutIdempotencyKeysInput, UserUncheckedCreateWithoutIdempotencyKeysInput>
+  }
+
+  export type UserUpsertWithoutIdempotencyKeysInput = {
+    update: XOR<UserUpdateWithoutIdempotencyKeysInput, UserUncheckedUpdateWithoutIdempotencyKeysInput>
+    create: XOR<UserCreateWithoutIdempotencyKeysInput, UserUncheckedCreateWithoutIdempotencyKeysInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutIdempotencyKeysInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutIdempotencyKeysInput, UserUncheckedUpdateWithoutIdempotencyKeysInput>
+  }
+
+  export type UserUpdateWithoutIdempotencyKeysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUpdateOneWithoutUserNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    carts?: CartUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutIdempotencyKeysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUncheckedUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUncheckedUpdateOneWithoutUserNestedInput
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    carts?: CartUncheckedUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CityCreateManyCountryInput = {
@@ -82189,6 +93045,7 @@ export namespace Prisma {
     expiresAt: Date | string
     revokedAt?: Date | string | null
     createdAt?: Date | string
+    mfaVerifiedAt?: Date | string | null
   }
 
   export type OrderCreateManyCustomerInput = {
@@ -82209,6 +93066,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     promoCodeId?: string | null
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
@@ -82268,6 +93128,54 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type SupportTicketCreateManyUserInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    orderId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+  }
+
+  export type ReviewCreateManyAuthorInput = {
+    id?: string
+    productId: string
+    orderLineId: string
+    rating: number
+    body?: string | null
+    status?: string
+    createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
+  }
+
+  export type IdempotencyKeyCreateManyUserInput = {
+    id?: string
+    key: string
+    requestHash: string
+    status?: string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    expiresAt: Date | string
+  }
+
+  export type MfaRecoveryCodeCreateManyUserInput = {
+    id?: string
+    codeHash: string
+    usedAt?: Date | string | null
+  }
+
   export type AddressUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     label?: NullableStringFieldUpdateOperationsInput | string | null
@@ -82321,6 +93229,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    mfaVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SessionUncheckedUpdateWithoutUserInput = {
@@ -82331,6 +93240,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    mfaVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SessionUncheckedUpdateManyWithoutUserInput = {
@@ -82341,6 +93251,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    mfaVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type OrderUpdateWithoutCustomerInput = {
@@ -82361,6 +93272,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -82375,6 +93289,8 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
   }
@@ -82397,6 +93313,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -82411,6 +93330,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -82433,6 +93354,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -82588,6 +93512,152 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SupportTicketUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: OrderUpdateOneWithoutSupportTicketsNestedInput
+    messages?: SupportMessageUpdateManyWithoutTicketNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    messages?: SupportMessageUncheckedUpdateManyWithoutTicketNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ReviewUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    product?: ProductUpdateOneRequiredWithoutReviewsNestedInput
+    orderLine?: OrderLineUpdateOneRequiredWithoutReviewNestedInput
+  }
+
+  export type ReviewUncheckedUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    orderLineId?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReviewUncheckedUpdateManyWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    orderLineId?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type IdempotencyKeyUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IdempotencyKeyUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IdempotencyKeyUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MfaRecoveryCodeUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type MfaRecoveryCodeUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type MfaRecoveryCodeUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type ProductCreateManyMakerInput = {
     id?: string
     slug: string
@@ -82626,6 +93696,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -82754,6 +93827,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -82780,6 +93856,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -82805,6 +93884,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83251,6 +94333,9 @@ export namespace Prisma {
     body?: string | null
     status?: string
     createdAt?: Date | string
+    moderatedAt?: Date | string | null
+    moderatorId?: string | null
+    rejectReason?: string | null
   }
 
   export type ProductImageUpdateWithoutProductInput = {
@@ -83284,6 +94369,7 @@ export namespace Prisma {
     finalPriceXof?: IntFieldUpdateOperationsInput | number
     lineTotalXof?: IntFieldUpdateOperationsInput | number
     subOrder?: SubOrderUpdateOneRequiredWithoutLinesNestedInput
+    review?: ReviewUpdateOneWithoutOrderLineNestedInput
   }
 
   export type OrderLineUncheckedUpdateWithoutProductInput = {
@@ -83296,6 +94382,7 @@ export namespace Prisma {
     commissionXof?: IntFieldUpdateOperationsInput | number
     finalPriceXof?: IntFieldUpdateOperationsInput | number
     lineTotalXof?: IntFieldUpdateOperationsInput | number
+    review?: ReviewUncheckedUpdateOneWithoutOrderLineNestedInput
   }
 
   export type OrderLineUncheckedUpdateManyWithoutProductInput = {
@@ -83330,12 +94417,15 @@ export namespace Prisma {
 
   export type ReviewUpdateWithoutProductInput = {
     id?: StringFieldUpdateOperationsInput | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    orderLineId?: StringFieldUpdateOperationsInput | string
     rating?: IntFieldUpdateOperationsInput | number
     body?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    author?: UserUpdateOneRequiredWithoutReviewsNestedInput
+    orderLine?: OrderLineUpdateOneRequiredWithoutReviewNestedInput
   }
 
   export type ReviewUncheckedUpdateWithoutProductInput = {
@@ -83346,6 +94436,9 @@ export namespace Prisma {
     body?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReviewUncheckedUpdateManyWithoutProductInput = {
@@ -83356,6 +94449,9 @@ export namespace Prisma {
     body?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    moderatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    moderatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CartItemCreateManyCartInput = {
@@ -83390,6 +94486,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof: number
     commissionSubtotalXof: number
     deliveryFeeXof?: number
+    balanceDueXof?: number
+    cashCollectedAt?: Date | string | null
+    cashCollectedXof?: number | null
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     rejectReason?: string | null
@@ -83470,6 +94569,37 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type RefundCreateManyOrderInput = {
+    id?: string
+    paymentId?: string | null
+    amountXof: number
+    reason: string
+    status?: string
+    providerRef?: string | null
+    requestedBy: string
+    createdAt?: Date | string
+    settledAt?: Date | string | null
+  }
+
+  export type SupportTicketCreateManyOrderInput = {
+    id?: string
+    reference: string
+    channel?: $Enums.TicketChannel
+    userId?: string | null
+    authorRole?: $Enums.UserRole | null
+    guestName?: string | null
+    guestEmail?: string | null
+    category: string
+    subject: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+  }
+
   export type SubOrderUpdateWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
     reference?: StringFieldUpdateOperationsInput | string
@@ -83477,6 +94607,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83503,6 +94636,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83528,6 +94664,9 @@ export namespace Prisma {
     itemsMakerSubtotalXof?: IntFieldUpdateOperationsInput | number
     commissionSubtotalXof?: IntFieldUpdateOperationsInput | number
     deliveryFeeXof?: IntFieldUpdateOperationsInput | number
+    balanceDueXof?: IntFieldUpdateOperationsInput | number
+    cashCollectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cashCollectedXof?: NullableIntFieldUpdateOperationsInput | number | null
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83752,6 +94891,101 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type RefundUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amountXof?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    settledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    payment?: PaymentUpdateOneWithoutRefundsNestedInput
+  }
+
+  export type RefundUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    amountXof?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    settledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type RefundUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    amountXof?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerRef?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    settledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SupportTicketUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneWithoutSupportTicketsNestedInput
+    messages?: SupportMessageUpdateManyWithoutTicketNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    messages?: SupportMessageUncheckedUpdateManyWithoutTicketNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    channel?: EnumTicketChannelFieldUpdateOperationsInput | $Enums.TicketChannel
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type OrderLineCreateManySubOrderInput = {
     id?: string
     productId: string
@@ -83789,6 +95023,7 @@ export namespace Prisma {
     finalPriceXof?: IntFieldUpdateOperationsInput | number
     lineTotalXof?: IntFieldUpdateOperationsInput | number
     product?: ProductUpdateOneRequiredWithoutOrderLinesNestedInput
+    review?: ReviewUpdateOneWithoutOrderLineNestedInput
   }
 
   export type OrderLineUncheckedUpdateWithoutSubOrderInput = {
@@ -83801,6 +95036,7 @@ export namespace Prisma {
     commissionXof?: IntFieldUpdateOperationsInput | number
     finalPriceXof?: IntFieldUpdateOperationsInput | number
     lineTotalXof?: IntFieldUpdateOperationsInput | number
+    review?: ReviewUncheckedUpdateOneWithoutOrderLineNestedInput
   }
 
   export type OrderLineUncheckedUpdateManyWithoutSubOrderInput = {
@@ -83877,6 +95113,7 @@ export namespace Prisma {
 
   export type RefundCreateManyPaymentInput = {
     id?: string
+    orderId?: string | null
     amountXof: number
     reason: string
     status?: string
@@ -83934,10 +95171,12 @@ export namespace Prisma {
     requestedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     settledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: OrderUpdateOneWithoutRefundsNestedInput
   }
 
   export type RefundUncheckedUpdateWithoutPaymentInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
     amountXof?: IntFieldUpdateOperationsInput | number
     reason?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -83949,6 +95188,7 @@ export namespace Prisma {
 
   export type RefundUncheckedUpdateManyWithoutPaymentInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
     amountXof?: IntFieldUpdateOperationsInput | number
     reason?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -84334,6 +95574,46 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SupportMessageCreateManyTicketInput = {
+    id?: string
+    authorId?: string | null
+    fromStaff?: boolean
+    internal?: boolean
+    body: string
+    fileKeys?: SupportMessageCreatefileKeysInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type SupportMessageUpdateWithoutTicketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    authorId?: NullableStringFieldUpdateOperationsInput | string | null
+    fromStaff?: BoolFieldUpdateOperationsInput | boolean
+    internal?: BoolFieldUpdateOperationsInput | boolean
+    body?: StringFieldUpdateOperationsInput | string
+    fileKeys?: SupportMessageUpdatefileKeysInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportMessageUncheckedUpdateWithoutTicketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    authorId?: NullableStringFieldUpdateOperationsInput | string | null
+    fromStaff?: BoolFieldUpdateOperationsInput | boolean
+    internal?: BoolFieldUpdateOperationsInput | boolean
+    body?: StringFieldUpdateOperationsInput | string
+    fileKeys?: SupportMessageUpdatefileKeysInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportMessageUncheckedUpdateManyWithoutTicketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    authorId?: NullableStringFieldUpdateOperationsInput | string | null
+    fromStaff?: BoolFieldUpdateOperationsInput | boolean
+    internal?: BoolFieldUpdateOperationsInput | boolean
+    body?: StringFieldUpdateOperationsInput | string
+    fileKeys?: SupportMessageUpdatefileKeysInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PromoRedemptionCreateManyPromoCodeInput = {
     id?: string
     userId: string
@@ -84361,6 +95641,9 @@ export namespace Prisma {
     vatXof?: number
     discountXof?: number
     totalXof: number
+    paymentMode?: $Enums.PaymentMode
+    upfrontXof?: number
+    balanceXof?: number
     placedAt?: Date | string | null
     deliveredAt?: Date | string | null
     validatedAt?: Date | string | null
@@ -84414,6 +95697,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -84428,6 +95714,8 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUpdateOneWithoutOrderNestedInput
   }
@@ -84451,6 +95739,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -84464,6 +95755,8 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
     shipments?: ShipmentUncheckedUpdateManyWithoutOrderNestedInput
     disputes?: DisputeUncheckedUpdateManyWithoutOrderNestedInput
+    refunds?: RefundUncheckedUpdateManyWithoutOrderNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutOrderNestedInput
     invoice?: InvoiceUncheckedUpdateOneWithoutOrderNestedInput
     promoRedemption?: PromoRedemptionUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -84487,6 +95780,9 @@ export namespace Prisma {
     vatXof?: IntFieldUpdateOperationsInput | number
     discountXof?: IntFieldUpdateOperationsInput | number
     totalXof?: IntFieldUpdateOperationsInput | number
+    paymentMode?: EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+    upfrontXof?: IntFieldUpdateOperationsInput | number
+    balanceXof?: IntFieldUpdateOperationsInput | number
     placedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
