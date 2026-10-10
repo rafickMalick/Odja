@@ -19,7 +19,7 @@ import type {
 
 import { Field, FieldRow, fieldStyles } from "@/components/Field";
 import { ApiError, apiFetch } from "@/lib/api";
-import { CREATOR_KIND_LABELS } from "@/lib/creators";
+import { CREATOR_KIND_LABELS, isApprenticeKind } from "@/lib/creators";
 import { formatFcfa } from "@/lib/format";
 
 import admin from "../admin.module.css";
@@ -50,6 +50,7 @@ interface AdminMaker {
   productCount: number;
   creatorKind: CreatorKind;
   plan: MakerPlanSummary;
+  training: { institution: string | null; specialty: string | null; level: string | null } | null;
 }
 
 interface Document {
@@ -80,6 +81,14 @@ const STATE: Record<
 
 export default function AdminMakersPage() {
   const [filter, setFilter] = useState("PENDING");
+  /* Apprentis et professionnels ne se valident pas sur les mêmes pièces : on
+     peut les traiter en séries séparées. Le lien des alertes ouvre directement
+     la file des apprentis. */
+  const [profileFilter, setProfileFilter] = useState("");
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get("profil");
+    if (fromUrl === "apprentis" || fromUrl === "professionnels") setProfileFilter(fromUrl);
+  }, []);
   const [makers, setMakers] = useState<AdminMaker[]>([]);
   const [plans, setPlans] = useState<VisibilityPlanView[]>([]);
   const [loading, setLoading] = useState(true);
@@ -96,7 +105,10 @@ export default function AdminMakersPage() {
     try {
       setMakers(
         await apiFetch<AdminMaker[]>(
-          `/admin/makers${filter ? `?status=${filter}` : ""}`,
+          `/admin/makers?${new URLSearchParams({
+            ...(filter ? { status: filter } : {}),
+            ...(profileFilter ? { profile: profileFilter } : {}),
+          }).toString()}`,
         ),
       );
     } catch {
@@ -104,7 +116,7 @@ export default function AdminMakersPage() {
     } finally {
       setLoading(false);
     }
-  }, [filter]);
+  }, [filter, profileFilter]);
 
   useEffect(() => {
     void load();
@@ -146,6 +158,23 @@ export default function AdminMakersPage() {
             type="button"
             className={filter === item.value ? admin.filterActive : admin.filter}
             onClick={() => setFilter(item.value)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
+      <div className={admin.filters}>
+        {[
+          { value: "", label: "Tous les profils" },
+          { value: "professionnels", label: "Professionnels" },
+          { value: "apprentis", label: "Apprentis" },
+        ].map((item) => (
+          <button
+            key={item.value || "all-profiles"}
+            type="button"
+            className={profileFilter === item.value ? admin.filterActive : admin.filter}
+            onClick={() => setProfileFilter(item.value)}
           >
             {item.label}
           </button>
@@ -202,6 +231,24 @@ function MakerCard({
     setBusy(false);
   };
 
+  const [notice, setNotice] = useState<string | null>(null);
+
+  /* Demander une pièce plutôt que refuser : le dossier reste en attente, et
+     le créateur sait exactement quoi envoyer. */
+  const requestDocument = async () => {
+    const message = window.prompt("Pièce demandée (le message est transmis au créateur) :");
+    if (!message?.trim()) return;
+    try {
+      await apiFetch(`/admin/makers/${maker.id}/request-document`, {
+        method: "POST",
+        body: { message: message.trim() },
+      });
+      setNotice("Demande envoyée au créateur.");
+    } catch (cause) {
+      setNotice(cause instanceof ApiError ? cause.message : "Demande impossible.");
+    }
+  };
+
   const state = STATE[maker.kycStatus];
 
   return (
@@ -250,6 +297,16 @@ function MakerCard({
           <dt>Statut</dt>
           <dd>{CREATOR_KIND_LABELS[maker.creatorKind]}</dd>
         </div>
+        {maker.training ? (
+          <div>
+            <dt>Formation</dt>
+            <dd>
+              {[maker.training.specialty, maker.training.institution, maker.training.level]
+                .filter(Boolean)
+                .join(" · ")}
+            </dd>
+          </div>
+        ) : null}
         <div>
           <dt>Formule</dt>
           <dd>
@@ -294,14 +351,18 @@ function MakerCard({
 
       {maker.kycStatus !== "APPROVED" ? (
         <div className={styles.rowActions}>
+          <Button type="button" variant="outline" onClick={() => void requestDocument()}>
+            Demander une pièce
+          </Button>
           <Button type="button" variant="outline" onClick={() => void onReview(maker.id, "REJECT")}>
             Refuser
           </Button>
           <Button type="button" onClick={() => void onReview(maker.id, "APPROVE")}>
-            Valider l’atelier
+            {isApprenticeKind(maker.creatorKind) ? "Valider l’apprenti" : "Valider l’atelier"}
           </Button>
         </div>
       ) : null}
+      {notice ? <p className={styles.muted}>{notice}</p> : null}
     </Panel>
   );
 }

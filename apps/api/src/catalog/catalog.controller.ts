@@ -178,6 +178,7 @@ export class MakerProductController {
       quantityReserved: product.quantityReserved,
       leadTimeDays: product.leadTimeDays,
       observations: product.observations,
+      packagingNotes: product.packagingNotes,
       weightGrams: product.weightGrams,
       lengthMm: product.lengthMm,
       widthMm: product.widthMm,

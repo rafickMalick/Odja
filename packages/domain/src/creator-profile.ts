@@ -22,16 +22,54 @@ export const CREATOR_KIND_LABELS: Readonly<Record<CreatorKind, string>> = {
   APPRENTICE_ARTISAN: 'Apprenti artisan',
 };
 
-/**
- * Statuts qu'un créateur peut choisir lui-même.
- *
- * Les statuts d'apprenti passent par un justificatif de formation et une
- * validation propre (§ 4.3 et 4.4) : ils ne s'ouvriront qu'avec ce circuit.
- */
-export const SELF_SERVICE_CREATOR_KINDS: readonly CreatorKind[] = ['STUDIO', 'ARTISAN', 'DESIGNER'];
+/** Statuts professionnels, par opposition aux statuts d'apprenti. */
+export const PROFESSIONAL_CREATOR_KINDS: readonly CreatorKind[] = ['STUDIO', 'ARTISAN', 'DESIGNER'];
 
 export function isApprentice(kind: CreatorKind): boolean {
   return kind === 'APPRENTICE_DESIGNER' || kind === 'APPRENTICE_ARTISAN';
+}
+
+/** Type de pièce attendu d'un apprenti (§ 4.3). */
+export const TRAINING_PROOF_TYPE = 'justificatif_formation';
+
+export interface ReviewReadiness {
+  creatorKind: CreatorKind;
+  managerName: string | null;
+  contactPhone: string | null;
+  postalAddress: string | null;
+  pickupLine1: string | null;
+  ifuNumber: string | null;
+  rccmNumber: string | null;
+  trainingInstitution: string | null;
+  trainingSpecialty: string | null;
+}
+
+/**
+ * Ce qui manque encore pour déposer le dossier, tout à la fois.
+ *
+ * Un professionnel justifie d'une existence légale (IFU ou RCCM). Un apprenti,
+ * lui, n'en a souvent pas : il justifie de sa formation — établissement,
+ * spécialité et pièce justificative (§ 4.3). La validation d'un apprenti n'est
+ * donc pas une certification professionnelle (§ 13).
+ */
+export function missingForReview(profile: ReviewReadiness, documentTypes: readonly string[]): string[] {
+  const missing: string[] = [];
+  const apprentice = isApprentice(profile.creatorKind);
+
+  if (!profile.managerName) missing.push(apprentice ? 'votre nom complet' : 'nom du responsable');
+  if (!profile.contactPhone) missing.push('téléphone');
+  if (!profile.pickupLine1) missing.push(apprentice ? 'adresse de retrait des pièces' : "adresse de l'atelier");
+
+  if (apprentice) {
+    if (!profile.trainingInstitution) missing.push('établissement ou atelier de formation');
+    if (!profile.trainingSpecialty) missing.push('spécialité');
+    if (!documentTypes.includes(TRAINING_PROOF_TYPE)) missing.push('justificatif de formation');
+  } else {
+    if (!profile.postalAddress) missing.push('adresse physique');
+    if (!profile.ifuNumber && !profile.rccmNumber) missing.push('numéro IFU ou RCCM');
+  }
+
+  return missing;
 }
 
 // ═══════════════════════════════════════════ Coordonnées dans les textes publics

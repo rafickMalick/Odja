@@ -5,6 +5,7 @@ import {
   displayAvailability,
   findContactDetails,
   isPurchasable,
+  missingForReview,
   publicationQuotaProblem,
 } from './creator-profile';
 
@@ -109,5 +110,43 @@ describe('quota de publications', () => {
 
   it('refuse au plafond, en nommant la formule', () => {
     expect(publicationQuotaProblem(20, 20, 'Standard')).toMatch(/Standard permet 20/);
+  });
+});
+
+describe('dossier prêt à déposer', () => {
+  const base = {
+    managerName: 'Rachida',
+    contactPhone: '+22997000000',
+    postalAddress: 'Haie Vive',
+    pickupLine1: 'Rue 12',
+    ifuNumber: null,
+    rccmNumber: null,
+    trainingInstitution: null,
+    trainingSpecialty: null,
+  };
+
+  it('demande un IFU ou un RCCM à un professionnel', () => {
+    expect(missingForReview({ ...base, creatorKind: 'ARTISAN' }, [])).toEqual(['numéro IFU ou RCCM']);
+  });
+
+  it('demande à un apprenti sa formation et son justificatif, pas un IFU', () => {
+    const missing = missingForReview({ ...base, creatorKind: 'APPRENTICE_DESIGNER' }, []);
+    expect(missing).toContain('justificatif de formation');
+    expect(missing).toContain('établissement ou atelier de formation');
+    expect(missing).not.toContain('numéro IFU ou RCCM');
+  });
+
+  it('accepte le dossier complet d’un apprenti', () => {
+    expect(
+      missingForReview(
+        {
+          ...base,
+          creatorKind: 'APPRENTICE_ARTISAN',
+          trainingInstitution: 'Centre Songhaï',
+          trainingSpecialty: 'Vannerie',
+        },
+        ['justificatif_formation'],
+      ),
+    ).toEqual([]);
   });
 });

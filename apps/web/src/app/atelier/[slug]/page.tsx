@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { fetchMaker } from "@/lib/catalog";
-import { CREATOR_KIND_LABELS, fetchMakerWorks } from "@/lib/creators";
+import { CREATOR_KIND_LABELS, fetchMakerWorks, isApprenticeKind } from "@/lib/creators";
 import { formatNumber } from "@/lib/format";
 
 import { WorksGallery } from "./WorksGallery";
@@ -95,7 +95,11 @@ export default async function AtelierPage({ params }: Params) {
         </div>
       </header>
 
-      {maker.description || maker.services || maker.specialties.length > 0 || maker.techniques.length > 0 ? (
+      {maker.description ||
+      maker.services ||
+      maker.training ||
+      maker.specialties.length > 0 ||
+      maker.techniques.length > 0 ? (
         <section className={styles.about}>
           <div className={styles.aboutText}>
             {maker.description ? (
@@ -108,6 +112,22 @@ export default async function AtelierPage({ params }: Params) {
               <>
                 <h3 className={styles.subheading}>Services proposés</h3>
                 <p className={styles.body}>{maker.services}</p>
+              </>
+            ) : null}
+            {maker.training ? (
+              <>
+                <h3 className={styles.subheading}>Formation</h3>
+                <p className={styles.body}>
+                  {[maker.training.specialty, maker.training.institution, maker.training.level]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+                {isApprenticeKind(maker.creatorKind) ? (
+                  <p className={styles.note}>
+                    Créateur en formation, vérifié par Ojà sur justificatif. Ses pièces sont
+                    vendues aux mêmes conditions que celles des ateliers confirmés.
+                  </p>
+                ) : null}
               </>
             ) : null}
           </div>

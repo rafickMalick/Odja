@@ -55,6 +55,17 @@ export function toPublicMaker(maker: MakerWithPlace, context: MakerContext): Pub
     services: maker.services,
     region: maker.region,
     publicArea: maker.publicArea,
+    /* Le parcours se montre quand il existe : c'est la présentation honnête
+       qu'attend le cahier pour un apprenti (§ 4.5). Le justificatif, lui,
+       n'est jamais public. */
+    training:
+      maker.trainingInstitution || maker.trainingSpecialty || maker.trainingLevel
+        ? {
+            institution: maker.trainingInstitution,
+            specialty: maker.trainingSpecialty,
+            level: maker.trainingLevel,
+          }
+        : null,
     badge: context.plan.showBadge ? { code: context.plan.code, name: context.plan.name } : null,
   };
 }

@@ -108,7 +108,17 @@ export const reorderProductImagesSchema = z.object({
 
 export const attachKycDocumentSchema = z.object({
   fileKey: z.string().trim().min(1),
-  type: z.enum(['cni_recto', 'cni_verso', 'rccm', 'ifu', 'permis', 'carte_grise', 'autre']),
+  type: z.enum([
+    'cni_recto',
+    'cni_verso',
+    'rccm',
+    'ifu',
+    'permis',
+    'carte_grise',
+    /** Carte d'étudiant, certificat de scolarité, attestation d'apprentissage. */
+    'justificatif_formation',
+    'autre',
+  ]),
 });
 export type AttachKycDocumentInput = z.infer<typeof attachKycDocumentSchema>;
 

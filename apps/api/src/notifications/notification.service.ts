@@ -10,6 +10,7 @@ import { SmsService } from './sms.service';
 import {
   money,
   templateOf,
+  type Notice,
   type NotificationTemplateName,
 } from './templates';
 
@@ -790,6 +791,57 @@ export class NotificationService {
   }
 
   // ═══════════════════════════════ Lecture in-app (LN-04)
+
+  // ═══════════════════════════════ Avis des évolutions créatives
+
+  /**
+   * Avis simple : une ligne dans la cloche, et le même texte par e-mail.
+   *
+   * Sert aux événements des profils créatifs, des apprentis et des
+   * expositions. Comme tous les avis, un échec d'envoi n'interrompt jamais
+   * l'action métier qui l'a déclenché.
+   */
+  async notice(
+    template: 'creator_notice' | 'organizer_notice' | 'visitor_notice',
+    userId: string,
+    notice: Notice,
+  ): Promise<void> {
+    await this.safely(notice.title, async () => {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, firstName: true },
+      });
+      if (!user) return;
+
+      await this.deliver({
+        userId,
+        template,
+        data: { ...notice },
+        email: {
+          to: user.email,
+          subject: notice.title,
+          text: [
+            `Bonjour ${user.firstName},`,
+            '',
+            notice.body,
+            '',
+            `${this.webOrigin}${notice.href}`,
+            '',
+            "L'équipe Ojà",
+          ].join('\n'),
+        },
+      });
+    });
+  }
+
+  /** Avis à toute l'équipe d'administration : une demande attend un geste. */
+  async adminNotice(notice: Notice): Promise<void> {
+    await this.safely(notice.title, async () => {
+      for (const admin of await this.adminUsers()) {
+        await this.deliver({ userId: admin.id, template: 'admin_notice', data: { ...notice } });
+      }
+    });
+  }
 
   async listForUser(userId: string, query: CursorQuery): Promise<Page<{
     id: string;
