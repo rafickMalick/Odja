@@ -5,18 +5,38 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type {
   AdminMaker,
   KycReviewInput,
+  MakerCard,
+  MakerDirectoryQuery,
+  MakerImageInput,
   MakerProfileInput,
   MakerProfileUpdateInput,
+  MakerWork,
   OwnMakerProfile,
+  Page,
   PublicMaker,
 } from '@oja/contracts';
+import type { MakerProfile } from '@oja/db';
+import { commissionFor, displayAvailability, findContactDetails } from '@oja/domain';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { toAdminMaker, toOwnMakerProfile, toPublicMaker } from './maker.mapper';
+import { StorageService } from '../storage/storage.service';
+import {
+  toAdminMaker,
+  toMakerCard,
+  toOwnMakerProfile,
+  toPublicMaker,
+  type MakerContext,
+} from './maker.mapper';
 import { NotificationService } from '../notifications/notification.service';
+import {
+  liveSubscriptionsInclude,
+  VisibilityService,
+  type ResolvedPlan,
+} from './visibility.service';
 
 /* Pas de `as const` : Prisma dérive le type de retour de l'objet `include`,
    et un littéral figé en lecture seule lui fait perdre la relation — les
@@ -25,16 +45,57 @@ const WITH_PLACE = {
   city: { include: { country: { select: { name: true } } } },
 };
 
+/** Une fiche que le public peut voir, quelle que soit sa disponibilité. */
+const PUBLIC_PRODUCT = { status: 'PUBLISHED' as const, hiddenAt: null, deletedAt: null };
+
+/** Champs du profil créatif, communs à la création et à la mise à jour. */
+const CREATIVE_FIELDS = [
+  'creatorKind',
+  'activityField',
+  'specialties',
+  'techniques',
+  'services',
+  'region',
+  'publicArea',
+] as const;
+
+/* L'annuaire trie en mémoire (formule, mise en avant, note) : le rang dépend
+   d'une autre table et de la date du jour, ce qu'un ORDER BY n'exprime pas
+   simplement. Ce plafond le garde raisonnable — au-delà, il faudra
+   matérialiser le rang. */
+const DIRECTORY_SCAN_LIMIT = 500;
+
 @Injectable()
 export class MakerService {
   private readonly logger = new Logger(MakerService.name);
+  private readonly defaultCommissionBps: number;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationService,
-  ) {}
+    private readonly storage: StorageService,
+    private readonly visibility: VisibilityService,
+    config: ConfigService,
+  ) {
+    this.defaultCommissionBps = config.get<number>('PLATFORM_COMMISSION_BPS', 500);
+  }
+
+  /** Ce que le mapper ne lit pas sur la ligne : formule et URL des images. */
+  private context(resolved: ResolvedPlan, productCount = 0): MakerContext {
+    return {
+      productCount,
+      plan: { ...this.visibility.summary(resolved), showBadge: resolved.plan.showBadge },
+      imageUrl: (fileKey) => this.storage.publicUrlFor(fileKey),
+    };
+  }
+
+  private async contextFor(maker: MakerProfile, productCount = 0): Promise<MakerContext> {
+    return this.context(await this.visibility.resolveFor(maker.id), productCount);
+  }
 
   async createProfile(userId: string, input: MakerProfileInput): Promise<AdminMaker> {
+    assertNoContactDetails(input);
+
     const existing = await this.prisma.makerProfile.findUnique({ where: { userId } });
     if (existing) {
       throw new ConflictException('Votre boutique existe déjà.');
@@ -61,12 +122,13 @@ export class MakerService {
           'pickupLandmark',
           'pickupLatitude',
           'pickupLongitude',
+          ...CREATIVE_FIELDS,
         ]),
       },
       include: WITH_PLACE,
     });
 
-    return toAdminMaker(maker);
+    return toAdminMaker(maker, await this.contextFor(maker));
   }
 
   /** Vue que le créateur a de sa propre boutique : complète, privé compris. */
@@ -80,10 +142,12 @@ export class MakerService {
     const productCount = await this.prisma.product.count({
       where: { makerId: maker.id, deletedAt: null },
     });
-    return toOwnMakerProfile(maker, productCount);
+    return toOwnMakerProfile(maker, await this.contextFor(maker, productCount));
   }
 
   async updateProfile(userId: string, input: MakerProfileUpdateInput): Promise<AdminMaker> {
+    assertNoContactDetails(input);
+
     const maker = await this.prisma.makerProfile.findUnique({ where: { userId } });
     if (!maker) throw new NotFoundException('Aucune boutique pour ce compte.');
 
@@ -120,6 +184,7 @@ export class MakerService {
           'pickupLandmark',
           'pickupLatitude',
           'pickupLongitude',
+          ...CREATIVE_FIELDS,
         ]),
         ...(touchesIdentity && maker.kycStatus === 'APPROVED'
           ? { kycStatus: 'PENDING' as const, kycSubmittedAt: new Date() }
@@ -128,7 +193,58 @@ export class MakerService {
       include: WITH_PLACE,
     });
 
-    return toAdminMaker(updated);
+    return toAdminMaker(updated, await this.contextFor(updated));
+  }
+
+  /**
+   * Logo ou bannière. Le fichier est déjà sur le stockage ; on vérifie qu'il y
+   * est vraiment avant de le rattacher, comme pour les photos produit.
+   */
+  async setImage(userId: string, input: MakerImageInput): Promise<OwnMakerProfile> {
+    const maker = await this.prisma.makerProfile.findUnique({ where: { userId } });
+    if (!maker) throw new NotFoundException('Aucune boutique pour ce compte.');
+
+    /* La clé doit désigner une image de boutique envoyée par ce compte : sans
+       ce contrôle, on afficherait en vitrine le fichier d'un autre — voire une
+       pièce justificative. */
+    if (!input.fileKey.includes('/shop-image/') || !input.fileKey.includes(`/${userId}/`)) {
+      throw new BadRequestException('Fichier inconnu.');
+    }
+    await this.storage.assertExists(input.fileKey);
+
+    const previous = input.slot === 'logo' ? maker.logoUrl : maker.coverUrl;
+    await this.prisma.makerProfile.update({
+      where: { userId },
+      data: input.slot === 'logo' ? { logoUrl: input.fileKey } : { coverUrl: input.fileKey },
+    });
+    await this.dropStoredImage(previous);
+
+    return this.myProfile(userId);
+  }
+
+  async removeImage(userId: string, slot: 'logo' | 'cover'): Promise<OwnMakerProfile> {
+    const maker = await this.prisma.makerProfile.findUnique({ where: { userId } });
+    if (!maker) throw new NotFoundException('Aucune boutique pour ce compte.');
+
+    const previous = slot === 'logo' ? maker.logoUrl : maker.coverUrl;
+    await this.prisma.makerProfile.update({
+      where: { userId },
+      data: slot === 'logo' ? { logoUrl: null } : { coverUrl: null },
+    });
+    await this.dropStoredImage(previous);
+
+    return this.myProfile(userId);
+  }
+
+  /** Les images de démonstration sont des chemins du site, pas des clés : on
+   *  ne supprime que ce qui vient du stockage. */
+  private async dropStoredImage(fileKey: string | null): Promise<void> {
+    if (!fileKey || fileKey.startsWith('/') || fileKey.startsWith('http')) return;
+    try {
+      await this.storage.remove(fileKey);
+    } catch (error) {
+      this.logger.warn(`Image ${fileKey} non supprimée : ${(error as Error).message}`);
+    }
   }
 
   /** Dépôt du dossier pour validation par l'administration. */
@@ -174,9 +290,110 @@ export class MakerService {
     if (!maker) throw new NotFoundException();
 
     const productCount = await this.prisma.product.count({
-      where: { makerId: maker.id, status: 'PUBLISHED', hiddenAt: null, deletedAt: null },
+      where: { makerId: maker.id, isForSale: true, ...PUBLIC_PRODUCT },
     });
-    return toPublicMaker(maker, productCount);
+    return toPublicMaker(maker, await this.contextFor(maker, productCount));
+  }
+
+  /**
+   * Galerie d'un atelier : tout ce qu'il a publié, à vendre ou non (§ 2.2 E).
+   *
+   * Les pièces vendues et les réalisations de portfolio y restent : c'est
+   * précisément ce qui montre le savoir-faire d'un atelier.
+   */
+  async worksBySlug(slug: string): Promise<MakerWork[]> {
+    const maker = await this.prisma.makerProfile.findFirst({
+      where: { slug, deletedAt: null, kycStatus: 'APPROVED' },
+    });
+    if (!maker) throw new NotFoundException();
+
+    const products = await this.prisma.product.findMany({
+      where: { makerId: maker.id, ...PUBLIC_PRODUCT },
+      include: {
+        category: { select: { name: true } },
+        images: { orderBy: { position: 'asc' }, take: 1 },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+
+    const commissionBps = maker.commissionBps || this.defaultCommissionBps;
+    return products.map((product) => ({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      category: product.category.name,
+      material: product.material,
+      imageUrl: product.images[0] ? this.storage.publicUrlFor(product.images[0].fileKey) : null,
+      finalPriceXof: product.isForSale
+        ? product.makerPriceXof + commissionFor(product.makerPriceXof, commissionBps)
+        : null,
+      availability: displayAvailability(product),
+    }));
+  }
+
+  /**
+   * Annuaire des créateurs, par zone et par statut (§ 2.2 D).
+   *
+   * Les formules qui l'achètent passent en tête, puis les ateliers que
+   * l'équipe met en avant, puis les mieux notés. Tous les autres restent
+   * listés : payer donne une meilleure place, jamais l'exclusivité (§ 3.4).
+   */
+  async directory(query: MakerDirectoryQuery): Promise<Page<MakerCard>> {
+    const insensitive = 'insensitive' as const;
+    const makers = await this.prisma.makerProfile.findMany({
+      where: {
+        deletedAt: null,
+        kycStatus: 'APPROVED',
+        ...(query.kind ? { creatorKind: query.kind } : {}),
+        ...(query.country || query.city
+          ? {
+              city: {
+                ...(query.city ? { name: { equals: query.city, mode: insensitive } } : {}),
+                ...(query.country ? { country: { iso2: query.country.toUpperCase() } } : {}),
+              },
+            }
+          : {}),
+        ...(query.q
+          ? {
+              OR: [
+                { shopName: { contains: query.q, mode: insensitive } },
+                { activityField: { contains: query.q, mode: insensitive } },
+                { specialties: { has: query.q } },
+                { techniques: { has: query.q } },
+              ],
+            }
+          : {}),
+      },
+      include: {
+        ...WITH_PLACE,
+        subscriptions: liveSubscriptionsInclude(),
+        _count: { select: { products: { where: { isForSale: true, ...PUBLIC_PRODUCT } } } },
+      },
+      take: DIRECTORY_SCAN_LIMIT,
+    });
+
+    const fallback = await this.visibility.defaultPlan();
+    const ranked = makers
+      .map((maker) => ({ maker, resolved: this.visibility.resolve(maker.subscriptions, fallback) }))
+      .sort(
+        (a, b) =>
+          Number(b.resolved.plan.boostInDirectory) - Number(a.resolved.plan.boostInDirectory) ||
+          Number(b.maker.isFeatured) - Number(a.maker.isFeatured) ||
+          b.maker.ratingAvg - a.maker.ratingAvg ||
+          a.maker.shopName.localeCompare(b.maker.shopName, 'fr'),
+      );
+
+    const offset = Math.max(0, Number.parseInt(query.cursor ?? '0', 10) || 0);
+    const slice = ranked.slice(offset, offset + query.limit);
+
+    return {
+      items: slice.map(({ maker, resolved }) =>
+        toMakerCard(maker, this.context(resolved, maker._count.products)),
+      ),
+      nextCursor: offset + query.limit < ranked.length ? String(offset + query.limit) : null,
+      total: ranked.length,
+    };
   }
 
   // ── Administration ──
@@ -187,11 +404,14 @@ export class MakerService {
         deletedAt: null,
         ...(status ? { kycStatus: status as 'PENDING' } : {}),
       },
-      include: WITH_PLACE,
+      include: { ...WITH_PLACE, subscriptions: liveSubscriptionsInclude() },
       orderBy: { kycSubmittedAt: 'asc' },
       take: 100,
     });
-    return makers.map((maker) => toAdminMaker(maker));
+    const fallback = await this.visibility.defaultPlan();
+    return makers.map((maker) =>
+      toAdminMaker(maker, this.context(this.visibility.resolve(maker.subscriptions, fallback))),
+    );
   }
 
   async reviewKyc(
@@ -262,7 +482,7 @@ export class MakerService {
     );
 
     this.logger.log(`Dossier ${makerId} ${approved ? 'validé' : 'refusé'} par ${reviewerId}`);
-    return toAdminMaker(updated);
+    return toAdminMaker(updated, await this.contextFor(updated));
   }
 
   /**
@@ -310,4 +530,31 @@ function optional<T extends object, K extends keyof T>(
     if (value !== undefined) result[key] = value as Exclude<T[K], undefined>;
   }
   return result;
+}
+
+/** Textes publics du profil, où un numéro ou une adresse e-mail n'a pas sa place. */
+const PUBLIC_TEXT_FIELDS = ['shopName', 'description', 'activityField', 'services'] as const;
+
+/**
+ * Refuse les coordonnées directes dans les textes publics du profil
+ * (§ 2.2 C). Chaque erreur porte le nom de son champ, pour que le formulaire
+ * l'affiche au bon endroit.
+ */
+function assertNoContactDetails(
+  input: Partial<Record<(typeof PUBLIC_TEXT_FIELDS)[number], string | undefined>>,
+): void {
+  const errors: { field: string; message: string }[] = [];
+  for (const field of PUBLIC_TEXT_FIELDS) {
+    const value = input[field];
+    if (!value) continue;
+    const problem = findContactDetails(value);
+    if (problem) errors.push({ field, message: problem });
+  }
+  if (errors.length > 0) {
+    throw new BadRequestException({
+      error: 'Coordonnées dans le profil public',
+      message: 'Votre profil public ne peut pas contenir de coordonnées directes.',
+      errors,
+    });
+  }
 }

@@ -54,25 +54,26 @@ export function ProductDetail({
   /* La fiche technique se compose des données réelles du produit. Elle ne
      montre que ce qui est renseigné : une ligne vide vaut moins que pas de
      ligne du tout. */
+  /* Une réalisation de portfolio n'a ni colis ni prix : ses dimensions
+     valent 0 en base, et une ligne « 0 cm » ne dit rien d'utile. */
+  const hasParcel = product.dimensions.lengthMm > 0 && product.dimensions.weightGrams > 0;
+
   const specs: [string, string][] = [
     ["Atelier", `${product.maker.shopName} · ${product.maker.city}`],
     ...(product.material ? ([["Matière", product.material]] as [string, string][]) : []),
-    [
-      "Dimensions",
-      `L ${cm(product.dimensions.lengthMm)} × l ${cm(product.dimensions.widthMm)} × H ${cm(
-        product.dimensions.heightMm,
-      )} cm`,
-    ],
-    ["Poids", `${formatNumber(product.dimensions.weightGrams / 1000, 1)} kg`],
+    ...(hasParcel
+      ? ([
+          [
+            "Dimensions",
+            `L ${cm(product.dimensions.lengthMm)} × l ${cm(product.dimensions.widthMm)} × H ${cm(
+              product.dimensions.heightMm,
+            )} cm`,
+          ],
+          ["Poids", `${formatNumber(product.dimensions.weightGrams / 1000, 1)} kg`],
+        ] as [string, string][])
+      : []),
     ["Catégorie", product.category.name],
-    [
-      "Disponibilité",
-      product.isMadeToOrder
-        ? `Fabriquée sur commande (${product.leadTimeDays ?? "?"} jours)`
-        : product.inStock
-          ? `${product.quantityAvailable} pièce(s) disponible(s)`
-          : "Momentanément indisponible",
-    ],
+    ["Disponibilité", availabilityText(product)],
   ];
 
   return (
@@ -139,11 +140,14 @@ export function ProductDetail({
 
                 {/* Un seul prix : celui que le client paie. Le détail part
                     créateur / commission Ojà ne lui est pas montré. */}
-                <div className={styles.priceBlock}>
-                  <p className={styles.price}>{formatFcfa(product.finalPriceXof)}</p>
-                </div>
+                {product.isForSale ? (
+                  <div className={styles.priceBlock}>
+                    <p className={styles.price}>{formatFcfa(product.finalPriceXof)}</p>
+                  </div>
+                ) : null}
               </div>
 
+              {product.purchasable ? (
               <div className={styles.actions}>
                 <div className={styles.actionRow}>
                   <StepperQuantity
@@ -151,8 +155,8 @@ export function ProductDetail({
                     onChange={setQuantity}
                     label={product.name}
                   />
-                  <Button variant="outline" onClick={handleAdd} disabled={adding || !product.inStock}>
-                    {product.inStock ? "Ajouter au panier" : "Indisponible"}
+                  <Button variant="outline" onClick={handleAdd} disabled={adding}>
+                    Ajouter au panier
                   </Button>
                   <button type="button" aria-label="Ajouter aux favoris">
                     <img
@@ -163,11 +167,9 @@ export function ProductDetail({
                   </button>
                 </div>
 
-                {product.inStock ? (
-                  <ButtonLink href="/panier" fullWidth onClick={handleAdd}>
-                    Commander
-                  </ButtonLink>
-                ) : null}
+                <ButtonLink href="/panier" fullWidth onClick={handleAdd}>
+                  Commander
+                </ButtonLink>
 
                 <div className={styles.reassurance}>
                   <p className={styles.reassuranceItem}>
@@ -190,6 +192,17 @@ export function ProductDetail({
                   </p>
                 </div>
               </div>
+              ) : (
+                /* Pièce vendue, indisponible ou présentée en portfolio : on le
+                   dit, et on renvoie vers l'atelier plutôt que vers un bouton
+                   grisé qui ne mène nulle part. */
+                <div className={styles.actions}>
+                  <p className={styles.unavailable}>{unavailableText(product)}</p>
+                  <ButtonLink href={`/atelier/${product.maker.slug}`} variant="outline" fullWidth>
+                    Voir l&apos;atelier {product.maker.shopName}
+                  </ButtonLink>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -268,4 +281,30 @@ export function ProductDetail({
 
 function cm(millimetres: number): number {
   return Math.round(millimetres / 10);
+}
+
+function availabilityText(product: PublicProduct): string {
+  switch (product.availability) {
+    case "PORTFOLIO":
+      return "Réalisation présentée, non proposée à la vente";
+    case "SOLD":
+      return "Vendue";
+    case "UNAVAILABLE":
+      return "Momentanément indisponible";
+    case "MADE_TO_ORDER":
+      return `Fabriquée sur commande (${product.leadTimeDays ?? "?"} jours)`;
+    default:
+      return `${product.quantityAvailable} pièce(s) disponible(s)`;
+  }
+}
+
+function unavailableText(product: PublicProduct): string {
+  switch (product.availability) {
+    case "PORTFOLIO":
+      return "Cette réalisation fait partie du portfolio de l’atelier. Elle n’est pas à vendre, mais l’atelier réalise des pièces sur demande.";
+    case "SOLD":
+      return "Cette pièce a trouvé preneur. D’autres créations de l’atelier sont peut-être disponibles.";
+    default:
+      return "Cette pièce n’est pas disponible pour le moment.";
+  }
 }

@@ -96,9 +96,9 @@ model User {
   /// prochaine connexion. `null` pour un compte jamais passé par Google.
   googleId        String?   @unique
 
-  firstName String
-  lastName  String
-  locale    String  @default("fr")
+  firstName    String
+  lastName     String
+  locale       String    @default("fr")
   /// Double authentification (TOTP, cahier L0-22) : obligatoire pour ADMIN,
   /// facultative pour les autres. Le secret est chiffré (AES-256-GCM) : une
   /// fuite de la base ne donne pas les codes. Renseigné sans `mfaEnabledAt`,
@@ -135,16 +135,16 @@ model User {
 model Session {
   id String @id @default(cuid())
 
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// Le jeton de rafraîchissement n'est jamais stocké en clair : une fuite de
   /// la base donnerait sinon des sessions valides.
-  refreshHash String
-  userAgent   String?
-  ip          String?
-  expiresAt   DateTime
-  revokedAt   DateTime?
-  createdAt   DateTime  @default(now())
+  refreshHash   String
+  userAgent     String?
+  ip            String?
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  createdAt     DateTime  @default(now())
   /// Ouverte avec un second facteur. Suit la session à chaque
   /// rafraîchissement ; exigée pour l'espace admin.
   mfaVerifiedAt DateTime?
@@ -248,6 +248,17 @@ enum KycStatus {
 /// Le cahier client sépare explicitement informations publiques et privées.
 /// Cette frontière n'est pas qu'un choix d'affichage : aucune route ne doit
 /// jamais exposer un champ marqué « privé » à un client.
+/// Statut professionnel affiché sur le profil. Il dit ce qu'est le créateur,
+/// pas ce qu'il paie : la visibilité commerciale vit à part, dans
+/// `MakerSubscription` (cahier des évolutions, § 3.1).
+enum CreatorKind {
+  STUDIO
+  ARTISAN
+  DESIGNER
+  APPRENTICE_DESIGNER
+  APPRENTICE_ARTISAN
+}
+
 model MakerProfile {
   id     String @id @default(cuid())
   userId String @unique
@@ -261,6 +272,20 @@ model MakerProfile {
   coverUrl    String?
   cityId      String
   city        City    @relation(fields: [cityId], references: [id])
+
+  // ── Profil créatif (public) ──
+  creatorKind   CreatorKind @default(ARTISAN)
+  /// Domaine d'activité, en clair : « Mobilier », « Céramique »…
+  activityField String?
+  specialties   String[]    @default([])
+  /// Matériaux et techniques maîtrisés.
+  techniques    String[]    @default([])
+  /// Services proposés : sur-mesure, restauration, formation…
+  services      String?
+  region        String?
+  /// Quartier ou zone de l'atelier, quand le créateur accepte de l'afficher.
+  /// L'adresse exacte, elle, ne sort jamais (§ 2.2 D).
+  publicArea    String?
 
   // ── Informations privées : administration uniquement ──
   managerName   String?
@@ -302,12 +327,68 @@ model MakerProfile {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  products  Product[]
-  subOrders SubOrder[]
-  documents KycDocument[]
+  products      Product[]
+  subOrders     SubOrder[]
+  documents     KycDocument[]
+  subscriptions MakerSubscription[]
 
   @@index([kycStatus])
   @@map("maker_profiles")
+}
+
+/// Formule de visibilité commerciale (Standard, Premium…). Tout ce qui la
+/// distingue est un réglage de l'administration, pas du code : le cahier
+/// demande de pouvoir en changer les avantages sans toucher à l'architecture.
+model VisibilityPlan {
+  id               String   @id @default(cuid())
+  code             String   @unique
+  name             String
+  description      String?
+  /// Fiches actives autorisées (brouillons compris, archives exclues).
+  /// Nul : illimité.
+  maxPublications  Int?
+  /// Durée d'une souscription. Nul : sans échéance (la formule par défaut).
+  durationDays     Int?
+  priceXof         Int      @default(0)
+  /// Avantages tels qu'ils sont présentés au créateur.
+  perks            String[] @default([])
+  showBadge        Boolean  @default(false)
+  /// Placé en tête de l'annuaire des créateurs.
+  boostInDirectory Boolean  @default(false)
+  /// Formule appliquée à qui n'a aucune souscription en cours. Une seule.
+  isDefault        Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  position         Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  subscriptions MakerSubscription[]
+
+  @@map("visibility_plans")
+}
+
+/// Une période de formule payante. On garde l'historique : renouvellements,
+/// changements et résiliations restent lisibles (§ 11.2).
+model MakerSubscription {
+  id      String         @id @default(cuid())
+  makerId String
+  maker   MakerProfile   @relation(fields: [makerId], references: [id], onDelete: Cascade)
+  planId  String
+  plan    VisibilityPlan @relation(fields: [planId], references: [id])
+
+  startsAt         DateTime
+  endsAt           DateTime?
+  amountXof        Int       @default(0)
+  /// Référence du paiement reçu hors plateforme, tant que le Premium
+  /// s'active à la main.
+  paymentReference String?
+  note             String?
+  activatedById    String?
+  cancelledAt      DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([makerId, startsAt])
+  @@map("maker_subscriptions")
 }
 
 model KycDocument {
@@ -411,6 +492,15 @@ model Category {
   @@map("categories")
 }
 
+/// Disponibilité commerciale, indépendante de la modération : une pièce
+/// vendue reste publiée dans la galerie de l'atelier, elle n'est plus
+/// achetable.
+enum ProductAvailability {
+  AVAILABLE
+  SOLD
+  UNAVAILABLE
+}
+
 enum ProductStatus {
   DRAFT
   PENDING_REVIEW
@@ -444,6 +534,12 @@ model Product {
   /// Stock. Ignoré quand le produit est fabriqué sur commande.
   quantityAvailable Int @default(0)
   quantityReserved  Int @default(0)
+
+  /// Faux pour une réalisation de portfolio : elle figure dans la galerie de
+  /// l'atelier, jamais au catalogue ni au panier. Son prix, son poids et ses
+  /// dimensions valent alors 0.
+  isForSale    Boolean             @default(true)
+  availability ProductAvailability @default(AVAILABLE)
 
   /// Mode de mise en vente, tel que nommé par le cahier client.
   isMadeToOrder Boolean @default(false)
@@ -1234,11 +1330,11 @@ model SupportTicket {
   /// SUP-2026-000123 : la référence que le client cite au téléphone.
   reference String @unique
 
-  channel TicketChannel @default(ACCOUNT)
+  channel    TicketChannel @default(ACCOUNT)
   /// Auteur inscrit. Nul pour un visiteur dont l'e-mail ne correspond à
   /// aucun compte.
-  userId  String?
-  user    User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId     String?
+  user       User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Rôle de l'auteur à l'ouverture (CUSTOMER, MAKER…). Nul pour un visiteur.
   authorRole UserRole?
   /// Coordonnées saisies sur le formulaire public.
@@ -1271,9 +1367,9 @@ model SupportTicket {
 }
 
 model SupportMessage {
-  id       String        @id @default(cuid())
-  ticketId String
-  ticket   SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   /// Nul pour un visiteur non inscrit.
   authorId  String?
   /// Écrit par le service client.
@@ -1486,17 +1582,17 @@ model NewsletterSubscriber {
 /// pas déployé, et la ligne `IN_PROGRESS` doit survivre à un redémarrage
 /// pour qu'une requête interrompue ne soit pas rejouée en double.
 model IdempotencyKey {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// Valeur de l'en-tête, choisie par le client. Unique par utilisateur.
-  key    String
+  key          String
   /// Empreinte de la méthode, du chemin et du corps : la même clé ne peut
   /// pas servir à une autre requête.
-  requestHash String
+  requestHash  String
   /// IN_PROGRESS tant que la requête tourne, COMPLETED une fois la réponse
   /// mémorisée. Une requête en échec efface sa ligne : on peut réessayer.
-  status String @default("IN_PROGRESS")
+  status       String   @default("IN_PROGRESS")
   responseBody Json?
   createdAt    DateTime @default(now())
   expiresAt    DateTime

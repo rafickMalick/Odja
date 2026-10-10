@@ -96,11 +96,17 @@ model User {
   /// prochaine connexion. `null` pour un compte jamais passé par Google.
   googleId        String?   @unique
 
-  firstName String
-  lastName  String
-  locale    String  @default("fr")
-  /// TOTP. Obligatoire pour ADMIN, optionnel pour MAKER.
-  mfaSecret String?
+  firstName    String
+  lastName     String
+  locale       String    @default("fr")
+  /// Double authentification (TOTP, cahier L0-22) : obligatoire pour ADMIN,
+  /// facultative pour les autres. Le secret est chiffré (AES-256-GCM) : une
+  /// fuite de la base ne donne pas les codes. Renseigné sans `mfaEnabledAt`,
+  /// c'est une activation commencée et pas encore confirmée.
+  mfaSecret    String?
+  mfaEnabledAt DateTime?
+  /// Dernier pas de 30 s accepté : un code déjà utilisé ne passe pas deux fois.
+  mfaLastStep  Int?
 
   lastLoginAt DateTime?
   deletedAt   DateTime?
@@ -117,6 +123,10 @@ model User {
   notifications    Notification[]
   verifications    VerificationToken[]
   promoRedemptions PromoRedemption[]
+  supportTickets   SupportTicket[]
+  reviews          Review[]
+  idempotencyKeys  IdempotencyKey[]
+  recoveryCodes    MfaRecoveryCode[]
 
   @@index([role, status])
   @@map("users")
@@ -125,19 +135,35 @@ model User {
 model Session {
   id String @id @default(cuid())
 
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// Le jeton de rafraîchissement n'est jamais stocké en clair : une fuite de
   /// la base donnerait sinon des sessions valides.
-  refreshHash String
-  userAgent   String?
-  ip          String?
-  expiresAt   DateTime
-  revokedAt   DateTime?
-  createdAt   DateTime  @default(now())
+  refreshHash   String
+  userAgent     String?
+  ip            String?
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  /// Ouverte avec un second facteur. Suit la session à chaque
+  /// rafraîchissement ; exigée pour l'espace admin.
+  mfaVerifiedAt DateTime?
 
   @@index([userId, revokedAt])
   @@map("sessions")
+}
+
+/// Code de secours de la double authentification : sert une fois, quand le
+/// téléphone est perdu. Jamais stocké en clair.
+model MfaRecoveryCode {
+  id       String    @id @default(cuid())
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash String
+  usedAt   DateTime?
+
+  @@index([userId])
+  @@map("mfa_recovery_codes")
 }
 
 enum VerificationPurpose {
@@ -222,6 +248,17 @@ enum KycStatus {
 /// Le cahier client sépare explicitement informations publiques et privées.
 /// Cette frontière n'est pas qu'un choix d'affichage : aucune route ne doit
 /// jamais exposer un champ marqué « privé » à un client.
+/// Statut professionnel affiché sur le profil. Il dit ce qu'est le créateur,
+/// pas ce qu'il paie : la visibilité commerciale vit à part, dans
+/// `MakerSubscription` (cahier des évolutions, § 3.1).
+enum CreatorKind {
+  STUDIO
+  ARTISAN
+  DESIGNER
+  APPRENTICE_DESIGNER
+  APPRENTICE_ARTISAN
+}
+
 model MakerProfile {
   id     String @id @default(cuid())
   userId String @unique
@@ -235,6 +272,20 @@ model MakerProfile {
   coverUrl    String?
   cityId      String
   city        City    @relation(fields: [cityId], references: [id])
+
+  // ── Profil créatif (public) ──
+  creatorKind   CreatorKind @default(ARTISAN)
+  /// Domaine d'activité, en clair : « Mobilier », « Céramique »…
+  activityField String?
+  specialties   String[]    @default([])
+  /// Matériaux et techniques maîtrisés.
+  techniques    String[]    @default([])
+  /// Services proposés : sur-mesure, restauration, formation…
+  services      String?
+  region        String?
+  /// Quartier ou zone de l'atelier, quand le créateur accepte de l'afficher.
+  /// L'adresse exacte, elle, ne sort jamais (§ 2.2 D).
+  publicArea    String?
 
   // ── Informations privées : administration uniquement ──
   managerName   String?
@@ -276,12 +327,68 @@ model MakerProfile {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  products  Product[]
-  subOrders SubOrder[]
-  documents KycDocument[]
+  products      Product[]
+  subOrders     SubOrder[]
+  documents     KycDocument[]
+  subscriptions MakerSubscription[]
 
   @@index([kycStatus])
   @@map("maker_profiles")
+}
+
+/// Formule de visibilité commerciale (Standard, Premium…). Tout ce qui la
+/// distingue est un réglage de l'administration, pas du code : le cahier
+/// demande de pouvoir en changer les avantages sans toucher à l'architecture.
+model VisibilityPlan {
+  id               String   @id @default(cuid())
+  code             String   @unique
+  name             String
+  description      String?
+  /// Fiches actives autorisées (brouillons compris, archives exclues).
+  /// Nul : illimité.
+  maxPublications  Int?
+  /// Durée d'une souscription. Nul : sans échéance (la formule par défaut).
+  durationDays     Int?
+  priceXof         Int      @default(0)
+  /// Avantages tels qu'ils sont présentés au créateur.
+  perks            String[] @default([])
+  showBadge        Boolean  @default(false)
+  /// Placé en tête de l'annuaire des créateurs.
+  boostInDirectory Boolean  @default(false)
+  /// Formule appliquée à qui n'a aucune souscription en cours. Une seule.
+  isDefault        Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  position         Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  subscriptions MakerSubscription[]
+
+  @@map("visibility_plans")
+}
+
+/// Une période de formule payante. On garde l'historique : renouvellements,
+/// changements et résiliations restent lisibles (§ 11.2).
+model MakerSubscription {
+  id      String         @id @default(cuid())
+  makerId String
+  maker   MakerProfile   @relation(fields: [makerId], references: [id], onDelete: Cascade)
+  planId  String
+  plan    VisibilityPlan @relation(fields: [planId], references: [id])
+
+  startsAt         DateTime
+  endsAt           DateTime?
+  amountXof        Int       @default(0)
+  /// Référence du paiement reçu hors plateforme, tant que le Premium
+  /// s'active à la main.
+  paymentReference String?
+  note             String?
+  activatedById    String?
+  cancelledAt      DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([makerId, startsAt])
+  @@map("maker_subscriptions")
 }
 
 model KycDocument {
@@ -385,6 +492,15 @@ model Category {
   @@map("categories")
 }
 
+/// Disponibilité commerciale, indépendante de la modération : une pièce
+/// vendue reste publiée dans la galerie de l'atelier, elle n'est plus
+/// achetable.
+enum ProductAvailability {
+  AVAILABLE
+  SOLD
+  UNAVAILABLE
+}
+
 enum ProductStatus {
   DRAFT
   PENDING_REVIEW
@@ -418,6 +534,12 @@ model Product {
   /// Stock. Ignoré quand le produit est fabriqué sur commande.
   quantityAvailable Int @default(0)
   quantityReserved  Int @default(0)
+
+  /// Faux pour une réalisation de portfolio : elle figure dans la galerie de
+  /// l'atelier, jamais au catalogue ni au panier. Son prix, son poids et ses
+  /// dimensions valent alors 0.
+  isForSale    Boolean             @default(true)
+  availability ProductAvailability @default(AVAILABLE)
 
   /// Mode de mise en vente, tel que nommé par le cahier client.
   isMadeToOrder Boolean @default(false)
@@ -581,6 +703,13 @@ model Order {
   discountXof        Int @default(0)
   totalXof           Int
 
+  /// Mode de règlement choisi à la caisse.
+  paymentMode PaymentMode @default(ONLINE_FULL)
+  /// Part payée en ligne à la commande (`totalXof` si tout est en ligne).
+  upfrontXof  Int         @default(0)
+  /// Part remise au livreur à la réception. `upfrontXof + balanceXof = totalXof`.
+  balanceXof  Int         @default(0)
+
   /// Code promo utilisé, figé sur la commande.
   promoCodeId String?
   promoCode   PromoCode? @relation(fields: [promoCodeId], references: [id])
@@ -602,6 +731,8 @@ model Order {
   payments        Payment[]
   shipments       Shipment[]
   disputes        Dispute[]
+  refunds         Refund[]
+  supportTickets  SupportTicket[]
   invoice         Invoice?
   promoRedemption PromoRedemption?
 
@@ -630,6 +761,13 @@ model SubOrder {
   itemsMakerSubtotalXof Int
   commissionSubtotalXof Int
   deliveryFeeXof        Int @default(0)
+
+  /// Part du solde que le livreur encaisse en remettant CETTE sous-commande.
+  /// Chaque atelier a sa livraison, donc son livreur : le solde de la commande
+  /// est réparti entre elles (somme des parts = `Order.balanceXof`).
+  balanceDueXof    Int       @default(0)
+  cashCollectedAt  DateTime?
+  cashCollectedXof Int?
 
   acceptedAt     DateTime?
   rejectedAt     DateTime?
@@ -681,6 +819,8 @@ model OrderLine {
   /// finalPriceXof × quantity
   lineTotalXof  Int
 
+  review Review?
+
   @@index([subOrderId])
   @@map("order_lines")
 }
@@ -694,6 +834,16 @@ enum PaymentStatus {
   FAILED
   EXPIRED
   REFUNDED
+}
+
+/// Comment la commande se règle (SPEC mode de paiement).
+///   ONLINE_FULL       tout en ligne à la commande ;
+///   DEPOSIT_50        la moitié en ligne, le solde remis au livreur ;
+///   CASH_ON_DELIVERY  tout remis au livreur à la réception.
+enum PaymentMode {
+  ONLINE_FULL
+  DEPOSIT_50
+  CASH_ON_DELIVERY
 }
 
 enum PaymentChannel {
@@ -789,9 +939,13 @@ model PaymentEvent {
 /// Règle du cahier client : le remboursement porte sur 100 % du prix produit.
 /// Les frais de livraison et la commission Ojà restent acquis.
 model Refund {
-  id        String  @id @default(cuid())
-  paymentId String
-  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  /// Absent quand rien n'a été payé en ligne (paiement à la livraison).
+  paymentId String?
+  payment   Payment? @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  /// Toujours renseigné : la commande remboursée, avec ou sans paiement en ligne.
+  orderId   String?
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   /// Σ (makerPriceXof × quantité) des lignes remboursées.
   amountXof   Int
@@ -803,6 +957,7 @@ model Refund {
   settledAt   DateTime?
 
   @@index([paymentId])
+  @@index([orderId])
   @@map("refunds")
 }
 
@@ -816,6 +971,12 @@ enum LedgerAccountType {
   CUSTOMER_REFUNDABLE
   PSP_FEE
   VAT_PAYABLE
+  /// Actif : ce que les clients doivent encore remettre au livreur à la
+  /// réception. S'éteint quand le livreur déclare avoir encaissé.
+  RECEIVABLE_ON_DELIVERY
+  /// Actif, nominatif (userId du livreur) : espèces encaissées pour Ojà et pas
+  /// encore reversées.
+  COURIER_CASH_HELD
 }
 
 model LedgerAccount {
@@ -1136,20 +1297,122 @@ model Message {
   @@map("messages")
 }
 
+// ═══════════════════════════════════════════ Service client (tickets)
+
+/// Cycle d'une demande. « En attente de réponse » attend le **client** : le
+/// service client lui a posé une question.
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+/// D'où vient la demande : un espace connecté, ou le formulaire de contact
+/// public (visiteur, éventuellement relié après coup à un compte existant).
+enum TicketChannel {
+  ACCOUNT
+  CONTACT_FORM
+}
+
+/// Une demande au service client. Toujours entre une personne et Ojà : le
+/// client et le créateur ne s'écrivent jamais directement (§ 15.3).
+model SupportTicket {
+  id        String @id @default(cuid())
+  /// SUP-2026-000123 : la référence que le client cite au téléphone.
+  reference String @unique
+
+  channel    TicketChannel @default(ACCOUNT)
+  /// Auteur inscrit. Nul pour un visiteur dont l'e-mail ne correspond à
+  /// aucun compte.
+  userId     String?
+  user       User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// Rôle de l'auteur à l'ouverture (CUSTOMER, MAKER…). Nul pour un visiteur.
+  authorRole UserRole?
+  /// Coordonnées saisies sur le formulaire public.
+  guestName  String?
+  guestEmail String?
+
+  /// Type de problème : clé stable de `@oja/contracts` (livraison, paiement…).
+  category String
+  subject  String
+  status   TicketStatus   @default(OPEN)
+  priority TicketPriority @default(NORMAL)
+
+  /// Commande concernée, facultative (espace acheteur).
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  /// Dernier message, interne compris : trie la file du service client.
+  lastMessageAt DateTime  @default(now())
+  resolvedAt    DateTime?
+  closedAt      DateTime?
+
+  messages SupportMessage[]
+
+  @@index([userId, status])
+  @@index([status, priority, lastMessageAt])
+  @@index([guestEmail])
+  @@map("support_tickets")
+}
+
+model SupportMessage {
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  /// Nul pour un visiteur non inscrit.
+  authorId  String?
+  /// Écrit par le service client.
+  fromStaff Boolean       @default(false)
+  /// Note interne : jamais montrée au client, ni renvoyée par ses routes.
+  internal  Boolean       @default(false)
+  body      String
+  fileKeys  String[]      @default([])
+  createdAt DateTime      @default(now())
+
+  @@index([ticketId, createdAt])
+  @@map("support_messages")
+}
+
+/// Avis client (cahier L6-11, L6-12). Un avis exige une ligne de commande
+/// réellement achetée **et** dont la réception a été validée : on ne note
+/// pas une pièce qu'on n'a pas eue entre les mains. Un seul par ligne.
+/// Publié après modération ; la publication recalcule les notes moyennes
+/// de la pièce et de l'atelier.
 model Review {
-  id          String  @id @default(cuid())
+  id          String    @id @default(cuid())
   productId   String
-  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   authorId    String
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   /// Un avis exige une ligne de commande réellement achetée et validée.
-  orderLineId String  @unique
+  orderLineId String    @unique
+  orderLine   OrderLine @relation(fields: [orderLineId], references: [id], onDelete: Cascade)
 
   rating    Int // 1..5
   body      String?
+  /// PENDING (en modération) | PUBLISHED | REJECTED
   status    String   @default("PENDING")
   createdAt DateTime @default(now())
 
+  moderatedAt  DateTime?
+  moderatorId  String?
+  /// Motif d'un refus, montré à l'auteur.
+  rejectReason String?
+
   @@index([productId, status])
+  @@index([status, createdAt])
+  @@index([authorId])
   @@map("reviews")
 }
 
@@ -1285,4 +1548,56 @@ model Invoice {
   country     String
 
   @@map("invoices")
+}
+
+// ═══════════════════════════════════════════ Newsletter
+
+/// Abonné à la newsletter (pied de page). La base fait foi ; la liste Brevo,
+/// d'où partent les campagnes, n'en est qu'une copie. Une désinscription se
+/// marque (`unsubscribedAt`) plutôt que de supprimer la ligne : on garde la
+/// trace du consentement et de son retrait.
+model NewsletterSubscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  /// D'où vient l'inscription (`footer`…), pour savoir quel formulaire convertit.
+  source         String    @default("footer")
+  createdAt      DateTime  @default(now())
+  /// Dernière inscription, réinscription comprise : la date du consentement.
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+  /// Dernière copie réussie vers la liste Brevo. Nul : à rattraper.
+  brevoSyncedAt  DateTime?
+
+  @@map("newsletter_subscribers")
+}
+
+// ═══════════════════════════════════════════ Idempotence
+
+/// Clé `Idempotency-Key` d'une requête qui engage de l'argent (cahier L0-25).
+/// Le client envoie la même clé quand il rejoue la même intention : un double
+/// clic ou un réseau qui renvoie la requête retrouve la première réponse au
+/// lieu de créer une seconde commande. Gardée 24 h, puis purgée.
+///
+/// En base plutôt que dans Redis, comme le prévoyait le backlog : Redis n'est
+/// pas déployé, et la ligne `IN_PROGRESS` doit survivre à un redémarrage
+/// pour qu'une requête interrompue ne soit pas rejouée en double.
+model IdempotencyKey {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Valeur de l'en-tête, choisie par le client. Unique par utilisateur.
+  key          String
+  /// Empreinte de la méthode, du chemin et du corps : la même clé ne peut
+  /// pas servir à une autre requête.
+  requestHash  String
+  /// IN_PROGRESS tant que la requête tourne, COMPLETED une fois la réponse
+  /// mémorisée. Une requête en échec efface sa ligne : on peut réessayer.
+  status       String   @default("IN_PROGRESS")
+  responseBody Json?
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+
+  @@unique([userId, key])
+  @@index([expiresAt])
+  @@map("idempotency_keys")
 }
