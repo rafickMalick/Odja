@@ -163,6 +163,7 @@ export class SearchService {
       maker: {
         kycStatus: 'APPROVED',
         deletedAt: null,
+        suspendedAt: null,
         ...(query.maker ? { slug: query.maker } : {}),
         ...(query.city ? { city: { name: { equals: query.city, mode: 'insensitive' } } } : {}),
       },

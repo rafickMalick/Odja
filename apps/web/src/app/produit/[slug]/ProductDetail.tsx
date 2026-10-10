@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, type ReactNode } from "react";
 
 import { Button, ButtonLink } from "@/components/Button";
+import { ReportButton } from "@/components/ReportButton";
 import { StepperQuantity } from "@/components/StepperQuantity";
 import { useCart } from "@/lib/cart";
 import { formatFcfa, formatNumber } from "@/lib/format";
@@ -275,6 +276,9 @@ export function ProductDetail({
         </div>
       </div>
       {children}
+      <div className={styles.report}>
+        <ReportButton targetType="PRODUCT" targetId={product.id} />
+      </div>
     </main>
   );
 }

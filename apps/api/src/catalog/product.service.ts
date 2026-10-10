@@ -385,7 +385,13 @@ export class ProductService {
 
   async publicBySlug(slug: string): Promise<PublicProduct> {
     const product = await this.prisma.product.findFirst({
-      where: { slug, status: 'PUBLISHED', hiddenAt: null, deletedAt: null },
+      where: {
+        slug,
+        status: 'PUBLISHED',
+        hiddenAt: null,
+        deletedAt: null,
+        maker: { suspendedAt: null },
+      },
       include: WITH_RELATIONS,
     });
     if (!product) throw new NotFoundException();

@@ -3,7 +3,12 @@ import Link from "next/link";
 import { ButtonLink } from "@/components/Button";
 import { ForVisitors } from "@/components/ForVisitors";
 import { CatalogCard } from "@/components/CatalogCard";
+import { CreatorCard } from "@/components/CreatorCard";
 import { fetchProducts } from "@/lib/catalog";
+import { fetchDirectory } from "@/lib/creators";
+import { fetchExhibitions } from "@/lib/exhibitions";
+
+import { ExhibitionCardView } from "./expositions/ExhibitionCardView";
 
 import styles from "./page.module.css";
 
@@ -133,7 +138,15 @@ const ROLES = [
 export default async function HomePage() {
   /* Les pièces mises en avant viennent du catalogue réel : ce sont celles que
      des ateliers ont publiées et que l'administration a validées. */
-  const featured = await fetchProducts({ limit: 4 });
+  const [featured, featuredExhibitions, currentExhibitions, creators] = await Promise.all([
+    fetchProducts({ limit: 4 }),
+    fetchExhibitions({ featured: true }),
+    fetchExhibitions({ when: "current" }),
+    fetchDirectory({}),
+  ]);
+  /* L'équipe choisit les expositions à la une (§ 10) ; à défaut, on montre
+     celles qui se visitent en ce moment. */
+  const exhibitions = (featuredExhibitions.length > 0 ? featuredExhibitions : currentExhibitions).slice(0, 3);
 
   return (
     <main className={styles.page}>
@@ -278,6 +291,47 @@ export default async function HomePage() {
           </p>
         )}
       </section>
+
+      {/* ── Expositions (cahier des évolutions, § 10) ── */}
+      {exhibitions.length > 0 ? (
+        <section className={styles.section}>
+          <div className={styles.sectionHead}>
+            <div>
+              <p className={styles.eyebrow}>Expositions</p>
+              <h2 className={styles.sectionTitle}>À voir en ce moment</h2>
+            </div>
+            <ButtonLink href="/expositions" variant="outline">
+              Toutes les expositions
+            </ButtonLink>
+          </div>
+          <div className={styles.exhibitionGrid}>
+            {exhibitions.map((exhibition) => (
+              <ExhibitionCardView key={exhibition.id} exhibition={exhibition} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {/* ── Créateurs à découvrir : formules Premium et ateliers mis en avant
+          en tête, comme dans l'annuaire (§ 3.4) ── */}
+      {creators.items.length > 0 ? (
+        <section className={styles.section}>
+          <div className={styles.sectionHead}>
+            <div>
+              <p className={styles.eyebrow}>Créateurs</p>
+              <h2 className={styles.sectionTitle}>Les ateliers à découvrir</h2>
+            </div>
+            <ButtonLink href="/createurs" variant="outline">
+              Tous les créateurs
+            </ButtonLink>
+          </div>
+          <div className={styles.exhibitionGrid}>
+            {creators.items.slice(0, 3).map((maker) => (
+              <CreatorCard key={maker.id} maker={maker} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {/* ── Atelier à l'honneur ── */}
       <section className={styles.spotlight}>

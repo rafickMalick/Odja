@@ -242,6 +242,8 @@ exports.Prisma.MakerProfileScalarFieldEnum = {
   postalAddress: 'postalAddress',
   ifuNumber: 'ifuNumber',
   rccmNumber: 'rccmNumber',
+  suspendedAt: 'suspendedAt',
+  suspendReason: 'suspendReason',
   kycStatus: 'kycStatus',
   kycSubmittedAt: 'kycSubmittedAt',
   kycReviewedAt: 'kycReviewedAt',
@@ -293,6 +295,8 @@ exports.Prisma.MakerSubscriptionScalarFieldEnum = {
   note: 'note',
   activatedById: 'activatedById',
   cancelledAt: 'cancelledAt',
+  reminderSentAt: 'reminderSentAt',
+  expiredNoticeAt: 'expiredNoticeAt',
   createdAt: 'createdAt'
 };
 
@@ -933,6 +937,24 @@ exports.Prisma.ExhibitionPassScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ContentReportScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  targetLabel: 'targetLabel',
+  reason: 'reason',
+  details: 'details',
+  reporterId: 'reporterId',
+  reporterEmail: 'reporterEmail',
+  status: 'status',
+  resolution: 'resolution',
+  contentHidden: 'contentHidden',
+  handledById: 'handledById',
+  handledAt: 'handledAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1185,6 +1207,27 @@ exports.ExhibitionPassStatus = exports.$Enums.ExhibitionPassStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.ReportTarget = exports.$Enums.ReportTarget = {
+  PRODUCT: 'PRODUCT',
+  MAKER: 'MAKER',
+  EXHIBITION: 'EXHIBITION',
+  EXHIBITION_WORK: 'EXHIBITION_WORK'
+};
+
+exports.ReportReason = exports.$Enums.ReportReason = {
+  UNAUTHORIZED_USE: 'UNAUTHORIZED_USE',
+  COUNTERFEIT: 'COUNTERFEIT',
+  INAPPROPRIATE: 'INAPPROPRIATE',
+  MISLEADING: 'MISLEADING',
+  OTHER: 'OTHER'
+};
+
+exports.ReportStatus = exports.$Enums.ReportStatus = {
+  OPEN: 'OPEN',
+  RESOLVED: 'RESOLVED',
+  DISMISSED: 'DISMISSED'
+};
+
 exports.Prisma.ModelName = {
   Country: 'Country',
   City: 'City',
@@ -1238,7 +1281,8 @@ exports.Prisma.ModelName = {
   ExhibitionPlan: 'ExhibitionPlan',
   Exhibition: 'Exhibition',
   ExhibitionWork: 'ExhibitionWork',
-  ExhibitionPass: 'ExhibitionPass'
+  ExhibitionPass: 'ExhibitionPass',
+  ContentReport: 'ContentReport'
 };
 
 /**

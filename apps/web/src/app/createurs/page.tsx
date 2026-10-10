@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { apiFetchOrNull } from "@/lib/api";
-import { CREATOR_KIND_LABELS, CREATOR_KIND_SHORT, fetchDirectory } from "@/lib/creators";
+import { CreatorCard } from "@/components/CreatorCard";
+import { CREATOR_KIND_LABELS, fetchDirectory } from "@/lib/creators";
 
 import styles from "./page.module.css";
 
@@ -105,37 +106,7 @@ export default async function CreatorsPage({
             <ul className={styles.grid}>
               {page.items.map((maker) => (
                 <li key={maker.id}>
-                  <Link href={`/atelier/${maker.slug}`} className={styles.card}>
-                    <span
-                      className={styles.cover}
-                      style={maker.coverUrl ? { backgroundImage: `url(${maker.coverUrl})` } : undefined}
-                    />
-                    <span className={styles.logo}>
-                      {maker.logoUrl ? (
-                        <img src={maker.logoUrl} alt="" />
-                      ) : (
-                        <span aria-hidden="true">{maker.shopName.slice(0, 1).toUpperCase()}</span>
-                      )}
-                    </span>
-                    <span className={styles.cardBody}>
-                      <span className={styles.kind}>
-                        {CREATOR_KIND_SHORT[maker.creatorKind]}
-                        {maker.badge ? <span className={styles.badge}>{maker.badge.name}</span> : null}
-                      </span>
-                      <span className={styles.name}>{maker.shopName}</span>
-                      <span className={styles.meta}>
-                        {[maker.activityField, maker.city].filter(Boolean).join(" · ")}
-                      </span>
-                      {maker.specialties.length > 0 ? (
-                        <span className={styles.specialties}>
-                          {maker.specialties.slice(0, 3).join(" · ")}
-                        </span>
-                      ) : null}
-                      <span className={styles.pieces}>
-                        {maker.productCount} pièce{maker.productCount > 1 ? "s" : ""} en vente
-                      </span>
-                    </span>
-                  </Link>
+                  <CreatorCard maker={maker} />
                 </li>
               ))}
             </ul>

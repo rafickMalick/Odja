@@ -16,6 +16,7 @@ import type {
 import type { MakerSubscription, VisibilityPlan } from '@oja/db';
 import { activeSubscription, publicationQuotaProblem } from '@oja/domain';
 
+import { NotificationService } from '../notifications/notification.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 type SubscriptionWithPlan = MakerSubscription & { plan: VisibilityPlan };
@@ -52,7 +53,10 @@ export function liveSubscriptionsInclude(now = new Date()) {
  */
 @Injectable()
 export class VisibilityService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationService,
+  ) {}
 
   // ═══════════════════════════════ Résolution
 
@@ -109,6 +113,72 @@ export class VisibilityService {
     ]);
     const problem = publicationQuotaProblem(count, plan.maxPublications, plan.name);
     if (problem) throw new BadRequestException(problem);
+  }
+
+  /**
+   * Rappels de renouvellement et avis d'expiration (§ 12).
+   *
+   * Idempotent : chaque période n'est rappelée qu'une fois, sept jours avant
+   * son terme, puis signalée une fois expirée. Appelée chaque jour par
+   * l'ordonnanceur.
+   */
+  async notifyRenewals(now = new Date()): Promise<number> {
+    const week = 7 * 24 * 60 * 60 * 1000;
+    const [ending, ended] = await Promise.all([
+      this.prisma.makerSubscription.findMany({
+        where: {
+          cancelledAt: null,
+          reminderSentAt: null,
+          endsAt: { gt: now, lte: new Date(now.getTime() + week) },
+        },
+        include: { plan: true, maker: { select: { userId: true } } },
+      }),
+      this.prisma.makerSubscription.findMany({
+        where: {
+          cancelledAt: null,
+          expiredNoticeAt: null,
+          endsAt: { lte: now, gt: new Date(now.getTime() - week) },
+        },
+        include: { plan: true, maker: { select: { userId: true } } },
+      }),
+    ]);
+
+    for (const subscription of ending) {
+      await this.prisma.makerSubscription.update({
+        where: { id: subscription.id },
+        data: { reminderSentAt: now },
+      });
+      await this.notifications.notice('creator_notice', subscription.maker.userId, {
+        title: `Votre formule ${subscription.plan.name} arrive à échéance`,
+        body: `Elle prend fin le ${subscription.endsAt!.toLocaleDateString('fr-FR')}. Contactez l’équipe Ojà pour la renouveler.`,
+        href: '/espace-createur/visibilite',
+      });
+    }
+
+    for (const subscription of ended) {
+      /* Une période renouvelée à temps a pris le relais : pas d'avis. */
+      const renewed = await this.prisma.makerSubscription.findFirst({
+        where: {
+          makerId: subscription.makerId,
+          id: { not: subscription.id },
+          cancelledAt: null,
+          startsAt: { lte: now },
+          OR: [{ endsAt: null }, { endsAt: { gt: now } }],
+        },
+      });
+      await this.prisma.makerSubscription.update({
+        where: { id: subscription.id },
+        data: { expiredNoticeAt: now },
+      });
+      if (renewed) continue;
+      await this.notifications.notice('creator_notice', subscription.maker.userId, {
+        title: `Votre formule ${subscription.plan.name} a expiré`,
+        body: 'Votre profil est revenu à la formule par défaut. Vos fiches restent en ligne.',
+        href: '/espace-createur/visibilite',
+      });
+    }
+
+    return ending.length + ended.length;
   }
 
   // ═══════════════════════════════ Espace créateur

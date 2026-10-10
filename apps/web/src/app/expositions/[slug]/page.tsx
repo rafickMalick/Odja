@@ -4,8 +4,11 @@ import { notFound } from "next/navigation";
 
 import { fetchExhibition, FORMAT_LABELS, PERIOD_LABELS, accessLabel, dateRange } from "@/lib/exhibitions";
 
+import { ReportButton } from "@/components/ReportButton";
+
 import styles from "../expositions.module.css";
 import { ExhibitionGallery } from "./ExhibitionGallery";
+import { ShareButton } from "./ShareButton";
 
 /**
  * Page publique d'une exposition (cahier des évolutions, § 7).
@@ -65,6 +68,7 @@ export default async function ExhibitionPage({ params }: Params) {
             )}{" "}
             · {dateRange(exhibition.startsAt, exhibition.endsAt)}
           </p>
+          <ShareButton title={exhibition.title} />
         </div>
       </header>
 
@@ -145,6 +149,7 @@ export default async function ExhibitionPage({ params }: Params) {
             Les œuvres en vente s’achètent sans venir sur place : paiement sur Ojà, livraison selon
             les zones desservies.
           </p>
+          <ReportButton targetType="EXHIBITION" targetId={exhibition.id} />
         </aside>
       </div>
 

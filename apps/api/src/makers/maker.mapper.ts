@@ -108,6 +108,8 @@ export function toAdminMaker(maker: MakerWithPlace, context: MakerContext): Admi
     kycRejectReason: maker.kycRejectReason,
     commissionBps: maker.commissionBps,
     plan,
+    suspendedAt: maker.suspendedAt?.toISOString() ?? null,
+    suspendReason: maker.suspendReason,
   };
 }
 

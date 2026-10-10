@@ -9,6 +9,8 @@ import {
   StatTile,
   workspaceStyles as styles,
 } from "@/components/dashboard/Workspace";
+import type { CreativeOverview } from "@oja/contracts";
+
 import { apiFetch } from "@/lib/api";
 
 /**
@@ -24,18 +26,20 @@ export default function AdminHomePage() {
   const [products, setProducts] = useState(0);
   const [shipments, setShipments] = useState(0);
   const [disputes, setDisputes] = useState(0);
+  const [creative, setCreative] = useState<CreativeOverview | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
 
     void (async () => {
-      const [m, c, p, s, d] = await Promise.all([
+      const [m, c, p, s, d, o] = await Promise.all([
         apiFetch<unknown[]>("/admin/makers?status=PENDING").catch(() => []),
         apiFetch<unknown[]>("/admin/couriers?status=PENDING").catch(() => []),
         apiFetch<unknown[]>("/admin/catalog/products/pending").catch(() => []),
         apiFetch<unknown[]>("/admin/logistics/unassigned").catch(() => []),
         apiFetch<unknown[]>("/admin/disputes?open=true").catch(() => []),
+        apiFetch<CreativeOverview>("/admin/creative-overview").catch(() => null),
       ]);
       if (cancelled) return;
       setMakers(m.length);
@@ -43,6 +47,7 @@ export default function AdminHomePage() {
       setProducts(p.length);
       setShipments(s.length);
       setDisputes(d.length);
+      setCreative(o);
       setLoading(false);
     })();
 
@@ -53,7 +58,13 @@ export default function AdminHomePage() {
 
   if (loading) return <p className={styles.muted}>Chargement…</p>;
 
-  const total = makers + couriers + products + shipments + disputes;
+  const total =
+    makers +
+    couriers +
+    products +
+    shipments +
+    disputes +
+    (creative ? creative.exhibitionsToReview + creative.reportsOpen : 0);
 
   return (
     <>
@@ -74,6 +85,34 @@ export default function AdminHomePage() {
         <StatTile label="Réclamations" value={String(disputes)} hint="ouvertes" />
       </div>
 
+      {/* Profils créatifs, expositions et signalements (cahier des
+          évolutions, § 11). */}
+      {creative ? (
+        <>
+          <h2 className={styles.panelTitle}>Profils créatifs et expositions</h2>
+          <div className={styles.statGrid}>
+            <StatTile
+              label="Apprentis"
+              value={String(creative.apprenticesPending)}
+              hint={`à valider · ${creative.professionalsPending} professionnel(s)`}
+            />
+            <StatTile label="Expositions" value={String(creative.exhibitionsToReview)} hint="à examiner" />
+            <StatTile
+              label="Contrats et paiements"
+              value={String(creative.exhibitionsAwaitingContract)}
+              hint={`${creative.exhibitionsLive} exposition(s) en ligne`}
+            />
+            <StatTile label="Signalements" value={String(creative.reportsOpen)} hint="à traiter" />
+            <StatTile
+              label="Formules payantes"
+              value={String(creative.premiumActive)}
+              hint={`${creative.suspendedMakers} profil(s) suspendu(s)`}
+            />
+            <StatTile label="Billets et inscriptions" value={String(creative.passesConfirmedThisMonth)} hint="ce mois-ci" />
+          </div>
+        </>
+      ) : null}
+
       <Panel title="Où aller">
         <ul className={styles.muted}>
           <li>
@@ -87,6 +126,14 @@ export default function AdminHomePage() {
           <li>
             <Link href="/admin/catalogue">Fiches à valider</Link> : refuser demande un motif,
             il part au créateur.
+          </li>
+          <li>
+            <Link href="/admin/expositions">Expositions</Link> : examen des dossiers, contrats,
+            paiements et programmation.
+          </li>
+          <li>
+            <Link href="/admin/signalements">Signalements</Link> : contenus publiés sans
+            autorisation, à masquer ou à écarter.
           </li>
           <li>
             <Link href="/admin/litiges">Réclamations</Link> : trois décisions distinctes

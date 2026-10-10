@@ -2,7 +2,9 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import {
   attachKycDocumentSchema,
   documentRequestSchema,
+  makerSuspensionSchema,
   type DocumentRequestInput,
+  type MakerSuspensionInput,
   grantSubscriptionSchema,
   kycReviewSchema,
   makerDirectoryQuerySchema,
@@ -168,6 +170,20 @@ export class MakerAdminController {
     @Query('profile') profile?: string,
   ): Promise<AdminMaker[]> {
     return this.makers.listForAdmin(status, profile);
+  }
+
+  @Post(':id/suspend')
+  async suspend(
+    @Param('id') id: string,
+    @CurrentUser() admin: AuthenticatedUser,
+    @Body(zodBody(makerSuspensionSchema)) input: MakerSuspensionInput,
+  ): Promise<AdminMaker> {
+    return this.makers.suspend(id, admin.id, input.reason);
+  }
+
+  @Post(':id/reinstate')
+  async reinstate(@Param('id') id: string, @CurrentUser() admin: AuthenticatedUser): Promise<AdminMaker> {
+    return this.makers.suspend(id, admin.id, null);
   }
 
   /** Demande d'une pièce complémentaire, sans refuser le dossier. */

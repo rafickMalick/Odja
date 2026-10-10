@@ -55,6 +55,8 @@ interface Profile {
   kycStatus: "NOT_SUBMITTED" | "PENDING" | "APPROVED" | "REJECTED";
   kycRejectReason: string | null;
   commissionBps: number;
+  suspendedAt: string | null;
+  suspendReason: string | null;
 }
 
 interface City {
@@ -257,6 +259,13 @@ export default function ShopPage() {
       {profile?.kycStatus === "REJECTED" && profile.kycRejectReason ? (
         <p className={styles.error}>
           Dossier refusé : {profile.kycRejectReason}. Corrigez, puis redéposez-le.
+        </p>
+      ) : null}
+
+      {profile?.suspendedAt ? (
+        <p className={styles.error}>
+          Votre profil est suspendu : {profile.suspendReason}. Il n’est plus visible des acheteurs.
+          Écrivez au support créateur pour en parler.
         </p>
       ) : null}
 

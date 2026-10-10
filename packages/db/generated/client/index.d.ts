@@ -325,6 +325,11 @@ export type ExhibitionWork = $Result.DefaultSelection<Prisma.$ExhibitionWorkPayl
  * 
  */
 export type ExhibitionPass = $Result.DefaultSelection<Prisma.$ExhibitionPassPayload>
+/**
+ * Model ContentReport
+ * 
+ */
+export type ContentReport = $Result.DefaultSelection<Prisma.$ContentReportPayload>
 
 /**
  * Enums
@@ -642,6 +647,36 @@ export const ExhibitionPassFormat: {
 
 export type ExhibitionPassFormat = (typeof ExhibitionPassFormat)[keyof typeof ExhibitionPassFormat]
 
+
+export const ReportTarget: {
+  PRODUCT: 'PRODUCT',
+  MAKER: 'MAKER',
+  EXHIBITION: 'EXHIBITION',
+  EXHIBITION_WORK: 'EXHIBITION_WORK'
+};
+
+export type ReportTarget = (typeof ReportTarget)[keyof typeof ReportTarget]
+
+
+export const ReportReason: {
+  UNAUTHORIZED_USE: 'UNAUTHORIZED_USE',
+  COUNTERFEIT: 'COUNTERFEIT',
+  INAPPROPRIATE: 'INAPPROPRIATE',
+  MISLEADING: 'MISLEADING',
+  OTHER: 'OTHER'
+};
+
+export type ReportReason = (typeof ReportReason)[keyof typeof ReportReason]
+
+
+export const ReportStatus: {
+  OPEN: 'OPEN',
+  RESOLVED: 'RESOLVED',
+  DISMISSED: 'DISMISSED'
+};
+
+export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -763,6 +798,18 @@ export const ExhibitionPassStatus: typeof $Enums.ExhibitionPassStatus
 export type ExhibitionPassFormat = $Enums.ExhibitionPassFormat
 
 export const ExhibitionPassFormat: typeof $Enums.ExhibitionPassFormat
+
+export type ReportTarget = $Enums.ReportTarget
+
+export const ReportTarget: typeof $Enums.ReportTarget
+
+export type ReportReason = $Enums.ReportReason
+
+export const ReportReason: typeof $Enums.ReportReason
+
+export type ReportStatus = $Enums.ReportStatus
+
+export const ReportStatus: typeof $Enums.ReportStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1411,6 +1458,16 @@ export class PrismaClient<
     * ```
     */
   get exhibitionPass(): Prisma.ExhibitionPassDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.contentReport`: Exposes CRUD operations for the **ContentReport** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ContentReports
+    * const contentReports = await prisma.contentReport.findMany()
+    * ```
+    */
+  get contentReport(): Prisma.ContentReportDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1904,7 +1961,8 @@ export namespace Prisma {
     ExhibitionPlan: 'ExhibitionPlan',
     Exhibition: 'Exhibition',
     ExhibitionWork: 'ExhibitionWork',
-    ExhibitionPass: 'ExhibitionPass'
+    ExhibitionPass: 'ExhibitionPass',
+    ContentReport: 'ContentReport'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1923,7 +1981,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "country" | "city" | "user" | "session" | "mfaRecoveryCode" | "verificationToken" | "termsAcceptance" | "address" | "makerProfile" | "visibilityPlan" | "makerSubscription" | "kycDocument" | "courierProfile" | "vehicleRate" | "category" | "product" | "productImage" | "cart" | "cartItem" | "order" | "subOrder" | "orderLine" | "paymentMethodConfig" | "payment" | "paymentEvent" | "refund" | "ledgerAccount" | "ledgerTransaction" | "ledgerEntry" | "payoutBatch" | "payoutItem" | "deliveryRun" | "shipment" | "shipmentEvent" | "dispute" | "disputeMessage" | "messageThread" | "message" | "supportTicket" | "supportMessage" | "review" | "notification" | "auditLog" | "referenceCounter" | "promoCode" | "promoRedemption" | "invoice" | "newsletterSubscriber" | "idempotencyKey" | "exhibitionPlan" | "exhibition" | "exhibitionWork" | "exhibitionPass"
+      modelProps: "country" | "city" | "user" | "session" | "mfaRecoveryCode" | "verificationToken" | "termsAcceptance" | "address" | "makerProfile" | "visibilityPlan" | "makerSubscription" | "kycDocument" | "courierProfile" | "vehicleRate" | "category" | "product" | "productImage" | "cart" | "cartItem" | "order" | "subOrder" | "orderLine" | "paymentMethodConfig" | "payment" | "paymentEvent" | "refund" | "ledgerAccount" | "ledgerTransaction" | "ledgerEntry" | "payoutBatch" | "payoutItem" | "deliveryRun" | "shipment" | "shipmentEvent" | "dispute" | "disputeMessage" | "messageThread" | "message" | "supportTicket" | "supportMessage" | "review" | "notification" | "auditLog" | "referenceCounter" | "promoCode" | "promoRedemption" | "invoice" | "newsletterSubscriber" | "idempotencyKey" | "exhibitionPlan" | "exhibition" | "exhibitionWork" | "exhibitionPass" | "contentReport"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5849,6 +5907,80 @@ export namespace Prisma {
           }
         }
       }
+      ContentReport: {
+        payload: Prisma.$ContentReportPayload<ExtArgs>
+        fields: Prisma.ContentReportFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ContentReportFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ContentReportFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload>
+          }
+          findFirst: {
+            args: Prisma.ContentReportFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ContentReportFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload>
+          }
+          findMany: {
+            args: Prisma.ContentReportFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload>[]
+          }
+          create: {
+            args: Prisma.ContentReportCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload>
+          }
+          createMany: {
+            args: Prisma.ContentReportCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ContentReportCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload>[]
+          }
+          delete: {
+            args: Prisma.ContentReportDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload>
+          }
+          update: {
+            args: Prisma.ContentReportUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload>
+          }
+          deleteMany: {
+            args: Prisma.ContentReportDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ContentReportUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ContentReportUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload>[]
+          }
+          upsert: {
+            args: Prisma.ContentReportUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentReportPayload>
+          }
+          aggregate: {
+            args: Prisma.ContentReportAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateContentReport>
+          }
+          groupBy: {
+            args: Prisma.ContentReportGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ContentReportGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ContentReportCountArgs<ExtArgs>
+            result: $Utils.Optional<ContentReportCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -5998,6 +6130,7 @@ export namespace Prisma {
     exhibition?: ExhibitionOmit
     exhibitionWork?: ExhibitionWorkOmit
     exhibitionPass?: ExhibitionPassOmit
+    contentReport?: ContentReportOmit
   }
 
   /* Types for Logging */
@@ -6190,6 +6323,7 @@ export namespace Prisma {
     recoveryCodes: number
     exhibitions: number
     exhibitionPasses: number
+    contentReports: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6207,6 +6341,7 @@ export namespace Prisma {
     recoveryCodes?: boolean | UserCountOutputTypeCountRecoveryCodesArgs
     exhibitions?: boolean | UserCountOutputTypeCountExhibitionsArgs
     exhibitionPasses?: boolean | UserCountOutputTypeCountExhibitionPassesArgs
+    contentReports?: boolean | UserCountOutputTypeCountContentReportsArgs
   }
 
   // Custom InputTypes
@@ -6316,6 +6451,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountExhibitionPassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ExhibitionPassWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountContentReportsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ContentReportWhereInput
   }
 
 
@@ -9824,6 +9966,7 @@ export namespace Prisma {
     recoveryCodes?: boolean | User$recoveryCodesArgs<ExtArgs>
     exhibitions?: boolean | User$exhibitionsArgs<ExtArgs>
     exhibitionPasses?: boolean | User$exhibitionPassesArgs<ExtArgs>
+    contentReports?: boolean | User$contentReportsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -9911,6 +10054,7 @@ export namespace Prisma {
     recoveryCodes?: boolean | User$recoveryCodesArgs<ExtArgs>
     exhibitions?: boolean | User$exhibitionsArgs<ExtArgs>
     exhibitionPasses?: boolean | User$exhibitionPassesArgs<ExtArgs>
+    contentReports?: boolean | User$contentReportsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -9935,6 +10079,7 @@ export namespace Prisma {
       recoveryCodes: Prisma.$MfaRecoveryCodePayload<ExtArgs>[]
       exhibitions: Prisma.$ExhibitionPayload<ExtArgs>[]
       exhibitionPasses: Prisma.$ExhibitionPassPayload<ExtArgs>[]
+      contentReports: Prisma.$ContentReportPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10389,6 +10534,7 @@ export namespace Prisma {
     recoveryCodes<T extends User$recoveryCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$recoveryCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     exhibitions<T extends User$exhibitionsArgs<ExtArgs> = {}>(args?: Subset<T, User$exhibitionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     exhibitionPasses<T extends User$exhibitionPassesArgs<ExtArgs> = {}>(args?: Subset<T, User$exhibitionPassesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExhibitionPassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    contentReports<T extends User$contentReportsArgs<ExtArgs> = {}>(args?: Subset<T, User$contentReportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11196,6 +11342,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ExhibitionPassScalarFieldEnum | ExhibitionPassScalarFieldEnum[]
+  }
+
+  /**
+   * User.contentReports
+   */
+  export type User$contentReportsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    where?: ContentReportWhereInput
+    orderBy?: ContentReportOrderByWithRelationInput | ContentReportOrderByWithRelationInput[]
+    cursor?: ContentReportWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ContentReportScalarFieldEnum | ContentReportScalarFieldEnum[]
   }
 
   /**
@@ -16863,6 +17033,8 @@ export namespace Prisma {
     postalAddress: string | null
     ifuNumber: string | null
     rccmNumber: string | null
+    suspendedAt: Date | null
+    suspendReason: string | null
     kycStatus: $Enums.KycStatus | null
     kycSubmittedAt: Date | null
     kycReviewedAt: Date | null
@@ -16908,6 +17080,8 @@ export namespace Prisma {
     postalAddress: string | null
     ifuNumber: string | null
     rccmNumber: string | null
+    suspendedAt: Date | null
+    suspendReason: string | null
     kycStatus: $Enums.KycStatus | null
     kycSubmittedAt: Date | null
     kycReviewedAt: Date | null
@@ -16955,6 +17129,8 @@ export namespace Prisma {
     postalAddress: number
     ifuNumber: number
     rccmNumber: number
+    suspendedAt: number
+    suspendReason: number
     kycStatus: number
     kycSubmittedAt: number
     kycReviewedAt: number
@@ -17018,6 +17194,8 @@ export namespace Prisma {
     postalAddress?: true
     ifuNumber?: true
     rccmNumber?: true
+    suspendedAt?: true
+    suspendReason?: true
     kycStatus?: true
     kycSubmittedAt?: true
     kycReviewedAt?: true
@@ -17063,6 +17241,8 @@ export namespace Prisma {
     postalAddress?: true
     ifuNumber?: true
     rccmNumber?: true
+    suspendedAt?: true
+    suspendReason?: true
     kycStatus?: true
     kycSubmittedAt?: true
     kycReviewedAt?: true
@@ -17110,6 +17290,8 @@ export namespace Prisma {
     postalAddress?: true
     ifuNumber?: true
     rccmNumber?: true
+    suspendedAt?: true
+    suspendReason?: true
     kycStatus?: true
     kycSubmittedAt?: true
     kycReviewedAt?: true
@@ -17244,6 +17426,8 @@ export namespace Prisma {
     postalAddress: string | null
     ifuNumber: string | null
     rccmNumber: string | null
+    suspendedAt: Date | null
+    suspendReason: string | null
     kycStatus: $Enums.KycStatus
     kycSubmittedAt: Date | null
     kycReviewedAt: Date | null
@@ -17310,6 +17494,8 @@ export namespace Prisma {
     postalAddress?: boolean
     ifuNumber?: boolean
     rccmNumber?: boolean
+    suspendedAt?: boolean
+    suspendReason?: boolean
     kycStatus?: boolean
     kycSubmittedAt?: boolean
     kycReviewedAt?: boolean
@@ -17365,6 +17551,8 @@ export namespace Prisma {
     postalAddress?: boolean
     ifuNumber?: boolean
     rccmNumber?: boolean
+    suspendedAt?: boolean
+    suspendReason?: boolean
     kycStatus?: boolean
     kycSubmittedAt?: boolean
     kycReviewedAt?: boolean
@@ -17414,6 +17602,8 @@ export namespace Prisma {
     postalAddress?: boolean
     ifuNumber?: boolean
     rccmNumber?: boolean
+    suspendedAt?: boolean
+    suspendReason?: boolean
     kycStatus?: boolean
     kycSubmittedAt?: boolean
     kycReviewedAt?: boolean
@@ -17463,6 +17653,8 @@ export namespace Prisma {
     postalAddress?: boolean
     ifuNumber?: boolean
     rccmNumber?: boolean
+    suspendedAt?: boolean
+    suspendReason?: boolean
     kycStatus?: boolean
     kycSubmittedAt?: boolean
     kycReviewedAt?: boolean
@@ -17485,7 +17677,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type MakerProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "shopName" | "slug" | "description" | "logoUrl" | "coverUrl" | "cityId" | "creatorKind" | "activityField" | "specialties" | "techniques" | "services" | "region" | "publicArea" | "trainingInstitution" | "trainingSpecialty" | "trainingLevel" | "managerName" | "contactPhone" | "contactEmail" | "postalAddress" | "ifuNumber" | "rccmNumber" | "kycStatus" | "kycSubmittedAt" | "kycReviewedAt" | "kycReviewerId" | "kycRejectReason" | "pickupLine1" | "pickupLandmark" | "pickupLatitude" | "pickupLongitude" | "payoutMethod" | "payoutMsisdn" | "payoutOperator" | "payoutBankIban" | "commissionBps" | "isFeatured" | "ratingAvg" | "ratingCount" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["makerProfile"]>
+  export type MakerProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "shopName" | "slug" | "description" | "logoUrl" | "coverUrl" | "cityId" | "creatorKind" | "activityField" | "specialties" | "techniques" | "services" | "region" | "publicArea" | "trainingInstitution" | "trainingSpecialty" | "trainingLevel" | "managerName" | "contactPhone" | "contactEmail" | "postalAddress" | "ifuNumber" | "rccmNumber" | "suspendedAt" | "suspendReason" | "kycStatus" | "kycSubmittedAt" | "kycReviewedAt" | "kycReviewerId" | "kycRejectReason" | "pickupLine1" | "pickupLandmark" | "pickupLatitude" | "pickupLongitude" | "payoutMethod" | "payoutMsisdn" | "payoutOperator" | "payoutBankIban" | "commissionBps" | "isFeatured" | "ratingAvg" | "ratingCount" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["makerProfile"]>
   export type MakerProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     city?: boolean | CityDefaultArgs<ExtArgs>
@@ -17560,6 +17752,12 @@ export namespace Prisma {
        * Registre du commerce et du crédit mobilier.
        */
       rccmNumber: string | null
+      /**
+       * Suspension par l'administration pour un motif légitime (§ 11.1) :
+       * le profil et ses fiches disparaissent du public, sans rien supprimer.
+       */
+      suspendedAt: Date | null
+      suspendReason: string | null
       kycStatus: $Enums.KycStatus
       kycSubmittedAt: Date | null
       kycReviewedAt: Date | null
@@ -18042,6 +18240,8 @@ export namespace Prisma {
     readonly postalAddress: FieldRef<"MakerProfile", 'String'>
     readonly ifuNumber: FieldRef<"MakerProfile", 'String'>
     readonly rccmNumber: FieldRef<"MakerProfile", 'String'>
+    readonly suspendedAt: FieldRef<"MakerProfile", 'DateTime'>
+    readonly suspendReason: FieldRef<"MakerProfile", 'String'>
     readonly kycStatus: FieldRef<"MakerProfile", 'KycStatus'>
     readonly kycSubmittedAt: FieldRef<"MakerProfile", 'DateTime'>
     readonly kycReviewedAt: FieldRef<"MakerProfile", 'DateTime'>
@@ -19885,6 +20085,8 @@ export namespace Prisma {
     note: string | null
     activatedById: string | null
     cancelledAt: Date | null
+    reminderSentAt: Date | null
+    expiredNoticeAt: Date | null
     createdAt: Date | null
   }
 
@@ -19899,6 +20101,8 @@ export namespace Prisma {
     note: string | null
     activatedById: string | null
     cancelledAt: Date | null
+    reminderSentAt: Date | null
+    expiredNoticeAt: Date | null
     createdAt: Date | null
   }
 
@@ -19913,6 +20117,8 @@ export namespace Prisma {
     note: number
     activatedById: number
     cancelledAt: number
+    reminderSentAt: number
+    expiredNoticeAt: number
     createdAt: number
     _all: number
   }
@@ -19937,6 +20143,8 @@ export namespace Prisma {
     note?: true
     activatedById?: true
     cancelledAt?: true
+    reminderSentAt?: true
+    expiredNoticeAt?: true
     createdAt?: true
   }
 
@@ -19951,6 +20159,8 @@ export namespace Prisma {
     note?: true
     activatedById?: true
     cancelledAt?: true
+    reminderSentAt?: true
+    expiredNoticeAt?: true
     createdAt?: true
   }
 
@@ -19965,6 +20175,8 @@ export namespace Prisma {
     note?: true
     activatedById?: true
     cancelledAt?: true
+    reminderSentAt?: true
+    expiredNoticeAt?: true
     createdAt?: true
     _all?: true
   }
@@ -20066,6 +20278,8 @@ export namespace Prisma {
     note: string | null
     activatedById: string | null
     cancelledAt: Date | null
+    reminderSentAt: Date | null
+    expiredNoticeAt: Date | null
     createdAt: Date
     _count: MakerSubscriptionCountAggregateOutputType | null
     _avg: MakerSubscriptionAvgAggregateOutputType | null
@@ -20099,6 +20313,8 @@ export namespace Prisma {
     note?: boolean
     activatedById?: boolean
     cancelledAt?: boolean
+    reminderSentAt?: boolean
+    expiredNoticeAt?: boolean
     createdAt?: boolean
     maker?: boolean | MakerProfileDefaultArgs<ExtArgs>
     plan?: boolean | VisibilityPlanDefaultArgs<ExtArgs>
@@ -20115,6 +20331,8 @@ export namespace Prisma {
     note?: boolean
     activatedById?: boolean
     cancelledAt?: boolean
+    reminderSentAt?: boolean
+    expiredNoticeAt?: boolean
     createdAt?: boolean
     maker?: boolean | MakerProfileDefaultArgs<ExtArgs>
     plan?: boolean | VisibilityPlanDefaultArgs<ExtArgs>
@@ -20131,6 +20349,8 @@ export namespace Prisma {
     note?: boolean
     activatedById?: boolean
     cancelledAt?: boolean
+    reminderSentAt?: boolean
+    expiredNoticeAt?: boolean
     createdAt?: boolean
     maker?: boolean | MakerProfileDefaultArgs<ExtArgs>
     plan?: boolean | VisibilityPlanDefaultArgs<ExtArgs>
@@ -20147,10 +20367,12 @@ export namespace Prisma {
     note?: boolean
     activatedById?: boolean
     cancelledAt?: boolean
+    reminderSentAt?: boolean
+    expiredNoticeAt?: boolean
     createdAt?: boolean
   }
 
-  export type MakerSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "makerId" | "planId" | "startsAt" | "endsAt" | "amountXof" | "paymentReference" | "note" | "activatedById" | "cancelledAt" | "createdAt", ExtArgs["result"]["makerSubscription"]>
+  export type MakerSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "makerId" | "planId" | "startsAt" | "endsAt" | "amountXof" | "paymentReference" | "note" | "activatedById" | "cancelledAt" | "reminderSentAt" | "expiredNoticeAt" | "createdAt", ExtArgs["result"]["makerSubscription"]>
   export type MakerSubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     maker?: boolean | MakerProfileDefaultArgs<ExtArgs>
     plan?: boolean | VisibilityPlanDefaultArgs<ExtArgs>
@@ -20185,6 +20407,11 @@ export namespace Prisma {
       note: string | null
       activatedById: string | null
       cancelledAt: Date | null
+      /**
+       * Rappels envoyés au créateur (§ 12) : on ne prévient qu'une fois.
+       */
+      reminderSentAt: Date | null
+      expiredNoticeAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["makerSubscription"]>
     composites: {}
@@ -20621,6 +20848,8 @@ export namespace Prisma {
     readonly note: FieldRef<"MakerSubscription", 'String'>
     readonly activatedById: FieldRef<"MakerSubscription", 'String'>
     readonly cancelledAt: FieldRef<"MakerSubscription", 'DateTime'>
+    readonly reminderSentAt: FieldRef<"MakerSubscription", 'DateTime'>
+    readonly expiredNoticeAt: FieldRef<"MakerSubscription", 'DateTime'>
     readonly createdAt: FieldRef<"MakerSubscription", 'DateTime'>
   }
     
@@ -72216,6 +72445,1216 @@ export namespace Prisma {
 
 
   /**
+   * Model ContentReport
+   */
+
+  export type AggregateContentReport = {
+    _count: ContentReportCountAggregateOutputType | null
+    _min: ContentReportMinAggregateOutputType | null
+    _max: ContentReportMaxAggregateOutputType | null
+  }
+
+  export type ContentReportMinAggregateOutputType = {
+    id: string | null
+    reference: string | null
+    targetType: $Enums.ReportTarget | null
+    targetId: string | null
+    targetLabel: string | null
+    reason: $Enums.ReportReason | null
+    details: string | null
+    reporterId: string | null
+    reporterEmail: string | null
+    status: $Enums.ReportStatus | null
+    resolution: string | null
+    contentHidden: boolean | null
+    handledById: string | null
+    handledAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type ContentReportMaxAggregateOutputType = {
+    id: string | null
+    reference: string | null
+    targetType: $Enums.ReportTarget | null
+    targetId: string | null
+    targetLabel: string | null
+    reason: $Enums.ReportReason | null
+    details: string | null
+    reporterId: string | null
+    reporterEmail: string | null
+    status: $Enums.ReportStatus | null
+    resolution: string | null
+    contentHidden: boolean | null
+    handledById: string | null
+    handledAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type ContentReportCountAggregateOutputType = {
+    id: number
+    reference: number
+    targetType: number
+    targetId: number
+    targetLabel: number
+    reason: number
+    details: number
+    reporterId: number
+    reporterEmail: number
+    status: number
+    resolution: number
+    contentHidden: number
+    handledById: number
+    handledAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ContentReportMinAggregateInputType = {
+    id?: true
+    reference?: true
+    targetType?: true
+    targetId?: true
+    targetLabel?: true
+    reason?: true
+    details?: true
+    reporterId?: true
+    reporterEmail?: true
+    status?: true
+    resolution?: true
+    contentHidden?: true
+    handledById?: true
+    handledAt?: true
+    createdAt?: true
+  }
+
+  export type ContentReportMaxAggregateInputType = {
+    id?: true
+    reference?: true
+    targetType?: true
+    targetId?: true
+    targetLabel?: true
+    reason?: true
+    details?: true
+    reporterId?: true
+    reporterEmail?: true
+    status?: true
+    resolution?: true
+    contentHidden?: true
+    handledById?: true
+    handledAt?: true
+    createdAt?: true
+  }
+
+  export type ContentReportCountAggregateInputType = {
+    id?: true
+    reference?: true
+    targetType?: true
+    targetId?: true
+    targetLabel?: true
+    reason?: true
+    details?: true
+    reporterId?: true
+    reporterEmail?: true
+    status?: true
+    resolution?: true
+    contentHidden?: true
+    handledById?: true
+    handledAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ContentReportAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ContentReport to aggregate.
+     */
+    where?: ContentReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentReports to fetch.
+     */
+    orderBy?: ContentReportOrderByWithRelationInput | ContentReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ContentReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ContentReports
+    **/
+    _count?: true | ContentReportCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ContentReportMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ContentReportMaxAggregateInputType
+  }
+
+  export type GetContentReportAggregateType<T extends ContentReportAggregateArgs> = {
+        [P in keyof T & keyof AggregateContentReport]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateContentReport[P]>
+      : GetScalarType<T[P], AggregateContentReport[P]>
+  }
+
+
+
+
+  export type ContentReportGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ContentReportWhereInput
+    orderBy?: ContentReportOrderByWithAggregationInput | ContentReportOrderByWithAggregationInput[]
+    by: ContentReportScalarFieldEnum[] | ContentReportScalarFieldEnum
+    having?: ContentReportScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ContentReportCountAggregateInputType | true
+    _min?: ContentReportMinAggregateInputType
+    _max?: ContentReportMaxAggregateInputType
+  }
+
+  export type ContentReportGroupByOutputType = {
+    id: string
+    reference: string
+    targetType: $Enums.ReportTarget
+    targetId: string
+    targetLabel: string
+    reason: $Enums.ReportReason
+    details: string
+    reporterId: string | null
+    reporterEmail: string | null
+    status: $Enums.ReportStatus
+    resolution: string | null
+    contentHidden: boolean
+    handledById: string | null
+    handledAt: Date | null
+    createdAt: Date
+    _count: ContentReportCountAggregateOutputType | null
+    _min: ContentReportMinAggregateOutputType | null
+    _max: ContentReportMaxAggregateOutputType | null
+  }
+
+  type GetContentReportGroupByPayload<T extends ContentReportGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ContentReportGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ContentReportGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ContentReportGroupByOutputType[P]>
+            : GetScalarType<T[P], ContentReportGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ContentReportSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reference?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    targetLabel?: boolean
+    reason?: boolean
+    details?: boolean
+    reporterId?: boolean
+    reporterEmail?: boolean
+    status?: boolean
+    resolution?: boolean
+    contentHidden?: boolean
+    handledById?: boolean
+    handledAt?: boolean
+    createdAt?: boolean
+    reporter?: boolean | ContentReport$reporterArgs<ExtArgs>
+  }, ExtArgs["result"]["contentReport"]>
+
+  export type ContentReportSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reference?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    targetLabel?: boolean
+    reason?: boolean
+    details?: boolean
+    reporterId?: boolean
+    reporterEmail?: boolean
+    status?: boolean
+    resolution?: boolean
+    contentHidden?: boolean
+    handledById?: boolean
+    handledAt?: boolean
+    createdAt?: boolean
+    reporter?: boolean | ContentReport$reporterArgs<ExtArgs>
+  }, ExtArgs["result"]["contentReport"]>
+
+  export type ContentReportSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reference?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    targetLabel?: boolean
+    reason?: boolean
+    details?: boolean
+    reporterId?: boolean
+    reporterEmail?: boolean
+    status?: boolean
+    resolution?: boolean
+    contentHidden?: boolean
+    handledById?: boolean
+    handledAt?: boolean
+    createdAt?: boolean
+    reporter?: boolean | ContentReport$reporterArgs<ExtArgs>
+  }, ExtArgs["result"]["contentReport"]>
+
+  export type ContentReportSelectScalar = {
+    id?: boolean
+    reference?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    targetLabel?: boolean
+    reason?: boolean
+    details?: boolean
+    reporterId?: boolean
+    reporterEmail?: boolean
+    status?: boolean
+    resolution?: boolean
+    contentHidden?: boolean
+    handledById?: boolean
+    handledAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type ContentReportOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reference" | "targetType" | "targetId" | "targetLabel" | "reason" | "details" | "reporterId" | "reporterEmail" | "status" | "resolution" | "contentHidden" | "handledById" | "handledAt" | "createdAt", ExtArgs["result"]["contentReport"]>
+  export type ContentReportInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reporter?: boolean | ContentReport$reporterArgs<ExtArgs>
+  }
+  export type ContentReportIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reporter?: boolean | ContentReport$reporterArgs<ExtArgs>
+  }
+  export type ContentReportIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reporter?: boolean | ContentReport$reporterArgs<ExtArgs>
+  }
+
+  export type $ContentReportPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ContentReport"
+    objects: {
+      reporter: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      reference: string
+      targetType: $Enums.ReportTarget
+      targetId: string
+      /**
+       * Libellé de la cible au moment du signalement, pour la file d'examen.
+       */
+      targetLabel: string
+      reason: $Enums.ReportReason
+      details: string
+      reporterId: string | null
+      reporterEmail: string | null
+      status: $Enums.ReportStatus
+      resolution: string | null
+      contentHidden: boolean
+      handledById: string | null
+      handledAt: Date | null
+      createdAt: Date
+    }, ExtArgs["result"]["contentReport"]>
+    composites: {}
+  }
+
+  type ContentReportGetPayload<S extends boolean | null | undefined | ContentReportDefaultArgs> = $Result.GetResult<Prisma.$ContentReportPayload, S>
+
+  type ContentReportCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ContentReportFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ContentReportCountAggregateInputType | true
+    }
+
+  export interface ContentReportDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ContentReport'], meta: { name: 'ContentReport' } }
+    /**
+     * Find zero or one ContentReport that matches the filter.
+     * @param {ContentReportFindUniqueArgs} args - Arguments to find a ContentReport
+     * @example
+     * // Get one ContentReport
+     * const contentReport = await prisma.contentReport.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ContentReportFindUniqueArgs>(args: SelectSubset<T, ContentReportFindUniqueArgs<ExtArgs>>): Prisma__ContentReportClient<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ContentReport that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ContentReportFindUniqueOrThrowArgs} args - Arguments to find a ContentReport
+     * @example
+     * // Get one ContentReport
+     * const contentReport = await prisma.contentReport.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ContentReportFindUniqueOrThrowArgs>(args: SelectSubset<T, ContentReportFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ContentReportClient<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ContentReport that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentReportFindFirstArgs} args - Arguments to find a ContentReport
+     * @example
+     * // Get one ContentReport
+     * const contentReport = await prisma.contentReport.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ContentReportFindFirstArgs>(args?: SelectSubset<T, ContentReportFindFirstArgs<ExtArgs>>): Prisma__ContentReportClient<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ContentReport that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentReportFindFirstOrThrowArgs} args - Arguments to find a ContentReport
+     * @example
+     * // Get one ContentReport
+     * const contentReport = await prisma.contentReport.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ContentReportFindFirstOrThrowArgs>(args?: SelectSubset<T, ContentReportFindFirstOrThrowArgs<ExtArgs>>): Prisma__ContentReportClient<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ContentReports that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentReportFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ContentReports
+     * const contentReports = await prisma.contentReport.findMany()
+     * 
+     * // Get first 10 ContentReports
+     * const contentReports = await prisma.contentReport.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const contentReportWithIdOnly = await prisma.contentReport.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ContentReportFindManyArgs>(args?: SelectSubset<T, ContentReportFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ContentReport.
+     * @param {ContentReportCreateArgs} args - Arguments to create a ContentReport.
+     * @example
+     * // Create one ContentReport
+     * const ContentReport = await prisma.contentReport.create({
+     *   data: {
+     *     // ... data to create a ContentReport
+     *   }
+     * })
+     * 
+     */
+    create<T extends ContentReportCreateArgs>(args: SelectSubset<T, ContentReportCreateArgs<ExtArgs>>): Prisma__ContentReportClient<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ContentReports.
+     * @param {ContentReportCreateManyArgs} args - Arguments to create many ContentReports.
+     * @example
+     * // Create many ContentReports
+     * const contentReport = await prisma.contentReport.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ContentReportCreateManyArgs>(args?: SelectSubset<T, ContentReportCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ContentReports and returns the data saved in the database.
+     * @param {ContentReportCreateManyAndReturnArgs} args - Arguments to create many ContentReports.
+     * @example
+     * // Create many ContentReports
+     * const contentReport = await prisma.contentReport.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ContentReports and only return the `id`
+     * const contentReportWithIdOnly = await prisma.contentReport.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ContentReportCreateManyAndReturnArgs>(args?: SelectSubset<T, ContentReportCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ContentReport.
+     * @param {ContentReportDeleteArgs} args - Arguments to delete one ContentReport.
+     * @example
+     * // Delete one ContentReport
+     * const ContentReport = await prisma.contentReport.delete({
+     *   where: {
+     *     // ... filter to delete one ContentReport
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ContentReportDeleteArgs>(args: SelectSubset<T, ContentReportDeleteArgs<ExtArgs>>): Prisma__ContentReportClient<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ContentReport.
+     * @param {ContentReportUpdateArgs} args - Arguments to update one ContentReport.
+     * @example
+     * // Update one ContentReport
+     * const contentReport = await prisma.contentReport.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ContentReportUpdateArgs>(args: SelectSubset<T, ContentReportUpdateArgs<ExtArgs>>): Prisma__ContentReportClient<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ContentReports.
+     * @param {ContentReportDeleteManyArgs} args - Arguments to filter ContentReports to delete.
+     * @example
+     * // Delete a few ContentReports
+     * const { count } = await prisma.contentReport.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ContentReportDeleteManyArgs>(args?: SelectSubset<T, ContentReportDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ContentReports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentReportUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ContentReports
+     * const contentReport = await prisma.contentReport.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ContentReportUpdateManyArgs>(args: SelectSubset<T, ContentReportUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ContentReports and returns the data updated in the database.
+     * @param {ContentReportUpdateManyAndReturnArgs} args - Arguments to update many ContentReports.
+     * @example
+     * // Update many ContentReports
+     * const contentReport = await prisma.contentReport.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ContentReports and only return the `id`
+     * const contentReportWithIdOnly = await prisma.contentReport.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ContentReportUpdateManyAndReturnArgs>(args: SelectSubset<T, ContentReportUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ContentReport.
+     * @param {ContentReportUpsertArgs} args - Arguments to update or create a ContentReport.
+     * @example
+     * // Update or create a ContentReport
+     * const contentReport = await prisma.contentReport.upsert({
+     *   create: {
+     *     // ... data to create a ContentReport
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ContentReport we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ContentReportUpsertArgs>(args: SelectSubset<T, ContentReportUpsertArgs<ExtArgs>>): Prisma__ContentReportClient<$Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ContentReports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentReportCountArgs} args - Arguments to filter ContentReports to count.
+     * @example
+     * // Count the number of ContentReports
+     * const count = await prisma.contentReport.count({
+     *   where: {
+     *     // ... the filter for the ContentReports we want to count
+     *   }
+     * })
+    **/
+    count<T extends ContentReportCountArgs>(
+      args?: Subset<T, ContentReportCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ContentReportCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ContentReport.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentReportAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ContentReportAggregateArgs>(args: Subset<T, ContentReportAggregateArgs>): Prisma.PrismaPromise<GetContentReportAggregateType<T>>
+
+    /**
+     * Group by ContentReport.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentReportGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ContentReportGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ContentReportGroupByArgs['orderBy'] }
+        : { orderBy?: ContentReportGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ContentReportGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetContentReportGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ContentReport model
+   */
+  readonly fields: ContentReportFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ContentReport.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ContentReportClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    reporter<T extends ContentReport$reporterArgs<ExtArgs> = {}>(args?: Subset<T, ContentReport$reporterArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ContentReport model
+   */
+  interface ContentReportFieldRefs {
+    readonly id: FieldRef<"ContentReport", 'String'>
+    readonly reference: FieldRef<"ContentReport", 'String'>
+    readonly targetType: FieldRef<"ContentReport", 'ReportTarget'>
+    readonly targetId: FieldRef<"ContentReport", 'String'>
+    readonly targetLabel: FieldRef<"ContentReport", 'String'>
+    readonly reason: FieldRef<"ContentReport", 'ReportReason'>
+    readonly details: FieldRef<"ContentReport", 'String'>
+    readonly reporterId: FieldRef<"ContentReport", 'String'>
+    readonly reporterEmail: FieldRef<"ContentReport", 'String'>
+    readonly status: FieldRef<"ContentReport", 'ReportStatus'>
+    readonly resolution: FieldRef<"ContentReport", 'String'>
+    readonly contentHidden: FieldRef<"ContentReport", 'Boolean'>
+    readonly handledById: FieldRef<"ContentReport", 'String'>
+    readonly handledAt: FieldRef<"ContentReport", 'DateTime'>
+    readonly createdAt: FieldRef<"ContentReport", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ContentReport findUnique
+   */
+  export type ContentReportFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentReport to fetch.
+     */
+    where: ContentReportWhereUniqueInput
+  }
+
+  /**
+   * ContentReport findUniqueOrThrow
+   */
+  export type ContentReportFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentReport to fetch.
+     */
+    where: ContentReportWhereUniqueInput
+  }
+
+  /**
+   * ContentReport findFirst
+   */
+  export type ContentReportFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentReport to fetch.
+     */
+    where?: ContentReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentReports to fetch.
+     */
+    orderBy?: ContentReportOrderByWithRelationInput | ContentReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ContentReports.
+     */
+    cursor?: ContentReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ContentReports.
+     */
+    distinct?: ContentReportScalarFieldEnum | ContentReportScalarFieldEnum[]
+  }
+
+  /**
+   * ContentReport findFirstOrThrow
+   */
+  export type ContentReportFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentReport to fetch.
+     */
+    where?: ContentReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentReports to fetch.
+     */
+    orderBy?: ContentReportOrderByWithRelationInput | ContentReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ContentReports.
+     */
+    cursor?: ContentReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ContentReports.
+     */
+    distinct?: ContentReportScalarFieldEnum | ContentReportScalarFieldEnum[]
+  }
+
+  /**
+   * ContentReport findMany
+   */
+  export type ContentReportFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentReports to fetch.
+     */
+    where?: ContentReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentReports to fetch.
+     */
+    orderBy?: ContentReportOrderByWithRelationInput | ContentReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ContentReports.
+     */
+    cursor?: ContentReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentReports.
+     */
+    skip?: number
+    distinct?: ContentReportScalarFieldEnum | ContentReportScalarFieldEnum[]
+  }
+
+  /**
+   * ContentReport create
+   */
+  export type ContentReportCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ContentReport.
+     */
+    data: XOR<ContentReportCreateInput, ContentReportUncheckedCreateInput>
+  }
+
+  /**
+   * ContentReport createMany
+   */
+  export type ContentReportCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ContentReports.
+     */
+    data: ContentReportCreateManyInput | ContentReportCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ContentReport createManyAndReturn
+   */
+  export type ContentReportCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * The data used to create many ContentReports.
+     */
+    data: ContentReportCreateManyInput | ContentReportCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ContentReport update
+   */
+  export type ContentReportUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ContentReport.
+     */
+    data: XOR<ContentReportUpdateInput, ContentReportUncheckedUpdateInput>
+    /**
+     * Choose, which ContentReport to update.
+     */
+    where: ContentReportWhereUniqueInput
+  }
+
+  /**
+   * ContentReport updateMany
+   */
+  export type ContentReportUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ContentReports.
+     */
+    data: XOR<ContentReportUpdateManyMutationInput, ContentReportUncheckedUpdateManyInput>
+    /**
+     * Filter which ContentReports to update
+     */
+    where?: ContentReportWhereInput
+    /**
+     * Limit how many ContentReports to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ContentReport updateManyAndReturn
+   */
+  export type ContentReportUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * The data used to update ContentReports.
+     */
+    data: XOR<ContentReportUpdateManyMutationInput, ContentReportUncheckedUpdateManyInput>
+    /**
+     * Filter which ContentReports to update
+     */
+    where?: ContentReportWhereInput
+    /**
+     * Limit how many ContentReports to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ContentReport upsert
+   */
+  export type ContentReportUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ContentReport to update in case it exists.
+     */
+    where: ContentReportWhereUniqueInput
+    /**
+     * In case the ContentReport found by the `where` argument doesn't exist, create a new ContentReport with this data.
+     */
+    create: XOR<ContentReportCreateInput, ContentReportUncheckedCreateInput>
+    /**
+     * In case the ContentReport was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ContentReportUpdateInput, ContentReportUncheckedUpdateInput>
+  }
+
+  /**
+   * ContentReport delete
+   */
+  export type ContentReportDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+    /**
+     * Filter which ContentReport to delete.
+     */
+    where: ContentReportWhereUniqueInput
+  }
+
+  /**
+   * ContentReport deleteMany
+   */
+  export type ContentReportDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ContentReports to delete
+     */
+    where?: ContentReportWhereInput
+    /**
+     * Limit how many ContentReports to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ContentReport.reporter
+   */
+  export type ContentReport$reporterArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * ContentReport without action
+   */
+  export type ContentReportDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentReport
+     */
+    select?: ContentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentReport
+     */
+    omit?: ContentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentReportInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -72374,6 +73813,8 @@ export namespace Prisma {
     postalAddress: 'postalAddress',
     ifuNumber: 'ifuNumber',
     rccmNumber: 'rccmNumber',
+    suspendedAt: 'suspendedAt',
+    suspendReason: 'suspendReason',
     kycStatus: 'kycStatus',
     kycSubmittedAt: 'kycSubmittedAt',
     kycReviewedAt: 'kycReviewedAt',
@@ -72431,6 +73872,8 @@ export namespace Prisma {
     note: 'note',
     activatedById: 'activatedById',
     cancelledAt: 'cancelledAt',
+    reminderSentAt: 'reminderSentAt',
+    expiredNoticeAt: 'expiredNoticeAt',
     createdAt: 'createdAt'
   };
 
@@ -73200,6 +74643,27 @@ export namespace Prisma {
   export type ExhibitionPassScalarFieldEnum = (typeof ExhibitionPassScalarFieldEnum)[keyof typeof ExhibitionPassScalarFieldEnum]
 
 
+  export const ContentReportScalarFieldEnum: {
+    id: 'id',
+    reference: 'reference',
+    targetType: 'targetType',
+    targetId: 'targetId',
+    targetLabel: 'targetLabel',
+    reason: 'reason',
+    details: 'details',
+    reporterId: 'reporterId',
+    reporterEmail: 'reporterEmail',
+    status: 'status',
+    resolution: 'resolution',
+    contentHidden: 'contentHidden',
+    handledById: 'handledById',
+    handledAt: 'handledAt',
+    createdAt: 'createdAt'
+  };
+
+  export type ContentReportScalarFieldEnum = (typeof ContentReportScalarFieldEnum)[keyof typeof ContentReportScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -73748,6 +75212,48 @@ export namespace Prisma {
    */
   export type ListEnumExhibitionPassStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExhibitionPassStatus[]'>
     
+
+
+  /**
+   * Reference to a field of type 'ReportTarget'
+   */
+  export type EnumReportTargetFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportTarget'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportTarget[]'
+   */
+  export type ListEnumReportTargetFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportTarget[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportReason'
+   */
+  export type EnumReportReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportReason'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportReason[]'
+   */
+  export type ListEnumReportReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportReason[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportStatus'
+   */
+  export type EnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportStatus[]'
+   */
+  export type ListEnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -73932,6 +75438,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeListRelationFilter
     exhibitions?: ExhibitionListRelationFilter
     exhibitionPasses?: ExhibitionPassListRelationFilter
+    contentReports?: ContentReportListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -73970,6 +75477,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeOrderByRelationAggregateInput
     exhibitions?: ExhibitionOrderByRelationAggregateInput
     exhibitionPasses?: ExhibitionPassOrderByRelationAggregateInput
+    contentReports?: ContentReportOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -74011,6 +75519,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeListRelationFilter
     exhibitions?: ExhibitionListRelationFilter
     exhibitionPasses?: ExhibitionPassListRelationFilter
+    contentReports?: ContentReportListRelationFilter
   }, "id" | "email" | "phone" | "googleId">
 
   export type UserOrderByWithAggregationInput = {
@@ -74456,6 +75965,8 @@ export namespace Prisma {
     postalAddress?: StringNullableFilter<"MakerProfile"> | string | null
     ifuNumber?: StringNullableFilter<"MakerProfile"> | string | null
     rccmNumber?: StringNullableFilter<"MakerProfile"> | string | null
+    suspendedAt?: DateTimeNullableFilter<"MakerProfile"> | Date | string | null
+    suspendReason?: StringNullableFilter<"MakerProfile"> | string | null
     kycStatus?: EnumKycStatusFilter<"MakerProfile"> | $Enums.KycStatus
     kycSubmittedAt?: DateTimeNullableFilter<"MakerProfile"> | Date | string | null
     kycReviewedAt?: DateTimeNullableFilter<"MakerProfile"> | Date | string | null
@@ -74510,6 +76021,8 @@ export namespace Prisma {
     postalAddress?: SortOrderInput | SortOrder
     ifuNumber?: SortOrderInput | SortOrder
     rccmNumber?: SortOrderInput | SortOrder
+    suspendedAt?: SortOrderInput | SortOrder
+    suspendReason?: SortOrderInput | SortOrder
     kycStatus?: SortOrder
     kycSubmittedAt?: SortOrderInput | SortOrder
     kycReviewedAt?: SortOrderInput | SortOrder
@@ -74567,6 +76080,8 @@ export namespace Prisma {
     postalAddress?: StringNullableFilter<"MakerProfile"> | string | null
     ifuNumber?: StringNullableFilter<"MakerProfile"> | string | null
     rccmNumber?: StringNullableFilter<"MakerProfile"> | string | null
+    suspendedAt?: DateTimeNullableFilter<"MakerProfile"> | Date | string | null
+    suspendReason?: StringNullableFilter<"MakerProfile"> | string | null
     kycStatus?: EnumKycStatusFilter<"MakerProfile"> | $Enums.KycStatus
     kycSubmittedAt?: DateTimeNullableFilter<"MakerProfile"> | Date | string | null
     kycReviewedAt?: DateTimeNullableFilter<"MakerProfile"> | Date | string | null
@@ -74621,6 +76136,8 @@ export namespace Prisma {
     postalAddress?: SortOrderInput | SortOrder
     ifuNumber?: SortOrderInput | SortOrder
     rccmNumber?: SortOrderInput | SortOrder
+    suspendedAt?: SortOrderInput | SortOrder
+    suspendReason?: SortOrderInput | SortOrder
     kycStatus?: SortOrder
     kycSubmittedAt?: SortOrderInput | SortOrder
     kycReviewedAt?: SortOrderInput | SortOrder
@@ -74676,6 +76193,8 @@ export namespace Prisma {
     postalAddress?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
     ifuNumber?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
     rccmNumber?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
+    suspendedAt?: DateTimeNullableWithAggregatesFilter<"MakerProfile"> | Date | string | null
+    suspendReason?: StringNullableWithAggregatesFilter<"MakerProfile"> | string | null
     kycStatus?: EnumKycStatusWithAggregatesFilter<"MakerProfile"> | $Enums.KycStatus
     kycSubmittedAt?: DateTimeNullableWithAggregatesFilter<"MakerProfile"> | Date | string | null
     kycReviewedAt?: DateTimeNullableWithAggregatesFilter<"MakerProfile"> | Date | string | null
@@ -74819,6 +76338,8 @@ export namespace Prisma {
     note?: StringNullableFilter<"MakerSubscription"> | string | null
     activatedById?: StringNullableFilter<"MakerSubscription"> | string | null
     cancelledAt?: DateTimeNullableFilter<"MakerSubscription"> | Date | string | null
+    reminderSentAt?: DateTimeNullableFilter<"MakerSubscription"> | Date | string | null
+    expiredNoticeAt?: DateTimeNullableFilter<"MakerSubscription"> | Date | string | null
     createdAt?: DateTimeFilter<"MakerSubscription"> | Date | string
     maker?: XOR<MakerProfileScalarRelationFilter, MakerProfileWhereInput>
     plan?: XOR<VisibilityPlanScalarRelationFilter, VisibilityPlanWhereInput>
@@ -74835,6 +76356,8 @@ export namespace Prisma {
     note?: SortOrderInput | SortOrder
     activatedById?: SortOrderInput | SortOrder
     cancelledAt?: SortOrderInput | SortOrder
+    reminderSentAt?: SortOrderInput | SortOrder
+    expiredNoticeAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     maker?: MakerProfileOrderByWithRelationInput
     plan?: VisibilityPlanOrderByWithRelationInput
@@ -74854,6 +76377,8 @@ export namespace Prisma {
     note?: StringNullableFilter<"MakerSubscription"> | string | null
     activatedById?: StringNullableFilter<"MakerSubscription"> | string | null
     cancelledAt?: DateTimeNullableFilter<"MakerSubscription"> | Date | string | null
+    reminderSentAt?: DateTimeNullableFilter<"MakerSubscription"> | Date | string | null
+    expiredNoticeAt?: DateTimeNullableFilter<"MakerSubscription"> | Date | string | null
     createdAt?: DateTimeFilter<"MakerSubscription"> | Date | string
     maker?: XOR<MakerProfileScalarRelationFilter, MakerProfileWhereInput>
     plan?: XOR<VisibilityPlanScalarRelationFilter, VisibilityPlanWhereInput>
@@ -74870,6 +76395,8 @@ export namespace Prisma {
     note?: SortOrderInput | SortOrder
     activatedById?: SortOrderInput | SortOrder
     cancelledAt?: SortOrderInput | SortOrder
+    reminderSentAt?: SortOrderInput | SortOrder
+    expiredNoticeAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: MakerSubscriptionCountOrderByAggregateInput
     _avg?: MakerSubscriptionAvgOrderByAggregateInput
@@ -74892,6 +76419,8 @@ export namespace Prisma {
     note?: StringNullableWithAggregatesFilter<"MakerSubscription"> | string | null
     activatedById?: StringNullableWithAggregatesFilter<"MakerSubscription"> | string | null
     cancelledAt?: DateTimeNullableWithAggregatesFilter<"MakerSubscription"> | Date | string | null
+    reminderSentAt?: DateTimeNullableWithAggregatesFilter<"MakerSubscription"> | Date | string | null
+    expiredNoticeAt?: DateTimeNullableWithAggregatesFilter<"MakerSubscription"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"MakerSubscription"> | Date | string
   }
 
@@ -78940,6 +80469,111 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ExhibitionPass"> | Date | string
   }
 
+  export type ContentReportWhereInput = {
+    AND?: ContentReportWhereInput | ContentReportWhereInput[]
+    OR?: ContentReportWhereInput[]
+    NOT?: ContentReportWhereInput | ContentReportWhereInput[]
+    id?: StringFilter<"ContentReport"> | string
+    reference?: StringFilter<"ContentReport"> | string
+    targetType?: EnumReportTargetFilter<"ContentReport"> | $Enums.ReportTarget
+    targetId?: StringFilter<"ContentReport"> | string
+    targetLabel?: StringFilter<"ContentReport"> | string
+    reason?: EnumReportReasonFilter<"ContentReport"> | $Enums.ReportReason
+    details?: StringFilter<"ContentReport"> | string
+    reporterId?: StringNullableFilter<"ContentReport"> | string | null
+    reporterEmail?: StringNullableFilter<"ContentReport"> | string | null
+    status?: EnumReportStatusFilter<"ContentReport"> | $Enums.ReportStatus
+    resolution?: StringNullableFilter<"ContentReport"> | string | null
+    contentHidden?: BoolFilter<"ContentReport"> | boolean
+    handledById?: StringNullableFilter<"ContentReport"> | string | null
+    handledAt?: DateTimeNullableFilter<"ContentReport"> | Date | string | null
+    createdAt?: DateTimeFilter<"ContentReport"> | Date | string
+    reporter?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type ContentReportOrderByWithRelationInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    targetLabel?: SortOrder
+    reason?: SortOrder
+    details?: SortOrder
+    reporterId?: SortOrderInput | SortOrder
+    reporterEmail?: SortOrderInput | SortOrder
+    status?: SortOrder
+    resolution?: SortOrderInput | SortOrder
+    contentHidden?: SortOrder
+    handledById?: SortOrderInput | SortOrder
+    handledAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    reporter?: UserOrderByWithRelationInput
+  }
+
+  export type ContentReportWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    reference?: string
+    AND?: ContentReportWhereInput | ContentReportWhereInput[]
+    OR?: ContentReportWhereInput[]
+    NOT?: ContentReportWhereInput | ContentReportWhereInput[]
+    targetType?: EnumReportTargetFilter<"ContentReport"> | $Enums.ReportTarget
+    targetId?: StringFilter<"ContentReport"> | string
+    targetLabel?: StringFilter<"ContentReport"> | string
+    reason?: EnumReportReasonFilter<"ContentReport"> | $Enums.ReportReason
+    details?: StringFilter<"ContentReport"> | string
+    reporterId?: StringNullableFilter<"ContentReport"> | string | null
+    reporterEmail?: StringNullableFilter<"ContentReport"> | string | null
+    status?: EnumReportStatusFilter<"ContentReport"> | $Enums.ReportStatus
+    resolution?: StringNullableFilter<"ContentReport"> | string | null
+    contentHidden?: BoolFilter<"ContentReport"> | boolean
+    handledById?: StringNullableFilter<"ContentReport"> | string | null
+    handledAt?: DateTimeNullableFilter<"ContentReport"> | Date | string | null
+    createdAt?: DateTimeFilter<"ContentReport"> | Date | string
+    reporter?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id" | "reference">
+
+  export type ContentReportOrderByWithAggregationInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    targetLabel?: SortOrder
+    reason?: SortOrder
+    details?: SortOrder
+    reporterId?: SortOrderInput | SortOrder
+    reporterEmail?: SortOrderInput | SortOrder
+    status?: SortOrder
+    resolution?: SortOrderInput | SortOrder
+    contentHidden?: SortOrder
+    handledById?: SortOrderInput | SortOrder
+    handledAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: ContentReportCountOrderByAggregateInput
+    _max?: ContentReportMaxOrderByAggregateInput
+    _min?: ContentReportMinOrderByAggregateInput
+  }
+
+  export type ContentReportScalarWhereWithAggregatesInput = {
+    AND?: ContentReportScalarWhereWithAggregatesInput | ContentReportScalarWhereWithAggregatesInput[]
+    OR?: ContentReportScalarWhereWithAggregatesInput[]
+    NOT?: ContentReportScalarWhereWithAggregatesInput | ContentReportScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ContentReport"> | string
+    reference?: StringWithAggregatesFilter<"ContentReport"> | string
+    targetType?: EnumReportTargetWithAggregatesFilter<"ContentReport"> | $Enums.ReportTarget
+    targetId?: StringWithAggregatesFilter<"ContentReport"> | string
+    targetLabel?: StringWithAggregatesFilter<"ContentReport"> | string
+    reason?: EnumReportReasonWithAggregatesFilter<"ContentReport"> | $Enums.ReportReason
+    details?: StringWithAggregatesFilter<"ContentReport"> | string
+    reporterId?: StringNullableWithAggregatesFilter<"ContentReport"> | string | null
+    reporterEmail?: StringNullableWithAggregatesFilter<"ContentReport"> | string | null
+    status?: EnumReportStatusWithAggregatesFilter<"ContentReport"> | $Enums.ReportStatus
+    resolution?: StringNullableWithAggregatesFilter<"ContentReport"> | string | null
+    contentHidden?: BoolWithAggregatesFilter<"ContentReport"> | boolean
+    handledById?: StringNullableWithAggregatesFilter<"ContentReport"> | string | null
+    handledAt?: DateTimeNullableWithAggregatesFilter<"ContentReport"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ContentReport"> | Date | string
+  }
+
   export type CountryCreateInput = {
     id?: string
     iso2: string
@@ -79125,6 +80759,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -79163,6 +80798,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserUpdateInput = {
@@ -79201,6 +80837,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -79239,6 +80876,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -79716,6 +81354,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -79770,6 +81410,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -79820,6 +81462,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79874,6 +81518,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79926,6 +81572,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -79971,6 +81619,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80018,6 +81668,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80179,6 +81831,8 @@ export namespace Prisma {
     note?: string | null
     activatedById?: string | null
     cancelledAt?: Date | string | null
+    reminderSentAt?: Date | string | null
+    expiredNoticeAt?: Date | string | null
     createdAt?: Date | string
     maker: MakerProfileCreateNestedOneWithoutSubscriptionsInput
     plan: VisibilityPlanCreateNestedOneWithoutSubscriptionsInput
@@ -80195,6 +81849,8 @@ export namespace Prisma {
     note?: string | null
     activatedById?: string | null
     cancelledAt?: Date | string | null
+    reminderSentAt?: Date | string | null
+    expiredNoticeAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -80207,6 +81863,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maker?: MakerProfileUpdateOneRequiredWithoutSubscriptionsNestedInput
     plan?: VisibilityPlanUpdateOneRequiredWithoutSubscriptionsNestedInput
@@ -80223,6 +81881,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -80237,6 +81897,8 @@ export namespace Prisma {
     note?: string | null
     activatedById?: string | null
     cancelledAt?: Date | string | null
+    reminderSentAt?: Date | string | null
+    expiredNoticeAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -80249,6 +81911,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -80263,6 +81927,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -84828,6 +86494,131 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ContentReportCreateInput = {
+    id?: string
+    reference: string
+    targetType: $Enums.ReportTarget
+    targetId: string
+    targetLabel: string
+    reason: $Enums.ReportReason
+    details: string
+    reporterEmail?: string | null
+    status?: $Enums.ReportStatus
+    resolution?: string | null
+    contentHidden?: boolean
+    handledById?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    reporter?: UserCreateNestedOneWithoutContentReportsInput
+  }
+
+  export type ContentReportUncheckedCreateInput = {
+    id?: string
+    reference: string
+    targetType: $Enums.ReportTarget
+    targetId: string
+    targetLabel: string
+    reason: $Enums.ReportReason
+    details: string
+    reporterId?: string | null
+    reporterEmail?: string | null
+    status?: $Enums.ReportStatus
+    resolution?: string | null
+    contentHidden?: boolean
+    handledById?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type ContentReportUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetFieldUpdateOperationsInput | $Enums.ReportTarget
+    targetId?: StringFieldUpdateOperationsInput | string
+    targetLabel?: StringFieldUpdateOperationsInput | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    details?: StringFieldUpdateOperationsInput | string
+    reporterEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHidden?: BoolFieldUpdateOperationsInput | boolean
+    handledById?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reporter?: UserUpdateOneWithoutContentReportsNestedInput
+  }
+
+  export type ContentReportUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetFieldUpdateOperationsInput | $Enums.ReportTarget
+    targetId?: StringFieldUpdateOperationsInput | string
+    targetLabel?: StringFieldUpdateOperationsInput | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    details?: StringFieldUpdateOperationsInput | string
+    reporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    reporterEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHidden?: BoolFieldUpdateOperationsInput | boolean
+    handledById?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentReportCreateManyInput = {
+    id?: string
+    reference: string
+    targetType: $Enums.ReportTarget
+    targetId: string
+    targetLabel: string
+    reason: $Enums.ReportReason
+    details: string
+    reporterId?: string | null
+    reporterEmail?: string | null
+    status?: $Enums.ReportStatus
+    resolution?: string | null
+    contentHidden?: boolean
+    handledById?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type ContentReportUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetFieldUpdateOperationsInput | $Enums.ReportTarget
+    targetId?: StringFieldUpdateOperationsInput | string
+    targetLabel?: StringFieldUpdateOperationsInput | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    details?: StringFieldUpdateOperationsInput | string
+    reporterEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHidden?: BoolFieldUpdateOperationsInput | boolean
+    handledById?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentReportUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetFieldUpdateOperationsInput | $Enums.ReportTarget
+    targetId?: StringFieldUpdateOperationsInput | string
+    targetLabel?: StringFieldUpdateOperationsInput | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    details?: StringFieldUpdateOperationsInput | string
+    reporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    reporterEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHidden?: BoolFieldUpdateOperationsInput | boolean
+    handledById?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -85219,6 +87010,12 @@ export namespace Prisma {
     none?: ExhibitionPassWhereInput
   }
 
+  export type ContentReportListRelationFilter = {
+    every?: ContentReportWhereInput
+    some?: ContentReportWhereInput
+    none?: ContentReportWhereInput
+  }
+
   export type SessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -85264,6 +87061,10 @@ export namespace Prisma {
   }
 
   export type ExhibitionPassOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ContentReportOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -85749,6 +87550,8 @@ export namespace Prisma {
     postalAddress?: SortOrder
     ifuNumber?: SortOrder
     rccmNumber?: SortOrder
+    suspendedAt?: SortOrder
+    suspendReason?: SortOrder
     kycStatus?: SortOrder
     kycSubmittedAt?: SortOrder
     kycReviewedAt?: SortOrder
@@ -85802,6 +87605,8 @@ export namespace Prisma {
     postalAddress?: SortOrder
     ifuNumber?: SortOrder
     rccmNumber?: SortOrder
+    suspendedAt?: SortOrder
+    suspendReason?: SortOrder
     kycStatus?: SortOrder
     kycSubmittedAt?: SortOrder
     kycReviewedAt?: SortOrder
@@ -85847,6 +87652,8 @@ export namespace Prisma {
     postalAddress?: SortOrder
     ifuNumber?: SortOrder
     rccmNumber?: SortOrder
+    suspendedAt?: SortOrder
+    suspendReason?: SortOrder
     kycStatus?: SortOrder
     kycSubmittedAt?: SortOrder
     kycReviewedAt?: SortOrder
@@ -86010,6 +87817,8 @@ export namespace Prisma {
     note?: SortOrder
     activatedById?: SortOrder
     cancelledAt?: SortOrder
+    reminderSentAt?: SortOrder
+    expiredNoticeAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -86028,6 +87837,8 @@ export namespace Prisma {
     note?: SortOrder
     activatedById?: SortOrder
     cancelledAt?: SortOrder
+    reminderSentAt?: SortOrder
+    expiredNoticeAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -86042,6 +87853,8 @@ export namespace Prisma {
     note?: SortOrder
     activatedById?: SortOrder
     cancelledAt?: SortOrder
+    reminderSentAt?: SortOrder
+    expiredNoticeAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -89175,6 +90988,111 @@ export namespace Prisma {
     _max?: NestedEnumExhibitionPassStatusFilter<$PrismaModel>
   }
 
+  export type EnumReportTargetFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportTarget | EnumReportTargetFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportTarget[] | ListEnumReportTargetFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportTarget[] | ListEnumReportTargetFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportTargetFilter<$PrismaModel> | $Enums.ReportTarget
+  }
+
+  export type EnumReportReasonFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportReason | EnumReportReasonFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportReasonFilter<$PrismaModel> | $Enums.ReportReason
+  }
+
+  export type EnumReportStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusFilter<$PrismaModel> | $Enums.ReportStatus
+  }
+
+  export type ContentReportCountOrderByAggregateInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    targetLabel?: SortOrder
+    reason?: SortOrder
+    details?: SortOrder
+    reporterId?: SortOrder
+    reporterEmail?: SortOrder
+    status?: SortOrder
+    resolution?: SortOrder
+    contentHidden?: SortOrder
+    handledById?: SortOrder
+    handledAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ContentReportMaxOrderByAggregateInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    targetLabel?: SortOrder
+    reason?: SortOrder
+    details?: SortOrder
+    reporterId?: SortOrder
+    reporterEmail?: SortOrder
+    status?: SortOrder
+    resolution?: SortOrder
+    contentHidden?: SortOrder
+    handledById?: SortOrder
+    handledAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ContentReportMinOrderByAggregateInput = {
+    id?: SortOrder
+    reference?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    targetLabel?: SortOrder
+    reason?: SortOrder
+    details?: SortOrder
+    reporterId?: SortOrder
+    reporterEmail?: SortOrder
+    status?: SortOrder
+    resolution?: SortOrder
+    contentHidden?: SortOrder
+    handledById?: SortOrder
+    handledAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumReportTargetWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportTarget | EnumReportTargetFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportTarget[] | ListEnumReportTargetFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportTarget[] | ListEnumReportTargetFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportTargetWithAggregatesFilter<$PrismaModel> | $Enums.ReportTarget
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportTargetFilter<$PrismaModel>
+    _max?: NestedEnumReportTargetFilter<$PrismaModel>
+  }
+
+  export type EnumReportReasonWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportReason | EnumReportReasonFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportReasonWithAggregatesFilter<$PrismaModel> | $Enums.ReportReason
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportReasonFilter<$PrismaModel>
+    _max?: NestedEnumReportReasonFilter<$PrismaModel>
+  }
+
+  export type EnumReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.ReportStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportStatusFilter<$PrismaModel>
+    _max?: NestedEnumReportStatusFilter<$PrismaModel>
+  }
+
   export type CityCreateNestedManyWithoutCountryInput = {
     create?: XOR<CityCreateWithoutCountryInput, CityUncheckedCreateWithoutCountryInput> | CityCreateWithoutCountryInput[] | CityUncheckedCreateWithoutCountryInput[]
     connectOrCreate?: CityCreateOrConnectWithoutCountryInput | CityCreateOrConnectWithoutCountryInput[]
@@ -89575,6 +91493,13 @@ export namespace Prisma {
     connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
   }
 
+  export type ContentReportCreateNestedManyWithoutReporterInput = {
+    create?: XOR<ContentReportCreateWithoutReporterInput, ContentReportUncheckedCreateWithoutReporterInput> | ContentReportCreateWithoutReporterInput[] | ContentReportUncheckedCreateWithoutReporterInput[]
+    connectOrCreate?: ContentReportCreateOrConnectWithoutReporterInput | ContentReportCreateOrConnectWithoutReporterInput[]
+    createMany?: ContentReportCreateManyReporterInputEnvelope
+    connect?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
+  }
+
   export type MakerProfileUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<MakerProfileCreateWithoutUserInput, MakerProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: MakerProfileCreateOrConnectWithoutUserInput
@@ -89683,6 +91608,13 @@ export namespace Prisma {
     connectOrCreate?: ExhibitionPassCreateOrConnectWithoutUserInput | ExhibitionPassCreateOrConnectWithoutUserInput[]
     createMany?: ExhibitionPassCreateManyUserInputEnvelope
     connect?: ExhibitionPassWhereUniqueInput | ExhibitionPassWhereUniqueInput[]
+  }
+
+  export type ContentReportUncheckedCreateNestedManyWithoutReporterInput = {
+    create?: XOR<ContentReportCreateWithoutReporterInput, ContentReportUncheckedCreateWithoutReporterInput> | ContentReportCreateWithoutReporterInput[] | ContentReportUncheckedCreateWithoutReporterInput[]
+    connectOrCreate?: ContentReportCreateOrConnectWithoutReporterInput | ContentReportCreateOrConnectWithoutReporterInput[]
+    createMany?: ContentReportCreateManyReporterInputEnvelope
+    connect?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
   }
 
   export type EnumUserRoleFieldUpdateOperationsInput = {
@@ -89929,6 +91861,20 @@ export namespace Prisma {
     deleteMany?: ExhibitionPassScalarWhereInput | ExhibitionPassScalarWhereInput[]
   }
 
+  export type ContentReportUpdateManyWithoutReporterNestedInput = {
+    create?: XOR<ContentReportCreateWithoutReporterInput, ContentReportUncheckedCreateWithoutReporterInput> | ContentReportCreateWithoutReporterInput[] | ContentReportUncheckedCreateWithoutReporterInput[]
+    connectOrCreate?: ContentReportCreateOrConnectWithoutReporterInput | ContentReportCreateOrConnectWithoutReporterInput[]
+    upsert?: ContentReportUpsertWithWhereUniqueWithoutReporterInput | ContentReportUpsertWithWhereUniqueWithoutReporterInput[]
+    createMany?: ContentReportCreateManyReporterInputEnvelope
+    set?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
+    disconnect?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
+    delete?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
+    connect?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
+    update?: ContentReportUpdateWithWhereUniqueWithoutReporterInput | ContentReportUpdateWithWhereUniqueWithoutReporterInput[]
+    updateMany?: ContentReportUpdateManyWithWhereWithoutReporterInput | ContentReportUpdateManyWithWhereWithoutReporterInput[]
+    deleteMany?: ContentReportScalarWhereInput | ContentReportScalarWhereInput[]
+  }
+
   export type MakerProfileUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<MakerProfileCreateWithoutUserInput, MakerProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: MakerProfileCreateOrConnectWithoutUserInput
@@ -90143,6 +92089,20 @@ export namespace Prisma {
     update?: ExhibitionPassUpdateWithWhereUniqueWithoutUserInput | ExhibitionPassUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ExhibitionPassUpdateManyWithWhereWithoutUserInput | ExhibitionPassUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ExhibitionPassScalarWhereInput | ExhibitionPassScalarWhereInput[]
+  }
+
+  export type ContentReportUncheckedUpdateManyWithoutReporterNestedInput = {
+    create?: XOR<ContentReportCreateWithoutReporterInput, ContentReportUncheckedCreateWithoutReporterInput> | ContentReportCreateWithoutReporterInput[] | ContentReportUncheckedCreateWithoutReporterInput[]
+    connectOrCreate?: ContentReportCreateOrConnectWithoutReporterInput | ContentReportCreateOrConnectWithoutReporterInput[]
+    upsert?: ContentReportUpsertWithWhereUniqueWithoutReporterInput | ContentReportUpsertWithWhereUniqueWithoutReporterInput[]
+    createMany?: ContentReportCreateManyReporterInputEnvelope
+    set?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
+    disconnect?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
+    delete?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
+    connect?: ContentReportWhereUniqueInput | ContentReportWhereUniqueInput[]
+    update?: ContentReportUpdateWithWhereUniqueWithoutReporterInput | ContentReportUpdateWithWhereUniqueWithoutReporterInput[]
+    updateMany?: ContentReportUpdateManyWithWhereWithoutReporterInput | ContentReportUpdateManyWithWhereWithoutReporterInput[]
+    deleteMany?: ContentReportScalarWhereInput | ContentReportScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -93198,6 +95158,34 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExhibitionPassesInput, UserUpdateWithoutExhibitionPassesInput>, UserUncheckedUpdateWithoutExhibitionPassesInput>
   }
 
+  export type UserCreateNestedOneWithoutContentReportsInput = {
+    create?: XOR<UserCreateWithoutContentReportsInput, UserUncheckedCreateWithoutContentReportsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutContentReportsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumReportTargetFieldUpdateOperationsInput = {
+    set?: $Enums.ReportTarget
+  }
+
+  export type EnumReportReasonFieldUpdateOperationsInput = {
+    set?: $Enums.ReportReason
+  }
+
+  export type EnumReportStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ReportStatus
+  }
+
+  export type UserUpdateOneWithoutContentReportsNestedInput = {
+    create?: XOR<UserCreateWithoutContentReportsInput, UserUncheckedCreateWithoutContentReportsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutContentReportsInput
+    upsert?: UserUpsertWithoutContentReportsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutContentReportsInput, UserUpdateWithoutContentReportsInput>, UserUncheckedUpdateWithoutContentReportsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -94004,6 +95992,57 @@ export namespace Prisma {
     _max?: NestedEnumExhibitionPassStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumReportTargetFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportTarget | EnumReportTargetFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportTarget[] | ListEnumReportTargetFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportTarget[] | ListEnumReportTargetFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportTargetFilter<$PrismaModel> | $Enums.ReportTarget
+  }
+
+  export type NestedEnumReportReasonFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportReason | EnumReportReasonFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportReasonFilter<$PrismaModel> | $Enums.ReportReason
+  }
+
+  export type NestedEnumReportStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusFilter<$PrismaModel> | $Enums.ReportStatus
+  }
+
+  export type NestedEnumReportTargetWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportTarget | EnumReportTargetFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportTarget[] | ListEnumReportTargetFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportTarget[] | ListEnumReportTargetFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportTargetWithAggregatesFilter<$PrismaModel> | $Enums.ReportTarget
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportTargetFilter<$PrismaModel>
+    _max?: NestedEnumReportTargetFilter<$PrismaModel>
+  }
+
+  export type NestedEnumReportReasonWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportReason | EnumReportReasonFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportReasonWithAggregatesFilter<$PrismaModel> | $Enums.ReportReason
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportReasonFilter<$PrismaModel>
+    _max?: NestedEnumReportReasonFilter<$PrismaModel>
+  }
+
+  export type NestedEnumReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.ReportStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportStatusFilter<$PrismaModel>
+    _max?: NestedEnumReportStatusFilter<$PrismaModel>
+  }
+
   export type CityCreateWithoutCountryInput = {
     id?: string
     name: string
@@ -94282,6 +96321,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -94334,6 +96375,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -94597,6 +96640,8 @@ export namespace Prisma {
     postalAddress?: StringNullableFilter<"MakerProfile"> | string | null
     ifuNumber?: StringNullableFilter<"MakerProfile"> | string | null
     rccmNumber?: StringNullableFilter<"MakerProfile"> | string | null
+    suspendedAt?: DateTimeNullableFilter<"MakerProfile"> | Date | string | null
+    suspendReason?: StringNullableFilter<"MakerProfile"> | string | null
     kycStatus?: EnumKycStatusFilter<"MakerProfile"> | $Enums.KycStatus
     kycSubmittedAt?: DateTimeNullableFilter<"MakerProfile"> | Date | string | null
     kycReviewedAt?: DateTimeNullableFilter<"MakerProfile"> | Date | string | null
@@ -94711,6 +96756,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -94763,6 +96810,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -95438,6 +97487,50 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ContentReportCreateWithoutReporterInput = {
+    id?: string
+    reference: string
+    targetType: $Enums.ReportTarget
+    targetId: string
+    targetLabel: string
+    reason: $Enums.ReportReason
+    details: string
+    reporterEmail?: string | null
+    status?: $Enums.ReportStatus
+    resolution?: string | null
+    contentHidden?: boolean
+    handledById?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type ContentReportUncheckedCreateWithoutReporterInput = {
+    id?: string
+    reference: string
+    targetType: $Enums.ReportTarget
+    targetId: string
+    targetLabel: string
+    reason: $Enums.ReportReason
+    details: string
+    reporterEmail?: string | null
+    status?: $Enums.ReportStatus
+    resolution?: string | null
+    contentHidden?: boolean
+    handledById?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type ContentReportCreateOrConnectWithoutReporterInput = {
+    where: ContentReportWhereUniqueInput
+    create: XOR<ContentReportCreateWithoutReporterInput, ContentReportUncheckedCreateWithoutReporterInput>
+  }
+
+  export type ContentReportCreateManyReporterInputEnvelope = {
+    data: ContentReportCreateManyReporterInput | ContentReportCreateManyReporterInput[]
+    skipDuplicates?: boolean
+  }
+
   export type MakerProfileUpsertWithoutUserInput = {
     update: XOR<MakerProfileUpdateWithoutUserInput, MakerProfileUncheckedUpdateWithoutUserInput>
     create: XOR<MakerProfileCreateWithoutUserInput, MakerProfileUncheckedCreateWithoutUserInput>
@@ -95472,6 +97565,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -95524,6 +97619,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -96026,6 +98123,43 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ExhibitionPass"> | Date | string
   }
 
+  export type ContentReportUpsertWithWhereUniqueWithoutReporterInput = {
+    where: ContentReportWhereUniqueInput
+    update: XOR<ContentReportUpdateWithoutReporterInput, ContentReportUncheckedUpdateWithoutReporterInput>
+    create: XOR<ContentReportCreateWithoutReporterInput, ContentReportUncheckedCreateWithoutReporterInput>
+  }
+
+  export type ContentReportUpdateWithWhereUniqueWithoutReporterInput = {
+    where: ContentReportWhereUniqueInput
+    data: XOR<ContentReportUpdateWithoutReporterInput, ContentReportUncheckedUpdateWithoutReporterInput>
+  }
+
+  export type ContentReportUpdateManyWithWhereWithoutReporterInput = {
+    where: ContentReportScalarWhereInput
+    data: XOR<ContentReportUpdateManyMutationInput, ContentReportUncheckedUpdateManyWithoutReporterInput>
+  }
+
+  export type ContentReportScalarWhereInput = {
+    AND?: ContentReportScalarWhereInput | ContentReportScalarWhereInput[]
+    OR?: ContentReportScalarWhereInput[]
+    NOT?: ContentReportScalarWhereInput | ContentReportScalarWhereInput[]
+    id?: StringFilter<"ContentReport"> | string
+    reference?: StringFilter<"ContentReport"> | string
+    targetType?: EnumReportTargetFilter<"ContentReport"> | $Enums.ReportTarget
+    targetId?: StringFilter<"ContentReport"> | string
+    targetLabel?: StringFilter<"ContentReport"> | string
+    reason?: EnumReportReasonFilter<"ContentReport"> | $Enums.ReportReason
+    details?: StringFilter<"ContentReport"> | string
+    reporterId?: StringNullableFilter<"ContentReport"> | string | null
+    reporterEmail?: StringNullableFilter<"ContentReport"> | string | null
+    status?: EnumReportStatusFilter<"ContentReport"> | $Enums.ReportStatus
+    resolution?: StringNullableFilter<"ContentReport"> | string | null
+    contentHidden?: BoolFilter<"ContentReport"> | boolean
+    handledById?: StringNullableFilter<"ContentReport"> | string | null
+    handledAt?: DateTimeNullableFilter<"ContentReport"> | Date | string | null
+    createdAt?: DateTimeFilter<"ContentReport"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     role: $Enums.UserRole
@@ -96061,6 +98195,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -96098,6 +98233,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -96151,6 +98287,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -96188,6 +98325,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type UserCreateWithoutRecoveryCodesInput = {
@@ -96225,6 +98363,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutRecoveryCodesInput = {
@@ -96262,6 +98401,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutRecoveryCodesInput = {
@@ -96315,6 +98455,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRecoveryCodesInput = {
@@ -96352,6 +98493,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type UserCreateWithoutVerificationsInput = {
@@ -96389,6 +98531,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutVerificationsInput = {
@@ -96426,6 +98569,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutVerificationsInput = {
@@ -96479,6 +98623,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerificationsInput = {
@@ -96516,6 +98661,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type UserCreateWithoutTermsAcceptanceInput = {
@@ -96553,6 +98699,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutTermsAcceptanceInput = {
@@ -96590,6 +98737,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutTermsAcceptanceInput = {
@@ -96643,6 +98791,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTermsAcceptanceInput = {
@@ -96680,6 +98829,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type UserCreateWithoutAddressesInput = {
@@ -96717,6 +98867,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutAddressesInput = {
@@ -96754,6 +98905,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutAddressesInput = {
@@ -96832,6 +98984,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAddressesInput = {
@@ -96869,6 +99022,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type CityUpsertWithoutAddressesInput = {
@@ -96937,6 +99091,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutMakerInput = {
@@ -96974,6 +99129,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutMakerInput = {
@@ -97197,6 +99353,8 @@ export namespace Prisma {
     note?: string | null
     activatedById?: string | null
     cancelledAt?: Date | string | null
+    reminderSentAt?: Date | string | null
+    expiredNoticeAt?: Date | string | null
     createdAt?: Date | string
     plan: VisibilityPlanCreateNestedOneWithoutSubscriptionsInput
   }
@@ -97211,6 +99369,8 @@ export namespace Prisma {
     note?: string | null
     activatedById?: string | null
     cancelledAt?: Date | string | null
+    reminderSentAt?: Date | string | null
+    expiredNoticeAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -97382,6 +99542,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMakerInput = {
@@ -97419,6 +99580,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type CityUpsertWithoutMakerProfilesInput = {
@@ -97609,6 +99771,8 @@ export namespace Prisma {
     note?: StringNullableFilter<"MakerSubscription"> | string | null
     activatedById?: StringNullableFilter<"MakerSubscription"> | string | null
     cancelledAt?: DateTimeNullableFilter<"MakerSubscription"> | Date | string | null
+    reminderSentAt?: DateTimeNullableFilter<"MakerSubscription"> | Date | string | null
+    expiredNoticeAt?: DateTimeNullableFilter<"MakerSubscription"> | Date | string | null
     createdAt?: DateTimeFilter<"MakerSubscription"> | Date | string
   }
 
@@ -97637,6 +99801,8 @@ export namespace Prisma {
     note?: string | null
     activatedById?: string | null
     cancelledAt?: Date | string | null
+    reminderSentAt?: Date | string | null
+    expiredNoticeAt?: Date | string | null
     createdAt?: Date | string
     maker: MakerProfileCreateNestedOneWithoutSubscriptionsInput
   }
@@ -97651,6 +99817,8 @@ export namespace Prisma {
     note?: string | null
     activatedById?: string | null
     cancelledAt?: Date | string | null
+    reminderSentAt?: Date | string | null
+    expiredNoticeAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -97703,6 +99871,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -97756,6 +99926,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -97862,6 +100034,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -97915,6 +100089,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -98011,6 +100187,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -98064,6 +100242,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -98172,6 +100352,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -98225,6 +100407,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -98335,6 +100519,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutCourierInput = {
@@ -98372,6 +100557,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutCourierInput = {
@@ -98563,6 +100749,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCourierInput = {
@@ -98600,6 +100787,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type KycDocumentUpsertWithWhereUniqueWithoutCourierInput = {
@@ -98995,6 +101183,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -99048,6 +101238,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -99298,6 +101490,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -99351,6 +101545,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -99747,6 +101943,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutCartsInput = {
@@ -99784,6 +101981,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutCartsInput = {
@@ -99859,6 +102057,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCartsInput = {
@@ -99896,6 +102095,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type CartItemUpsertWithWhereUniqueWithoutCartInput = {
@@ -100169,6 +102369,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -100206,6 +102407,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -100674,6 +102876,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -100711,6 +102914,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type PromoCodeUpsertWithoutOrdersInput = {
@@ -101088,6 +103292,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -101141,6 +103347,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -101491,6 +103699,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -101544,6 +103754,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -105009,6 +107221,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutSupportTicketsInput = {
@@ -105046,6 +107259,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutSupportTicketsInput = {
@@ -105216,6 +107430,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupportTicketsInput = {
@@ -105253,6 +107468,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type OrderUpsertWithoutSupportTicketsInput = {
@@ -105590,6 +107806,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutReviewsInput = {
@@ -105627,6 +107844,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutReviewsInput = {
@@ -105798,6 +108016,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewsInput = {
@@ -105835,6 +108054,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type OrderLineUpsertWithoutReviewInput = {
@@ -105909,6 +108129,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -105946,6 +108167,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -105999,6 +108221,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -106036,6 +108259,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type PromoRedemptionCreateWithoutPromoCodeInput = {
@@ -106266,6 +108490,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutPromoRedemptionsInput = {
@@ -106303,6 +108528,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutPromoRedemptionsInput = {
@@ -106492,6 +108718,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPromoRedemptionsInput = {
@@ -106529,6 +108756,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type OrderUpsertWithoutPromoRedemptionInput = {
@@ -106839,6 +109067,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutIdempotencyKeysInput = {
@@ -106876,6 +109105,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutIdempotencyKeysInput = {
@@ -106929,6 +109159,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutIdempotencyKeysInput = {
@@ -106966,6 +109197,7 @@ export namespace Prisma {
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type ExhibitionCreateWithoutPlanInput = {
@@ -107131,6 +109363,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutExhibitionsInput = {
@@ -107168,6 +109401,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutExhibitionsInput = {
@@ -107198,6 +109432,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -107251,6 +109487,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -107476,6 +109714,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutExhibitionsInput = {
@@ -107513,6 +109752,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
   }
 
   export type MakerProfileUpsertWithoutExhibitionsInput = {
@@ -107549,6 +109789,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -107602,6 +109844,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -108266,6 +110510,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    contentReports?: ContentReportCreateNestedManyWithoutReporterInput
   }
 
   export type UserUncheckedCreateWithoutExhibitionPassesInput = {
@@ -108303,6 +110548,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
     recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
     exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    contentReports?: ContentReportUncheckedCreateNestedManyWithoutReporterInput
   }
 
   export type UserCreateOrConnectWithoutExhibitionPassesInput = {
@@ -108469,6 +110715,7 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    contentReports?: ContentReportUpdateManyWithoutReporterNestedInput
   }
 
   export type UserUncheckedUpdateWithoutExhibitionPassesInput = {
@@ -108506,6 +110753,175 @@ export namespace Prisma {
     idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
     recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
     exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    contentReports?: ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  }
+
+  export type UserCreateWithoutContentReportsInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileCreateNestedOneWithoutUserInput
+    courier?: CourierProfileCreateNestedOneWithoutUserInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    carts?: CartCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutContentReportsInput = {
+    id?: string
+    role: $Enums.UserRole
+    status?: $Enums.UserStatus
+    email: string
+    emailVerifiedAt?: Date | string | null
+    phone: string
+    phoneVerifiedAt?: Date | string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    firstName: string
+    lastName: string
+    locale?: string
+    mfaSecret?: string | null
+    mfaEnabledAt?: Date | string | null
+    mfaLastStep?: number | null
+    lastLoginAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    maker?: MakerProfileUncheckedCreateNestedOneWithoutUserInput
+    courier?: CourierProfileUncheckedCreateNestedOneWithoutUserInput
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    carts?: CartUncheckedCreateNestedManyWithoutUserInput
+    termsAcceptance?: TermsAcceptanceUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    verifications?: VerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    promoRedemptions?: PromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutAuthorInput
+    idempotencyKeys?: IdempotencyKeyUncheckedCreateNestedManyWithoutUserInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+    exhibitions?: ExhibitionUncheckedCreateNestedManyWithoutOrganizerInput
+    exhibitionPasses?: ExhibitionPassUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutContentReportsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutContentReportsInput, UserUncheckedCreateWithoutContentReportsInput>
+  }
+
+  export type UserUpsertWithoutContentReportsInput = {
+    update: XOR<UserUpdateWithoutContentReportsInput, UserUncheckedUpdateWithoutContentReportsInput>
+    create: XOR<UserCreateWithoutContentReportsInput, UserUncheckedCreateWithoutContentReportsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutContentReportsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutContentReportsInput, UserUncheckedUpdateWithoutContentReportsInput>
+  }
+
+  export type UserUpdateWithoutContentReportsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUpdateOneWithoutUserNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    carts?: CartUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutContentReportsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    phoneVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    mfaSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    mfaEnabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    mfaLastStep?: NullableIntFieldUpdateOperationsInput | number | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maker?: MakerProfileUncheckedUpdateOneWithoutUserNestedInput
+    courier?: CourierProfileUncheckedUpdateOneWithoutUserNestedInput
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    carts?: CartUncheckedUpdateManyWithoutUserNestedInput
+    termsAcceptance?: TermsAcceptanceUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    verifications?: VerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    promoRedemptions?: PromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutAuthorNestedInput
+    idempotencyKeys?: IdempotencyKeyUncheckedUpdateManyWithoutUserNestedInput
+    recoveryCodes?: MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+    exhibitions?: ExhibitionUncheckedUpdateManyWithoutOrganizerNestedInput
+    exhibitionPasses?: ExhibitionPassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CityCreateManyCountryInput = {
@@ -108673,6 +111089,8 @@ export namespace Prisma {
     postalAddress?: string | null
     ifuNumber?: string | null
     rccmNumber?: string | null
+    suspendedAt?: Date | string | null
+    suspendReason?: string | null
     kycStatus?: $Enums.KycStatus
     kycSubmittedAt?: Date | string | null
     kycReviewedAt?: Date | string | null
@@ -108812,6 +111230,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -108864,6 +111284,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -108915,6 +111337,8 @@ export namespace Prisma {
     postalAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ifuNumber?: NullableStringFieldUpdateOperationsInput | string | null
     rccmNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendReason?: NullableStringFieldUpdateOperationsInput | string | null
     kycStatus?: EnumKycStatusFieldUpdateOperationsInput | $Enums.KycStatus
     kycSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     kycReviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -109304,6 +111728,23 @@ export namespace Prisma {
     paidAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type ContentReportCreateManyReporterInput = {
+    id?: string
+    reference: string
+    targetType: $Enums.ReportTarget
+    targetId: string
+    targetLabel: string
+    reason: $Enums.ReportReason
+    details: string
+    reporterEmail?: string | null
+    status?: $Enums.ReportStatus
+    resolution?: string | null
+    contentHidden?: boolean
+    handledById?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
   }
 
   export type AddressUpdateWithoutUserInput = {
@@ -109984,6 +112425,57 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ContentReportUpdateWithoutReporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetFieldUpdateOperationsInput | $Enums.ReportTarget
+    targetId?: StringFieldUpdateOperationsInput | string
+    targetLabel?: StringFieldUpdateOperationsInput | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    details?: StringFieldUpdateOperationsInput | string
+    reporterEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHidden?: BoolFieldUpdateOperationsInput | boolean
+    handledById?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentReportUncheckedUpdateWithoutReporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetFieldUpdateOperationsInput | $Enums.ReportTarget
+    targetId?: StringFieldUpdateOperationsInput | string
+    targetLabel?: StringFieldUpdateOperationsInput | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    details?: StringFieldUpdateOperationsInput | string
+    reporterEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHidden?: BoolFieldUpdateOperationsInput | boolean
+    handledById?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentReportUncheckedUpdateManyWithoutReporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetFieldUpdateOperationsInput | $Enums.ReportTarget
+    targetId?: StringFieldUpdateOperationsInput | string
+    targetLabel?: StringFieldUpdateOperationsInput | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    details?: StringFieldUpdateOperationsInput | string
+    reporterEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHidden?: BoolFieldUpdateOperationsInput | boolean
+    handledById?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ProductCreateManyMakerInput = {
     id?: string
     slug: string
@@ -110061,6 +112553,8 @@ export namespace Prisma {
     note?: string | null
     activatedById?: string | null
     cancelledAt?: Date | string | null
+    reminderSentAt?: Date | string | null
+    expiredNoticeAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -110341,6 +112835,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     plan?: VisibilityPlanUpdateOneRequiredWithoutSubscriptionsNestedInput
   }
@@ -110355,6 +112851,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -110368,6 +112866,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -110532,6 +113032,8 @@ export namespace Prisma {
     note?: string | null
     activatedById?: string | null
     cancelledAt?: Date | string | null
+    reminderSentAt?: Date | string | null
+    expiredNoticeAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -110544,6 +113046,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maker?: MakerProfileUpdateOneRequiredWithoutSubscriptionsNestedInput
   }
@@ -110558,6 +113062,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -110571,6 +113077,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     activatedById?: NullableStringFieldUpdateOperationsInput | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredNoticeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
