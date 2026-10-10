@@ -215,7 +215,7 @@ export default function AdminSettingsPage() {
           </table>
         </div>
         <p className={styles.muted}>
-          Les frais sont ceux de l’agrégateur, retenus sur l’encaissement. Tant que Kadev Pay
+          Les frais sont ceux de l’agrégateur, retenus sur l’encaissement. Tant que KKiaPay
           n’est pas branché, un fournisseur simulé les reproduit.
         </p>
       </Panel>

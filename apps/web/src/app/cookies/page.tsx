@@ -64,7 +64,7 @@ export default function CookiesPage() {
 
       <h2>Au moment du paiement</h2>
       <p>
-        Le paiement s’effectue dans le module de notre prestataire de paiement (Kadev Pay),
+        Le paiement s’effectue dans le module de notre prestataire de paiement (KKiaPay),
         qui peut déposer ses propres cookies, nécessaires à la sécurité de la transaction. Ils
         relèvent de sa propre politique.
       </p>
