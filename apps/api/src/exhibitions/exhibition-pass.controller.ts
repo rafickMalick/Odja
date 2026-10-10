@@ -2,6 +2,8 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
   accessCodeSchema,
   passRequestSchema,
+  passVerifySchema,
+  type PassVerifyInput,
   type AccessCodeInput,
   type AdminPassView,
   type ExhibitionPassView,
@@ -60,8 +62,9 @@ export class ExhibitionPassController {
   async verify(
     @Param('reference') reference: string,
     @CurrentUser() user: AuthenticatedUser,
+    @Body(zodBody(passVerifySchema)) input: PassVerifyInput,
   ): Promise<ExhibitionPassView> {
-    return this.passes.verify(reference, user.id);
+    return this.passes.verify(reference, user.id, input.providerRef);
   }
 
   /** Développement et recette uniquement : refusée en production. */

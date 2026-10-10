@@ -19,3 +19,6 @@ next-env.d.ts
 # Tests navigateur (Playwright)
 test-results
 playwright-report
+
+# Moteur Prisma propre au poste Windows : la production tourne sous Linux.
+packages/db/generated/client/query_engine-windows.dll.node

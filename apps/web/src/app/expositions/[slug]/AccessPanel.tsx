@@ -1,13 +1,18 @@
 "use client";
 
-import type { ExhibitionPassView, PassFormat, PublicExhibition, TicketCheckout } from "@oja/contracts";
+import type {
+  ExhibitionPassView,
+  PassFormat,
+  PublicExhibition,
+  TicketCheckout,
+} from "@oja/contracts";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/Button";
 import { ApiError, apiFetch } from "@/lib/api";
 import { formatFcfa } from "@/lib/format";
-import { isCheckoutClosedByUser, openKadevPayCheckout } from "@/lib/kadevpay";
+import { isCheckoutClosedByUser, openKkiapayCheckout } from "@/lib/kkiapay";
 import { useSession } from "@/lib/session";
 
 import styles from "../expositions.module.css";
@@ -27,7 +32,9 @@ export function AccessPanel({
   onUnlocked: () => Promise<void>;
 }) {
   const { user, ready } = useSession();
-  const [format, setFormat] = useState<PassFormat>(exhibition.format === "PHYSICAL" ? "ONSITE" : "ONLINE");
+  const [format, setFormat] = useState<PassFormat>(
+    exhibition.format === "PHYSICAL" ? "ONSITE" : "ONLINE",
+  );
   const [code, setCode] = useState("");
   const [pending, setPending] = useState<ExhibitionPassView | null>(null);
   const [busy, setBusy] = useState(false);
@@ -49,44 +56,67 @@ export function AccessPanel({
       await work();
     } catch (cause) {
       if (!isCheckoutClosedByUser(cause)) {
-        setMessage(cause instanceof ApiError ? cause.message : "L’opération a échoué. Réessayez.");
+        setMessage(
+          cause instanceof ApiError
+            ? cause.message
+            : "L’opération a échoué. Réessayez.",
+        );
       }
     } finally {
       setBusy(false);
     }
   };
 
-  const verify = (reference: string) =>
-    run(async () => {
-      const pass = await apiFetch<ExhibitionPassView>(`/exhibitions/passes/${reference}/verify`, {
+  const verify = (reference: string, providerRef?: string) =>
+    run(() => confirm(reference, providerRef));
+
+  /* Le serveur relit la transaction auprès de KKiaPay : l'identifiant appris
+     par le widget l'y aide, il ne prouve rien à lui seul. */
+  const confirm = async (reference: string, providerRef?: string) => {
+    const pass = await apiFetch<ExhibitionPassView>(
+      `/exhibitions/passes/${reference}/verify`,
+      {
         method: "POST",
-      });
-      if (pass.status === "CONFIRMED") {
-        await onUnlocked();
-      } else {
-        setPending(pass);
-        setMessage("Paiement pas encore confirmé. Vérifiez à nouveau dans un instant.");
-      }
-    });
+        body: providerRef ? { providerRef } : {},
+      },
+    );
+    if (pass.status === "CONFIRMED") {
+      await onUnlocked();
+    } else {
+      setPending(pass);
+      setMessage(
+        "Paiement pas encore confirmé. Vérifiez à nouveau dans un instant.",
+      );
+    }
+  };
 
   const register = () =>
     run(async () => {
-      await apiFetch(`/exhibitions/${exhibition.slug}/register`, { method: "POST", body: { format } });
+      await apiFetch(`/exhibitions/${exhibition.slug}/register`, {
+        method: "POST",
+        body: { format },
+      });
       await onUnlocked();
     });
 
   const redeem = () =>
     run(async () => {
-      await apiFetch(`/exhibitions/${exhibition.slug}/code`, { method: "POST", body: { code, format } });
+      await apiFetch(`/exhibitions/${exhibition.slug}/code`, {
+        method: "POST",
+        body: { code, format },
+      });
       await onUnlocked();
     });
 
   const buy = () =>
     run(async () => {
-      const ticket = await apiFetch<TicketCheckout>(`/exhibitions/${exhibition.slug}/tickets`, {
-        method: "POST",
-        body: { format },
-      });
+      const ticket = await apiFetch<TicketCheckout>(
+        `/exhibitions/${exhibition.slug}/tickets`,
+        {
+          method: "POST",
+          body: { format },
+        },
+      );
       setPending(ticket.pass);
 
       if (ticket.checkout.mode === "redirect" && ticket.checkout.redirectUrl) {
@@ -94,14 +124,17 @@ export function AccessPanel({
         return;
       }
       if (ticket.checkout.mode === "widget" && ticket.checkout.publicKey) {
-        await openKadevPayCheckout({
+        /* KKiaPay : notre identifiant de billet voyage en `partnerId`, ce qui
+           empêche de confirmer ce billet avec une autre transaction. */
+        const transactionId = await openKkiapayCheckout({
           publicKey: ticket.checkout.publicKey,
           amountXof: ticket.checkout.amountXof,
           reference: ticket.checkout.reference,
-          customer: { fullName: user?.firstName ?? "", email: "", phone: "" },
+          sandbox: ticket.checkout.sandbox ?? false,
+          customer: ticket.customer,
           method: "momo",
         });
-        await verify(ticket.pass.reference);
+        await confirm(ticket.pass.reference, transactionId);
       }
       /* Mode simulé : rien à afficher, le bouton de simulation prend le relais. */
     });
@@ -109,7 +142,10 @@ export function AccessPanel({
   const simulate = () =>
     run(async () => {
       if (!pending) return;
-      await apiFetch(`/exhibitions/passes/${pending.reference}/simulate-payment`, { method: "POST" });
+      await apiFetch(
+        `/exhibitions/passes/${pending.reference}/simulate-payment`,
+        { method: "POST" },
+      );
       await onUnlocked();
     });
 
@@ -122,7 +158,8 @@ export function AccessPanel({
       : [];
 
   const intro = {
-    REGISTER: "L’organisateur demande une inscription gratuite avant la visite.",
+    REGISTER:
+      "L’organisateur demande une inscription gratuite avant la visite.",
     TICKET: `L’accès à la galerie est payant : ${formatFcfa(exhibition.ticketPriceXof)} le billet.`,
     CODE: "Cette exposition est réservée aux personnes invitées par l’organisateur.",
     OPEN: "",
@@ -142,7 +179,11 @@ export function AccessPanel({
       ) : (
         <>
           {formats.length > 0 ? (
-            <div className={styles.lockForm} role="radiogroup" aria-label="Format de la visite">
+            <div
+              className={styles.lockForm}
+              role="radiogroup"
+              aria-label="Format de la visite"
+            >
               {formats.map((item) => (
                 <label key={item.value} className={styles.notice}>
                   <input
@@ -158,7 +199,11 @@ export function AccessPanel({
           ) : null}
 
           {exhibition.requirement === "REGISTER" ? (
-            <Button type="button" onClick={() => void register()} disabled={busy}>
+            <Button
+              type="button"
+              onClick={() => void register()}
+              disabled={busy}
+            >
               {busy ? "Inscription…" : "M’inscrire gratuitement"}
             </Button>
           ) : null}
@@ -186,18 +231,29 @@ export function AccessPanel({
           {exhibition.requirement === "TICKET" ? (
             pending ? (
               <div className={styles.lockForm}>
-                <Button type="button" onClick={() => void verify(pending.reference)} disabled={busy}>
+                <Button
+                  type="button"
+                  onClick={() => void verify(pending.reference)}
+                  disabled={busy}
+                >
                   J’ai payé, vérifier mon billet
                 </Button>
                 {process.env.NODE_ENV !== "production" ? (
-                  <Button type="button" variant="outline" onClick={() => void simulate()} disabled={busy}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void simulate()}
+                    disabled={busy}
+                  >
                     Simuler le paiement (test)
                   </Button>
                 ) : null}
               </div>
             ) : (
               <Button type="button" onClick={() => void buy()} disabled={busy}>
-                {busy ? "Préparation…" : `Acheter un billet — ${formatFcfa(exhibition.ticketPriceXof)}`}
+                {busy
+                  ? "Préparation…"
+                  : `Acheter un billet — ${formatFcfa(exhibition.ticketPriceXof)}`}
               </Button>
             )
           ) : null}

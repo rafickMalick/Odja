@@ -11,6 +11,7 @@ import { DomainErrorFilter } from '../common/domain-error.filter';
 import { ProblemFilter } from '../common/problem.filter';
 import { PrismaService } from '../prisma/prisma.service';
 import { resetTestData } from '../test/cleanup';
+import { ExhibitionPassService } from './exhibition-pass.service';
 
 /**
  * Billetterie et achat d'œuvres (cahier des évolutions, phase 4) : billet
@@ -176,6 +177,64 @@ describe('Billetterie des expositions (bout en bout)', () => {
         .expect(409);
     });
 
+    it('refuse une transaction ouverte pour un autre paiement, puis confirme par le webhook', async () => {
+      const ticket = await api()
+        .post('/api/v1/exhibitions/lumiere-payante/tickets')
+        .set('Cookie', visitorCookies)
+        .send({ format: 'ONSITE' })
+        .expect(201);
+      const pass = await prisma.exhibitionPass.findUniqueOrThrow({
+        where: { reference: ticket.body.pass.reference },
+      });
+      const passes = app.get(ExhibitionPassService);
+      const paid = (paymentId: string) => ({
+        status: 'paid' as const,
+        amountXof: 2_000,
+        netAmountXof: 1_960,
+        feeXof: 40,
+        currency: 'XOF',
+        paidAt: new Date(),
+        paymentId,
+      });
+
+      /* KKiaPay renvoie notre identifiant (`partnerId`) : une transaction
+         d'un autre paiement, même au bon montant, ne confirme rien. */
+      expect(
+        await passes.handleWebhookEvent({
+          reference: 'TX-AUTRE',
+          paymentId: pass.id,
+          eventType: 'transaction.success',
+          status: paid('un-autre-paiement'),
+        }),
+      ).toBe(true);
+      expect((await prisma.exhibitionPass.findUniqueOrThrow({ where: { id: pass.id } })).status).toBe(
+        'PENDING_PAYMENT',
+      );
+
+      expect(
+        await passes.handleWebhookEvent({
+          reference: 'TX-BILLET',
+          paymentId: pass.id,
+          eventType: 'transaction.success',
+          status: paid(pass.id),
+        }),
+      ).toBe(true);
+      const confirmed = await prisma.exhibitionPass.findUniqueOrThrow({ where: { id: pass.id } });
+      expect(confirmed.status).toBe('CONFIRMED');
+      expect(confirmed.providerRef).toBe('TX-BILLET');
+    });
+
+    it('laisse au paiement des commandes une notification qui n’est pas un billet', async () => {
+      expect(
+        await app.get(ExhibitionPassService).handleWebhookEvent({
+          reference: 'TX-COMMANDE',
+          paymentId: 'paiement-de-commande',
+          eventType: 'transaction.success',
+          status: { status: 'pending' },
+        }),
+      ).toBe(false);
+    });
+
     it('n’ouvre pas la galerie au visiteur anonyme', async () => {
       const response = await api().get('/api/v1/exhibitions/lumiere-payante').expect(200);
       expect(response.body.unlocked).toBe(false);
@@ -217,6 +276,7 @@ describe('Billetterie des expositions (bout en bout)', () => {
         'INVITATION',
         'REGISTRATION',
         'TICKET',
+        'TICKET',
       ]);
     });
   });
@@ -227,7 +287,7 @@ describe('Billetterie des expositions (bout en bout)', () => {
         .get(`/api/v1/admin/exhibitions/${paidId}/stats`)
         .set('Cookie', adminCookies)
         .expect(200);
-      expect(response.body).toMatchObject({ ticketsConfirmed: 1, ticketRevenueXof: 2_000 });
+      expect(response.body).toMatchObject({ ticketsConfirmed: 2, ticketRevenueXof: 4_000 });
       expect(response.body.views).toBeGreaterThan(0);
 
       const passes = await api()

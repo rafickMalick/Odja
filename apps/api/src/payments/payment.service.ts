@@ -15,6 +15,7 @@ import {
   productionDaysFor,
   type PaymentProvider,
   type ProviderPaymentStatus,
+  type WebhookEvent,
 } from '@oja/domain';
 
 import { LedgerService } from '../ledger/ledger.service';
@@ -22,6 +23,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../notifications/notification.service';
 import { PAYMENT_PROVIDER } from './payment-provider.factory';
 import { SimulatedPaymentProvider } from './simulated.provider';
+
+/**
+ * Encaissement hors commande (billets d'exposition). Renvoie vrai si la
+ * notification lui appartenait et a été traitée.
+ */
+export interface ExternalPaymentHandler {
+  handleWebhookEvent(event: WebhookEvent): Promise<boolean>;
+}
 
 /**
  * Confirmation d'un encaissement.
@@ -38,6 +47,9 @@ export class PaymentService {
   private readonly isProduction: boolean;
   private readonly webOrigin: string;
 
+  /** Voir `useExternalPayments`. */
+  private external: ExternalPaymentHandler | null = null;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly ledger: LedgerService,
@@ -48,6 +60,16 @@ export class PaymentService {
   ) {
     this.isProduction = config.get<string>('NODE_ENV') === 'production';
     this.webOrigin = config.get<string>('WEB_ORIGIN', 'http://localhost:3000');
+  }
+
+  /**
+   * Inscrit un module qui encaisse autre chose que des commandes — les
+   * billets d'exposition. L'agrégateur n'a qu'une adresse de webhook : une
+   * notification qui ne correspond à aucun paiement de commande lui est
+   * proposée avant d'être écartée.
+   */
+  useExternalPayments(handler: ExternalPaymentHandler): void {
+    this.external = handler;
   }
 
   /**
@@ -446,6 +468,10 @@ export class PaymentService {
     const payment = event.paymentId
       ? await this.prisma.payment.findUnique({ where: { id: event.paymentId } })
       : await this.prisma.payment.findFirst({ where: { providerRef: event.reference } });
+
+    if (!payment && this.external && (await this.external.handleWebhookEvent(event))) {
+      return { status: 'processed' };
+    }
 
     if (!payment) {
       /* Un webhook sur une référence inconnue est un signal, pas une erreur
